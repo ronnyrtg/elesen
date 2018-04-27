@@ -1,0 +1,256 @@
+﻿@using TradingLicense.Infrastructure;
+@using TradingLicense.Web.Classes;
+
+<div class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            @Html.ActionLink("Laman Utama", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Profile
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Senarai Lesen Premis Perniagaan &amp; Iklan</a></li>
+                    <li><a href="#">Senarai Lesen Penjaja</a></li>
+                    <li><a href="#">Senarai Permit Perniagaan</a></li>
+                    <li><a href="#">Senarai Harta</a></li>
+                    <li><a href="#">Senarai Individu/Syarikat/Agensi</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Process
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#">Lesen Premis Perniagaan &amp; Iklan</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">General</a></li>
+                            <li><a href="#">New Application</a></li>
+                            <li><a href="#">Change of Info Application</a></li>
+                            <li><a href="#">Renew Application</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Lesen Penjaja</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">General</a></li>
+                            <li><a href="#">New Application</a></li>
+                            <li><a href="#">Change of Info Application</a></li>
+                            <li><a href="#">Renew Application</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Permit Perniagaan</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">General</a></li>
+                            <li><a href="#">New Application</a></li>
+                            <li><a href="#">Change of Info Application</a></li>
+                            <li><a href="#">Renew Application</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Inquiry
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#">General</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Owner Master</a></li>
+                            <li><a href="#">Personal Detail</a></li>
+                            <li><a href="#">Payment</a></li>
+                            <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
+                            <li><a href="#">Lesen Penjaja</a></li>
+                            <li><a href="#">Permit Perniagaan</a></li>
+                            <li><a href="#">Renewal Log</a></li>
+                            <li><a href="#">Change Of Owner Log</a></li>
+                            <li><a href="#">Change Of Business Log</a></li>
+                            <li><a href="#">Change Of Address Log</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">New Application</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
+                            <li><a href="#">Lesen Penjaja</a></li>
+                            <li><a href="#">Permit Perniagaan</a></li>
+                        </ul>
+                    <li>
+                        <a href="#">Change of Info Application</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
+                            <li><a href="#">Lesen Penjaja</a></li>
+                            <li><a href="#">Permit Perniagaan</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Renew Application</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
+                            <li><a href="#">Lesen Penjaja</a></li>
+                            <li><a href="#">Permit Perniagaan</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Master Setup
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#">General</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">System Control</a></li>
+                            <li><a href="#">Zone</a></li>
+                            <li><a href="#">Location</a></li>
+                            <li><a href="#">Road</a></li>
+                            <li><a href="#">Citizenship</a></li>
+                            <li><a href="#">Race</a></li>
+                            <li><a href="#">Transaction Type</a></li>
+                            <li><a href="#">Bank</a></li>
+                            <li><a href="#">Jenis Lesen Perniagaan &amp; Iklan</a></li>
+                            <li><a href="#">Jenis Lesen Penjaja</a></li>
+                            <li><a href="#">Jenis Permit Perniagaan</a></li>
+                            <li><a href="#">Fees Type</a></li>
+                            <li><a href="#">Holiday</a></li>
+                            <li><a href="#">Duration</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">License Group</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Group</a></li>
+                            <li><a href="#">Group Setup</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Document</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Document Name</a></li>
+                            <li><a href="#">Required Document</a></li>
+                            <li><a href="#">File Type</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Units</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Unit Name</a></li>
+                            <li><a href="#">Unit Comment</a></li>
+                            <li><a href="#">Unit Routing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Reporting
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#">Listing</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">License/Business Type Master</a></li>
+                            <li><a href="#">Zone Master</a></li>
+                            <li><a href="#">Subzone Master</a></li>
+                            <li><a href="#">Road Master</a></li>
+                            <li><a href="#">Citizen Master</a></li>
+                            <li><a href="#">Race Master</a></li>
+                            <li><a href="#">Bank Master</a></li>
+                            <li><a href="#">Owner Master</a></li>
+                            <li><a href="#">Joint Owner</a></li>
+                            <li><a href="#">Payment Transaction Listing</a></li>
+                            <li><a href="#">Payment Collection Listing</a></li>
+                            <li><a href="#">Payment Inquiry Listing Paid</a></li>
+                            <li><a href="#">Payment Inquiry Listing Unpaid</a></li>
+                            <li><a href="#">Duration Report</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Lesen Perniagaan &amp; Iklan</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">List by Account</a></li>
+                            <li><a href="#">List by Type</a></li>
+                            <li><a href="#">Butir - Butir Pemilik</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Lesen Penjaja</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">List by Account</a></li>
+                            <li><a href="#">List by Type</a></li>
+                            <li><a href="#">Butir - Butir Pemilik</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Permit Perniagaan</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">List by Account</a></li>
+                            <li><a href="#">List by Type</a></li>
+                            <li><a href="#">Butir - Butir Pemilik</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">PLIS</a>
+                        <ul class="dropdown-menu-right">
+                            <li><a href="#">Status Permohonan Lesen</a></li>
+                            <li><a href="#">Senarai Keputusan Pembaharuan</a></li>
+                            <li><a href="#">Analisa Pemohon Lesen</a></li>
+                            <li><a href="#">Analisa Lokasi Permohonan Lesen</a></li>
+                            <li><a href="#">Senarai Perniagaan</a></li>
+                            <li><a href="#">Status Pergerakan Permohonan Lesen</a></li>
+                        </ul>
+                    </li>
+                    <li>@Html.ActionLink("Senarai Perniagaan", "Index", "Business")</li>
+                    <li>@Html.ActionLink("Senarai Kod Perniagaan", "Index", "BusinessCode")</li>
+                    <li>@Html.ActionLink("Senarai Pemilik Perniagaan", "Index", "Individual")</li>
+                    <li>@Html.ActionLink("Senarai Lampiran", "Index", "Attachment")</li>
+                    <li>@Html.ActionLink("Jenis Bangunan", "Index", "PremiseType")</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Masters
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Department", "Department", "Master")</li>
+
+                    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel))
+                    {
+                        <li>@Html.ActionLink("Access Page", "AccessPage", "Master")</li>
+                    }
+
+                    <li>@Html.ActionLink("Required Document", "RequiredDoc", "Master")</li>
+                    <li>@Html.ActionLink("Company", "Company", "Master")</li>
+                    <li>@Html.ActionLink("Attachment", "Attachment", "Master")</li>
+                    <li>@Html.ActionLink("Role Template", "RoleTemplate", "Master")</li>
+                    <li>@Html.ActionLink("PA Status", "PAStatus", "Master")</li>
+                    <li>@Html.ActionLink("Business Code", "BusinessCode", "Master")</li>
+                    <li>@Html.ActionLink("Signboard", "Signboard", "Master")</li>
+                    <li>@Html.ActionLink("Premise Type", "PremiseType", "Master")</li>
+                    <li>@Html.ActionLink("Individual", "Individual", "Master")</li>
+                    <li>@Html.ActionLink("UnLock User", "Users", "Master")</li>
+                    <li>@Html.ActionLink("User", "Userslist", "Master")</li>
+                    <li>@Html.ActionLink("Sector", "Sector", "Master")</li>
+                    <li>@Html.ActionLink("Support Document", "SupportDocument", "Business")</li>
+                    <li>@Html.ActionLink("Business Code Link Department", "BusinessCodeLinkDepartment", "Business")</li>
+                </ul>
+            </li>
+
+        </ul>
+        <div class="navbar-header">
+            @Html.ActionLink("Log Out", "Logout", "Account", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+    </div>
+</div>

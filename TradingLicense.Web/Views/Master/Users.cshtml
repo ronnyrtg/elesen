@@ -1,0 +1,178 @@
+﻿
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4>UnLock Users</h4>
+    </div>
+    <div class="filter-block">
+        <div class="row small-gutter">
+            <form>
+                <div class="col-xs-4">
+                    <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Full Name" maxlength="100" />
+                </div>
+                <div class="col-xs-4">
+                    <input type="text" name="txtusersName" id="txtusersName" class="form-control" placeholder="User Name" maxlength="50" />
+                </div>
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="grid" id="divtblUsers">
+        <table cellspacing="0" class="table table-striped" id="tblUsers"></table>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/javascript">
+    $(function () {
+        $('.form-control').keypress(function (e) {
+            if (e.which == 13) {
+                bindTable();
+                return false;
+            }
+        });
+         var success = '@(TempData["SuccessMessage"])';
+                if (success != null && success != "") {
+                    successMessage(success);
+                }
+        bindTable();
+        });
+
+     function bindTable() {
+         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+         if ($.fn.DataTable.isDataTable("#tblUsers")) {
+             $('#tblUsers').dataTable().fnDestroy();
+             $('#divtblUsers').html('<table class="table table-striped" width="100%"  id="tblUsers"></table>');
+         }
+
+         table = $("#tblUsers").dataTable({
+             "autoWidth": false,
+             "searching": false,
+             "paging": true,
+             "sPaginationType": "full_numbers",
+             "language": {
+                 "lengthMenu": "Page Size : _MENU_ ",
+                 "info": "Records _START_ to _END_ of (_TOTAL_)",
+                 "emptyTable": "No Record(s) Found"
+             },
+             "processing": true,
+             "serverSide": true,
+             "pageLength": 10,
+                    "ajax": {
+                        url: '@Url.Action("Users", "Master")',
+                        type: "POST",
+                        data: bindSearch()
+                    },
+             "columns": [
+                        { "title": "Full Name", "data": "FullName" },
+                 { "title": "Username", "data": "Username" },
+                 { "title": "Email", "data": "Email" },
+                 {
+                     "title": "Active",
+                     "data": "Active",
+                     "render": function (data, type, row) {
+                         if (data) {
+                             return '<label class="label label-success">Active</label>';
+                         }
+                         else {
+                             return '<label class="label label-danger">InActive</label>';
+                         }
+                     },
+                     "width": "10%",
+                     "orderable": true,
+                 },
+                        {
+                    "title": "Action",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["UsersID"] + '" onclick="bindUnlockUser(this);" title="Unlock User"><img src="@Url.Content("~/images/correct.png")" alt="Unlock User" /></a>';
+                        return appendstring
+                    },
+                            "width": "80px",
+                    "orderable": false,
+                    "class": "action-icons"
+                }
+
+             ],
+             "drawCallback": function (settings) {
+                 //hide paging and info when empty datattable
+                 var api = this.api();
+                 if (api.rows({ page: 'current' }).data().length <= 0) {
+                     $('#tblUsers_info').hide();
+                     $('#tblUsers_paginate').hide();
+                     $('#tblUsers_length').hide();
+                 }
+                 else {
+                     $('#tblUsers_info').show();
+                     $('#tblUsers_paginate').show();
+                     $('#tblUsers_length').show();
+                 }
+                 bindSortingArrow();
+             }
+                });
+        }
+
+        function clearControls() {
+            $("#txtfullName").val('');
+            $("#txtusersName").val('');
+            bindTable();
+        }
+
+        function bindSearch() {
+            var param = {};
+            param["usersName"] = $('#txtusersName').val();
+            param["fullName"] = $('#txtfullName').val();
+            return param;
+        }
+
+        function isValidSearchCriteria(formName) {
+            var isValid = true;
+
+            $("form#" + formName + " input[type=text]").each(function () {
+                if ($(this).val().match(/[<>]/)) {
+                    $(this).addClass('input-validation-error');
+                    isValid = false;
+                }
+                else {
+                    $(this).removeClass('input-validation-error');
+                }
+            });
+            return isValid;
+        }
+
+        function bindUnlockUser(item) {
+            var x = confirm("Are you sure you want to unlock user?");
+            if (x) {
+                $.ajax({
+                    type: "POST",
+                    url: encodeURI('@Url.Action("UnLockUsers", "Master")'),
+                    data: { "Id": $(item).attr('data-id') },
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data, textStatus, XMLHttpRequest) {
+                        if (data.success) {
+                            bindTable();
+                            successMessage(data.message);
+
+                        }
+                        else {
+                            errorMessage(data.message);
+                        }
+                    },
+                    error: function (jqXHR, exception, errMsg) {
+                    }
+                });
+            }
+        }
+
+</script>
+}

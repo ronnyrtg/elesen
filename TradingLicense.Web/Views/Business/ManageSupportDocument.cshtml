@@ -1,0 +1,69 @@
+﻿@using AutoMapper;
+@model TradingLicense.Model.SupportDocsModel
+@{
+    ViewBag.Title = "Manage Support Document";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    List<TradingLicense.Model.BusinessCodeModel> businessCodeList = new List<TradingLicense.Model.BusinessCodeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessCode = ctx.BusinessCodes.ToList();
+        businessCodeList = Mapper.Map<List<TradingLicense.Model.BusinessCodeModel>>(businessCode);
+    }
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Support Document</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmSupportDocs", id = "frmSupportDocs" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.SupportDocsID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BusinessCodeID, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.DropDownListFor(m => m.BusinessCodeID, new SelectList(businessCodeList, "BusinessCodeID", "CodeNumber"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SuppDocDesc, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextAreaFor(m => m.SuppDocDesc, new { @class = "form-control", @maxlength = "255" })
+                        @Html.ValidationMessageFor(m => m.SuppDocDesc)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("SupportDocument", "Business")';
+        window.location.href = link;
+    }
+    </script>
+}

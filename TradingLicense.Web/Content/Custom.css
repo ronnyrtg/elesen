@@ -1,0 +1,579 @@
+﻿@charset "utf-8";
+/* Reset */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    min-height: 100%;
+    padding-bottom:68px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/*Input validation*/
+.input-validation-error {
+    background-color: #ffeeee;
+    border-color: red !important;
+}
+
+.field-validation-error {
+    color: #ff0000;
+}
+
+.input-validation-error {
+    border: 1px solid red !important;
+}
+
+input.error, textarea.error, select.error {
+    border: 1px solid red !important;
+}
+
+#forgotEmail-error {
+    display: none !important;
+}
+
+.login-panel .btn {
+    margin-bottom: 0px !important;
+}
+
+
+.dataTable, .dataTable1 {
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 0px;
+}
+
+    .dataTable thead tr, .dataTable1 thead tr {
+        background: #f9f9f9 !important;
+    }
+
+    .dataTable th a, .dataTable1 th a {
+        color: #646464;
+        font-weight: bold !important;
+        text-decoration: none;
+    }
+
+        .dataTable th a:hover, .dataTable1 th a:hover {
+            color: #333;
+        }
+
+    .dataTable td, .dataTable1 td {
+        padding: 13px 15px !important;
+        color: #777a7d;
+        vertical-align: middle !important;
+        /*white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px !important;*/
+    }
+
+    .dataTable td, .dataTable th, .dataTable1 td, .dataTable1 th {
+        border: none !important;
+        font-weight: normal !important;
+    }
+
+    .dataTable th, .dataTable1 th {
+        font-size: 14px;
+        background: #FFF;
+        color: #646464;
+        font-weight: bold !important;
+        border-bottom: 1px solid #ddd !important;
+        padding: 13px 15px !important;
+    }
+
+.grid-bottom {
+    background: #FFF;
+    padding: 5px 10px;
+    border-top: 1px solid #ddd;
+}
+
+    .grid-bottom .dataTables_length .bootstrap-select {
+        width: 75px !important;
+    }
+
+div.dataTables_length {
+    float: left;
+    padding: 5px 15px 0 10px;
+}
+
+    div.dataTables_length label {
+        font-weight: normal;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    div.dataTables_length select {
+        width: 75px;
+        display: inline-block;
+    }
+
+div.dataTables_filter {
+    text-align: right;
+}
+
+    div.dataTables_filter label {
+        font-weight: normal;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    div.dataTables_filter input {
+        margin-left: 0.5em;
+        display: inline-block;
+        width: auto;
+    }
+
+div.dataTables_info {
+    /*padding-top: 16px;*/
+    white-space: nowrap;
+    float: left;
+}
+
+div.dataTables_paginate {
+    margin: 0;
+    white-space: nowrap;
+    text-align: right;
+}
+
+    div.dataTables_paginate ul.pagination {
+        margin: 5px 0;
+        white-space: nowrap;
+    }
+
+/*.paginate_button.first a{ background-image:url(../images/first.png) !important; }
+.paginate_button.previous a{ background-image:url(../images/prev.png) !important; }
+.paginate_button.next a{ background-image:url(../images/next.png) !important; }
+.paginate_button.last a{ background-image:url(../images/last.png) !important; }*/
+.paginate_button a {
+    background-color: #FFF;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+    .paginate_button a:hover {
+        background-color: #e7e7e7;
+    }
+
+table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting:after {
+    padding-top: 9px;
+}
+
+.datatable-group-colapse a {
+    text-decoration: none;
+    font-weight: 200;
+    background: url(../images/ic-arrowdown.png) 2px 3px no-repeat;
+    color: black;
+    padding-left: 25px;
+    font-weight: bold;
+}
+
+.datatable-group-expand a {
+    text-decoration: none;
+    font-weight: 200;
+    background: url(../images/ic-rightarrow.png) 2px 3px no-repeat;
+    color: black;
+    padding-left: 25px;
+    font-weight: bold;
+}
+
+
+.modal-title {
+    font-size: 20px;
+    color: #333;
+    font-weight: normal;
+    padding: 0px;
+}
+
+.modal-header {
+    background: #f6f7f8;
+    padding: 10px 15px;
+    position: relative;
+    border-radius: 7px 7px 0 0;
+}
+
+    .modal-header .close {
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: url(../images/pop-close.svg) center no-repeat;
+        display: block;
+        opacity: 1;
+    }
+
+        .modal-header .close:hover {
+            background: #e0e3e6 url(../images/pop-close.svg) center no-repeat;
+        }
+
+.modal-body {
+    padding: 25px;
+}
+
+.cfont {
+    color: red;
+}
+
+.table thead .sorting:after,
+.table thead .sorting_asc:after,
+.table thead .sorting_desc:after {
+    content: none !important;
+}
+
+span.arrow-hack {
+    margin-left: 5px;
+    padding-left: 5px;
+}
+
+span.sort {
+    background: url("../images/sort.png") no-repeat center right;
+}
+
+span.asc, .sorting_asc span.sort {
+    background: url("../images/sort-asc.png") no-repeat center right;
+}
+
+span.desc, .sorting_desc span.sort {
+    background: url("../images/sort-desc.png") no-repeat center right;
+}
+
+.bootstrap-select > .dropdown-toggle {
+    min-width: 80px !important;
+}
+
+.form-group label {
+    padding-bottom: 4px;
+}
+
+.btn {
+    min-width: 100px;
+}
+
+.label-success {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.label-danger {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.label-primary {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+    background-color: #337ab7;
+}
+
+@media (max-width:767px) {
+    .grid-bottom div.dataTables_length {
+        float: none;
+    }
+
+    .grid-bottom div.dataTables_info {
+        float: none;
+        padding-top: 0px;
+    }
+
+    .grid-bottom .pagination {
+        float: none !important;
+    }
+
+    div.dataTables_wrapper > div.row > div, div.dataTables_length, div.dataTables_filter, div.dataTables_info, div.dataTables_paginate {
+        text-align: center;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+}
+
+.hover-dropdown-menu li a.activelink {
+    color: #1195F7;
+}
+
+
+.modal-xlg {
+    width: 1100px;
+}
+
+.text-primary {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+    color: #337ab7;
+}
+
+.text-danger {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+    color: #d9534f;
+}
+
+.text-success {
+    font-weight: normal;
+    padding: 6px 12px;
+    display: inline-block;
+    font-size: 14px;
+    color: #3c763d;
+}
+
+.right {
+    text-align: right;
+}
+
+#permissionTable > tbody > tr:nth-of-type(odd), #permissionTable > tbody > tr:nth-of-type(even) {
+    background-color: #FFF;
+}
+
+#permissionTable > tbody > tr.groupmain {
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.onlygrid {
+    padding: 0px !important;
+}
+
+.onlygrid-btn {
+    padding: 5px 15px 15px 15px;
+}
+
+.loader-wrapper.visible {
+    z-index: 10000;
+}
+.wrapper {
+    width: 100%;
+    padding: 30px;
+}
+/* card */
+.card {
+    box-shadow: 0 0 10px rgba(153, 153, 153, 0.15);
+    background: #fff;
+    position: relative;
+}
+
+.card .header {
+    border-bottom: 1px solid #e1e1e1;
+    padding: 15px;
+}
+
+    .card .header h4 {
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 24px;
+        padding: 0;
+        margin:0;
+    }
+
+.card .body {
+    padding: 15px;
+}
+
+.card .page-action-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+}
+
+    .card .page-action-button li {
+        display: inline-block;
+    }
+
+        .card .page-action-button li a {
+            line-height: 0;
+            display: block;
+            padding: 13px 14px;
+            border-left: 1px solid #e1e1e1;
+        }
+
+            .card .page-action-button li a:hover {
+                background: #f6f6f6;
+            }
+
+.card .back-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+    .card .back-button a {
+        font-size: 18px;
+        line-height: 54px;
+        color: #646464;
+        padding: 0 15px;
+        text-decoration:none;
+    }
+
+        .card .back-button a:hover, .card .back-button a:focus, .card .back-button a:active, .card .back-button a.active {
+            opacity: 0.7;
+        }
+
+        .card .back-button a img {
+            margin-right: 5px;
+            position: relative;
+            top: 3px;
+        }
+
+    .card ul {
+        list-style: none;
+    }
+
+/* filter block */
+.filter-block {
+    border-bottom: 1px solid #e1e1e1;
+    padding: 15px;
+    background: #f9f9f9;
+}
+
+    .filter-block .btn + .btn {
+        margin-left: 10px;
+    }
+
+    .filter-block .checkbox {
+        margin-right: 15px;
+    }
+
+/* checkbox */
+.checkbox {
+    margin: 0 0 15px;
+    line-height: 20px;
+    font-size: 14px;
+    color: #646464;
+}
+
+    .checkbox label {
+        position: relative;
+        padding-left: 25px;
+    }
+
+        .checkbox label input {
+            opacity: 0;
+        }
+
+            .checkbox label input:checked ~ .pointer {
+                border-color: #041a63;
+            }
+
+                .checkbox label input:checked ~ .pointer img {
+                    opacity: 1;
+                }
+
+        .checkbox label .pointer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 20px;
+            width: 20px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+            padding: 1px 2px;
+        }
+
+            .checkbox label .pointer img {
+                height: 14px;
+                width: 14px;
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+
+    .checkbox.inline {
+        display: inline-block;
+    }
+.wrapper {
+    min-height: 100%;
+    padding-bottom: 68px;
+}
+
+.copyright {
+    text-align: right;
+    color: #848484;
+    font-size: 14px;
+    line-height: 18px;
+    padding: 25px 30px 25px 0;
+    /*margin-top: -68px;*/
+}
+
+/* login-panel */
+.vertical-wrapper {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    display: table;
+    background: #f2f2f2;
+}
+
+.login-panel-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.login-panel {
+    width: 358px;
+    background: #fff;
+    margin: 0 auto 25px;
+    border: 1px solid #e5e5e5;
+    padding: 30px;
+}
+
+    .login-panel .logo {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-panel .btn {
+        margin-bottom: 25px;
+    }
+
+    .login-panel + .copyright {
+        color: #8e93ac;
+        font-size: 14px;
+        line-height: 18px;
+        margin: 0 auto;
+        width: 260px;
+    }
+
+.btn.fluid {
+    width: 100%;
+}
+
+/*google reCAPTCHA*/ 
+
+msg-error {
+    color: #c65848;
+}
+.g-recaptcha.error {
+  border: solid 2px #c64848;
+  padding: .1em;
+  width: 19.4em;
+}

@@ -1,0 +1,138 @@
+﻿@model TradingLicense.Model.IndividualModel
+@{
+    ViewBag.Title = "ManageIndividual";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    List<SelectListItem> nationalityList = new List<SelectListItem>();
+    nationalityList.Add(new SelectListItem { Text = "Select Nationality", Value = "0" });
+    nationalityList.Add(new SelectListItem { Text = "British", Value = "1" });
+    nationalityList.Add(new SelectListItem { Text = "American", Value = "2" });
+    nationalityList.Add(new SelectListItem { Text = "Brazilian", Value = "3" });
+
+    List<SelectListItem> genderList = new List<SelectListItem>();
+    genderList.Add(new SelectListItem { Text = "Select Gender", Value = "0" });
+    genderList.Add(new SelectListItem { Text = "Male", Value = "1" });
+    genderList.Add(new SelectListItem { Text = "Female", Value = "2" });
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Individual</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.IndividualID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FullName, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.IndividualEmail, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.IndividualEmail)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MykadNo, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.MykadNo, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.MykadNo)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PhoneNo, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.PhoneNo)
+                    </div>
+                </div>
+            </div>
+
+           <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.NationalityID, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.NationalityID)
+                        </div>
+                    </div>
+                </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AddressIC, new { @class = "control-label" })
+                        @Html.TextAreaFor(m => m.AddressIC, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.AddressIC)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Gender, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Gender)
+                        </div>
+                    </div>
+                </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("Individual", "Master")';
+        window.location.href = link;
+    }
+    </script>
+}

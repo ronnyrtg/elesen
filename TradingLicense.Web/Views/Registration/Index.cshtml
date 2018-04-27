@@ -1,0 +1,100 @@
+﻿@using TradingLicense.Web.Pages;
+@using TradingLicense.Infrastructure;
+@model TradingLicense.Model.RegistrationModel
+@{
+    ViewBag.Title = "Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Registration</title>
+
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+        <link rel="shortcut icon" href="~/images/favicon.png" />
+        @Styles.Render("~/Content/css")
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/bootstrap")
+
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    </head>
+    <body>*@
+<div class="vertical-wrapper">
+    <div class="login-panel-wrapper">
+        <div class="login-panel">
+            <div class="logo">
+                <a href="#" title="Trading LIcense">
+                    <img src="@Url.Content("~/Content/images/logo.png")" />
+                </a>
+            </div>
+            @using (Html.BeginForm(Actions.Index, TradingLicense.Web.Pages.Controllers.Registration, new { Area = "" }, FormMethod.Post, new { id = "frmregistration" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control", maxlength = 30, @placeholder = "User Name" })
+                    @Html.ValidationMessageFor(model => model.Username)
+                </div>
+                <div class="form-group">
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", maxlength = 200, @placeholder = "Email" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+                <div class="form-group">
+                    @Html.TextBoxFor(model => model.Password, new { @class = "form-control", maxlength = 32, @placeholder = "Password", @type = "password" })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                <div class="form-group">
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password", @maxlength = "32" })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                </div>
+
+                <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lc5MlUUAAAAAAQRbxup25LxAZf175gKWvpj3C6-"></div><br />
+
+                <button type="submit" class="btn btn-primary fluid" onclick="return RegistrationUser();">Register</button><br /><br />
+                <a href="@Url.Action(Actions.LogIn, TradingLicense.Web.Pages.Controllers.Account)" title="Login" class="btn btn-primary fluid">Login</a>
+            }
+        </div>
+        <p class="copyright" style="padding:0px;">&copy;@DateTime.Now.Year Trading License. All rights reserved.</p>
+    </div>
+</div>
+
+@Html.Raw(ViewBag.openPopup)
+@*</body>
+    </html>*@
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+
+        function RegistrationUser() {
+            if ($("#frmregistration").valid()) {
+
+                var $captcha = $('#recaptcha'),
+                    response = grecaptcha.getResponse();
+
+                if (checkStrength($('#Password').val()) < 3) {
+                    ShowMessageToastr('danger', 'Password must contain lowercase,uppercase, number and one special character.');
+                    return false;
+                }
+                else if (response.length === 0) {
+                    $('.msg-error').text("reCAPTCHA is mandatory");
+                    if (!$captcha.hasClass("error")) {
+                        $captcha.addClass("error");
+                        return false;
+                    }
+                }
+                else {
+                    $captcha.removeClass("error");
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+    </script>
+}

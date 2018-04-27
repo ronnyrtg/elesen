@@ -1,0 +1,77 @@
+﻿@using AutoMapper;
+@model TradingLicense.Model.BussCodLinkDepModel
+@{
+    ViewBag.Title = "Manage Business Code Link Department";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    List<TradingLicense.Model.BusinessCodeModel> businessCodeList = new List<TradingLicense.Model.BusinessCodeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessCode = ctx.BusinessCodes.ToList();
+        businessCodeList = Mapper.Map<List<TradingLicense.Model.BusinessCodeModel>>(businessCode);
+    }
+
+    List<TradingLicense.Model.DepartmentModel> departmentModelList = new List<TradingLicense.Model.DepartmentModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var departments = ctx.Departments.ToList();
+        departmentModelList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(departments);
+    }
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Business Code Link Department</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBussCodeLinkDep", id = "frmBussCodeLinkDep" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.BussCodLinkDepID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BusinessCodeID, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.DropDownListFor(m => m.BusinessCodeID, new SelectList(businessCodeList, "BusinessCodeID", "CodeNumber"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DepartmentID, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.DropDownListFor(m => m.DepartmentID, new SelectList(departmentModelList, "DepartmentID", "DepartmentCode"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("BusinessCodeLinkDepartment", "Business")';
+        window.location.href = link;
+    }
+    </script>
+}
+

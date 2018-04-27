@@ -1,0 +1,73 @@
+﻿@model TradingLicense.Model.PAStatusModel
+@{
+    ViewBag.Title = "ManagePAStatus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage PA Status</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPAStatus", id = "frmPAStatus" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PAStatusID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.StatusDesc, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.StatusDesc, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(m => m.StatusDesc)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PercentProgress, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.PercentProgress, new { @class = "form-control allownumeric", @maxlength = "2" })
+                        @Html.ValidationMessageFor(m => m.PercentProgress)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("PAStatus", "Master")';
+        window.location.href = link;
+        }
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+        $(".allownumeric").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+    </script>
+}

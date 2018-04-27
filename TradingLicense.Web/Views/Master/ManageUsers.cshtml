@@ -1,0 +1,124 @@
+﻿@using AutoMapper;
+@model TradingLicense.Model.UsersModel
+@{
+    ViewBag.Title = "ManageUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    List<TradingLicense.Model.DepartmentModel> DepartmentList = new List<TradingLicense.Model.DepartmentModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var department = ctx.Departments.ToList();
+        DepartmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(department);
+    }
+
+    List<TradingLicense.Model.RoleTemplateModel> RoleTemplateList = new List<TradingLicense.Model.RoleTemplateModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var roletemplate= ctx.RoleTemplates.ToList();
+        RoleTemplateList = Mapper.Map<List<TradingLicense.Model.RoleTemplateModel>>(roletemplate);
+    }
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage User</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmUser", id = "frmUser" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.UsersID)
+        @Html.HiddenFor(m => m.Password)
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FullName, new { @class = "control-label" })<span class="cfont">*</span>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
+                    @Html.ValidationMessageFor(m => m.FullName)
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Username, new { @class = "control-label" })<span class="cfont">*</span>
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @maxlength = "30" })
+                    @Html.ValidationMessageFor(m => m.Username)
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email, new { @class = "control-label" })<span class="cfont">*</span>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @maxlength = "200" })
+                    @Html.ValidationMessageFor(m => m.Email)
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DepartmentID, new { @class = "control-label" })<span class="cfont">*</span>
+                    @Html.DropDownListFor(m => m.DepartmentID, new SelectList(DepartmentList, "DepartmentID", "DepartmentCode"), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.RoleTemplateID, new { @class = "control-label" })<span class="cfont">*</span>
+                    @Html.DropDownListFor(m => m.RoleTemplateID, new SelectList(RoleTemplateList, "RoleTemplateID", "RoleTemplateDesc"), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.Active)
+                            <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                    <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                </div>
+            </div>
+        </div>
+}
+
+    </div>
+</div>
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("Userslist", "Master")';
+        window.location.href = link;
+    }
+    </script>
+}
+
+

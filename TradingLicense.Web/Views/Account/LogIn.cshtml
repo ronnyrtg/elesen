@@ -1,0 +1,153 @@
+﻿@using TradingLicense.Web.Pages;
+@using TradingLicense.Infrastructure;
+@model TradingLicense.Model.LoginModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>LogIn</title>
+
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+        <link rel="shortcut icon" href="~/images/favicon.png" />
+        @Styles.Render("~/Content/css")
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/bootstrap")
+    </head>
+    <body>*@
+<div class="vertical-wrapper">
+    <div class="login-panel-wrapper">
+        <div class="login-panel">
+            <div class="logo">
+                <a href="#" title="Trading LIcense">
+                    <img src="@Url.Content("~/Content/images/logo.png")" />
+                </a>
+            </div>
+            @using (Html.BeginForm(Actions.LogIn, TradingLicense.Web.Pages.Controllers.Account, new { Area = "" }, FormMethod.Post, new { id = "frmlogin" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control", maxlength = 30, Value = @Model.Username, @placeholder = "Username" })
+                    @Html.ValidationMessageFor(model => model.Username)
+                </div>
+                <div class="form-group">
+                    @Html.TextBoxFor(model => model.Password, new { @class = "form-control", maxlength = 32, @placeholder = "Password", Value = @Model.Password, @type = "password" })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="checkbox">
+                            <label>
+                                @if (Model.RememberMe)
+                                {
+                                    @Html.CheckBoxFor(model => model.RememberMe, new { @checked = true })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(model => model.RememberMe)
+                                }
+                                <span>Remember Me</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <a href="#" title="Forget password ?" data-toggle="modal" data-target="#forgotpwdModal" onclick="forgotpassword()">Forget password ?</a>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary fluid">Login</button><br /><br />
+                <a href="@Url.Action(Actions.Index, TradingLicense.Web.Pages.Controllers.Registration)" title="Register" class="btn btn-primary fluid">Register</a>
+            }
+        </div>
+        <p class="copyright" style="padding:0px;">&copy;@DateTime.Now.Year Trading License. All rights reserved.</p>
+
+        <div class="modal fade" id="forgotpwdModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content cus-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title" id="myModalLabel">Forgot Password</h4>
+                    </div>
+                    <form id="forgotpwdform">
+                        <div class="modal-body">
+                            <div id="divModalpwdMessage"></div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="emailtxt" class="form-control" id="forgotEmail" placeholder="Enter Email Address" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" id="btn_submit" title="Send" onclick="SendEmail()">Send</button>
+                                <button type="button" class="btn btn-default" title="Cancel" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Raw(ViewBag.openPopup)
+@*</body>
+    </html>*@
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+
+            var validator1 = $('#forgotpwdform').validate({
+            rules:
+            {
+                emailtxt: { required: true, email: true }
+            },
+            messages:
+            {
+                emailtxt: { required: '', email: '' }
+            }
+             });
+
+        $('#forgotpwdModal').on('hide.bs.modal', function (e) {
+          if (validator1 != "")
+                validator1.resetForm();
+        });
+
+        function forgotpassword() {
+        validator1.resetForm();
+        $("#forgotEmail").val($("#Email").val());
+        }
+
+        function SendEmail() {
+        var emailvalue = $("#forgotEmail").val();
+            if ($("#forgotpwdform").valid()) {
+                $('#btn_submit').attr('disabled', true);
+            $.ajax({
+                url: '@Url.Action(Actions.ForgotPassword, Controllers.Account, new { area = "" })',
+                data: { emailValue: emailvalue,Type: @Enums.ResetPasswordType.ForgotPassword.GetHashCode() },
+                type: 'Post',
+                datatype: 'json',
+                success: onSuccess
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+    function onSuccess(responseText, statusText, xhr, $form) {
+            $('#btn_submit').attr('disabled', false);
+            if (responseText[0] == 0) {
+                $("#forgotpwdModal").modal("hide");
+                ShowMessageToastr(responseText[1], responseText[2]);
+            }
+            else {
+                ShowMessageToastr(responseText[1], responseText[2]);
+            }
+        }
+
+    </script>
+}

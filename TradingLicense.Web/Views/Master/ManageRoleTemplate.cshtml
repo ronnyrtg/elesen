@@ -1,0 +1,50 @@
+﻿@model TradingLicense.Model.RoleTemplateModel
+@{
+    ViewBag.Title = "ManageRoleTemplate";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Role Template</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmRoleTemplate", id = "frmRoleTemplate" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.RoleTemplateID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RoleTemplateDesc, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.RoleTemplateDesc, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(m => m.RoleTemplateDesc)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("RoleTemplate", "Master")';
+        window.location.href = link;
+    }
+    </script>
+}
