@@ -25,11 +25,6 @@
 <div class="vertical-wrapper">
     <div class="login-panel-wrapper">
         <div class="login-panel">
-            <div class="logo">
-                <a href="#" title="Trading LIcense">
-                    <img src="@Url.Content("~/Content/images/logo.png")" />
-                </a>
-            </div>
             @using (Html.BeginForm(Actions.Index, TradingLicense.Web.Pages.Controllers.Registration, new { Area = "" }, FormMethod.Post, new { id = "frmregistration" }))
             {
                 @Html.AntiForgeryToken()

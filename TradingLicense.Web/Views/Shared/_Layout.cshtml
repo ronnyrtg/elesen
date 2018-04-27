@@ -18,9 +18,9 @@
     @Scripts.Render("~/bundles/bootstrap")
 </head>
 <body>
+    <div class="navbar-static-top" align="center"><img src="~/Content/images/header.png" /></div><br />
     @if (ProjectSession.User != null && ProjectSession.UserID > 0)
     {
-        <div class="navbar-static-top" align="center"><img src="~/Content/images/header.png" /></div><br />
         @Html.Partial("_Menu")
     }
 
