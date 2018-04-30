@@ -4,7 +4,6 @@
     ViewBag.Title = "ManageBusinessCode";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 @{
     List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
@@ -13,14 +12,12 @@
         sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
     }
 }
-
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
         <h4 id="headerTitle">Manage Business Code</h4>
     </div>
     <div class="body">
-
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBusinessCode", id = "frmBusinessCode" }))
         {
             @Html.AntiForgeryToken()
@@ -120,7 +117,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         @Html.LabelFor(m => m.SectorID, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorList, "SectorID", "SectorDesc"), new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control"})
+                        @Html.ValidationMessageFor(m => m.SectorID)
                     </div>
                 </div>
             </div>
@@ -162,13 +160,18 @@
 
 @section scripts{
     <script>
-         var actionError = '@(TempData["ErrorMessage"])';
-           if (actionError != null && actionError != "") {
-                errorMessage(actionError);
-            }
-    function back() {
-         var link = '@Url.Action("BusinessCode", "Master")';
-        window.location.href = link;
+
+           $(function () {
+            $("#Sectorlist").select2();
+        });
+        
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+              errorMessage(actionError);
+        }
+        function back() {
+             var link = '@Url.Action("BusinessCode", "Master")';
+             window.location.href = link;
         }
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
