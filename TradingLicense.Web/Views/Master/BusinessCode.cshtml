@@ -16,13 +16,13 @@
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-3">
+                    <input type="text" name="txtSector" id="txtSector" class="form-control" placeholder="Group" maxlength="50" />
+                </div>
+                <div class="col-xs-3">
                     <input type="text" name="txtcodeNumber" id="txtcodeNumber" class="form-control" placeholder="Code Number" maxlength="50" />
                 </div>
                 <div class="col-xs-3">
-                    <input type="text" name="txtdefaultRate" id="txtdefaultRate" class="form-control" placeholder="Default Rate" maxlength="10" />
-                </div>
-                <div class="col-xs-3">
-                    <input type="text" name="txtexpress" id="txtexpress" class="form-control" placeholder="Express" maxlength="10" />
+                    <input type="text" name="txtcodeDesc" id="txtcodeDesc" class="form-control" placeholder="Code Description" maxlength="10" />
                 </div>
                 <div class="col-xs-3">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -83,10 +83,29 @@
                         data: bindSearch()
                     },
                     "columns": [
-                        { "title": "Code Number", "data": "CodeNumber"},
+                        { "title": "Group", "data": "SectorID" },
+                        { "title": "Code Number", "data": "CodeNumber" },
                         { "title": "Code Description", "data": "CodeDesc"},
-                        { "title": "Default Rate", "data": "DefaultRate"},
-                        { "title": "Express", "data": "Express" },
+                        {
+                            "title": "Fee (RM/m&sup2;)",
+                            "data": "DefaultRate",
+                            "render": $.fn.dataTable.render.number( ',', '.', 2, 'RM' ),
+                            "orderable": true,
+                        },
+                        {
+                            "title": "Express",
+                            "data": "Express",
+                            "render": function (data, type, row) {
+                                if (data) {
+                                    return '<label class="label label-success">Yes</label>';
+                                }
+                                else {
+                                    return '<label class="label label-danger">No</label>';
+                                }
+                            },
+                            "width": "10%",
+                            "orderable": true,
+                        },
                         {
                             "title": "Active",
                             "data": "Active",
