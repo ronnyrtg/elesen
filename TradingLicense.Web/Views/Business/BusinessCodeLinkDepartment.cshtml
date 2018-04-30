@@ -16,10 +16,10 @@
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtbusinessCode" id="txtbusinessCode" class="form-control" placeholder="Business Code" maxlength="5" />
+                    <input type="text" name="txtbusinessCodeDesc" id="txtbusinessCodeDesc" class="form-control" placeholder="Business Code Description" maxlength="5" />
                 </div>
                 <div class="col-xs-4">
-                    <input type="text" name="txtdepartmentCode" id="txtdepartmentCode" class="form-control" placeholder="Department Code" maxlength="10" />
+                    <input type="text" name="txtdepartmentCodeDesc" id="txtdepartmentCodeDesc" class="form-control" placeholder="Department Code Description" maxlength="10" />
                 </div>
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -80,8 +80,18 @@
                         data: bindSearch()
                     },
                     "columns": [
-                        { "title": "Business Code", "data": "CodeNumber"},
-                        { "title": "Department Code", "data": "DepartmentCode"},
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
+                        { "title": "Business Code Description", "data": "CodeDesc" },
+                        { "title": "Department Code Description", "data": "DepartmentDesc" },
                         {
                     "title": "Action",
                     "data": null,
@@ -116,15 +126,15 @@
         }
 
         function clearControls() {
-            $("#txtbusinessCode").val('');
-            $("#txtdepartmentCode").val('');
+            $("#txtCodeDesc").val('');
+            $("#txtdepartmentDesc").val('');
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
-            param["businessCode"] = $('#txtbusinessCode').val();
-            param["departmentCode"] = $('#txtdepartmentCode').val();
+            param["CodeDesc"] = $('#txtCodeDesc').val();
+            param["departmentDesc"] = $('#txtdepartmentDesc').val();
             return param;
         }
 

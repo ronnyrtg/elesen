@@ -36,7 +36,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         @Html.LabelFor(m => m.BusinessCodeID, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.DropDownListFor(m => m.BusinessCodeID, new SelectList(businessCodeList, "BusinessCodeID", "CodeNumber"), new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.BusinessCodeID, new SelectList(businessCodeList.OrderBy(x => x.CodeDesc), "BusinessCodeID", "CodeDesc"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         @Html.LabelFor(m => m.DepartmentID, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.DropDownListFor(m => m.DepartmentID, new SelectList(departmentModelList, "DepartmentID", "DepartmentCode"), new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.DepartmentID, new SelectList(departmentModelList.OrderBy(x => x.DepartmentDesc), "DepartmentID", "DepartmentDesc"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>

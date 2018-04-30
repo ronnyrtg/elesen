@@ -39,8 +39,8 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<SupportDocs, SupportDocsModel>().ForMember(dest => dest.CodeNumber, opt => opt.MapFrom(s => s.BusinessCode.CodeNumber));
                 cfg.CreateMap<SupportDocsModel, SupportDocs>();
                 cfg.CreateMap<BussCodLinkDep, BussCodLinkDepModel>()
-                    .ForMember(dest => dest.CodeNumber, opt => opt.MapFrom(src => src.BusinessCode.CodeNumber))
-                    .ForMember(dest => dest.DepartmentCode, opt => opt.MapFrom(src => src.Department.DepartmentCode));
+                    .ForMember(dest => dest.CodeDesc, opt => opt.MapFrom(src => src.BusinessCode.CodeDesc))
+                    .ForMember(dest => dest.DepartmentDesc, opt => opt.MapFrom(src => src.Department.DepartmentDesc));
                 cfg.CreateMap<BussCodLinkDepModel, BussCodLinkDep>();
                 cfg.CreateMap<Sector, SectorModel>();
             });

@@ -55,5 +55,6 @@ namespace TradingLicense.Model
         public bool Active { get; set; }
 
         public int SectorID { get; set; }
+        public string SectorDesc { get; set; }
     }
 }
