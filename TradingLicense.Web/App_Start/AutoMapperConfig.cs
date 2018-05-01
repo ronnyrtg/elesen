@@ -28,8 +28,8 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<Attachment, AttachmentModel>();
                 cfg.CreateMap<RoleTemplate, RoleTemplateModel>();
                 cfg.CreateMap<PAStatus, PAStatusModel>();
-                cfg.CreateMap<BusinessCode, BusinessCodeModel>();
-                cfg.CreateMap<BusinessCodeModel, BusinessCode>().ReverseMap();
+                cfg.CreateMap<BusinessCode, BusinessCodeModel>().ForMember(dest =>dest.SectorDesc,opt =>opt.MapFrom(s =>s.Sector.SectorDesc));
+                cfg.CreateMap<BusinessCodeModel, BusinessCode>();
                 cfg.CreateMap<Signboard, SignboardModel>();
                 cfg.CreateMap<PremiseType, PremiseTypeModel>();
                 cfg.CreateMap<LoginLog, LoginLogModel>();

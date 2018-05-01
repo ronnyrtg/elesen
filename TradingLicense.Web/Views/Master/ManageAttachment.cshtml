@@ -21,7 +21,7 @@
                         <input type="file" name="file" /><br />
                         @if (!string.IsNullOrWhiteSpace(Model.FileName))
                         {
-                            <a href="@Url.Content(TradingLicense.Common.ProjectConfiguration.AttachmentDocument+Model.FileName)" download>
+                            <a href="@Url.Content(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + Model.FileName)" download>
                                 @Model.FileName
                             </a>
                         }

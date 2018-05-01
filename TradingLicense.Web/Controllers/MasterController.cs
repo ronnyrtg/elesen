@@ -1252,7 +1252,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string defaultRate, string express)
+        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorID)
         {
             List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
             int totalRecord = 0;
@@ -1263,16 +1263,37 @@ namespace TradingLicense.Web.Controllers
                 totalRecord = query.Count();
 
                 #region Filtering
+
+                // Apply filters for comman Grid searching
+                if (requestModel.Search.Value != string.Empty)
+               {
+                    var value = requestModel.Search.Value.ToLower().Trim();
+                    query = query.Where(p => p.CodeNumber.ToLower().Contains(value) ||
+                                             p.CodeDesc.ToLower().Contains(value) ||
+                                             p.SectorID.ToString().Contains(value) ||
+                                             p.DefaultRate.ToString().Contains(value) ||
+                                             p.Sector.SectorDesc.ToLower().Contains(value)
+                                       );
+                }
+
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(codeNumber) || !string.IsNullOrWhiteSpace(defaultRate) || !string.IsNullOrWhiteSpace(express))
+                if (!string.IsNullOrWhiteSpace(codeNumber))
                 {
-                    query = query.Where(p =>
-                                        p.CodeNumber.Contains(codeNumber) &&
-                                        p.DefaultRate.ToString().Contains(defaultRate) &&
-                                        p.Express.ToString().Contains(express)
-                                    );
+                    query = query.Where(p => p.CodeNumber.ToLower().Contains(codeNumber.ToLower()));
                 }
+
+                if (!string.IsNullOrWhiteSpace(codeDesc))
+                {
+                    query = query.Where(p => p.CodeDesc.ToLower().Contains(codeDesc.ToLower()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(sectorID))
+                {
+                    query = query.Where(p =>p.SectorID.ToString().Contains(sectorID));
+                }
+
+                // Filter End
 
                 filteredRecord = query.Count();
 
@@ -1291,15 +1312,15 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString);
+                var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
                 #endregion Sorting
-
+                
                 // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
 
-                BusinessCode = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
-
+                BusinessCode = result;
             }
             return Json(new DataTablesResponse(requestModel.Draw, BusinessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }

@@ -1,9 +1,16 @@
-﻿
+﻿@using AutoMapper;
 @{
     ViewBag.Title = "BusinessCode";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@{
+    List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var sector = ctx.Sectors.ToList();
+        sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
+    }
+}
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
@@ -15,13 +22,13 @@
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
-                <div class="col-xs-3">
-                    <input type="text" name="txtSector" id="txtSector" class="form-control" placeholder="Group" maxlength="50" />
+                <div class="col-xs-2">
+                    @Html.DropDownList("Sectorlist", new SelectList(sectorList, "SectorID", "SectorDesc"), "Select Group", new { @class = "form-control" })
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-2">
                     <input type="text" name="txtcodeNumber" id="txtcodeNumber" class="form-control" placeholder="Code Number" maxlength="50" />
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-2">
                     <input type="text" name="txtcodeDesc" id="txtcodeDesc" class="form-control" placeholder="Code Description" maxlength="10" />
                 </div>
                 <div class="col-xs-3">
@@ -35,21 +42,32 @@
         <table cellspacing="0" class="table table-striped" id="tblBusinessCode"></table>
     </div>
 </div>
-
 @section scripts{
-<script type="text/javascript">
-    $(function () {
+    <script type="text/javascript">
+        $(function () {
+
+        $("#Sectorlist").select2();
+
+        $("#Sectorlist").bind("change keypress", function () {
+           if (window.event.keyCode === 13) {
+               bindTable();
+               return false;
+           }
+        })
+
         $('.form-control').keypress(function (e) {
             if (e.which == 13) {
                 bindTable();
                 return false;
             }
         });
+
          var success = '@(TempData["SuccessMessage"])';
                 if (success != null && success != "") {
                     successMessage(success);
                 }
-        bindTable();
+         bindTable();
+
         });
 
         function addBusinessCode() {
@@ -66,7 +84,7 @@
 
          table = $("#tblBusinessCode").dataTable({
              "autoWidth": false,
-             "searching": false,
+             "searching": true,
              "paging": true,
              "sPaginationType": "full_numbers",
              "language": {
@@ -93,7 +111,7 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Group", "data": "SectorID" },
+                        { "title": "Group", "data": "SectorDesc" },
                         { "title": "Code Number", "data": "CodeNumber" },
                         { "title": "Code Description", "data": "CodeDesc"},
                         {
@@ -165,16 +183,16 @@
 
         function clearControls() {
             $("#txtcodeNumber").val('');
-            $("#txtdefaultRate").val('');
-            $("#txtexpress").val('');
+            $("#txtcodeDesc").val('');
+            $('#Sectorlist').val("").trigger("change");
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
             param["codeNumber"] = $('#txtcodeNumber').val();
-            param["defaultRate"] = $('#txtdefaultRate').val();
-            param["express"] = $('#txtexpress').val();
+            param["codeDesc"] = $('#txtcodeDesc').val();
+            param["sectorID"] = $('#Sectorlist').val();
             return param;
         }
 
@@ -218,5 +236,5 @@
             }
         }
 
-</script>
+    </script>
 }
