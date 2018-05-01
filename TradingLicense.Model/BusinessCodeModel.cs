@@ -54,6 +54,7 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
 
+        [Required(ErrorMessage = "Please Select Sector")]
         public int SectorID { get; set; }
         public string SectorDesc { get; set; }
     }
