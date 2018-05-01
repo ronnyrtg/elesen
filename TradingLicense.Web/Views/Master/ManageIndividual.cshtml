@@ -1,18 +1,16 @@
 ﻿@model TradingLicense.Model.IndividualModel
 @{
-    ViewBag.Title = "ManageIndividual";
+    ViewBag.Title = "Manage Individual";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @{
     List<SelectListItem> nationalityList = new List<SelectListItem>();
-    nationalityList.Add(new SelectListItem { Text = "Select Nationality", Value = "0" });
-    nationalityList.Add(new SelectListItem { Text = "British", Value = "1" });
-    nationalityList.Add(new SelectListItem { Text = "American", Value = "2" });
-    nationalityList.Add(new SelectListItem { Text = "Brazilian", Value = "3" });
+    nationalityList.Add(new SelectListItem { Text = "Warganegara", Value = "1" });
+    nationalityList.Add(new SelectListItem { Text = "Bukan Warganegara", Value = "2" });
+    nationalityList.Add(new SelectListItem { Text = "Penduduk Tetap", Value = "3" });
 
     List<SelectListItem> genderList = new List<SelectListItem>();
-    genderList.Add(new SelectListItem { Text = "Select Gender", Value = "0" });
     genderList.Add(new SelectListItem { Text = "Male", Value = "1" });
     genderList.Add(new SelectListItem { Text = "Female", Value = "2" });
 }

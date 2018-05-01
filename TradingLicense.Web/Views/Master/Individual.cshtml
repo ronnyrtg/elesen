@@ -19,10 +19,10 @@
                     <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Full Name" maxlength="100" />
                 </div>
                 <div class="col-xs-3">
-                    <input type="text" name="txtindividualEmail" id="txtindividualEmail" class="form-control" placeholder="Individual Email" maxlength="100" />
+                    <input type="text" name="txtmykadPassport" id="txtmykadPassport" class="form-control" placeholder="MyKad/Passport" maxlength="100" />
                 </div>
                 <div class="col-xs-3">
-                    <input type="text" name="txtphoneNo" id="txtphoneNo" class="form-control" placeholder="Phone No" maxlength="20" />
+                    <input type="text" name="txtphoneNo" id="txtphoneNo" class="form-control" placeholder="Phone Number" maxlength="20" />
                 </div>
                 <div class="col-xs-3">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -86,7 +86,7 @@
                     },
              "columns": [
                  { "title": "Full Name", "data": "FullName"},
-                 { "title": "Mykad No", "data": "MykadNo" },
+                 { "title": "Mykad/Passport", "data": "MykadNo" },
                  { "title": "Individual Email", "data": "IndividualEmail" },
                  { "title": "Phone No", "data": "PhoneNo" },
                  {
@@ -137,7 +137,7 @@
 
         function clearControls() {
             $("#txtfullName").val('');
-            $("#txtindividualEmail").val('');
+            $("#txtmykadPassport").val('');
             $("#txtphoneNo").val('');
             bindTable();
         }
@@ -145,7 +145,7 @@
         function bindSearch() {
             var param = {};
             param["fullName"] = $('#txtfullName').val();
-            param["individualEmail"] = $('#txtindividualEmail').val();
+            param["MykadNo"] = $('#txtmykadPassport').val();
             param["phoneNo"] = $('#txtphoneNo').val();
             return param;
         }

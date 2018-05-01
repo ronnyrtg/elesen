@@ -18,7 +18,7 @@ namespace TradingLicense.Web.Controllers
 {
     public class MasterController : BaseController
     {
-        #region "Department"
+        #region Department
 
         /// <summary>
         /// GET: Department
@@ -901,7 +901,7 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region "Role Template"
+        #region Role Template
 
         /// <summary>
         /// GET: Role Template
@@ -1550,7 +1550,7 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region "Premise Information"
+        #region PremiseType
 
         /// <summary>
         /// GET: PremiseType
@@ -1720,7 +1720,7 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region "Individual Information"
+        #region Individual
 
         /// <summary>
         /// GET: Individual
