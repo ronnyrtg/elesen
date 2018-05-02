@@ -20,6 +20,48 @@ namespace TradingLicense.Infrastructure
             /// </summary>
             [Description("AccessPages")]
             AccessPages = 1,
+
+            /// <summary>
+            /// Additional Infos
+            /// </summary>
+            [Description("AdditionalInfos")]
+            AdditionalInfos = 2,
+
+            /// <summary>
+            /// Attachment
+            /// </summary>
+            [Description("Attachment")]
+            Attachment = 3,
+
+            /// <summary>
+            /// Administrator
+            /// </summary>
+            [Description("Administrator")]
+            Administrator = 4,
+
+            /// <summary>
+            /// Master Setup
+            /// </summary>
+            [Description("MasterSetup")]
+            MasterSetup = 5,
+
+            /// <summary>
+            /// Inquiry
+            /// </summary>
+            [Description("Inquiry")]
+            Inquiry = 6,
+
+            /// <summary>
+            /// Reporting
+            /// </summary>
+            [Description("Reporting")]
+            Reporting = 7,
+
+            /// <summary>
+            /// Individual
+            /// </summary>
+            [Description("Individual")]
+            Individual = 8,
         }
 
 
@@ -41,7 +83,7 @@ namespace TradingLicense.Infrastructure
             /// CrudLevel
             /// </summary>
             [Description("CrudLevel3")]
-            CrudLeve3 = 3,
+            CrudLevel3 = 3,
 
             /// <summary>
             /// CrudLevel

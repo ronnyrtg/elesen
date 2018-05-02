@@ -23,9 +23,10 @@ namespace TradingLicense.Web.Pages
 
         #region Master
         public const string Department = "Department";
+        public const string Individual = "Individual";
         #endregion
 
-        #region Eroro
+        #region Error
 
         public const string AccessDenied = "AccessDenied";
         #endregion

@@ -4,7 +4,7 @@
 <div class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            @Html.ActionLink("Laman Utama", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("Dashboard", "Individual", "Master", null, new { @class = "navbar-brand" })
         </div>
         <ul class="nav navbar-nav">
             <li class="dropdown">
@@ -21,7 +21,8 @@
                     <li><a href="#">Operating License untuk Hiburan</a></li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
-                    <li><a href="#">Senarai Agensi</a></li>
+                    <li><a href="#">Senarai Agensi Dalam</a></li>
+                    <li><a href="#">Senarai Agensi Luar</a></li>
                 </ul>
             </li>
             <li class="dropdown">
@@ -30,7 +31,7 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
+                    <li>@Html.ActionLink("Lesen Premis Perniagaan & Iklan (Test)", "PremiseApplication", "PremiseApplication")</li>
                     <li><a href="#">Lesen Penjaja</a></li>
                     <li><a href="#">Lesen Pasar</a></li>
                     <li><a href="#">Lesen Petempatan Makanan</a></li>
@@ -38,6 +39,8 @@
                     <li><a href="#">Operating License untuk Hiburan</a></li>
                 </ul>
             </li>
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Inquiry, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     Inquiry
@@ -53,6 +56,9 @@
                     <li><a href="#">Change Of Address Log</a></li>
                 </ul>
             </li>
+}
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.MasterSetup, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     Master Setup
@@ -78,6 +84,9 @@
                     <li><a href="#">Unit Routing</a></li>
                 </ul>
             </li>
+}
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     Reporting
@@ -106,19 +115,17 @@
                     <li><a href="#">Status Pergerakan Permohonan Lesen</a></li>
                 </ul>
             </li>
+}
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Administrator, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Masters
+                    Administrator
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>@Html.ActionLink("Department", "Department", "Master")</li>
-
-                    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel))
-                    {
-                        <li>@Html.ActionLink("Access Page", "AccessPage", "Master")</li>
-                    }
-
+                    <li>@Html.ActionLink("Access Page", "AccessPage", "Master")</li>
                     <li>@Html.ActionLink("Required Document", "RequiredDoc", "Master")</li>
                     <li>@Html.ActionLink("Company", "Company", "Master")</li>
                     <li>@Html.ActionLink("Attachment", "Attachment", "Master")</li>
@@ -135,10 +142,23 @@
                     <li>@Html.ActionLink("Business Code Link Department", "BusinessCodeLinkDepartment", "Business")</li>
                 </ul>
             </li>
-
+}
         </ul>
-        <div class="navbar-header">
-            @Html.ActionLink("Log Out", "Logout", "Account", new { area = "" }, new { @class = "navbar-brand" })
+        <div class="navbar-right">
+        @if (ProjectSession.User != null && ProjectSession.UserID > 0)
+        {
+            var fullName = ProjectSession.User.FullName;
+            <div class="navbar-text">
+                You are logged in as @fullName.
+                @Html.ActionLink("Log Out", "Logout", "Account", null, new { @class = "btn btn-primary btn-xs" })
+            </div>
+        }
+        else
+        {
+            <div class="navbar-text">
+                You have logged out.
+            </div>
+        }
         </div>
     </div>
 </div>

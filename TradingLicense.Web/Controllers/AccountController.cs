@@ -28,7 +28,7 @@ namespace TradingLicense.Web.Controllers
         {
             if (ProjectSession.UserID > 0)
             {
-                return RedirectToAction(Actions.Department, Pages.Controllers.Master);
+                return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
             }
 
             LoginModel loginModel = new LoginModel();
@@ -119,7 +119,7 @@ namespace TradingLicense.Web.Controllers
                                 }
                                 else
                                 {
-                                    return RedirectToAction(Actions.Department, Pages.Controllers.Master);
+                                    return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
                                 }
                             }
                             else
@@ -322,7 +322,7 @@ namespace TradingLicense.Web.Controllers
                         ProjectSession.User = usermodel;
 
                         FormsAuthentication.SetAuthCookie(ProjectSession.UserName, false);
-                        return RedirectToAction(Actions.Department, Pages.Controllers.Master);
+                        return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
                     }
                     else
                     {

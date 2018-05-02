@@ -1,4 +1,5 @@
-﻿
+﻿@using TradingLicense.Infrastructure;
+@using TradingLicense.Web.Classes;
 @{
     ViewBag.Title = "Individual";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,9 +7,12 @@
 
 <div id="divMessage"></div>
 <div class="card">
+    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel2))
+    {
     <ul class="page-action-button">
         <li><a href="#" title="Add Individual" onclick="addIndividual();"><img src="@Url.Content("~/images/add.png")" alt="Add Individual"></a></li>
     </ul>
+    }
     <div class="header">
         <h4>Individuals</h4>
     </div>
@@ -35,9 +39,12 @@
         <table cellspacing="0" class="table table-striped" id="tblIndividual"></table>
     </div>
 </div>
-
 @section scripts{
 <script type="text/javascript">
+    var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel3)';
+    var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel4)';
+    var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel)';
+
     $(function () {
         $('.form-control').keypress(function (e) {
             if (e.which == 13) {
@@ -108,8 +115,17 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        if (IsEdit != "False" || IsView != "False") {
+                            if (IsEdit != "False") {
+                                appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                            }
+                            else {
+                                appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="Edit" /></a>&nbsp; '
+                            }
+                        }
+                        if (IsDelete != "False") {
+                            appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        }
                         return appendstring
                     },
                              "width": "80px",
@@ -190,5 +206,6 @@
             }
         }
 
-</script>
-}
+        </script>
+    }
+
