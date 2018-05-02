@@ -24,7 +24,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: Department
         /// </summary>
         /// <returns></returns>
-        
+
         public ActionResult Department()
         {
             return View();
@@ -192,7 +192,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: AccessPage
         /// </summary>
         /// <returns></returns>
-        [AuthorizationPrivilegeFilter(SystemEnum.Page.AccessPages,SystemEnum.PageRight.CrudLevel)]
+        [AuthorizationPrivilegeFilter(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel)]
         public ActionResult AccessPage()
         {
             return View();
@@ -217,7 +217,7 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(PageDesc) || !string.IsNullOrWhiteSpace(CrudLevel))
+                if (!string.IsNullOrWhiteSpace(PageDesc) || !string.IsNullOrWhiteSpace(CrudLevel))
                 {
                     query = query.Where(p =>
                                             (p.PageDesc.Contains(PageDesc)) &&
@@ -554,7 +554,7 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(companyName) || !string.IsNullOrWhiteSpace(registrationNo))
+                if (!string.IsNullOrWhiteSpace(companyName) || !string.IsNullOrWhiteSpace(registrationNo))
                 {
                     query = query.Where(p =>
                                         p.CompanyName.Contains(companyName) &&
@@ -1256,17 +1256,16 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
             int totalRecord = 0;
-            int filteredRecord = 0;
+           // int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BusinessCode> query = ctx.BusinessCodes;
-                totalRecord = query.Count();
 
                 #region Filtering
 
                 // Apply filters for comman Grid searching
                 if (requestModel.Search.Value != string.Empty)
-               {
+                {
                     var value = requestModel.Search.Value.ToLower().Trim();
                     query = query.Where(p => p.CodeNumber.ToLower().Contains(value) ||
                                              p.CodeDesc.ToLower().Contains(value) ||
@@ -1290,13 +1289,11 @@ namespace TradingLicense.Web.Controllers
 
                 if (!string.IsNullOrWhiteSpace(sectorID))
                 {
-                    query = query.Where(p =>p.SectorID.ToString().Contains(sectorID));
+                    query = query.Where(p => p.SectorID.ToString().Contains(sectorID));
                 }
 
                 // Filter End
-
-                filteredRecord = query.Count();
-
+                
                 #endregion Filtering
 
                 #region Sorting
@@ -1315,8 +1312,9 @@ namespace TradingLicense.Web.Controllers
                 var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
+                totalRecord = result.Count();
                 #endregion Sorting
-                
+
                 // Paging
                 result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
 
@@ -1457,7 +1455,7 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(displayMethod) || !string.IsNullOrWhiteSpace(location))
+                if (!string.IsNullOrWhiteSpace(displayMethod) || !string.IsNullOrWhiteSpace(location))
                 {
                     query = query.Where(p =>
                                         p.DisplayMethod.Contains(displayMethod) &&
@@ -1758,7 +1756,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Individual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string fullName,string individualEmail,string phoneNo)
+        public JsonResult Individual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string fullName, string individualEmail, string phoneNo)
         {
             List<TradingLicense.Model.IndividualModel> Individual = new List<Model.IndividualModel>();
             int totalRecord = 0;
@@ -1771,7 +1769,7 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(fullName) || !string.IsNullOrWhiteSpace(individualEmail) || !string.IsNullOrWhiteSpace(phoneNo))
+                if (!string.IsNullOrWhiteSpace(fullName) || !string.IsNullOrWhiteSpace(individualEmail) || !string.IsNullOrWhiteSpace(phoneNo))
                 {
                     query = query.Where(p =>
                                     p.FullName.Contains(fullName) &&
@@ -1937,7 +1935,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Users> query = ctx.Users.Where(u=>u.Locked==1);
+                IQueryable<Users> query = ctx.Users.Where(u => u.Locked == 1);
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1994,7 +1992,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     var Users = ctx.Users.Where(u => u.UsersID == id).FirstOrDefault();
-                    if(Users !=null && Users.UsersID >0)
+                    if (Users != null && Users.UsersID > 0)
                     {
                         Users.Locked = 0;
                         ctx.Users.AddOrUpdate(Users);
@@ -2041,7 +2039,7 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if(!string.IsNullOrWhiteSpace(usersName) || !string.IsNullOrWhiteSpace(fullName))
+                if (!string.IsNullOrWhiteSpace(usersName) || !string.IsNullOrWhiteSpace(fullName))
                 {
                     query = query.Where(p =>
                                         p.Username.Contains(usersName) &&
@@ -2120,7 +2118,7 @@ namespace TradingLicense.Web.Controllers
                         return View(usersModel);
                     }
 
-                    if(IsEmailDuplicate(usersModel.Email, usersModel.UsersID))
+                    if (IsEmailDuplicate(usersModel.Email, usersModel.UsersID))
                     {
                         TempData["ErrorMessage"] = "Email is already exist in the database.";
                         return View(usersModel);
@@ -2171,7 +2169,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsUserNameDuplicate(string name,int? id = null)
+        private bool IsUserNameDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {

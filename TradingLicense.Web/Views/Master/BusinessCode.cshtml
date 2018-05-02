@@ -45,15 +45,22 @@
 @section scripts{
     <script type="text/javascript">
         $(function () {
+        getDataTableSorage();
 
         $("#Sectorlist").select2();
 
         $("#Sectorlist").bind("change keypress", function () {
-           if (window.event.keyCode === 13) {
-               bindTable();
-               return false;
+            if(window.event.keyCode === 13) {
+              localStorage.clear();
+              bindTable();
+              return false;
            }
         })
+
+        $(".form-control").on("propertychange change keyup paste input", function () {
+            localStorage.clear();
+            bindSearch();
+        });
 
         $('.form-control').keypress(function (e) {
             if (e.which == 13) {
@@ -66,7 +73,7 @@
                 if (success != null && success != "") {
                     successMessage(success);
                 }
-         bindTable();
+            bindTable();
 
         });
 
@@ -76,12 +83,12 @@
         }
 
      function bindTable() {
-
+        
          if ($.fn.DataTable.isDataTable("#tblBusinessCode")) {
              $('#tblBusinessCode').dataTable().fnDestroy();
              $('#divtblBusinessCode').html('<table class="table table-striped" width="100%"  id="tblBusinessCode"></table>');
           }
-
+       
          table = $("#tblBusinessCode").dataTable({
              "autoWidth": false,
              "searching": true,
@@ -92,6 +99,7 @@
                  "info": "Records _START_ to _END_ of (_TOTAL_)",
                  "emptyTable": "No Record(s) Found"
              },
+             "bStateSave": true,
              "processing": true,
              "serverSide": true,
              "pageLength": 10,
@@ -178,13 +186,32 @@
                  }
                  bindSortingArrow();
              }
-                });
+         });
+        }
+
+        function getDataTableSorage() {
+            var businessCodeSearch = JSON.parse(localStorage.getItem('DataTables_BusinessCode_Search'));
+            if (businessCodeSearch != null) {
+                if ($('#txtcodeNumber').val() == "" && businessCodeSearch.codeNumber != "") {
+                    $('#txtcodeNumber').val(businessCodeSearch.codeNumber);
+                }
+                if ($('#txtcodeDesc').val() == "" && businessCodeSearch.codeDesc != "") {
+                    $('#txtcodeDesc').val(businessCodeSearch.codeDesc);
+                }
+                if ($('#Sectorlist').val() == "" && businessCodeSearch.sectorID != "") {
+                    $('#Sectorlist').val(businessCodeSearch.sectorID).trigger("change");
+                }
+            }
         }
 
         function clearControls() {
             $("#txtcodeNumber").val('');
             $("#txtcodeDesc").val('');
             $('#Sectorlist').val("").trigger("change");
+
+            // Clear Storage 
+            localStorage.clear();
+
             bindTable();
         }
 
@@ -193,6 +220,10 @@
             param["codeNumber"] = $('#txtcodeNumber').val();
             param["codeDesc"] = $('#txtcodeDesc').val();
             param["sectorID"] = $('#Sectorlist').val();
+
+            // Set Local Storage
+            localStorage.setItem('DataTables_BusinessCode_Search', JSON.stringify(param));
+
             return param;
         }
 
