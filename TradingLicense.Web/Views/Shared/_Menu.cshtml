@@ -7,6 +7,21 @@
             @Html.ActionLink("Dashboard", "Individual", "Master", null, new { @class = "navbar-brand" })
         </div>
         <ul class="nav navbar-nav">
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.CheckDebt, SystemEnum.PageRight.CrudLevel))
+{
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Semak Baki Tertunggak
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
+            <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
+        </ul>
+    </li>
+}
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Profile, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     Profile
@@ -21,10 +36,11 @@
                     <li><a href="#">Operating License untuk Hiburan</a></li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
-                    <li><a href="#">Senarai Agensi Dalam</a></li>
-                    <li><a href="#">Senarai Agensi Luar</a></li>
                 </ul>
             </li>
+}
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Process, SystemEnum.PageRight.CrudLevel))
+{
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     Process
@@ -39,6 +55,7 @@
                     <li><a href="#">Operating License untuk Hiburan</a></li>
                 </ul>
             </li>
+}
 @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Inquiry, SystemEnum.PageRight.CrudLevel))
 {
             <li class="dropdown">
@@ -79,7 +96,8 @@
                     <li><a href="#">Document Name</a></li>
                     <li>@Html.ActionLink("Required Document (Test)", "RequiredDoc", "Master")</li>
                     <li><a href="#">File Type</a></li>
-                    <li>@Html.ActionLink("Unit Name (Test)", "Department", "Master")</li>
+                    <li>@Html.ActionLink("Internal Unit (Test)", "Department", "Master")</li>
+                    <li><a href="#">External Unit</a></li>
                     <li><a href="#">Unit Comment</a></li>
                     <li><a href="#">Unit Routing</a></li>
                 </ul>

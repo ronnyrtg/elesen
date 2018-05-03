@@ -209,7 +209,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<BussCodLinkDep> query = ctx.BussCodLinkDeps;
+                IQueryable<BCLinkDep> query = ctx.BussCodLinkDeps;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -286,7 +286,7 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    BussCodLinkDep bussCodLinkDep;
+                    BCLinkDep bussCodLinkDep;
 
                     if (IsBussCodLinkDepDuplicate(bussCodLinkDepModel.BusinessCodeID,bussCodLinkDepModel.DepartmentID,bussCodLinkDepModel.BussCodLinkDepID))
                     {
@@ -294,7 +294,7 @@ namespace TradingLicense.Web.Controllers
                         return View(bussCodLinkDepModel);
                     }
 
-                    bussCodLinkDep = Mapper.Map<BussCodLinkDep>(bussCodLinkDepModel);
+                    bussCodLinkDep = Mapper.Map<BCLinkDep>(bussCodLinkDepModel);
                     ctx.BussCodLinkDeps.AddOrUpdate(bussCodLinkDep);
                     ctx.SaveChanges();
                 }
@@ -319,7 +319,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var bussCodLinkDep = new TradingLicense.Entities.BussCodLinkDep() { BussCodLinkDepID = id };
+                var bussCodLinkDep = new TradingLicense.Entities.BCLinkDep() { BussCodLinkDepID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(bussCodLinkDep).State = System.Data.Entity.EntityState.Deleted;

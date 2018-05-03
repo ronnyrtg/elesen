@@ -22,15 +22,9 @@ namespace TradingLicense.Data
 
         public DbSet<Attachment> Attachments { get; set; }
 
-        public DbSet<Business> Businesss { get; set; }
-
-        public DbSet<BusinessActivity> BusinessActivities { get; set; }
-
         public DbSet<BusinessCode> BusinessCodes { get; set; }
 
-        public DbSet<BLinkCode> BLinkCodes { get; set; }
-
-        public DbSet<BussCodLinkDep> BussCodLinkDeps { get; set; }
+        public DbSet<BCLinkDep> BussCodLinkDeps { get; set; }
 
         public DbSet<Company> Companies { get; set; }
 
@@ -38,15 +32,13 @@ namespace TradingLicense.Data
 
         public DbSet<Individual> Individuals { get; set; }
 
-        public DbSet<ILinkB> ILinkBs { get; set; }  // Individual Link Business
-
         public DbSet<IndLinkCom> IndLinkComs { get; set; }  // Individual Link Com
 
         public DbSet<LoginLog> LoginLogs { get; set; }
 
         public DbSet<PALinkAI> PALinkAIs { get; set; }
 
-        public DbSet<PALinkBAct> PALinkBActs { get; set; }
+        public DbSet<PALinkBC> PALinkBActs { get; set; }
 
         public DbSet<PALinkReqDoc> PALinkReqDocs { get; set; }
 
@@ -67,8 +59,6 @@ namespace TradingLicense.Data
         public DbSet<Signboard> Signboards { get; set; }
 
         public DbSet<SupportDocs> SupportDocs { get; set; }
-
-        public DbSet<UnitLuar> UnitLuars { get; set; }
 
         public DbSet<Users> Users { get; set; }
        

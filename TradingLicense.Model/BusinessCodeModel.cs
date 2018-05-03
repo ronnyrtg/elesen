@@ -49,7 +49,7 @@ namespace TradingLicense.Model
 
         [Required(ErrorMessage = "Please Enter Express")]
         [Display(Name = "Express")]
-        public int Express { get; set; }
+        public bool Express { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }

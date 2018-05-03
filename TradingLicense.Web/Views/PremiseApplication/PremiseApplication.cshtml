@@ -14,10 +14,10 @@
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtPremiseApplicationID" id="txtPremiseApplicationID" class="form-control" placeholder="Premise Application No" maxlength="100" />
+                    <input type="text" name="txtPremiseApplicationID" id="txtPremiseApplicationID" class="form-control" placeholder="Reference No." maxlength="100" />
                 </div>
                 <div class="col-xs-4">
-                    <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="IndividualID" />
+                    <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
                 </div>
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -82,8 +82,8 @@
                         data: bindSearch()
                     },
                     "columns": [
-                        { "title": "Premise Application No", "data": "PremiseApplicationID" },
-                        { "title": "Applicant MyKad", "data": "IndividualID" },
+                        { "title": "Reference No.", "data": "PremiseApplicationID" },
+                        { "title": "MyKad/Passport", "data": "IndividualID" },
                         { "title": "Premise Address", "data": "PremiseAddress" },
                         { "title": "Submitted", "data": "DateSubmitted" },
                         { "title": "Updated", "data": "UpdatedBy" },
@@ -93,8 +93,8 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["DepartmentID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManagePremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["PremiseApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                     "width": "80px",
@@ -121,8 +121,8 @@
         }
 
         function clearControls() {
-            $("#txtDepartmentCode").val('');
-            $("#txtDepartmentDesc").val('');
+            $("#txtPremiseApplication").val('');
+            $("#txtIndividualID").val('');
             bindTable();
         }
 

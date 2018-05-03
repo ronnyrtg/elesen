@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.IndividualID, new { @class = "control-label" }) <span class="cfont">*</span>
+                        <div class="control-label">Mykad/Passport No.<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.IndividualID, new { @class = "form-control", placeholder = "Enter Applicant MyKad", @maxlength = "10" })
                         @Html.ValidationMessageFor(m => m.IndividualID)
                     </div>
@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.PremiseAddress, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Premise Address<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PremiseAddress, new { @class = "form-control", @maxlength = "255" })
                         @Html.ValidationMessageFor(m => m.PremiseAddress)
                     </div>
@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.PremiseStatus, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Premise Status<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PremiseStatus, new { @class = "form-control", @maxlength = "255" })
                         @Html.ValidationMessageFor(m => m.PremiseStatus)
                     </div>
@@ -48,7 +48,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.PremiseTypeID, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Premise Type<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PremiseTypeID, new { @class = "form-control", @maxlength = "255" })
                         @Html.ValidationMessageFor(m => m.PremiseTypeID)
                     </div>

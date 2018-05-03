@@ -62,6 +62,24 @@ namespace TradingLicense.Infrastructure
             /// </summary>
             [Description("Individual")]
             Individual = 8,
+
+            /// <summary>
+            /// CheckDebt
+            /// </summary>
+            [Description("CheckDebt")]
+            CheckDebt = 9,
+
+            /// <summary>
+            /// Profile
+            /// </summary>
+            [Description("Profile")]
+            Profile = 10,
+
+            /// <summary>
+            /// Process
+            /// </summary>
+            [Description("Process")]
+            Process = 11,
         }
 
 

@@ -11,6 +11,10 @@
         var sector = ctx.Sectors.ToList();
         sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
     }
+
+    List<SelectListItem> expressList = new List<SelectListItem>();
+    expressList.Add(new SelectListItem { Text = "Yes", Value = "1" });
+    expressList.Add(new SelectListItem { Text = "No", Value = "0" });
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -26,6 +30,16 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
+                        <div class="control-label">Group<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SectorID)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
                         @Html.LabelFor(m => m.CodeNumber, new { @class = "control-label" })<span class="cfont">*</span>
                         @Html.TextBoxFor(m => m.CodeNumber, new { @class = "form-control", @maxlength = "5" })
                         @Html.ValidationMessageFor(m => m.CodeNumber)
@@ -36,7 +50,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.CodeDesc, new { @class = "control-label" })
+                        @Html.LabelFor(m => m.CodeDesc, new { @class = "control-label" })<span class="cfont">*</span>
                         @Html.TextAreaFor(m => m.CodeDesc, new { @class = "form-control", @maxlength = "255" })
                         @Html.ValidationMessageFor(m => m.CodeDesc)
                     </div>
@@ -56,7 +70,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.BaseFee, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.LabelFor(m => m.BaseFee, new { @class = "control-label" })
                         @Html.TextBoxFor(m => m.BaseFee, new { @class = "form-control allownumericwithdecimal" })
                         @Html.ValidationMessageFor(m => m.BaseFee)
                     </div>
@@ -66,7 +80,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.ExtraFee, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.LabelFor(m => m.ExtraFee, new { @class = "control-label" })
                         @Html.TextBoxFor(m => m.ExtraFee, new { @class = "form-control allownumericwithdecimal" })
                         @Html.ValidationMessageFor(m => m.ExtraFee)
                     </div>
@@ -76,7 +90,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.ExtraUnit, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.LabelFor(m => m.ExtraUnit, new { @class = "control-label" })
                         @Html.TextBoxFor(m => m.ExtraUnit, new { @class = "form-control allownumeric" })
                         @Html.ValidationMessageFor(m => m.ExtraUnit)
                     </div>
@@ -86,7 +100,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.Period, new { @class = "control-label" })
+                        @Html.LabelFor(m => m.Period, new { @class = "control-label" })<span class="cfont">*</span>
                         @Html.TextBoxFor(m => m.Period, new { @class = "form-control", @maxlength = "1" })
                         @Html.ValidationMessageFor(m => m.Period)
                     </div>
@@ -105,30 +119,11 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Express, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.Express, new { @class = "form-control allownumeric" })
-                        @Html.ValidationMessageFor(m => m.Express)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.SectorID, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control"})
-                        @Html.ValidationMessageFor(m => m.SectorID)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Express, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.Express, new { @class = "form-control allownumeric" })
-                        @Html.ValidationMessageFor(m => m.Express)
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.Express)
+                            <span>Express?</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                        </label>
                     </div>
                 </div>
             </div>

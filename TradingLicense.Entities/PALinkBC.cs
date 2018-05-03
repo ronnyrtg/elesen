@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-    public class BLinkCode
+   public class PALinkBC
     {
         [Key]
-        public int Id { get; set; }
-        public int BusinessID { get; set; }
+        public int PALinkBCID { get; set; }
+
+        public int PremiseApplicationID { get; set; }
+
         public int BusinessCodeID { get; set; }
 
-        public virtual Business Business { get; set; }
         public virtual BusinessCode BusinessCode { get; set; }
+        public virtual PremiseApplication PremiseApplication { get; set; }
     }
 }

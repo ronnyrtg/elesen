@@ -36,7 +36,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult PremiseApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int premiseApplicationID, int individualID)
+        public JsonResult PremiseApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
         {
             List<TradingLicense.Model.PremiseApplicationModel> PremiseApplication = new List<Model.PremiseApplicationModel>();
             int totalRecord = 0;

@@ -38,10 +38,10 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<RegistrationModel, Users>().ReverseMap();
                 cfg.CreateMap<SupportDocs, SupportDocsModel>().ForMember(dest => dest.CodeNumber, opt => opt.MapFrom(s => s.BusinessCode.CodeNumber));
                 cfg.CreateMap<SupportDocsModel, SupportDocs>();
-                cfg.CreateMap<BussCodLinkDep, BussCodLinkDepModel>()
+                cfg.CreateMap<BCLinkDep, BussCodLinkDepModel>()
                     .ForMember(dest => dest.CodeDesc, opt => opt.MapFrom(src => src.BusinessCode.CodeDesc))
                     .ForMember(dest => dest.DepartmentDesc, opt => opt.MapFrom(src => src.Department.DepartmentDesc));
-                cfg.CreateMap<BussCodLinkDepModel, BussCodLinkDep>();
+                cfg.CreateMap<BussCodLinkDepModel, BCLinkDep>();
                 cfg.CreateMap<Sector, SectorModel>();
             });
         }

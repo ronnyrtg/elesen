@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-   public class BussCodLinkDep
+   public class BCLinkDep
     {
         [Key]
         public int BussCodLinkDepID { get; set; }

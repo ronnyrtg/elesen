@@ -7,14 +7,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Entities
 {
-    public class ILinkB
+    public class PALinkInd
     {
         [Key]
-        public int Id { get; set; }
+        public int PALinkIndID { get; set; }
+        
+        public int PremiseApplicationID { get; set; }
+
         public int IndividualID { get; set; }
-        public int BusinessID { get; set; }
 
         public virtual Individual Individual { get; set; }
-        public virtual Business Business { get; set; }
+        public virtual PremiseApplication PremiseApplication { get; set; }
     }
 }
