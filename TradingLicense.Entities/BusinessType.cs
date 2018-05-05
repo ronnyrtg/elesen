@@ -8,23 +8,20 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-   public class Department
+    public class BusinessType
     {
         [Key]
-        public int DepartmentID { get; set; }
-
+        public int BusinessTypeID { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(1)]
         [Column(TypeName = "VARCHAR2")]
-        public string DepartmentCode { get; set; }
-
+        public string BusinessTypeCode { get; set; }
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string DepartmentDesc { get; set; }
-        public bool Internal { get; set; }
+        public string BusinessTypeDesc { get; set; }
         public bool Active { get; set; }
-        public Department()
+        public BusinessType()
         {
             Active = true;
         }

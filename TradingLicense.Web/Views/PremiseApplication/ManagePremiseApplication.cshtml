@@ -1,4 +1,5 @@
 ﻿@model TradingLicense.Model.PremiseApplicationModel
+
 @{
     ViewBag.Title = "Manage Premise License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,6 +15,15 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.PremiseApplicationID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Mykad/Passport No.<span class="cfont">*</span></div>
+                        @Html.TextBox("BusinessTypeID")
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-12">

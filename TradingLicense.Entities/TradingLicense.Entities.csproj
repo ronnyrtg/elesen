@@ -42,19 +42,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessPage.cs" />
-    <Compile Include="AdditionalInfo.cs" />
+    <Compile Include="AdditionalDoc.cs" />
     <Compile Include="Attachment.cs" />
     <Compile Include="BusinessCode.cs" />
     <Compile Include="BCLinkDep.cs" />
+    <Compile Include="BusinessType.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Department.cs" />
     <Compile Include="Individual.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="IndLinkCom.cs" />
     <Compile Include="LoginLog.cs" />
-    <Compile Include="PALinkAI.cs" />
+    <Compile Include="BCLinkAD.cs" />
     <Compile Include="PALinkBC.cs" />
-    <Compile Include="PALinkReqDoc.cs" />
+    <Compile Include="BTLinkReqDoc.cs" />
     <Compile Include="PALinkSign.cs" />
     <Compile Include="PAStatus.cs" />
     <Compile Include="PremiseApplication.cs" />
@@ -64,7 +65,6 @@
     <Compile Include="RoleTemplate.cs" />
     <Compile Include="Sector.cs" />
     <Compile Include="Signboard.cs" />
-    <Compile Include="SupportDocs.cs" />
     <Compile Include="Users.cs" />
   </ItemGroup>
   <ItemGroup>

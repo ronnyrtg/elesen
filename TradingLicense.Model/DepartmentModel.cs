@@ -20,6 +20,8 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please Enter Department Description")]
         [StringLength(255)]
         public string DepartmentDesc { get; set; }
+        [Display(Name = "Internal?")]
+        public bool Internal { get; set; }
         [Display(Name = "Active")]
         public bool Active { get; set; }
     }

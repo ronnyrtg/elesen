@@ -18,7 +18,7 @@ namespace TradingLicense.Data
 
         public DbSet<AccessPage> AccessPages { get; set; }
 
-        public DbSet<AdditionalInfo> AdditionalInfos { get; set; }
+        public DbSet<AdditionalDoc> AdditionalInfos { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
 
@@ -36,11 +36,11 @@ namespace TradingLicense.Data
 
         public DbSet<LoginLog> LoginLogs { get; set; }
 
-        public DbSet<PALinkAI> PALinkAIs { get; set; }
+        public DbSet<BCLinkAD> PALinkAIs { get; set; }
 
         public DbSet<PALinkBC> PALinkBActs { get; set; }
 
-        public DbSet<PALinkReqDoc> PALinkReqDocs { get; set; }
+        public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
 
         public DbSet<PALinkSign> PALinkSigns { get; set; }
 
@@ -61,7 +61,9 @@ namespace TradingLicense.Data
         public DbSet<SupportDocs> SupportDocs { get; set; }
 
         public DbSet<Users> Users { get; set; }
-       
+
+        public DbSet<BusinessType> BusinessTypes { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

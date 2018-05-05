@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-   public class SupportDocs
+   public class AdditionalDoc
     {
         [Key]
-        public int SupportDocsID { get; set; }
-
-        [Required]
-        public int BusinessCodeID { get; set; }
-
+        public int AdditionalDocID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string SuppDocDesc { get; set; }
-
-        public virtual BusinessCode BusinessCode { get; set; }
+        public string DocDesc { get; set; }
+        public bool Active { get; set; }
+        public AdditionalDoc()
+        {
+            Active = true;
+        }
     }
 }

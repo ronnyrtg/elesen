@@ -1,25 +1,22 @@
 ﻿
 @{
-    ViewBag.Title = "Company";
+    ViewBag.Title = "Business Type";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
-        <li><a href="#" title="Add Company" onclick="addCompany();"><img src="@Url.Content("~/images/add.png")" alt="Add Company"></a></li>
+        <li><a href="#" title="Add Business Type" onclick="addBusinessType();"><img src="@Url.Content("~/images/add.png")" alt="Add Business Type"></a></li>
     </ul>
     <div class="header">
-        <h4>Companies</h4>
+        <h4>Business Types</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtcompanyName" id="txtcompanyName" class="form-control" placeholder="Company Name" maxlength="100" />
-                </div>
-                <div class="col-xs-4">
-                    <input type="text" name="txtregistrationNo" id="txtregistrationNo" class="form-control" placeholder="Registration No" maxlength="50" />
+                    <input type="text" name="txtbusinessTypeDesc" id="txtbusinessTypeDesc" class="form-control" placeholder="Business Type" maxlength="100" />
                 </div>
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -28,8 +25,8 @@
             </form>
         </div>
     </div>
-    <div class="grid" id="divtblCompany">
-        <table cellspacing="0" class="table table-striped" id="tblCompany"></table>
+    <div class="grid" id="divtblBusinessType">
+        <table cellspacing="0" class="table table-striped" id="tblBusinessType"></table>
     </div>
 </div>
 
@@ -49,19 +46,19 @@
         bindTable();
         });
 
-        function addCompany() {
-           var link = '@Url.Action("ManageCompany", "Master")';
+        function addBusinessTypeType() {
+           var link = '@Url.Action("ManageBusinessType", "Master")';
              window.location.href = link;
         }
 
      function bindTable() {
          if (!isValidSearchCriteria('SearchCriteria')) { return false; }
-         if ($.fn.DataTable.isDataTable("#tblCompany")) {
-             $('#tblCompany').dataTable().fnDestroy();
-             $('#divtblCompany').html('<table class="table table-striped" width="100%"  id="tblCompany"></table>');
-         }
+         if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+             $('#tblBusinessType').dataTable().fnDestroy();
+             $('#divtblBusinessType').html('<table class="table table-striped" width="100%"  id="tblBusinessTypeType"></table>');
+                }
 
-         table = $("#tblCompany").dataTable({
+         table = $("#tblBusinessType").dataTable({
              "autoWidth": false,
              "searching": false,
              "paging": true,
@@ -75,55 +72,52 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("Company", "Master")',
+                        url: '@Url.Action("BusinessType", "Master")',
                         type: "POST",
                         data: bindSearch()
                     },
-             "columns": [
-                        { "title": "Company Name", "data": "CompanyName" },
-                        { "title": "Registration No", "data": "RegistrationNo" },
-                 { "title": "Company Address", "data": "CompanyAddress", "orderable": false },
-                 {
-                     "title": "Active",
-                     "data": "Active",
-                     "render": function (data, type, row) {
-                         if (data) {
-                             return '<label class="label label-success">Active</label>';
-                         }
-                         else {
-                             return '<label class="label label-danger">InActive</label>';
-                         }
-                     },
-                     "width": "10%",
-                     "orderable": true,
-                 },
+                    "columns": [
+                        { "title": "Business Type", "data": "BusinessTypeDesc" },
+                        {
+                            "title": "Active",
+                            "data": "Active",
+                            "render": function (data, type, row) {
+                                if (data) {
+                                    return '<label class="label label-success">Active</label>';
+                                }
+                                else {
+                                    return '<label class="label label-danger">InActive</label>';
+                                }
+                            },
+                            "width": "10%",
+                            "orderable": true,
+                        },
                         {
                     "title": "Action",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageCompany", "Master")?Id=' + row["CompanyID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["CompanyID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageBusinessTypeType", "Master")?Id=' + row["BusinessTypeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BusinessTypeID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
                     "orderable": false,
                     "class": "action-icons"
                 }
-
              ],
              "drawCallback": function (settings) {
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblCompany_info').hide();
-                     $('#tblCompany_paginate').hide();
-                     $('#tblCompany_length').hide();
+                     $('#tblBusinessTypeType_info').hide();
+                     $('#tblBusinessTypeType_paginate').hide();
+                     $('#tblBusinessTypeType_length').hide();
                  }
                  else {
-                     $('#tblCompany_info').show();
-                     $('#tblCompany_paginate').show();
-                     $('#tblCompany_length').show();
+                     $('#tblBusinessTypeType_info').show();
+                     $('#tblBusinessTypeType_paginate').show();
+                     $('#tblBusinessTypeType_length').show();
                  }
                  bindSortingArrow();
              }
@@ -131,15 +125,13 @@
         }
 
         function clearControls() {
-            $("#txtcompanyName").val('');
-            $("#txtregistrationNo").val('');
+            $("#txtbusinessTypeDesc").val('');
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
-            param["companyName"] = $('#txtcompanyName').val();
-            param["registrationNo"] = $('#txtregistrationNo').val();
+            param["businessTypeDesc"] = $('#txtbusinessTypeDesc').val();
             return param;
         }
 
@@ -163,7 +155,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteCompany", "Master")'),
+                    url: encodeURI('@Url.Action("DeleteBusinessType", "Master")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',
@@ -171,7 +163,6 @@
                         if (data.success) {
                             bindTable();
                             successMessage(data.message);
-
                         }
                         else {
                             successMessage(data.message);
@@ -185,4 +176,3 @@
 
     </script>
 }
-

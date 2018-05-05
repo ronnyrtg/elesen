@@ -299,6 +299,7 @@
     <Content Include="Views\Shared\_Menu.cshtml" />
     <Content Include="Views\PremiseApplication\PremiseApplication.cshtml" />
     <Content Include="Views\PremiseApplication\ManagePremiseApplication.cshtml" />
+    <Content Include="Views\Master\BusinessType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

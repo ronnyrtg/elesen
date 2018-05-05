@@ -56,7 +56,7 @@
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessModel.cs" />
-    <Compile Include="BussCodLinkDepModel.cs" />
+    <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
     <Compile Include="IndividualModel.cs" />
@@ -73,7 +73,6 @@
     <Compile Include="RoleTemplateModel.cs" />
     <Compile Include="SectorModel.cs" />
     <Compile Include="SignboardModel.cs" />
-    <Compile Include="SupportDocsModel.cs" />
     <Compile Include="UsersModel.cs" />
   </ItemGroup>
   <ItemGroup>

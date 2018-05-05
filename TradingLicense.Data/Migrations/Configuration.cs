@@ -37,6 +37,18 @@ namespace TradingLicense.Data.Migrations
             sector.ForEach(s => context.Sectors.Add(s));
             context.SaveChanges();
 
+            var businesstypes = new List<BusinessType>
+            {
+                new BusinessType {BusinessTypeCode="I",BusinessTypeDesc="HAK MILIK PERSEORANGAN" },
+                new BusinessType {BusinessTypeCode="O",BusinessTypeDesc="LAIN-LAIN" },
+                new BusinessType {BusinessTypeCode="P",BusinessTypeDesc="PERKONGSIAN" },
+                new BusinessType {BusinessTypeCode="U",BusinessTypeDesc="SYARIKAT AWAM BERHAD" },
+                new BusinessType {BusinessTypeCode="C",BusinessTypeDesc="SYARIKAT KERJASAMA" },
+                new BusinessType {BusinessTypeCode="R",BusinessTypeDesc="SYARIKAT SENDIRIAN BERHAD" },
+            };
+            businesstypes.ForEach(s => context.BusinessTypes.Add(s));
+            context.SaveChanges();
+
             var businesscode = new List<BusinessCode>
             {
                 new BusinessCode {CodeNumber="A001",SectorID=1,CodeDesc="Pejabat urusan",DefaultRate=1.5f,BaseFee=0.0f,ExtraFee=0.0f,ExtraUnit=0,Period="Y",PQuantity=1},
@@ -184,54 +196,54 @@ namespace TradingLicense.Data.Migrations
 
             var departments = new List<Department>
             {
-                new Department {DepartmentCode="Lesen",DepartmentDesc="Bahagian Pelesenan PL"},
-                new Department {DepartmentCode="ICT",DepartmentDesc="Bahagian ICT PL"},
-                new Department {DepartmentCode="Harta",DepartmentDesc="Bahagian Harta PL"},
-                new Department {DepartmentCode="Kewangan",DepartmentDesc="Bahagian Kewangan PL"},
-                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif PL"},
-                new Department {DepartmentCode="Bomba",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia"},
-                new Department {DepartmentCode="KPDNKK",DepartmentDesc="Kementerian Perdagangan Dalam Negeri, Koperasi & Kepenggunaan"},
-                new Department {DepartmentCode="JKKP",DepartmentDesc="Jabatan Keselamatan dan Kesihatan Pekerjaan"},
-                new Department {DepartmentCode="ST",DepartmentDesc="Suruhanjaya Tenaga"},
-                new Department {DepartmentCode="MPIC",DepartmentDesc="Kementerian Perusahaan Perladangan dan Komoditi"},
-                new Department {DepartmentCode="MPOB",DepartmentDesc="Lembaga Minyak Sawit Malaysia"},
-                new Department {DepartmentCode="LKTN",DepartmentDesc="Lembaga Kenaf dan Tembakau Negara"},
-                new Department {DepartmentCode="LGM",DepartmentDesc="Lembaga Getah Malaysia"},
-                new Department {DepartmentCode="JPJ",DepartmentDesc="Jabatan Pengangkutan Jalan"},
-                new Department {DepartmentCode="JAS",DepartmentDesc="Jabatan Alam Sekitar"},
-                new Department {DepartmentCode="PPN",DepartmentDesc="Pejabat Perhutanan Negeri"},
-                new Department {DepartmentCode="BPFK",DepartmentDesc="Biro Pengawalan Farmaseutikal Kebangsaan"},
-                new Department {DepartmentCode="BKKM",DepartmentDesc="Bahagian Keselamatan Dan Kualiti Makanan"},
-                new Department {DepartmentCode="MOA",DepartmentDesc="Kementerian Pertanian Malaysia"},
-                new Department {DepartmentCode="JPV",DepartmentDesc="Jabatan Perkhidmatan Veterinar"},
-                new Department {DepartmentCode="LPNM",DepartmentDesc="Lembaga Perindustrian Nanas Malaysia"},
-                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia"},
-                new Department {DepartmentCode="LKM",DepartmentDesc="Lembaga Koko Malaysia"},
-                new Department {DepartmentCode="PERHILITAN",DepartmentDesc="Jabatan Perlindungan Hidupan Liar dan Taman Negara"},
-                new Department {DepartmentCode="FAMA",DepartmentDesc="Lembaga Pemasaran Pertanian Persekutuan"},
-                new Department {DepartmentCode="FINAS",DepartmentDesc="Perbadanan Kemajuan Filem Nasional Malaysia"},
-                new Department {DepartmentCode="LFM",DepartmentDesc="Lembaga Farmasi Malaysia"},
-                new Department {DepartmentCode="MOM",DepartmentDesc="Majlis Optik Malaysia"},
-                new Department {DepartmentCode="JPM",DepartmentDesc="Jabatan Pertanian Malaysia"},
-                new Department {DepartmentCode="MOTAC",DepartmentDesc="Kementerian Pelancongan dan Kebudayaan Malaysia"},
-                new Department {DepartmentCode="KPKT",DepartmentDesc="Kementerian Perumahan dan Kerajaan Tempatan"},
-                new Department {DepartmentCode="JTK",DepartmentDesc="Jabatan Tenaga Kerja"},
-                new Department {DepartmentCode="KDN",DepartmentDesc="Kementerian Dalam Negeri"},
-                new Department {DepartmentCode="BEM",DepartmentDesc="Lembaga Jurutera Malaysia"},
-                new Department {DepartmentCode="CIDB",DepartmentDesc="Lembaga Pembangunan Industri Pembinaan Malaysia"},
-                new Department {DepartmentCode="MOE",DepartmentDesc="Kementerian Pendidikan"},
-                new Department {DepartmentCode="MOHE",DepartmentDesc="Kementerian Pendidikan Tinggi"},
-                new Department {DepartmentCode="DCA",DepartmentDesc="Jabatan Penerbangan Awam Malaysia"},
-                new Department {DepartmentCode="JKM",DepartmentDesc="Jabatan Kebajikan Masyarakat"},
-                new Department {DepartmentCode="CKAPS",DepartmentDesc="Cawangan Kawalan Amalan Perubatan Swasta"},
-                new Department {DepartmentCode="MOH",DepartmentDesc="Kementerian Kesihatan Malaysia"},
-                new Department {DepartmentCode="MDC",DepartmentDesc="Majlis Pergigian Malaysia"},
-                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia"},
-                new Department {DepartmentCode="BNM",DepartmentDesc="Bank Negara Malaysia"},
-                new Department {DepartmentCode="SKMM",DepartmentDesc="Suruhanjaya Komunikasi dan Multimedia Malaysia"},
-                new Department {DepartmentCode="SPAD",DepartmentDesc="Suruhanjaya Pengangkutan Awam Darat"},
-                new Department {DepartmentCode="JPSPN",DepartmentDesc="Jabatan Pengurusan Sisa Pepejal Negara dan Pembersihan Awam"},
-                new Department {DepartmentCode="MOF",DepartmentDesc="Kementerian Kewangan"},
+                new Department {DepartmentCode="Lesen",DepartmentDesc="Bahagian Pelesenan PL",Internal=true},
+                new Department {DepartmentCode="ICT",DepartmentDesc="Bahagian ICT PL",Internal=true},
+                new Department {DepartmentCode="Harta",DepartmentDesc="Bahagian Harta PL",Internal=true},
+                new Department {DepartmentCode="Kewangan",DepartmentDesc="Bahagian Kewangan PL",Internal=true},
+                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif PL",Internal=true},
+                new Department {DepartmentCode="Bomba",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia",Internal=false},
+                new Department {DepartmentCode="KPDNKK",DepartmentDesc="Kementerian Perdagangan Dalam Negeri, Koperasi & Kepenggunaan",Internal=false},
+                new Department {DepartmentCode="JKKP",DepartmentDesc="Jabatan Keselamatan dan Kesihatan Pekerjaan",Internal=false},
+                new Department {DepartmentCode="ST",DepartmentDesc="Suruhanjaya Tenaga",Internal=false},
+                new Department {DepartmentCode="MPIC",DepartmentDesc="Kementerian Perusahaan Perladangan dan Komoditi",Internal=false},
+                new Department {DepartmentCode="MPOB",DepartmentDesc="Lembaga Minyak Sawit Malaysia",Internal=false},
+                new Department {DepartmentCode="LKTN",DepartmentDesc="Lembaga Kenaf dan Tembakau Negara",Internal=false},
+                new Department {DepartmentCode="LGM",DepartmentDesc="Lembaga Getah Malaysia",Internal=false},
+                new Department {DepartmentCode="JPJ",DepartmentDesc="Jabatan Pengangkutan Jalan",Internal=false},
+                new Department {DepartmentCode="JAS",DepartmentDesc="Jabatan Alam Sekitar",Internal=false},
+                new Department {DepartmentCode="PPN",DepartmentDesc="Pejabat Perhutanan Negeri",Internal=false},
+                new Department {DepartmentCode="BPFK",DepartmentDesc="Biro Pengawalan Farmaseutikal Kebangsaan",Internal=false},
+                new Department {DepartmentCode="BKKM",DepartmentDesc="Bahagian Keselamatan Dan Kualiti Makanan",Internal=false},
+                new Department {DepartmentCode="MOA",DepartmentDesc="Kementerian Pertanian Malaysia",Internal=false},
+                new Department {DepartmentCode="JPV",DepartmentDesc="Jabatan Perkhidmatan Veterinar",Internal=false},
+                new Department {DepartmentCode="LPNM",DepartmentDesc="Lembaga Perindustrian Nanas Malaysia",Internal=false},
+                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia",Internal=false},
+                new Department {DepartmentCode="LKM",DepartmentDesc="Lembaga Koko Malaysia",Internal=false},
+                new Department {DepartmentCode="PERHILITAN",DepartmentDesc="Jabatan Perlindungan Hidupan Liar dan Taman Negara",Internal=false},
+                new Department {DepartmentCode="FAMA",DepartmentDesc="Lembaga Pemasaran Pertanian Persekutuan",Internal=false},
+                new Department {DepartmentCode="FINAS",DepartmentDesc="Perbadanan Kemajuan Filem Nasional Malaysia",Internal=false},
+                new Department {DepartmentCode="LFM",DepartmentDesc="Lembaga Farmasi Malaysia",Internal=false},
+                new Department {DepartmentCode="MOM",DepartmentDesc="Majlis Optik Malaysia",Internal=false},
+                new Department {DepartmentCode="JPM",DepartmentDesc="Jabatan Pertanian Malaysia",Internal=false},
+                new Department {DepartmentCode="MOTAC",DepartmentDesc="Kementerian Pelancongan dan Kebudayaan Malaysia",Internal=false},
+                new Department {DepartmentCode="KPKT",DepartmentDesc="Kementerian Perumahan dan Kerajaan Tempatan",Internal=false},
+                new Department {DepartmentCode="JTK",DepartmentDesc="Jabatan Tenaga Kerja",Internal=false},
+                new Department {DepartmentCode="KDN",DepartmentDesc="Kementerian Dalam Negeri",Internal=false},
+                new Department {DepartmentCode="BEM",DepartmentDesc="Lembaga Jurutera Malaysia",Internal=false},
+                new Department {DepartmentCode="CIDB",DepartmentDesc="Lembaga Pembangunan Industri Pembinaan Malaysia",Internal=false},
+                new Department {DepartmentCode="MOE",DepartmentDesc="Kementerian Pendidikan",Internal=false},
+                new Department {DepartmentCode="MOHE",DepartmentDesc="Kementerian Pendidikan Tinggi",Internal=false},
+                new Department {DepartmentCode="DCA",DepartmentDesc="Jabatan Penerbangan Awam Malaysia",Internal=false},
+                new Department {DepartmentCode="JKM",DepartmentDesc="Jabatan Kebajikan Masyarakat",Internal=false},
+                new Department {DepartmentCode="CKAPS",DepartmentDesc="Cawangan Kawalan Amalan Perubatan Swasta",Internal=false},
+                new Department {DepartmentCode="MOH",DepartmentDesc="Kementerian Kesihatan Malaysia",Internal=false},
+                new Department {DepartmentCode="MDC",DepartmentDesc="Majlis Pergigian Malaysia",Internal=false},
+                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia",Internal=false},
+                new Department {DepartmentCode="BNM",DepartmentDesc="Bank Negara Malaysia",Internal=false},
+                new Department {DepartmentCode="SKMM",DepartmentDesc="Suruhanjaya Komunikasi dan Multimedia Malaysia",Internal=false},
+                new Department {DepartmentCode="SPAD",DepartmentDesc="Suruhanjaya Pengangkutan Awam Darat",Internal=false},
+                new Department {DepartmentCode="JPSPN",DepartmentDesc="Jabatan Pengurusan Sisa Pepejal Negara dan Pembersihan Awam",Internal=false},
+                new Department {DepartmentCode="MOF",DepartmentDesc="Kementerian Kewangan",Internal=false},
             };
             departments.ForEach(s => context.Departments.Add(s));
             context.SaveChanges();
@@ -265,21 +277,6 @@ namespace TradingLicense.Data.Migrations
             companies.ForEach(s => context.Companies.Add(s));
             context.SaveChanges();
 
-            var attachments = new List<Attachment>
-            {
-                new Attachment{FileName="sijil_ssm.pdf"},
-                new Attachment{FileName="mayKadChin.pdf"},
-                new Attachment{FileName="peta.jpg"},
-                new Attachment{FileName="sijil_ssm.pdf"},
-                new Attachment{FileName="borang_9.pdf"},
-                new Attachment{FileName="borang_49.pdf"},
-                new Attachment{FileName="IC_siti.pdf"},
-                new Attachment{FileName="IC_ali.pdf"},
-                new Attachment{FileName="lokasi_premis_kejora_bersatu.pdf"},
-            };
-            attachments.ForEach(s => context.Attachments.Add(s));
-            context.SaveChanges();
-
             var indlinkcoms = new List<IndLinkCom>
             {
                 new IndLinkCom {IndividualID=1,CompanyID=2 },
@@ -307,7 +304,7 @@ namespace TradingLicense.Data.Migrations
             var accesspages = new List<AccessPage>
             {
                 new AccessPage {PageDesc="AccessPages",CrudLevel=0,RoleTemplateID=1,ScreenId=1},
-                new AccessPage {PageDesc="AccessPages",CrudLevel=2,RoleTemplateID=2,ScreenId=1},
+                new AccessPage {PageDesc="AccessPages",CrudLevel=0,RoleTemplateID=2,ScreenId=1},
                 new AccessPage {PageDesc="AccessPages",CrudLevel=2,RoleTemplateID=3,ScreenId=1},
                 new AccessPage {PageDesc="AccessPages",CrudLevel=3,RoleTemplateID=4,ScreenId=1},
                 new AccessPage {PageDesc="AccessPages",CrudLevel=3,RoleTemplateID=5,ScreenId=1},
@@ -316,7 +313,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="AccessPages",CrudLevel=4,RoleTemplateID=8,ScreenId=1},
 
                 new AccessPage {PageDesc="AdditionalInfos",CrudLevel=0,RoleTemplateID=1,ScreenId=2},
-                new AccessPage {PageDesc="AdditionalInfos",CrudLevel=2,RoleTemplateID=2,ScreenId=2},
+                new AccessPage {PageDesc="AdditionalInfos",CrudLevel=0,RoleTemplateID=2,ScreenId=2},
                 new AccessPage {PageDesc="AdditionalInfos",CrudLevel=2,RoleTemplateID=3,ScreenId=2},
                 new AccessPage {PageDesc="AdditionalInfos",CrudLevel=3,RoleTemplateID=4,ScreenId=2},
                 new AccessPage {PageDesc="AdditionalInfos",CrudLevel=3,RoleTemplateID=5,ScreenId=2},
@@ -325,7 +322,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="AdditionalInfos",CrudLevel=4,RoleTemplateID=8,ScreenId=2},
 
                 new AccessPage {PageDesc="Attachment",CrudLevel=0,RoleTemplateID=1,ScreenId=3},
-                new AccessPage {PageDesc="Attachment",CrudLevel=2,RoleTemplateID=2,ScreenId=3},
+                new AccessPage {PageDesc="Attachment",CrudLevel=0,RoleTemplateID=2,ScreenId=3},
                 new AccessPage {PageDesc="Attachment",CrudLevel=2,RoleTemplateID=3,ScreenId=3},
                 new AccessPage {PageDesc="Attachment",CrudLevel=3,RoleTemplateID=4,ScreenId=3},
                 new AccessPage {PageDesc="Attachment",CrudLevel=3,RoleTemplateID=5,ScreenId=3},
@@ -334,7 +331,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Attachment",CrudLevel=4,RoleTemplateID=8,ScreenId=3},
 
                 new AccessPage {PageDesc="Administrator",CrudLevel=0,RoleTemplateID=1,ScreenId=4},
-                new AccessPage {PageDesc="Administrator",CrudLevel=2,RoleTemplateID=2,ScreenId=4},
+                new AccessPage {PageDesc="Administrator",CrudLevel=0,RoleTemplateID=2,ScreenId=4},
                 new AccessPage {PageDesc="Administrator",CrudLevel=2,RoleTemplateID=3,ScreenId=4},
                 new AccessPage {PageDesc="Administrator",CrudLevel=3,RoleTemplateID=4,ScreenId=4},
                 new AccessPage {PageDesc="Administrator",CrudLevel=3,RoleTemplateID=5,ScreenId=4},
@@ -343,7 +340,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Administrator",CrudLevel=4,RoleTemplateID=8,ScreenId=4},
 
                 new AccessPage {PageDesc="MasterSetup",CrudLevel=0,RoleTemplateID=1,ScreenId=5},
-                new AccessPage {PageDesc="MasterSetup",CrudLevel=2,RoleTemplateID=2,ScreenId=5},
+                new AccessPage {PageDesc="MasterSetup",CrudLevel=0,RoleTemplateID=2,ScreenId=5},
                 new AccessPage {PageDesc="MasterSetup",CrudLevel=2,RoleTemplateID=3,ScreenId=5},
                 new AccessPage {PageDesc="MasterSetup",CrudLevel=3,RoleTemplateID=4,ScreenId=5},
                 new AccessPage {PageDesc="MasterSetup",CrudLevel=3,RoleTemplateID=5,ScreenId=5},
@@ -352,7 +349,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="MasterSetup",CrudLevel=4,RoleTemplateID=8,ScreenId=5},
 
                 new AccessPage {PageDesc="Inquiry",CrudLevel=0,RoleTemplateID=1,ScreenId=6},
-                new AccessPage {PageDesc="Inquiry",CrudLevel=2,RoleTemplateID=2,ScreenId=6},
+                new AccessPage {PageDesc="Inquiry",CrudLevel=0,RoleTemplateID=2,ScreenId=6},
                 new AccessPage {PageDesc="Inquiry",CrudLevel=2,RoleTemplateID=3,ScreenId=6},
                 new AccessPage {PageDesc="Inquiry",CrudLevel=3,RoleTemplateID=4,ScreenId=6},
                 new AccessPage {PageDesc="Inquiry",CrudLevel=3,RoleTemplateID=5,ScreenId=6},
@@ -361,7 +358,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Inquiry",CrudLevel=4,RoleTemplateID=8,ScreenId=6},
 
                 new AccessPage {PageDesc="Reporting",CrudLevel=0,RoleTemplateID=1,ScreenId=7},
-                new AccessPage {PageDesc="Reporting",CrudLevel=2,RoleTemplateID=2,ScreenId=7},
+                new AccessPage {PageDesc="Reporting",CrudLevel=1,RoleTemplateID=2,ScreenId=7},
                 new AccessPage {PageDesc="Reporting",CrudLevel=2,RoleTemplateID=3,ScreenId=7},
                 new AccessPage {PageDesc="Reporting",CrudLevel=3,RoleTemplateID=4,ScreenId=7},
                 new AccessPage {PageDesc="Reporting",CrudLevel=3,RoleTemplateID=5,ScreenId=7},
@@ -370,7 +367,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Reporting",CrudLevel=4,RoleTemplateID=8,ScreenId=7},
 
                 new AccessPage {PageDesc="Individual",CrudLevel=0,RoleTemplateID=1,ScreenId=8},
-                new AccessPage {PageDesc="Individual",CrudLevel=2,RoleTemplateID=2,ScreenId=8},
+                new AccessPage {PageDesc="Individual",CrudLevel=1,RoleTemplateID=2,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=2,RoleTemplateID=3,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=4,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=5,ScreenId=8},
@@ -378,17 +375,17 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Individual",CrudLevel=4,RoleTemplateID=7,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=4,RoleTemplateID=8,ScreenId=8},
 
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=0,RoleTemplateID=1,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=2,RoleTemplateID=2,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=2,RoleTemplateID=3,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=3,RoleTemplateID=4,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=3,RoleTemplateID=5,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=4,RoleTemplateID=6,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=4,RoleTemplateID=7,ScreenId=9},
-                new AccessPage {PageDesc="CheckDebt",CrudLevel=4,RoleTemplateID=8,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=1,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=1,RoleTemplateID=2,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=3,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=4,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=5,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=6,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=7,ScreenId=9},
+                new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=8,ScreenId=9},
 
                 new AccessPage {PageDesc="Profile",CrudLevel=0,RoleTemplateID=1,ScreenId=10},
-                new AccessPage {PageDesc="Profile",CrudLevel=2,RoleTemplateID=2,ScreenId=10},
+                new AccessPage {PageDesc="Profile",CrudLevel=0,RoleTemplateID=2,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=2,RoleTemplateID=3,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=3,RoleTemplateID=4,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=3,RoleTemplateID=5,ScreenId=10},
@@ -397,7 +394,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Profile",CrudLevel=4,RoleTemplateID=8,ScreenId=10},
 
                 new AccessPage {PageDesc="Process",CrudLevel=0,RoleTemplateID=1,ScreenId=11},
-                new AccessPage {PageDesc="Process",CrudLevel=2,RoleTemplateID=2,ScreenId=11},
+                new AccessPage {PageDesc="Process",CrudLevel=1,RoleTemplateID=2,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=2,RoleTemplateID=3,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=3,RoleTemplateID=4,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=3,RoleTemplateID=5,ScreenId=11},
@@ -410,22 +407,23 @@ namespace TradingLicense.Data.Migrations
 
             var users = new List<Users>
             {
-                new Users {FullName="Abd Aziz Bin Hamzah",Username="aziz",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="aziz.h@pl.gov.my" },
-                new Users {FullName="Soffiyan Bin Hadis",Username="soffiyan",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="soffiyan.hadis@pl.gov.my" },
-                new Users {FullName="Hjh. Simai Binti Md Jamil",Username="simai",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="simai@pl.gov.my" },
-                new Users {FullName="Suriani Salleh",Username="suriani",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="suriani.salleh@pl.gov.my" },
-                new Users {FullName="Suwardi Binti Muali",Username="suwardi",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="suwardi.muali.pl@1govuc.gov.my" },
-                new Users {FullName="Adey Suhaimi Bin Suhaili",Username="adey",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="adey.suhaimi.pl@1govuc.gov.my" },
-                new Users {FullName="Azean Irdawati Binti Wahid",Username="azean",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="azean.wahid.pl@1govuc.gov.my" },
-                new Users {FullName="Kazlina Binti Kassim",Username="kazlina",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="kazlina@yahoo.com" },
-                new Users {FullName="Mat Daly Bin Matdin",Username="matdaly",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="mat.daly@yahoo.com" },
-                new Users {FullName="Patimah Binti Hj. Lamat",Username="patimah",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="patimah@yahoo.com" },
-                new Users {FullName="Rafidah Binti Mohd Isa",Username="rafidah",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="rafidah@yahoo.com" },
-                new Users {FullName="Ahmad Jais Bin Halon",Username="ahmadjais",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="ahmad.jais@yahoo.com" },
-                new Users {FullName="YBHG. Datuk Azhar Bin Ahmad",Username="kpe",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="azharahmad@pl.gov.my" },
-                new Users {FullName="Mazalan Bin Hassin",Username="mazalan",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="mazalan.hassin@pl.gov.my" },
-                new Users {FullName="R. Norasliana Binti Ramlee",Username="norasliana",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="ana.ramli@pl.gov.my" },
-                new Users {FullName="Jabatan Bomba",Username="bomba",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="jbpm_labuan.bomba@1govuc.gov.my" },
+                new Users {FullName="Abd Aziz Bin Hamzah",Username="aziz",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="aziz.h@pl.gov.my", RoleTemplateID=6,DepartmentID=1},
+                new Users {FullName="Soffiyan Bin Hadis",Username="soffiyan",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="soffiyan.hadis@pl.gov.my", RoleTemplateID=4,DepartmentID=1},
+                new Users {FullName="Hjh. Simai Binti Md Jamil",Username="simai",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="simai@pl.gov.my", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Suriani Salleh",Username="suriani",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="suriani.salleh@pl.gov.my", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="Suwardi Binti Muali",Username="suwardi",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="suwardi.muali.pl@1govuc.gov.my", RoleTemplateID=2,DepartmentID=1},
+                new Users {FullName="Adey Suhaimi Bin Suhaili",Username="adey",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="adey.suhaimi.pl@1govuc.gov.my", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Azean Irdawati Binti Wahid",Username="azean",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="azean.wahid.pl@1govuc.gov.my", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Kazlina Binti Kassim",Username="kazlina",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="kazlina@yahoo.com", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="Mat Daly Bin Matdin",Username="matdaly",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="mat.daly@yahoo.com", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="Patimah Binti Hj. Lamat",Username="patimah",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="patimah@yahoo.com", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="Rafidah Binti Mohd Isa",Username="rafidah",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="rafidah@yahoo.com", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="Ahmad Jais Bin Halon",Username="ahmadjais",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="ahmad.jais@yahoo.com", RoleTemplateID=1,DepartmentID=1},
+                new Users {FullName="YBHG. Datuk Azhar Bin Ahmad",Username="kpe",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="azharahmad@pl.gov.my", RoleTemplateID=7,DepartmentID=1},
+                new Users {FullName="Mazalan Bin Hassin",Username="mazalan",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="mazalan.hassin@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
+                new Users {FullName="R. Norasliana Binti Ramlee",Username="norasliana",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="ana.ramli@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
+                new Users {FullName="Jabatan Bomba",Username="bomba",Password="81dc9bdb52d04dc20036dbd8313ed055",Email="jbpm_labuan.bomba@1govuc.gov.my", RoleTemplateID=5,DepartmentID=1},
+                new Users {FullName="Ronny Jimmy",Username="ronny",Password="rGWQ/rZGq74=",Email="ronnyrtg@yahoo.com", RoleTemplateID=8,DepartmentID=1},
             };
             users.ForEach(s => context.Users.Add(s));
             context.SaveChanges();

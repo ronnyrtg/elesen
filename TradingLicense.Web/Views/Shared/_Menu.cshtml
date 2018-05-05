@@ -3,20 +3,18 @@
 
 <div class="navbar navbar-inverse">
     <div class="container-fluid">
-        <div class="navbar-header">
-            @Html.ActionLink("Dashboard", "Individual", "Master", null, new { @class = "navbar-brand" })
-        </div>
         <ul class="nav navbar-nav">
-@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.CheckDebt, SystemEnum.PageRight.CrudLevel))
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.DeskOfficer, SystemEnum.PageRight.CrudLevel))
 {
     <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Semak Baki Tertunggak
+            Outstanding Debts
             <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
             <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
             <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
+            <li><a href="#">Senarai Lot Bangunan</a></li>
         </ul>
     </li>
 }
@@ -31,9 +29,9 @@
                     <li><a href="#">Lesen Premis Perniagaan &amp; Iklan</a></li>
                     <li><a href="#">Lesen Penjaja</a></li>
                     <li><a href="#">Lesen Pasar</a></li>
-                    <li><a href="#">Lesen Petempatan Makanan</a></li>
+                    <li><a href="#">Lesen Iklan (Banting/Banner)</a></li>
                     <li><a href="#">Lesen Menjual Minuman Keras</a></li>
-                    <li><a href="#">Operating License untuk Hiburan</a></li>
+                    <li><a href="#">Lesen Pusat Hiburan</a></li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
                 </ul>
@@ -50,9 +48,9 @@
                     <li>@Html.ActionLink("Lesen Premis Perniagaan & Iklan (Test)", "PremiseApplication", "PremiseApplication")</li>
                     <li><a href="#">Lesen Penjaja</a></li>
                     <li><a href="#">Lesen Pasar</a></li>
-                    <li><a href="#">Lesen Petempatan Makanan</a></li>
+                    <li><a href="#">Lesen Iklan (Banting/Banner)</a></li>
                     <li><a href="#">Lesen Menjual Minuman Keras</a></li>
-                    <li><a href="#">Operating License untuk Hiburan</a></li>
+                    <li><a href="#">Lesen Pusat Hiburan</a></li>
                 </ul>
             </li>
 }
@@ -111,6 +109,12 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
+                    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel))
+                    {
+                    <li><a href="#">Received Applications</a></li>
+                    }
+                    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel2))
+                    {
                     <li><a href="#">License/Business Type Master</a></li>
                     <li><a href="#">Zone Master</a></li>
                     <li><a href="#">Subzone Master</a></li>
@@ -131,6 +135,7 @@
                     <li><a href="#">Analisa Lokasi Permohonan Lesen</a></li>
                     <li><a href="#">Senarai Perniagaan</a></li>
                     <li><a href="#">Status Pergerakan Permohonan Lesen</a></li>
+                    }
                 </ul>
             </li>
 }

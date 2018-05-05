@@ -204,7 +204,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult BusinessCodeLinkDepartment([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCode,string departmentCode)
         {
-            List<TradingLicense.Model.BussCodLinkDepModel> bussCodLinkDepModel = new List<Model.BussCodLinkDepModel>();
+            List<TradingLicense.Model.BCLinkDepModel> bussCodLinkDepModel = new List<Model.BCLinkDepModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -237,7 +237,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                var result = Mapper.Map<List<BussCodLinkDepModel>>(query.ToList());
+                var result = Mapper.Map<List<BCLinkDepModel>>(query.ToList());
 
                 result = result.OrderBy(orderByString == string.Empty ? "BussCodLinkDepID asc" : orderByString).ToList();
 
@@ -259,14 +259,14 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageBussCodLinkDep(int? Id)
         {
-            BussCodLinkDepModel bussCodLinkDepModel = new BussCodLinkDepModel();
+            BCLinkDepModel bussCodLinkDepModel = new BCLinkDepModel();
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int bussCodLinkDepID = Convert.ToInt32(Id);
                     var bussCodLinkDeps = ctx.BussCodLinkDeps.Where(a => a.BussCodLinkDepID == bussCodLinkDepID).FirstOrDefault();
-                    bussCodLinkDepModel = Mapper.Map<BussCodLinkDepModel>(bussCodLinkDeps);
+                    bussCodLinkDepModel = Mapper.Map<BCLinkDepModel>(bussCodLinkDeps);
                 }
             }
 
@@ -280,7 +280,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBussCodLinkDep(BussCodLinkDepModel bussCodLinkDepModel)
+        public ActionResult ManageBussCodLinkDep(BCLinkDepModel bussCodLinkDepModel)
         {
             if (ModelState.IsValid)
             {

@@ -11,6 +11,10 @@ namespace TradingLicense.Model
     {
         public int PremiseApplicationID { get; set; }
 
+        [Display(Name = "Business Type")]
+        [Required(ErrorMessage = "Please select Business Type")]
+        public List<int> BusinessTypeID { get; set; }
+
         [Display(Name = "Applicant")]
         [Required(ErrorMessage = "Please select Individual")]
         public int IndividualID { get; set; }

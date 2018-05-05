@@ -64,10 +64,10 @@ namespace TradingLicense.Infrastructure
             Individual = 8,
 
             /// <summary>
-            /// CheckDebt
+            /// DeskOfficer
             /// </summary>
-            [Description("CheckDebt")]
-            CheckDebt = 9,
+            [Description("DeskOfficer")]
+            DeskOfficer = 9,
 
             /// <summary>
             /// Profile

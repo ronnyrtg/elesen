@@ -2371,5 +2371,175 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region BusinessType
+
+        /// <summary>
+        /// GET: BusinessType
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BusinessType()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save BusinessType Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BusinessType([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BusinessTypeCode, string BusinessTypeDesc)
+        {
+            List<TradingLicense.Model.BusinessTypeModel> businessType = new List<Model.BusinessTypeModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BusinessType> query = ctx.BusinessTypes;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(BusinessTypeDesc))
+                {
+                    query = query.Where(p =>
+                                        p.BusinessTypeDesc.Contains(BusinessTypeDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "BusinessTypeID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                businessType = Mapper.Map<List<BusinessTypeModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, businessType, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get BusinessType Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageBusinessType(int? Id)
+        {
+            BusinessTypeModel businessTypeModel = new BusinessTypeModel();
+            businessTypeModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int businessTypeID = Convert.ToInt32(Id);
+                    var businessType = ctx.BusinessTypes.Where(a => a.BusinessTypeID == businessTypeID).FirstOrDefault();
+                    businessTypeModel = Mapper.Map<BusinessTypeModel>(businessType);
+                }
+            }
+
+            return View(businessTypeModel);
+        }
+
+        /// <summary>
+        /// Save Premise Type Infomration
+        /// </summary>
+        /// <param name="businessTypeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBusinessType(BusinessTypeModel businessTypeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    BusinessType businessType;
+                    if (IsBusinessTypeDuplicate(businessTypeModel.BusinessTypeDesc, businessTypeModel.BusinessTypeID))
+                    {
+                        TempData["ErrorMessage"] = "Business Type already exists in the database.";
+                        return View(businessTypeModel);
+                    }
+
+                    businessType = Mapper.Map<BusinessType>(businessTypeModel);
+                    ctx.BusinessTypes.AddOrUpdate(businessType);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Business Type saved successfully.";
+
+                return RedirectToAction("BusinessType");
+            }
+            else
+            {
+                return View(businessTypeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Business Type Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBusinessType(int id)
+        {
+            try
+            {
+                var businessType = new TradingLicense.Entities.BusinessType() { BusinessTypeID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(businessType).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsBusinessTypeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.BusinessTypes.FirstOrDefault(
+                   c => c.BusinessTypeID != id && c.BusinessTypeDesc.ToLower() == name.ToLower())
+               : ctx.BusinessTypes.FirstOrDefault(
+                   c => c.BusinessTypeDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
     }
 }

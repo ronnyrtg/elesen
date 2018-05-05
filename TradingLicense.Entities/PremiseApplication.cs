@@ -12,7 +12,7 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int PremiseApplicationID { get; set; }
-
+        public int BusinessTypeID { get; set; }
         public int IndividualID { get; set; }
 
         [StringLength(255)]
@@ -33,6 +33,6 @@ namespace TradingLicense.Entities
         public virtual PremiseType PremiseType { get; set; }
         public virtual PAStatus PAStatus { get; set; }
         public virtual Individual Individual { get; set; }
-
+        public virtual BusinessType BusinessType { get; set; }
     }
 }
