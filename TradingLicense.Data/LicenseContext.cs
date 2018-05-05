@@ -58,7 +58,7 @@ namespace TradingLicense.Data
 
         public DbSet<Signboard> Signboards { get; set; }
 
-        public DbSet<SupportDocs> SupportDocs { get; set; }
+        public DbSet<AdditionalDoc> AdditionalDocs { get; set; }
 
         public DbSet<Users> Users { get; set; }
 

@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessPageModel.cs" />
+    <Compile Include="AdditionalDocModel.cs" />
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessModel.cs" />
