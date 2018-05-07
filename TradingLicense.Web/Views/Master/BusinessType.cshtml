@@ -46,7 +46,7 @@
         bindTable();
         });
 
-        function addBusinessTypeType() {
+        function addBusinessType() {
            var link = '@Url.Action("ManageBusinessType", "Master")';
              window.location.href = link;
         }
@@ -55,7 +55,7 @@
          if (!isValidSearchCriteria('SearchCriteria')) { return false; }
          if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
              $('#tblBusinessType').dataTable().fnDestroy();
-             $('#divtblBusinessType').html('<table class="table table-striped" width="100%"  id="tblBusinessTypeType"></table>');
+             $('#divtblBusinessType').html('<table class="table table-striped" width="100%"  id="tblBusinessType"></table>');
                 }
 
          table = $("#tblBusinessType").dataTable({
@@ -76,7 +76,18 @@
                         type: "POST",
                         data: bindSearch()
                     },
-                    "columns": [
+             "columns": [
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
+                        { "title": "Business Type Code", "data": "BusinessTypeCode" },
                         { "title": "Business Type", "data": "BusinessTypeDesc" },
                         {
                             "title": "Active",
@@ -97,7 +108,7 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBusinessTypeType", "Master")?Id=' + row["BusinessTypeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a  href="@Url.Action("ManageBusinessType", "Master")?Id=' + row["BusinessTypeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
                         appendstring += '<a href="javascript:void(0);" data-id="' + row["BusinessTypeID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
@@ -110,14 +121,14 @@
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblBusinessTypeType_info').hide();
-                     $('#tblBusinessTypeType_paginate').hide();
-                     $('#tblBusinessTypeType_length').hide();
+                     $('#tblBusinessType_info').hide();
+                     $('#tblBusinessType_paginate').hide();
+                     $('#tblBusinessType_length').hide();
                  }
                  else {
-                     $('#tblBusinessTypeType_info').show();
-                     $('#tblBusinessTypeType_paginate').show();
-                     $('#tblBusinessTypeType_length').show();
+                     $('#tblBusinessType_info').show();
+                     $('#tblBusinessType_paginate').show();
+                     $('#tblBusinessType_length').show();
                  }
                  bindSortingArrow();
              }

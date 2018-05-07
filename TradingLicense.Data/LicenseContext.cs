@@ -18,13 +18,13 @@ namespace TradingLicense.Data
 
         public DbSet<AccessPage> AccessPages { get; set; }
 
-        public DbSet<AdditionalDoc> AdditionalInfos { get; set; }
+        public DbSet<AdditionalDoc> AdditionalDocs { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
 
         public DbSet<BusinessCode> BusinessCodes { get; set; }
 
-        public DbSet<BCLinkDep> BussCodLinkDeps { get; set; }
+        public DbSet<BCLinkDep> BCLinkDeps { get; set; }
 
         public DbSet<Company> Companies { get; set; }
 
@@ -36,9 +36,9 @@ namespace TradingLicense.Data
 
         public DbSet<LoginLog> LoginLogs { get; set; }
 
-        public DbSet<BCLinkAD> PALinkAIs { get; set; }
+        public DbSet<BCLinkAD> BCLinkAD { get; set; }
 
-        public DbSet<PALinkBC> PALinkBActs { get; set; }
+        public DbSet<PALinkBC> PALinkBC { get; set; }
 
         public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
 
@@ -58,11 +58,11 @@ namespace TradingLicense.Data
 
         public DbSet<Signboard> Signboards { get; set; }
 
-        public DbSet<AdditionalDoc> AdditionalDocs { get; set; }
-
         public DbSet<Users> Users { get; set; }
 
         public DbSet<BusinessType> BusinessTypes { get; set; }
+
+        public DbSet<Holiday> Holidays { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

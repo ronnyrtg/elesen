@@ -19,25 +19,6 @@
     <div class="header">
         <h4>Business Codes</h4>
     </div>
-    <div class="filter-block">
-        <div class="row small-gutter">
-            <form>
-                <div class="col-xs-2">
-                    @Html.DropDownList("Sectorlist", new SelectList(sectorList, "SectorID", "SectorDesc"), "Select Group", new { @class = "form-control" })
-                </div>
-                <div class="col-xs-2">
-                    <input type="text" name="txtcodeNumber" id="txtcodeNumber" class="form-control" placeholder="Code Number" maxlength="50" />
-                </div>
-                <div class="col-xs-2">
-                    <input type="text" name="txtcodeDesc" id="txtcodeDesc" class="form-control" placeholder="Code Description" maxlength="10" />
-                </div>
-                <div class="col-xs-3">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <div class="grid" id="divtblBusinessCode">
         <table cellspacing="0" class="table table-striped" id="tblBusinessCode"></table>
     </div>

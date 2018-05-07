@@ -63,6 +63,7 @@
     <Compile Include="IndividualModel.cs" />
     <Compile Include="LoginLogModel.cs" />
     <Compile Include="LoginModel.cs" />
+    <Compile Include="HolidayModel.cs" />
     <Compile Include="PAStatusModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />

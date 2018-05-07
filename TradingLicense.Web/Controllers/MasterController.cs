@@ -2541,5 +2541,172 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region Holiday
+
+        /// <summary>
+        /// GET: Holiday
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Holiday()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Holiday Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Holiday([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string holidayDesc)
+        {
+            List<TradingLicense.Model.HolidayModel> Holiday = new List<Model.HolidayModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Holiday> query = ctx.Holidays;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+                if (!string.IsNullOrWhiteSpace(holidayDesc))
+                {
+                    query = query.Where(p =>
+                                        p.HolidayDesc.Contains(holidayDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "HolidayID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Holiday = Mapper.Map<List<HolidayModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Holiday, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Holiday Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageHoliday(int? Id)
+        {
+            HolidayModel HolidayModel = new HolidayModel();
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int HolidayID = Convert.ToInt32(Id);
+                    var Holiday = ctx.Holidays.Where(a => a.HolidayID == HolidayID).FirstOrDefault();
+                    HolidayModel = Mapper.Map<HolidayModel>(Holiday);
+                }
+            }
+
+            return View(HolidayModel);
+        }
+
+        /// <summary>
+        /// Save Holiday Infomration
+        /// </summary>
+        /// <param name="HolidayModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageHoliday(HolidayModel HolidayModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    Holiday Holiday;
+                    if (IsHolidayDuplicate(HolidayModel.HolidayDesc, HolidayModel.HolidayID))
+                    {
+                        TempData["ErrorMessage"] = "Holiday already exists in the database.";
+                        return View(HolidayModel);
+                    }
+                    Holiday = Mapper.Map<Holiday>(HolidayModel);
+                    ctx.Holidays.AddOrUpdate(Holiday);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Holiday saved successfully.";
+
+                return RedirectToAction("Holiday");
+            }
+            else
+            {
+                return View(HolidayModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Holiday Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteHoliday(int id)
+        {
+            try
+            {
+                var Holiday = new TradingLicense.Entities.Holiday() { HolidayID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(Holiday).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsHolidayDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.Holidays.FirstOrDefault(
+                   c => c.HolidayID != id && c.HolidayDesc.ToLower() == name.ToLower())
+               : ctx.Holidays.FirstOrDefault(
+                   c => c.HolidayDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
     }
 }

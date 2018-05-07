@@ -49,6 +49,7 @@
     <Compile Include="BusinessType.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Department.cs" />
+    <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="IndLinkCom.cs" />

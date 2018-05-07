@@ -1,0 +1,70 @@
+﻿@model TradingLicense.Model.BusinessTypeModel
+@{
+    ViewBag.Title = "ManageBusinessType";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Business Type</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBusinessType", id = "frmBusinessType" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.BusinessTypeID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BusinessTypeCode, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.BusinessTypeCode, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.BusinessTypeCode)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BusinessTypeDesc, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.BusinessTypeDesc, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.BusinessTypeDesc)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+                </div>
+                @section scripts{
+                    <script>
+                        var actionError = '@(TempData["ErrorMessage"])';
+                        if (actionError != null && actionError != "") {
+                            errorMessage(actionError);
+                        }
+                        function back() {
+                            var link = '@Url.Action("BusinessType", "Master")';
+                            window.location.href = link;
+                        }
+                    </script>
+                }

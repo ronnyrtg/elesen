@@ -1,0 +1,77 @@
+﻿@model TradingLicense.Model.HolidayModel
+@{
+    ViewBag.Title = "ManageHoliday";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Holiday Type</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmHoliday", id = "frmHoliday" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.HolidayID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.HolidayDesc, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.HolidayDesc, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.HolidayDesc)
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.HolidayDate,
+                htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.HolidayDate,
+           new
+           {
+               htmlAttributes = new
+               {
+                   @Value = Model.HolidayDate.ToString("MM/dd/yyyy"),
+                   @class = "form-control"
+               },
+           })
+                    @Html.ValidationMessageFor(model => model.HolidayDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
+    function back() {
+         var link = '@Url.Action("Holiday", "Master")';
+        window.location.href = link;
+    }
+    </script>
+<script type="text/javascript">
+    $(function () {
+
+        $('#AnnualMeetingDate').datetimepicker({
+            defaultDate: '@Model.HolidayDate',
+            format: 'L',
+            showClose: true,
+            showClear: true,
+            toolbarPlacement: 'top'
+        });
+    });
+</script>
+}
