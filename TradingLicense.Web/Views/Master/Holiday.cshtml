@@ -76,9 +76,29 @@
                         type: "POST",
                         data: bindSearch()
                     },
-                    "columns": [
+             "columns": [
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
                         { "title": "Holiday", "data": "HolidayDesc" },
-                        { "title": "Date", "data": "HolidayDate" },
+                        {
+                            "title": "Date",
+                            "data": "HolidayDate",
+                            "render": function (data) {
+                                var pattern = /Date\(([^)]+)\)/;
+                                var results = pattern.exec(data);
+                                var dt = new Date(parseFloat(results[1]));
+
+                                return dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                            }
+                        },
                         {
                     "title": "Action",
                     "data": null,

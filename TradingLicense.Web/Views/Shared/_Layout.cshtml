@@ -14,6 +14,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/datetime")
+    @RenderSection("scripts", required: false)
 
     <link href="~/Content/select2/select2.min.css" rel="stylesheet" />
 </head>
@@ -33,6 +34,6 @@
         <p class="copyright">&copy; @DateTime.Now.Year - Datatechnet</p>
     }
     <script src="~/Content/select2/select2.min.js"></script>
-    @RenderSection("scripts", required: false)
+    
 </body>
 </html>

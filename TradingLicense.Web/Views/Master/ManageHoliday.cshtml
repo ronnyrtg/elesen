@@ -23,33 +23,26 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.HolidayDate,
-                htmlAttributes: new { @class = "control-label col-md-3" })
-                <div class="col-md-8">
-                    @Html.EditorFor(model => model.HolidayDate,
-           new
-           {
-               htmlAttributes = new
-               {
-                   @Value = Model.HolidayDate.ToString("MM/dd/yyyy"),
-                   @class = "form-control"
-               },
-           })
-                    @Html.ValidationMessageFor(model => model.HolidayDate, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Save" />
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        @Html.LabelFor(model => model.HolidayDate,htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.HolidayDate, new { htmlAttributes = new { @Value = Model.HolidayDate.ToString("MM/dd/yyyy"), @class = "form-control"},})
+                        @Html.ValidationMessageFor(model => model.HolidayDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
-        }
-    </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" value="Save" />
+                            <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
 </div>
 @section scripts{
     <script>
@@ -65,7 +58,7 @@
 <script type="text/javascript">
     $(function () {
 
-        $('#AnnualMeetingDate').datetimepicker({
+        $('#HolidayDate').datetimepicker({
             defaultDate: '@Model.HolidayDate',
             format: 'L',
             showClose: true,
