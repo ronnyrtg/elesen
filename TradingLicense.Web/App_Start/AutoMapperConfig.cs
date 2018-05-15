@@ -38,6 +38,14 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<RegistrationModel, Users>().ReverseMap();
                 cfg.CreateMap<AdditionalDocModel, AdditionalDoc>();
                 cfg.CreateMap<Sector, SectorModel>();
+                cfg.CreateMap<BTLinkReqDoc, BTLinkReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+                cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();
+                cfg.CreateMap<PremiseApplication, PremiseApplicationModel>()
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.PAStatus.StatusDesc))
+                            .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
+                cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
+                cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));
+                cfg.CreateMap<BCLinkADModel, BCLinkAD>();
             });
         }
     }

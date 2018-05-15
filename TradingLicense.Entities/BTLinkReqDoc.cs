@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-   public class BTLinkReqDoc
+    public class BTLinkReqDoc
     {
         [Key]
         public int BTLinkReqDocID { get; set; }
@@ -17,6 +17,7 @@ namespace TradingLicense.Entities
         public int RequiredDocID { get; set; }
 
         public virtual BusinessType BusinessType { get; set; }
+
         public virtual RequiredDoc RequiredDoc { get; set; }
     }
 }

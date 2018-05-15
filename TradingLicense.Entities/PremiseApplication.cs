@@ -13,12 +13,16 @@ namespace TradingLicense.Entities
         [Key]
         public int PremiseApplicationID { get; set; }
         public int BusinessTypeID { get; set; }
-        public int IndividualID { get; set; }
+        //public int IndividualID { get; set; }
+
+        public int UsersID { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string PremiseAddress { get; set; }
         public int PremiseStatus { get; set; }
+
+        public float PremiseArea { get; set; }
 
         public int PremiseTypeID { get; set; }
         public int PremiseModification { get; set; }
@@ -32,7 +36,11 @@ namespace TradingLicense.Entities
 
         public virtual PremiseType PremiseType { get; set; }
         public virtual PAStatus PAStatus { get; set; }
-        public virtual Individual Individual { get; set; }
+
+        //public virtual Individual Individual { get; set; }
+
         public virtual BusinessType BusinessType { get; set; }
+
+        public virtual Users Users { get; set; }
     }
 }

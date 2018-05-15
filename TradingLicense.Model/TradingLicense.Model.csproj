@@ -55,6 +55,8 @@
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AdditionalDocModel.cs" />
     <Compile Include="AttachmentModel.cs" />
+    <Compile Include="BCLinkADModel.cs" />
+    <Compile Include="BTLinkReqDocModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessModel.cs" />
     <Compile Include="BusinessTypeModel.cs" />
@@ -80,6 +82,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TradingLicense.Entities\TradingLicense.Entities.csproj">
+      <Project>{E97359ED-19A2-441B-A88A-DED8B42FAE12}</Project>
+      <Name>TradingLicense.Entities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

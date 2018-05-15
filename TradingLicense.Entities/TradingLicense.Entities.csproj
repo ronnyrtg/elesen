@@ -51,12 +51,15 @@
     <Compile Include="Department.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
+    <Compile Include="PAComment.cs" />
+    <Compile Include="PALinkAddDoc.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="IndLinkCom.cs" />
     <Compile Include="LoginLog.cs" />
     <Compile Include="BCLinkAD.cs" />
     <Compile Include="PALinkBC.cs" />
     <Compile Include="BTLinkReqDoc.cs" />
+    <Compile Include="PALinkReqDoc.cs" />
     <Compile Include="PALinkSign.cs" />
     <Compile Include="PAStatus.cs" />
     <Compile Include="PremiseApplication.cs" />

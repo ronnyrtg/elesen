@@ -19,4 +19,18 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
     }
+
+    public class RequiredDocList
+    {
+        public int RequiredDocID { get; set; }
+
+        public int AttachmentID { get; set; }
+    }
+
+    public class AdditionalDocList
+    {
+        public int AdditionalDocID { get; set; }
+
+        public int AttachmentID { get; set; }
+    }
 }

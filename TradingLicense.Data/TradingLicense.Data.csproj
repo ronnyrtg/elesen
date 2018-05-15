@@ -54,9 +54,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LicenseContext.cs" />
-    <Compile Include="Migrations\201805070538360_seed.cs" />
-    <Compile Include="Migrations\201805070538360_seed.Designer.cs">
-      <DependentUpon>201805070538360_seed.cs</DependentUpon>
+    <Compile Include="Migrations\201805111222123_InitialCreate.cs" />
+    <Compile Include="Migrations\201805111222123_InitialCreate.Designer.cs">
+      <DependentUpon>201805111222123_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805140630445_InitialCreate1.cs" />
+    <Compile Include="Migrations\201805140630445_InitialCreate1.Designer.cs">
+      <DependentUpon>201805140630445_InitialCreate1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="MyDbConfiguration.cs" />
@@ -74,8 +78,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201805070538360_seed.resx">
-      <DependentUpon>201805070538360_seed.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201805111222123_InitialCreate.resx">
+      <DependentUpon>201805111222123_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805140630445_InitialCreate1.resx">
+      <DependentUpon>201805140630445_InitialCreate1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

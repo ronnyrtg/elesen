@@ -62,12 +62,20 @@ namespace TradingLicense.Data
 
         public DbSet<BusinessType> BusinessTypes { get; set; }
 
+        public DbSet<PALinkInd> PALinkInds { get; set; }
         public DbSet<Holiday> Holidays { get; set; }
+
+        public DbSet<PALinkAddDoc> PALinkAddDocs { get; set; }
+
+        public DbSet<PALinkReqDoc> PALinkReqDoc { get; set; }
+
+        public DbSet<PAComment> PAComments { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.HasDefaultSchema("LICENSING");
+            //modelBuilder.HasDefaultSchema("LICENSING");
+            modelBuilder.HasDefaultSchema("C##TRADING");
         }
     }
 }

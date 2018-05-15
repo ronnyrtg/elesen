@@ -58,4 +58,16 @@ namespace TradingLicense.Model
         public int SectorID { get; set; }
         public string SectorDesc { get; set; }
     }
+
+    public class SelectedBusinessCodeModel
+    {
+       public int id { get; set; }
+       public string text { get; set; }
+    }
+
+    public class SelectedIndividualModel
+    {
+        public int id { get; set; }
+        public string text { get; set; }
+    }
 }

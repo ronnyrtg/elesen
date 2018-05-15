@@ -17,6 +17,7 @@ namespace TradingLicense.Entities
         public int IndividualID { get; set; }
 
         public virtual Individual Individual { get; set; }
+
         public virtual PremiseApplication PremiseApplication { get; set; }
     }
 }

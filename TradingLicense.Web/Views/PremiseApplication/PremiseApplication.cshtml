@@ -16,9 +16,9 @@
                 <div class="col-xs-4">
                     <input type="text" name="txtPremiseApplicationID" id="txtPremiseApplicationID" class="form-control" placeholder="Reference No." maxlength="100" />
                 </div>
-                <div class="col-xs-4">
+                @*<div class="col-xs-4">
                     <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
-                </div>
+                </div>*@
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
                     <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
@@ -83,11 +83,12 @@
                     },
                     "columns": [
                         { "title": "Reference No.", "data": "PremiseApplicationID" },
-                        { "title": "MyKad/Passport", "data": "IndividualID" },
+                        { "title": "Business Type.", "data": "PremiseDesc" },
                         { "title": "Premise Address", "data": "PremiseAddress" },
-                        { "title": "Submitted", "data": "DateSubmitted" },
+                        { "title": "Premise Area", "data": "PremiseArea" },
+                        { "title": "Submitted", "data": "DateSubmitted", render: renderDate },
                         { "title": "Updated", "data": "UpdatedBy" },
-                        { "title": "Status", "data": "PAStatusID" },
+                        { "title": "Status", "data": "StatusDesc" },
                         {
                     "title": "Action",
                     "data": null,
@@ -121,7 +122,7 @@
         }
 
         function clearControls() {
-            $("#txtPremiseApplication").val('');
+            $("#txtPremiseApplicationID").val('');
             $("#txtIndividualID").val('');
             bindTable();
         }
@@ -129,7 +130,7 @@
         function bindSearch() {
             var param = {};
             param["PremiseApplicationID"] = $('#txtPremiseApplicationID').val();
-            param["IndividualID"] = $('#txtIndividualID').val();
+            param["IndividualMkNo"] = $('#txtIndividualID').val();
             return param;
         }
 
@@ -160,7 +161,6 @@
                         if (data.success) {
                             bindTable();
                             successMessage(data.message);
-
                         }
                         else {
                             successMessage(data.message);

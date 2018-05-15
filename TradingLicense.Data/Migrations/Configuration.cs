@@ -301,6 +301,26 @@ namespace TradingLicense.Data.Migrations
             roletemplates.ForEach(s => context.RoleTemplates.Add(s));
             context.SaveChanges();
 
+            var PAStatus = new List<PAStatus>
+            {
+                new PAStatus {StatusDesc="draft created" ,PercentProgress =1},
+                new PAStatus {StatusDesc="submitted to clerk" ,PercentProgress =2},
+                new PAStatus {StatusDesc="unit route" ,PercentProgress =3},
+                new PAStatus {StatusDesc="supervisor check" ,PercentProgress =4},
+                new PAStatus {StatusDesc="director check" ,PercentProgress =5},
+                new PAStatus {StatusDesc="meeting" ,PercentProgress =6},
+                new PAStatus {StatusDesc="KIV at Meeting" ,PercentProgress =7},
+                new PAStatus {StatusDesc="CEO check" ,PercentProgress =8},
+                new PAStatus {StatusDesc="KIV at CEO" ,PercentProgress =9},
+                new PAStatus {StatusDesc="Letter of notification (Approved)" ,PercentProgress =10},
+                new PAStatus {StatusDesc="Letter of notification (Rejected)" ,PercentProgress =11},
+                new PAStatus {StatusDesc="Letter of notification (Approved with Terms & Conditions)" ,PercentProgress =12},
+                new PAStatus {StatusDesc="Pending payment" ,PercentProgress =13},
+                new PAStatus {StatusDesc="License Generated" ,PercentProgress =14},
+            };
+            PAStatus.ForEach(s => context.PAStatus.Add(s));
+            context.SaveChanges();
+
             var accesspages = new List<AccessPage>
             {
                 new AccessPage {PageDesc="AccessPages",CrudLevel=0,RoleTemplateID=1,ScreenId=1},

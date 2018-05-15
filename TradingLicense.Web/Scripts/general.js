@@ -125,3 +125,27 @@ function checkStrength(password) {
 
     return strength;
 }
+
+
+function checkforValidUploadedfiles(files, _validFileExtensions) {
+    var blnValidP = false;
+    if (files && files[0]) {
+        var sFileName = files[0].name.toLowerCase();
+        if (sFileName.length > 0) {
+            for (var j = 0; j < _validFileExtensions.length; j++) {
+                var sCurExtension = _validFileExtensions[j];
+                if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                    blnValidP = true;
+                    break;
+                }
+                else {
+                    blnValidP = false;
+                }
+            }
+        }
+    }
+    else {
+        blnValidP = false;
+    }
+    return blnValidP;
+}

@@ -36,5 +36,6 @@ namespace TradingLicense.Entities
         }
 
         public virtual Sector Sector { get; set; }
+        
     }
 }

@@ -43,8 +43,28 @@ namespace TradingLicense.Infrastructure
                 return ConvertTo.String(ConfigurationManager.AppSettings.Get("Attachment"));
             }
         }
-      
-      
+
+        public static string PremiseAttachmentDocument
+        {
+            get
+            {
+                return ConvertTo.String(ConfigurationManager.AppSettings.Get("PremiseAttachment"));
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the upload file format.
+        /// </summary>
+        /// <value>The upload file format.</value>
+        public static string UploadFileFormat
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings.Get("UploadFileFormat");
+            }
+        }
+
         /// <summary>
         /// Gets current Url 
         /// </summary>

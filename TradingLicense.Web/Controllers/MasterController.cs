@@ -1308,7 +1308,7 @@ namespace TradingLicense.Web.Controllers
                       (column.SortDirection ==
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
-
+                
                 var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
