@@ -1,0 +1,67 @@
+﻿@model TradingLicense.Model.AdditionalDocModel
+@{
+    ViewBag.Title = "ManageAdditionalDoc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Additional Document</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmAdditionalDoc", id = "frmAdditionalDoc" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.AdditionalDocID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DocDesc, new { @class = "control-label" })  <span class="cfont">*</span>
+                        @Html.TextAreaFor(m => m.DocDesc, new { @class = "form-control", @maxlength = "255" })
+                        @Html.ValidationMessageFor(m => m.DocDesc)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("AdditionalDoc", "Master")';
+        window.location.href = link;
+    }
+    </script>
+}
+
+
+

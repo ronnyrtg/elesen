@@ -1068,31 +1068,31 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region PAStatus
+        #region AppStatus
 
         /// <summary>
-        /// GET: PAStatus
+        /// GET: AppStatus
         /// </summary>
         /// <returns></returns>
-        public ActionResult PAStatus()
+        public ActionResult AppStatus()
         {
             return View();
         }
 
         /// <summary>
-        /// Save PAStatus Data
+        /// Save AppStatus Data
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult PAStatus([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string statusDesc)
+        public JsonResult AppStatus([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string statusDesc)
         {
-            List<TradingLicense.Model.PAStatusModel> PAStatus = new List<Model.PAStatusModel>();
+            List<TradingLicense.Model.AppStatusModel> AppStatus = new List<Model.AppStatusModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PAStatus> query = ctx.PAStatus;
+                IQueryable<AppStatus> query = ctx.AppStatus;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1121,89 +1121,89 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "PAStatusID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "AppStatusID asc" : orderByString);
 
                 #endregion Sorting
 
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                PAStatus = Mapper.Map<List<PAStatusModel>>(query.ToList());
+                AppStatus = Mapper.Map<List<AppStatusModel>>(query.ToList());
 
             }
-            return Json(new DataTablesResponse(requestModel.Draw, PAStatus, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, AppStatus, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
-        /// Get PAStatus Data by ID
+        /// Get AppStatus Data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManagePAStatus(int? Id)
+        public ActionResult ManageAppStatus(int? Id)
         {
-            PAStatusModel pAStatusModel = new PAStatusModel();
+            AppStatusModel appStatusModel = new AppStatusModel();
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int pAStatusID = Convert.ToInt32(Id);
-                    var pAStatus = ctx.PAStatus.Where(a => a.PAStatusID == pAStatusID).FirstOrDefault();
-                    pAStatusModel = Mapper.Map<PAStatusModel>(pAStatus);
+                    var pAStatus = ctx.AppStatus.Where(a => a.AppStatusID == pAStatusID).FirstOrDefault();
+                    appStatusModel = Mapper.Map<AppStatusModel>(pAStatus);
                 }
             }
 
-            return View(pAStatusModel);
+            return View(appStatusModel);
         }
 
         /// <summary>
-        /// Save PAStatus Infomration
+        /// Save AppStatus Infomration
         /// </summary>
-        /// <param name="pAStatusModel"></param>
+        /// <param name="appStatusModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManagePAStatus(PAStatusModel pAStatusModel)
+        public ActionResult ManageAppStatus(AppStatusModel appStatusModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    PAStatus pAStatus;
-                    if (IsPAStatusDuplicate(pAStatusModel.StatusDesc, pAStatusModel.PAStatusID))
+                    AppStatus pAStatus;
+                    if (IsAppStatusDuplicate(appStatusModel.StatusDesc, appStatusModel.AppStatusID))
                     {
-                        TempData["ErrorMessage"] = "PAStatus is already exist in the database.";
-                        return View(pAStatusModel);
+                        TempData["ErrorMessage"] = "AppStatus is already exist in the database.";
+                        return View(appStatusModel);
                     }
-                    pAStatus = Mapper.Map<PAStatus>(pAStatusModel);
-                    ctx.PAStatus.AddOrUpdate(pAStatus);
+                    pAStatus = Mapper.Map<AppStatus>(appStatusModel);
+                    ctx.AppStatus.AddOrUpdate(pAStatus);
                     ctx.SaveChanges();
                 }
 
-                TempData["SuccessMessage"] = "PAStatus saved successfully.";
+                TempData["SuccessMessage"] = "AppStatus saved successfully.";
 
-                return RedirectToAction("PAStatus");
+                return RedirectToAction("AppStatus");
             }
             else
             {
-                return View(pAStatusModel);
+                return View(appStatusModel);
             }
 
         }
 
         /// <summary>
-        /// Delete PAStatus Information
+        /// Delete AppStatus Information
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeletePAStatus(int id)
+        public ActionResult DeleteAppStatus(int id)
         {
             try
             {
-                var PAStatus = new TradingLicense.Entities.PAStatus() { PAStatusID = id };
+                var AppStatus = new TradingLicense.Entities.AppStatus() { AppStatusID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(PAStatus).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.Entry(AppStatus).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
@@ -1220,14 +1220,14 @@ namespace TradingLicense.Web.Controllers
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsPAStatusDuplicate(string name, int? id = null)
+        private bool IsAppStatusDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.PAStatus.FirstOrDefault(
-                   c => c.PAStatusID != id && c.StatusDesc.ToLower() == name.ToLower())
-               : ctx.PAStatus.FirstOrDefault(
+               ctx.AppStatus.FirstOrDefault(
+                   c => c.AppStatusID != id && c.StatusDesc.ToLower() == name.ToLower())
+               : ctx.AppStatus.FirstOrDefault(
                    c => c.StatusDesc.ToLower() == name.ToLower());
                 return existObj != null;
             }
@@ -1420,150 +1420,6 @@ namespace TradingLicense.Web.Controllers
                : ctx.BusinessCodes.FirstOrDefault(
                    c => c.CodeNumber.ToLower() == name.ToLower());
                 return existObj != null;
-            }
-        }
-
-        #endregion
-
-        #region Signboard
-
-        /// <summary>
-        /// GET: Signboard
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Signboard()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Save Signboard Data
-        /// </summary>
-        /// <param name="requestModel"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult Signboard([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string displayMethod, string location)
-        {
-            List<TradingLicense.Model.SignboardModel> Signboard = new List<Model.SignboardModel>();
-            int totalRecord = 0;
-            int filteredRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<Signboard> query = ctx.Signboards;
-                totalRecord = query.Count();
-
-                #region Filtering
-                // Apply filters for searching
-
-                if (!string.IsNullOrWhiteSpace(displayMethod) || !string.IsNullOrWhiteSpace(location))
-                {
-                    query = query.Where(p =>
-                                        p.DisplayMethod.Contains(displayMethod) &&
-                                        p.Location.ToString().Contains(location)
-                                    );
-                }
-
-                filteredRecord = query.Count();
-
-                #endregion Filtering
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                query = query.OrderBy(orderByString == string.Empty ? "SignboardID asc" : orderByString);
-
-                #endregion Sorting
-
-                // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
-
-                Signboard = Mapper.Map<List<SignboardModel>>(query.ToList());
-
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, Signboard, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get Signboard Data by ID
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        public ActionResult ManageSignboard(int? Id)
-        {
-            SignboardModel signboardModel = new SignboardModel();
-            if (Id != null && Id > 0)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    int signboardID = Convert.ToInt32(Id);
-                    var signboard = ctx.Signboards.Where(a => a.SignboardID == signboardID).FirstOrDefault();
-                    signboardModel = Mapper.Map<SignboardModel>(signboard);
-                }
-            }
-
-            return View(signboardModel);
-        }
-
-        /// <summary>
-        /// Save Signboard Infomration
-        /// </summary>
-        /// <param name="signboardModel"></param>
-        /// <returns></returns>
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public ActionResult ManageSignboard(SignboardModel signboardModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    Signboard signboard;
-                    signboard = Mapper.Map<Signboard>(signboardModel);
-                    ctx.Signboards.AddOrUpdate(signboard);
-                    ctx.SaveChanges();
-                }
-
-                TempData["SuccessMessage"] = "Signboard saved successfully.";
-
-                return RedirectToAction("Signboard");
-            }
-            else
-            {
-                return View(signboardModel);
-            }
-        }
-
-        /// <summary>
-        /// Delete Signboard Information
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteSignboard(int id)
-        {
-            try
-            {
-                var Signboard = new TradingLicense.Entities.Signboard() { SignboardID = id };
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    ctx.Entry(Signboard).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
-                }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -2703,6 +2559,176 @@ namespace TradingLicense.Web.Controllers
                    c => c.HolidayID != id && c.HolidayDesc.ToLower() == name.ToLower())
                : ctx.Holidays.FirstOrDefault(
                    c => c.HolidayDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
+
+        #region AdditionalDoc
+
+        /// <summary>
+        /// GET: AdditionalDoc
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AdditionalDoc()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save AdditionalDoc Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult AdditionalDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string docDesc)
+        {
+            List<TradingLicense.Model.AdditionalDocModel> AdditionalDoc = new List<Model.AdditionalDocModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+
+                IQueryable<AdditionalDoc> query = ctx.AdditionalDocs;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(docDesc))
+                {
+                    query = query.Where(p =>
+                                            p.DocDesc.Contains(docDesc)
+                                      );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "AdditionalDocID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                AdditionalDoc = Mapper.Map<List<AdditionalDocModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, AdditionalDoc, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get AdditionalDoc Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageAdditionalDoc(int? Id)
+        {
+            AdditionalDocModel additionalDocModel = new AdditionalDocModel();
+            additionalDocModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int AdditionalDocID = Convert.ToInt32(Id);
+                    var AdditionalDoc = ctx.AdditionalDocs.Where(a => a.AdditionalDocID == AdditionalDocID).FirstOrDefault();
+                    additionalDocModel = Mapper.Map<AdditionalDocModel>(AdditionalDoc);
+                }
+            }
+
+            return View(additionalDocModel);
+        }
+
+        /// <summary>
+        /// Save AdditionalDoc Information
+        /// </summary>
+        /// <param name="additionalDocModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageAdditionalDoc(AdditionalDocModel additionalDocModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    AdditionalDoc additionalDoc;
+                    if (IsAdditionalDocDuplicate(additionalDocModel.DocDesc, additionalDocModel.AdditionalDocID))
+                    {
+                        TempData["ErrorMessage"] = "Required Document is already exist in the database.";
+                        return View(additionalDocModel);
+                    }
+                    additionalDoc = Mapper.Map<AdditionalDoc>(additionalDocModel);
+                    ctx.AdditionalDocs.AddOrUpdate(additionalDoc);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Required Document saved successfully.";
+
+                return RedirectToAction("AdditionalDoc");
+            }
+            else
+            {
+                return View(additionalDocModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete AdditionalDoc Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteAdditionalDoc(int id)
+        {
+            try
+            {
+                var AdditionalDoc = new TradingLicense.Entities.AdditionalDoc() { AdditionalDocID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(AdditionalDoc).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsAdditionalDocDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.AdditionalDocs.FirstOrDefault(
+                   c => c.AdditionalDocID != id && c.DocDesc.ToLower() == name.ToLower())
+               : ctx.AdditionalDocs.FirstOrDefault(
+                   c => c.DocDesc.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }

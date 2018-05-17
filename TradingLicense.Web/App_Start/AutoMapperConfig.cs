@@ -27,10 +27,9 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<Company, CompanyModel>();
                 cfg.CreateMap<Attachment, AttachmentModel>();
                 cfg.CreateMap<RoleTemplate, RoleTemplateModel>();
-                cfg.CreateMap<PAStatus, PAStatusModel>();
+                cfg.CreateMap<AppStatus, AppStatusModel>();
                 cfg.CreateMap<BusinessCode, BusinessCodeModel>().ForMember(dest =>dest.SectorDesc,opt =>opt.MapFrom(s =>s.Sector.SectorDesc));
                 cfg.CreateMap<BusinessCodeModel, BusinessCode>();
-                cfg.CreateMap<Signboard, SignboardModel>();
                 cfg.CreateMap<PremiseType, PremiseTypeModel>();
                 cfg.CreateMap<LoginLog, LoginLogModel>();
                 cfg.CreateMap<Users, UsersModel>();
@@ -41,7 +40,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BTLinkReqDoc, BTLinkReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
                 cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();
                 cfg.CreateMap<PremiseApplication, PremiseApplicationModel>()
-                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.PAStatus.StatusDesc))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
                 cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
                 cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));

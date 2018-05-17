@@ -23,11 +23,11 @@
         PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
     }
 
-    List<TradingLicense.Model.PAStatusModel> paStatusList = new List<TradingLicense.Model.PAStatusModel>();
+    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var paStatus = ctx.PAStatus.ToList();
-        paStatusList = Mapper.Map<List<TradingLicense.Model.PAStatusModel>>(paStatus);
+        var appStatus = ctx.AppStatus.ToList();
+        appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
     }
 
     List<SelectListItem> PremiseStatusList = new List<SelectListItem>();
@@ -63,14 +63,14 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
-                        <div class="control-label">Bussiness Type.<span class="cfont">*</span></div>
+                        <div class="control-label">Business Type.<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Select Business Type", new { @class = "form-control", @onchange = "businessTypeChange()" })
                     </div>
                 </div>
 
                 <div class="col-md-offset-3 col-lg-3 col-md-3">
                     <div class="form-group">
-                        @if (Model.PAStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                        @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                         {
                             <div class="control-label" style="color:green;">Submitted to Clerk</div>
                         }
@@ -79,14 +79,14 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-11">
+                <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">Bussiness code.<span class="cfont">*</span></div>
+                        <div class="control-label">Business Code.<span class="cfont">*</span></div>
                         @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Select Bussiness code", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
                         @Html.HiddenFor(model => model.BusinessCodeids)
                     </div>
                 </div>
-                <div class="col-sm-1">
+                <div class="col-sm-4">
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindBusinessCodeTable(); return false;'>View</button>
                     </div>
@@ -94,7 +94,7 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-11">
+                <div class="col-sm-6">
                     <div class="form-group">
                         <div class="control-label">
                             Mykad/Passport No.   @if (Model.UserRollTemplate > 2)
@@ -104,23 +104,13 @@
                         @Html.HiddenFor(model => model.Individualids)
                     </div>
                 </div>
-                <div class="col-sm-1">
+                <div class="col-sm-4">
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindMykadTable(); return false;'>View</button>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Address</div>
-                        @Html.TextBoxFor(m => m.PremiseAddress, new { @class = "form-control", @maxlength = "255" })
-                        @Html.ValidationMessageFor(m => m.PremiseAddress)
-                    </div>
-                </div>
-            </div>
-
+            
             <div class="row">
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
@@ -152,7 +142,7 @@
             </div>
             
             <div class="row">
-                <div class="col-lg-6 col-md-12" id="RequiredDocument" style="display:none;">
+                <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
                             Document List.   @if (Model.UserRollTemplate > 1)
@@ -161,7 +151,7 @@
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12" id="AdditionalDocument" style="display:none;">
+                <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
                             Additional Document List.@if (Model.UserRollTemplate > 1)
@@ -180,11 +170,11 @@
                         {
                             if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                             {
-                                if (Model.PAStatusID == 0 || Model.PAStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {<input type="submit" class="btn btn-primary" onclick='frmSubmit(false); return false;' id="btnsubmitdraft" value="Save Draft " /> }
                             }
 
-                            if (Model.PAStatusID == 0 || Model.PAStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                             {
                                 <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                             }
@@ -242,7 +232,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Bussiness Code</h4>
+                <h4 class="modal-title">Business Code</h4>
             </div>
             <div class="modal-body">
                 <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessCode"></table>

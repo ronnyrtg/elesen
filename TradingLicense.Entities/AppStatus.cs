@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Entities
 {
-   public class PAStatus
+   public class AppStatus
     {
         [Key]
-        public int PAStatusID { get; set; }
+        public int AppStatusID { get; set; }
 
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]

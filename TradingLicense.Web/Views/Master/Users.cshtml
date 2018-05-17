@@ -72,7 +72,17 @@
                         data: bindSearch()
                     },
              "columns": [
-                        { "title": "Full Name", "data": "FullName" },
+                 {
+                     "targets": 0,
+                     "searchable": false,
+                     "orderable": false,
+                     "title": "No.",
+                     "data": null,
+                     "render": function (data, type, full, meta) {
+                         return meta.settings._iDisplayStart + meta.row + 1;
+                     }
+                 },
+                 { "title": "Full Name", "data": "FullName" },
                  { "title": "Username", "data": "Username" },
                  { "title": "Email", "data": "Email" },
                  {

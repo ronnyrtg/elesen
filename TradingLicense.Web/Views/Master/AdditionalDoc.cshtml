@@ -1,22 +1,22 @@
 ﻿
 @{
-    ViewBag.Title = "PAStatus";
+    ViewBag.Title = "AdditionalDoc";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
-        <li><a href="#" title="Add PAStatus" onclick="addPAStatus();"><img src="@Url.Content("~/images/add.png")" alt="Add PAStatus"></a></li>
+        <li><a href="#" title="Additional Document" onclick="addAdditionalDocument();"><img src="@Url.Content("~/images/add.png")" alt="Additional Document"></a></li>
     </ul>
     <div class="header">
-        <h4>PA Status</h4>
+        <h4>Additional Documents</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtstatusDesc" id="txtstatusDesc" class="form-control" placeholder="Status Description" maxlength="100" />
+                    <input type="text" name="txtadditionalDocDesc" id="txtadditionalDocDesc" class="form-control" placeholder="Additional Document Description" />
                 </div>
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -25,8 +25,8 @@
             </form>
         </div>
     </div>
-    <div class="grid" id="divtblPAStatus">
-        <table cellspacing="0" class="table table-striped" id="tblPAStatus"></table>
+    <div class="grid" id="divtblAdditionalDocument">
+        <table cellspacing="0" class="table table-striped" id="tblAdditionalDocument"></table>
     </div>
 </div>
 
@@ -46,19 +46,21 @@
         bindTable();
         });
 
-        function addPAStatus() {
-           var link = '@Url.Action("ManagePAStatus", "Master")';
+        function addAdditionalDocument() {
+           var link = '@Url.Action("ManageAdditionalDoc", "Master")';
              window.location.href = link;
         }
 
      function bindTable() {
-         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
-         if ($.fn.DataTable.isDataTable("#tblPAStatus")) {
-             $('#tblPAStatus').dataTable().fnDestroy();
-             $('#divtblPAStatus').html('<table class="table table-striped" width="100%"  id="tblPAStatus"></table>');
-          }
 
-         table = $("#tblPAStatus").dataTable({
+         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+
+         if ($.fn.DataTable.isDataTable("#tblAdditionalDocument")) {
+             $('#tblAdditionalDocument').dataTable().fnDestroy();
+             $('#divtblAdditionalDocument').html('<table class="table table-striped" width="100%"  id="tblAdditionalDocument"></table>');
+         }
+
+         table = $("#tblAdditionalDocument").dataTable({
              "autoWidth": false,
              "searching": false,
              "paging": true,
@@ -72,20 +74,43 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("PAStatus", "Master")',
+                        url: '@Url.Action("AdditionalDoc", "Master")',
                         type: "POST",
                         data: bindSearch()
                     },
-             "columns": [
-                 { "title": "Status Description", "data": "StatusDesc" },
-                 { "title": "Percent Progress", "data": "PercentProgress" },
+                    "columns": [
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
+                        { "title": "Additional Document Description", "data": "DocDesc" },
+                        {
+                            "title": "Active",
+                            "data": "Active",
+                            "render": function (data, type, row) {
+                                if (data) {
+                                    return '<label class="label label-success">Active</label>';
+                                }
+                                else {
+                                    return '<label class="label label-danger">InActive</label>';
+                                }
+                            },
+                            "width": "10%",
+                            "orderable": true,
+                        },
                         {
                     "title": "Action",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManagePAStatus", "Master")?Id=' + row["PAStatusID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["PAStatusID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageAdditionalDoc", "Master")?Id=' + row["AdditionalDocID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["AdditionalDocID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
@@ -98,14 +123,14 @@
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblPAStatus_info').hide();
-                     $('#tblPAStatus_paginate').hide();
-                     $('#tblPAStatus_length').hide();
+                     $('#tblAdditionalDocument_info').hide();
+                     $('#tblAdditionalDocument_paginate').hide();
+                     $('#tblAdditionalDocument_length').hide();
                  }
                  else {
-                     $('#tblPAStatus_info').show();
-                     $('#tblPAStatus_paginate').show();
-                     $('#tblPAStatus_length').show();
+                     $('#tblAdditionalDocument_info').show();
+                     $('#tblAdditionalDocument_paginate').show();
+                     $('#tblAdditionalDocument_length').show();
                  }
                  bindSortingArrow();
              }
@@ -113,13 +138,13 @@
         }
 
         function clearControls() {
-            $("#txtstatusDesc").val('');
+            $("#txtadditionalDocDesc").val('');
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
-            param["statusDesc"] = $('#txtstatusDesc').val();
+            param["additionalDocDesc"] = $('#txtadditionalDocDesc').val();
             return param;
         }
 
@@ -143,7 +168,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeletePAStatus", "Master")'),
+                    url: encodeURI('@Url.Action("DeleteAdditionalDoc", "Master")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',

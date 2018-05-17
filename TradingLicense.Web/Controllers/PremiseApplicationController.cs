@@ -293,14 +293,14 @@ namespace TradingLicense.Web.Controllers
                         {
                             if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
                             {
-                                premiseApplication.PAStatusID = (int)PAStausenum.submittedtoclerk;
+                                premiseApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
                             }
                         }
                         else
                         {
                             if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
                             {
-                                premiseApplication.PAStatusID = (int)PAStausenum.draftcreated;
+                                premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
                             }
                         }
 
@@ -323,16 +323,16 @@ namespace TradingLicense.Web.Controllers
 
                                 if (IslinkDept)
                                 {
-                                    premiseApplication.PAStatusID = (int)PAStausenum.unitroute;
+                                    premiseApplication.AppStatusID = (int)PAStausenum.unitroute;
                                 }
                                 else
                                 {
-                                    premiseApplication.PAStatusID = (int)PAStausenum.supervisorcheck;
+                                    premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
                                 }
                             }
                             else
                             {
-                                premiseApplication.PAStatusID = (int)PAStausenum.supervisorcheck;
+                                premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
                             }
                         }
 
@@ -1259,7 +1259,7 @@ namespace TradingLicense.Web.Controllers
                                     {
                                         if (preimiseApplication != null && preimiseApplication.PremiseApplicationID > 0)
                                         {
-                                            preimiseApplication.PAStatusID = (int)PAStausenum.unitroute;
+                                            preimiseApplication.AppStatusID = (int)PAStausenum.unitroute;
                                             ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
                                             ctx.SaveChanges();
                                         }
@@ -1268,7 +1268,7 @@ namespace TradingLicense.Web.Controllers
                                     {
                                         if (preimiseApplication != null && preimiseApplication.PremiseApplicationID > 0)
                                         {
-                                            preimiseApplication.PAStatusID = (int)PAStausenum.LetterofnotificationApproved;
+                                            preimiseApplication.AppStatusID = (int)PAStausenum.LetterofnotificationApproved;
                                             ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
                                             ctx.SaveChanges();
                                         }
@@ -1276,7 +1276,7 @@ namespace TradingLicense.Web.Controllers
                                 }
                                 else
                                 {
-                                    preimiseApplication.PAStatusID = (int)PAStausenum.draftcreated;
+                                    preimiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
                                     ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
                                     ctx.SaveChanges();
                                 }

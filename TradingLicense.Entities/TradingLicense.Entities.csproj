@@ -49,6 +49,7 @@
     <Compile Include="BusinessType.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Department.cs" />
+    <Compile Include="HawkerType.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
     <Compile Include="PAComment.cs" />
@@ -60,15 +61,13 @@
     <Compile Include="PALinkBC.cs" />
     <Compile Include="BTLinkReqDoc.cs" />
     <Compile Include="PALinkReqDoc.cs" />
-    <Compile Include="PALinkSign.cs" />
-    <Compile Include="PAStatus.cs" />
+    <Compile Include="AppStatus.cs" />
     <Compile Include="PremiseApplication.cs" />
     <Compile Include="PremiseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredDoc.cs" />
     <Compile Include="RoleTemplate.cs" />
     <Compile Include="Sector.cs" />
-    <Compile Include="Signboard.cs" />
     <Compile Include="Users.cs" />
   </ItemGroup>
   <ItemGroup>

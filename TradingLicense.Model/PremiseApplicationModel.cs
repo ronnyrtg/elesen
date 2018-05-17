@@ -39,7 +39,7 @@ namespace TradingLicense.Model
         
         public string UpdatedBy { get; set; }
 
-        public int PAStatusID { get; set; }
+        public int AppStatusID { get; set; }
 
         public string BusinessCodeids { get; set; }
 

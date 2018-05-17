@@ -27,15 +27,15 @@ namespace TradingLicense.Entities
         public int PremiseTypeID { get; set; }
         public int PremiseModification { get; set; }
         public DateTime DateSubmitted { get; set; }
-
+    
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
 
-        public int PAStatusID { get; set; }
+        public int AppStatusID { get; set; }
 
         public virtual PremiseType PremiseType { get; set; }
-        public virtual PAStatus PAStatus { get; set; }
+        public virtual AppStatus AppStatus { get; set; }
 
         //public virtual Individual Individual { get; set; }
 

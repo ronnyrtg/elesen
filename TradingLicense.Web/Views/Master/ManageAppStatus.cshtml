@@ -1,19 +1,19 @@
-﻿@model TradingLicense.Model.PAStatusModel
+﻿@model TradingLicense.Model.AppStatusModel
 @{
-    ViewBag.Title = "ManagePAStatus";
+    ViewBag.Title = "Manage Application Status";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage PA Status</h4>
+        <h4 id="headerTitle">Manage Application Status</h4>
     </div>
     <div class="body">
-        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPAStatus", id = "frmPAStatus" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmAppStatus", id = "frmAppStatus" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.PAStatusID)
+            @Html.HiddenFor(m => m.AppStatusID)
 
             <div class="row">
                 <div class="col-sm-12">
@@ -29,7 +29,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         @Html.LabelFor(m => m.PercentProgress, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.PercentProgress, new { @class = "form-control allownumeric", @maxlength = "2" })
+                        @Html.TextBoxFor(m => m.PercentProgress, new { @class = "form-control allownumeric", @maxlength = "3" })
                         @Html.ValidationMessageFor(m => m.PercentProgress)
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                 errorMessage(actionError);
             }
     function back() {
-         var link = '@Url.Action("PAStatus", "Master")';
+         var link = '@Url.Action("AppStatus", "Master")';
         window.location.href = link;
         }
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {

@@ -42,9 +42,7 @@ namespace TradingLicense.Data
 
         public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
 
-        public DbSet<PALinkSign> PALinkSigns { get; set; }
-
-        public DbSet<PAStatus> PAStatus { get; set; }
+        public DbSet<AppStatus> AppStatus { get; set; }
 
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
 
@@ -55,8 +53,6 @@ namespace TradingLicense.Data
         public DbSet<RoleTemplate> RoleTemplates { get; set; }
 
         public DbSet<Sector> Sectors { get; set; }
-
-        public DbSet<Signboard> Signboards { get; set; }
 
         public DbSet<Users> Users { get; set; }
 
@@ -71,11 +67,13 @@ namespace TradingLicense.Data
 
         public DbSet<PAComment> PAComments { get; set; }
 
+        public DbSet<HawkerType> HawkerTypes { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            //modelBuilder.HasDefaultSchema("LICENSING");
-            modelBuilder.HasDefaultSchema("C##TRADING");
+            modelBuilder.HasDefaultSchema("LICENSING");
+            //modelBuilder.HasDefaultSchema("C##TRADING");
         }
     }
 }

@@ -172,6 +172,7 @@
     <Compile Include="Classes\BaseController.cs" />
     <Compile Include="Classes\TradingLicenseCommon.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HawkerApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
@@ -367,8 +368,8 @@
     <Content Include="Views\Master\ManageAttachment.cshtml" />
     <Content Include="Views\Master\RoleTemplate.cshtml" />
     <Content Include="Views\Master\ManageRoleTemplate.cshtml" />
-    <Content Include="Views\Master\PAStatus.cshtml" />
-    <Content Include="Views\Master\ManagePAStatus.cshtml" />
+    <Content Include="Views\Master\AppStatus.cshtml" />
+    <Content Include="Views\Master\ManageAppStatus.cshtml" />
     <Content Include="Views\Master\BusinessCode.cshtml" />
     <Content Include="Views\Master\ManageBusinessCode.cshtml" />
     <Content Include="Views\Master\Signboard.cshtml" />
@@ -383,10 +384,6 @@
     <Content Include="Views\Registration\Index.cshtml" />
     <Content Include="Views\Master\Userslist.cshtml" />
     <Content Include="Views\Master\ManageUsers.cshtml" />
-    <Content Include="Views\Business\SupportDocument.cshtml" />
-    <Content Include="Views\Business\ManageSupportDocument.cshtml" />
-    <Content Include="Views\Business\BusinessCodeLinkDepartment.cshtml" />
-    <Content Include="Views\Business\ManageBussCodLinkDep.cshtml" />
     <Content Include="Views\Master\Sector.cshtml" />
     <Content Include="Views\Master\ManageSector.cshtml" />
     <Content Include="Views\Home\AccessDenied.cshtml" />
@@ -397,6 +394,10 @@
     <Content Include="Views\Master\ManageBusinessType.cshtml" />
     <Content Include="Views\Master\Holiday.cshtml" />
     <Content Include="Views\Master\ManageHoliday.cshtml" />
+    <Content Include="Views\Master\AdditionalDoc.cshtml" />
+    <Content Include="Views\Master\ManageAdditionalDoc.cshtml" />
+    <Content Include="Views\HawkerApplication\HawkerType.cshtml" />
+    <Content Include="Views\HawkerApplication\ManageHawkerType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

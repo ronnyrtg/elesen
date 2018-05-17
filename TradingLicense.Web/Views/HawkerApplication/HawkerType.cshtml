@@ -1,25 +1,22 @@
 ﻿
 @{
-    ViewBag.Title = "Business Code Link Department";
+    ViewBag.Title = "Hawker Type";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
-        <li><a href="#" title="Add Business Code Link Department" onclick="addBussCodLinkDep();"><img src="@Url.Content("~/images/add.png")" alt="Add Business Code Link Department"></a></li>
+        <li><a href="#" title="Add Hawker Type" onclick="addHawkerType();"><img src="@Url.Content("~/images/add.png")" alt="Add Hawker Type"></a></li>
     </ul>
     <div class="header">
-        <h4>Business Code Link Departments</h4>
+        <h4>Hawker Types</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtbusinessCodeDesc" id="txtbusinessCodeDesc" class="form-control" placeholder="Business Code Description" maxlength="5" />
-                </div>
-                <div class="col-xs-4">
-                    <input type="text" name="txtdepartmentCodeDesc" id="txtdepartmentCodeDesc" class="form-control" placeholder="Department Code Description" maxlength="10" />
+                    <input type="text" name="txthawkerTypeDesc" id="txthawkerTypeDesc" class="form-control" placeholder="Hawker Type Description" maxlength="100" />
                 </div>
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
@@ -28,13 +25,13 @@
             </form>
         </div>
     </div>
-    <div class="grid" id="divtblBussCodLinkDep">
-        <table cellspacing="0" class="table table-striped" id="tblBussCodLinkDep"></table>
+    <div class="grid" id="divtblHawkerType">
+        <table cellspacing="0" class="table table-striped" id="tblHawkerType"></table>
     </div>
 </div>
 
 @section scripts{
-<script type="text/javascript">
+    <script type="text/javascript">
     $(function () {
         $('.form-control').keypress(function (e) {
             if (e.which == 13) {
@@ -49,19 +46,19 @@
         bindTable();
         });
 
-        function addBussCodLinkDep() {
-           var link = '@Url.Action("ManageBussCodLinkDep", "Business")';
+        function addHawkerType() {
+           var link = '@Url.Action("ManageHawkerType", "HawkerApplication")';
              window.location.href = link;
         }
 
      function bindTable() {
          if (!isValidSearchCriteria('SearchCriteria')) { return false; }
-         if ($.fn.DataTable.isDataTable("#tblBussCodLinkDep")) {
-             $('#tblBussCodLinkDep').dataTable().fnDestroy();
-             $('#divtblBussCodLinkDep').html('<table class="table table-striped" width="100%"  id="tblBussCodLinkDep"></table>');
-         }
+         if ($.fn.DataTable.isDataTable("#tblHawkerType")) {
+             $('#tblHawkerType').dataTable().fnDestroy();
+             $('#divtblHawkerType').html('<table class="table table-striped" width="100%"  id="tblHawkerType"></table>');
+                }
 
-         table = $("#tblBussCodLinkDep").dataTable({
+         table = $("#tblHawkerType").dataTable({
              "autoWidth": false,
              "searching": false,
              "paging": true,
@@ -75,7 +72,7 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("BusinessCodeLinkDepartment", "Business")',
+                        url: '@Url.Action("HawkerType", "HawkerApplication")',
                         type: "POST",
                         data: bindSearch()
                     },
@@ -90,35 +87,48 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Business Code Description", "data": "CodeDesc" },
-                        { "title": "Department Code Description", "data": "DepartmentDesc" },
+                        { "title": "Hawker Type", "data": "HawkerTypeDesc" },
+                        { "title": "Fee", "data": "Fee" },
+                        {
+                            "title": "Active",
+                            "data": "Active",
+                            "render": function (data, type, row) {
+                                if (data) {
+                                    return '<label class="label label-success">Active</label>';
+                                }
+                                else {
+                                    return '<label class="label label-danger">InActive</label>';
+                                }
+                            },
+                            "width": "10%",
+                            "orderable": true,
+                        },
                         {
                     "title": "Action",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBussCodLinkDep", "Business")?Id=' + row["BussCodLinkDepID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BussCodLinkDepID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageHawkerType", "HawkerApplication")?Id=' + row["HawkerTypeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["HawkerTypeID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
                     "orderable": false,
                     "class": "action-icons"
                 }
-
              ],
              "drawCallback": function (settings) {
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblBussCodLinkDep_info').hide();
-                     $('#tblBussCodLinkDep_paginate').hide();
-                     $('#tblBussCodLinkDep_length').hide();
+                     $('#tblHawkerType_info').hide();
+                     $('#tblHawkerType_paginate').hide();
+                     $('#tblHawkerType_length').hide();
                  }
                  else {
-                     $('#tblBussCodLinkDep_info').show();
-                     $('#tblBussCodLinkDep_paginate').show();
-                     $('#tblBussCodLinkDep_length').show();
+                     $('#tblHawkerType_info').show();
+                     $('#tblHawkerType_paginate').show();
+                     $('#tblHawkerType_length').show();
                  }
                  bindSortingArrow();
              }
@@ -126,15 +136,13 @@
         }
 
         function clearControls() {
-            $("#txtCodeDesc").val('');
-            $("#txtdepartmentDesc").val('');
+            $("#txthawkerDesc").val('');
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
-            param["CodeDesc"] = $('#txtCodeDesc').val();
-            param["departmentDesc"] = $('#txtdepartmentDesc').val();
+            param["hawkerDesc"] = $('#txthawkerDesc').val();
             return param;
         }
 
@@ -158,7 +166,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteBussCodLinkDep", "Business")'),
+                    url: encodeURI('@Url.Action("DeleteHawkerType", "HawkerApplication")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',
@@ -166,7 +174,6 @@
                         if (data.success) {
                             bindTable();
                             successMessage(data.message);
-
                         }
                         else {
                             successMessage(data.message);
@@ -178,5 +185,5 @@
             }
         }
 
-</script>
+    </script>
 }

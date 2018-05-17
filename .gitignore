@@ -240,3 +240,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/TradingLicense.Data/Migrations/201805160945052_seed.cs
+/TradingLicense.Data/Migrations/201805160945052_seed.resx
+/TradingLicense.Data/Migrations/201805160945052_seed.Designer.cs

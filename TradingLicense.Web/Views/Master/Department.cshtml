@@ -83,7 +83,17 @@
                         data: bindSearch()
                     },
                     "columns": [
-                        { "title": "Department Code", "data": "DepartmentCode"},
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
+                        { "title": "Department Code", "data": "DepartmentCode" },
                         { "title": "Department Description", "data": "DepartmentDesc"},
                         {
                             "title": "Active",

@@ -62,11 +62,12 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
+    <Compile Include="HawkerTypeModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="LoginLogModel.cs" />
     <Compile Include="LoginModel.cs" />
     <Compile Include="HolidayModel.cs" />
-    <Compile Include="PAStatusModel.cs" />
+    <Compile Include="AppStatusModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="ResetPasswordModel.cs" />
     <Compile Include="RoleTemplateModel.cs" />
     <Compile Include="SectorModel.cs" />
-    <Compile Include="SignboardModel.cs" />
     <Compile Include="UsersModel.cs" />
   </ItemGroup>
   <ItemGroup>

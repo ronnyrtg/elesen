@@ -80,10 +80,20 @@
                         data: bindSearch()
                     },
              "columns": [
-                        { "title": "Company Name", "data": "CompanyName" },
-                        { "title": "Registration No", "data": "RegistrationNo" },
-                 { "title": "Company Address", "data": "CompanyAddress", "orderable": false },
-                 {
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Company Name", "data": "CompanyName" },
+                    { "title": "Registration No", "data": "RegistrationNo" },
+                    { "title": "Company Address", "data": "CompanyAddress", "orderable": false },
+                    {
                      "title": "Active",
                      "data": "Active",
                      "render": function (data, type, row) {
@@ -96,8 +106,8 @@
                      },
                      "width": "10%",
                      "orderable": true,
-                 },
-                        {
+                    },
+                    {
                     "title": "Action",
                     "data": null,
                     "render": function (data, type, row) {
@@ -105,12 +115,11 @@
                         appendstring += '<a  href="@Url.Action("ManageCompany", "Master")?Id=' + row["CompanyID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
                         appendstring += '<a href="javascript:void(0);" data-id="' + row["CompanyID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
-                    },
+                        },
                             "width": "80px",
                     "orderable": false,
                     "class": "action-icons"
-                }
-
+                    }
              ],
              "drawCallback": function (settings) {
                  //hide paging and info when empty datattable

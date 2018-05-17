@@ -82,6 +82,16 @@
                         data: bindSearch()
                     },
                     "columns": [
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
                         { "title": "Reference No.", "data": "PremiseApplicationID" },
                         { "title": "Business Type.", "data": "PremiseDesc" },
                         { "title": "Premise Address", "data": "PremiseAddress" },

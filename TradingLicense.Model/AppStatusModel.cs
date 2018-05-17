@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace TradingLicense.Model
 {
-    public class PAStatusModel
+    public class AppStatusModel
     {
-        public int PAStatusID { get; set; }
+        public int AppStatusID { get; set; }
 
         [Required(ErrorMessage = "Please Enter Status Description")]
         [Display(Name = "Status Description")]
