@@ -110,14 +110,20 @@
                             "orderable": true,
                         },
                         {
-                            "title": "Express",
-                            "data": "Express",
+                            "title": "Kelulusan",
+                            "data": "Mode",
                             "render": function (data, type, row) {
-                                if (data) {
-                                    return '<label class="label label-success">Yes</label>';
+                                if (data=1) {
+                                    return '<label class="label label-success">Ekspres</label>';
                                 }
-                                else {
-                                    return '<label class="label label-danger">No</label>';
+                                if (data=2) {
+                                    return '<label class="label label-danger">Pengarah</label>';
+                                }
+                                if (data = 3) {
+                                    return '<label class="label label-danger">Mesyuarat JP</label>';
+                                }
+                                if (data = 4) {
+                                    return '<label class="label label-danger">KPE</label>';
                                 }
                             },
                             "width": "10%",

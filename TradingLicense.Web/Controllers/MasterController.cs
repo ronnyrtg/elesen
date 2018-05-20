@@ -204,54 +204,11 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult AccessPage([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string PageDesc, string CrudLevel)
+        public JsonResult AccessPage([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int pageId)
         {
-            List<TradingLicense.Model.AccessPageModel> AccessPage = new List<TradingLicense.Model.AccessPageModel>();
-            int totalRecord = 0;
-            int filteredRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<AccessPage> query = ctx.AccessPages;
-                totalRecord = query.Count();
-
-                #region Filtering
-                // Apply filters for searching
-
-                if (!string.IsNullOrWhiteSpace(PageDesc) || !string.IsNullOrWhiteSpace(CrudLevel))
-                {
-                    query = query.Where(p =>
-                                            (p.PageDesc.Contains(PageDesc)) &&
-                                            (p.CrudLevel.ToString().Contains(CrudLevel))
-                                      );
-                }
-
-                filteredRecord = query.Count();
-
-                #endregion Filtering
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                var result = Mapper.Map<List<AccessPageModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "AccessPageID asc" : orderByString).ToList();
-
-                #endregion Sorting
-
-                // Paging
-                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
-                AccessPage = result;
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, AccessPage, filteredRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            SystemEnum.Page page = (SystemEnum.Page)pageId;
+            var pageRoleAccess = TradingLicenseCommon.GetPageAccess(page);
+            return Json(new DataTablesResponse(requestModel.Draw, pageRoleAccess, pageRoleAccess.Count, pageRoleAccess.Count), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -260,20 +217,14 @@ namespace TradingLicense.Web.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
         [AuthorizationPrivilegeFilter(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel2)]
-        public ActionResult ManageAccessPage(int? Id)
+        public ActionResult ManageAccessPage(int Id)
         {
-            AccessPageModel accessPageModel = new AccessPageModel();
-            if (Id != null && Id > 0)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    int accessPageID = Convert.ToInt32(Id);
-                    var accessPage = ctx.AccessPages.Where(a => a.AccessPageID == accessPageID).FirstOrDefault();
-                    accessPageModel = Mapper.Map<AccessPageModel>(accessPage);
-                }
-            }
-
-            return View(accessPageModel);
+            PageRoleAccessModel model = new PageRoleAccessModel();
+            SystemEnum.Page page = (SystemEnum.Page)Id;
+            model.PageID = Id;
+            model.PageDesc = page.ToString();
+            model.RoleAccess = TradingLicenseCommon.GetPageAccess(page);
+            return View(model);
         }
 
         /// <summary>
@@ -283,24 +234,20 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageAccessPage(AccessPageModel accessPageModel)
+        public ActionResult ManageAccessPage(PageRoleAccessModel accessPageModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    AccessPage accessPage;
-                    //if (IsAccessPageDuplicate(accessPageModel.PageDesc, accessPageModel.AccessPageID))
-                    //{
-                    //    TempData["ErrorMessage"] = "Access Page is already exist in the database.";
-                    //    return View(accessPageModel);
-                    //}
-                    accessPage = Mapper.Map<AccessPage>(accessPageModel);
-                    ctx.AccessPages.AddOrUpdate(accessPage);
+                    AccessPage[] accessPages;
+                    accessPages = Mapper.Map<AccessPage[]>(accessPageModel.RoleAccess);
+                    ctx.AccessPages.AddOrUpdate(accessPages);
                     ctx.SaveChanges();
                 }
 
                 TempData["SuccessMessage"] = "Access Page saved successfully.";
+                TempData["BindAccess"] = accessPageModel.PageID;
                 return RedirectToAction("AccessPage");
             }
             else

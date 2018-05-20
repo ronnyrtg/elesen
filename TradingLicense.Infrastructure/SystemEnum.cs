@@ -80,6 +80,12 @@ namespace TradingLicense.Infrastructure
             /// </summary>
             [Description("Process")]
             Process = 11,
+
+            /// <summary>
+            /// Company
+            /// </summary>
+            [Description("Company")]
+            Company = 12,
         }
 
 

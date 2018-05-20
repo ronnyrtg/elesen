@@ -47,9 +47,9 @@ namespace TradingLicense.Model
         [Display(Name = "Period Quantity")]
         public int PQuantity { get; set; }
 
-        [Required(ErrorMessage = "Please Enter Express")]
-        [Display(Name = "Express")]
-        public bool Express { get; set; }
+        [Required(ErrorMessage = "Please Select Mode")]
+        [Display(Name = "Mode")]
+        public int Mode { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }

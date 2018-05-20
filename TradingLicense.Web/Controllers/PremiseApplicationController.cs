@@ -1247,37 +1247,37 @@ namespace TradingLicense.Web.Controllers
 
                         if (paComment.PACommentID > 0)
                         {
-                            var preimiseApplication = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
+                            var premiseApplication = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
                             var paLinkBC = ctx.PALinkBC.Where(t => t.PremiseApplicationID == PremiseApplicationID).ToList();
 
                             if (UserroleTemplate == (int)RollTemplate.Clerk)
                             {
                                 if (approveRejectType == "Approve")
                                 {
-                                    var paLinkBusinessCode = ctx.PALinkBC.Where(t => t.PremiseApplicationID == PremiseApplicationID && t.BusinessCode != null && !t.BusinessCode.Express).ToList();
+                                    var paLinkBusinessCode = ctx.PALinkBC.Where(t => t.PremiseApplicationID == PremiseApplicationID && t.BusinessCode != null).ToList();
                                     if (paLinkBusinessCode != null && paLinkBusinessCode.Count > 0)
                                     {
-                                        if (preimiseApplication != null && preimiseApplication.PremiseApplicationID > 0)
+                                        if (premiseApplication != null && premiseApplication.PremiseApplicationID > 0)
                                         {
-                                            preimiseApplication.AppStatusID = (int)PAStausenum.unitroute;
-                                            ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
+                                            premiseApplication.AppStatusID = (int)PAStausenum.unitroute;
+                                            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                                             ctx.SaveChanges();
                                         }
                                     }
                                     else
                                     {
-                                        if (preimiseApplication != null && preimiseApplication.PremiseApplicationID > 0)
+                                        if (premiseApplication != null && premiseApplication.PremiseApplicationID > 0)
                                         {
-                                            preimiseApplication.AppStatusID = (int)PAStausenum.LetterofnotificationApproved;
-                                            ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
+                                            premiseApplication.AppStatusID = (int)PAStausenum.LetterofnotificationApproved;
+                                            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                                             ctx.SaveChanges();
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    preimiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
-                                    ctx.PremiseApplications.AddOrUpdate(preimiseApplication);
+                                    premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
+                                    ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                                     ctx.SaveChanges();
                                 }
                             }

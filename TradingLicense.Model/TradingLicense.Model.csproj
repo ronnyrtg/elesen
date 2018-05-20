@@ -68,6 +68,7 @@
     <Compile Include="LoginModel.cs" />
     <Compile Include="HolidayModel.cs" />
     <Compile Include="AppStatusModel.cs" />
+    <Compile Include="PageRoleAccessModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

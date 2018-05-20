@@ -27,11 +27,10 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string Period { get; set; }
         public int PQuantity { get; set; }
-        public bool Express { get; set; }
+        public int Mode { get; set; }
         public bool Active { get; set; }
         public BusinessCode()
         {
-            Express = true;
             Active = true;
         }
 
