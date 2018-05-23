@@ -13,42 +13,42 @@ using TradingLicense.Web.Classes;
 
 namespace TradingLicense.Web.Controllers
 {
-    public class HawkerApplicationController : BaseController
+    public class BannerApplicationController : BaseController
     {
-        #region HawkerCode
+        #region BannerCode
 
         /// <summary>
-        /// GET: HawkerCode
+        /// GET: BannerCode
         /// </summary>
         /// <returns></returns>
-        public ActionResult HawkerCode()
+        public ActionResult BannerCode()
         {
             return View();
         }
 
         /// <summary>
-        /// Save Hawker Code Data
+        /// Save Banner Code Data
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult HawkerCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string hawkerCodeDesc)
+        public JsonResult BannerCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string bannerCodeDesc)
         {
-            List<TradingLicense.Model.HawkerCodeModel> hawkerCode = new List<Model.HawkerCodeModel>();
+            List<TradingLicense.Model.BannerCodeModel> bannerCode = new List<Model.BannerCodeModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<HawkerCode> query = ctx.HawkerCodes;
+                IQueryable<BannerCode> query = ctx.BannerCodes;
                 totalRecord = query.Count();
 
                 #region Filtering
                 // Apply filters for searching
 
-                if (!string.IsNullOrWhiteSpace(hawkerCodeDesc))
+                if (!string.IsNullOrWhiteSpace(bannerCodeDesc))
                 {
                     query = query.Where(p =>
-                                        p.HawkerCodeDesc.Contains(hawkerCodeDesc)
+                                        p.BannerCodeDesc.Contains(bannerCodeDesc)
                                     );
                 }
 
@@ -69,91 +69,91 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "HawkerCodeID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "BannerCodeID asc" : orderByString);
 
                 #endregion Sorting
 
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                hawkerCode = Mapper.Map<List<HawkerCodeModel>>(query.ToList());
+                bannerCode = Mapper.Map<List<BannerCodeModel>>(query.ToList());
 
             }
-            return Json(new DataTablesResponse(requestModel.Draw, hawkerCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, bannerCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
-        /// Get HawkerCode Data by ID
+        /// Get BannerCode Data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageHawkerCode(int? Id)
+        public ActionResult ManageBannerCode(int? Id)
         {
-            HawkerCodeModel hawkerCodeModel = new HawkerCodeModel();
-            hawkerCodeModel.Active = true;
+            BannerCodeModel bannerCodeModel = new BannerCodeModel();
+            bannerCodeModel.Active = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int hawkerCodeID = Convert.ToInt32(Id);
-                    var hawkerCode = ctx.HawkerCodes.Where(a => a.HawkerCodeID == hawkerCodeID).FirstOrDefault();
-                    hawkerCodeModel = Mapper.Map<HawkerCodeModel>(hawkerCode);
+                    int bannerCodeID = Convert.ToInt32(Id);
+                    var bannerCode = ctx.BannerCodes.Where(a => a.BannerCodeID == bannerCodeID).FirstOrDefault();
+                    bannerCodeModel = Mapper.Map<BannerCodeModel>(bannerCode);
                 }
             }
 
-            return View(hawkerCodeModel);
+            return View(bannerCodeModel);
         }
 
         /// <summary>
-        /// Save Hawker Code Infomration
+        /// Save Banner Code Infomration
         /// </summary>
-        /// <param name="hawkerCodeModel"></param>
+        /// <param name="bannerCodeModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageHawkerCode(HawkerCodeModel hawkerCodeModel)
+        public ActionResult ManageBannerCode(BannerCodeModel bannerCodeModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    HawkerCode hawkerCode;
-                    if (IsHawkerCodeDuplicate(hawkerCodeModel.HawkerCodeDesc, hawkerCodeModel.HawkerCodeID))
+                    BannerCode bannerCode;
+                    if (IsBannerCodeDuplicate(bannerCodeModel.BannerCodeDesc, bannerCodeModel.BannerCodeID))
                     {
-                        TempData["ErrorMessage"] = "Hawker Code already exists in the database.";
-                        return View(hawkerCodeModel);
+                        TempData["ErrorMessage"] = "Banner Code already exists in the database.";
+                        return View(bannerCodeModel);
                     }
 
-                    hawkerCode = Mapper.Map<HawkerCode>(hawkerCodeModel);
-                    ctx.HawkerCodes.AddOrUpdate(hawkerCode);
+                    bannerCode = Mapper.Map<BannerCode>(bannerCodeModel);
+                    ctx.BannerCodes.AddOrUpdate(bannerCode);
                     ctx.SaveChanges();
                 }
 
-                TempData["SuccessMessage"] = "Hawker Code saved successfully.";
+                TempData["SuccessMessage"] = "Banner Code saved successfully.";
 
-                return RedirectToAction("HawkerCode");
+                return RedirectToAction("BannerCode");
             }
             else
             {
-                return View(hawkerCodeModel);
+                return View(bannerCodeModel);
             }
 
         }
 
         /// <summary>
-        /// Delete Hawker Code Information
+        /// Delete Banner Code Information
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteHawkerCode(int id)
+        public ActionResult DeleteBannerCode(int id)
         {
             try
             {
-                var hawkerCode = new TradingLicense.Entities.HawkerCode() { HawkerCodeID = id };
+                var bannerCode = new TradingLicense.Entities.BannerCode() { BannerCodeID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(hawkerCode).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.Entry(bannerCode).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
@@ -170,15 +170,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsHawkerCodeDuplicate(string name, int? id = null)
+        private bool IsBannerCodeDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.HawkerCodes.FirstOrDefault(
-                   c => c.HawkerCodeID != id && c.HawkerCodeDesc.ToLower() == name.ToLower())
-               : ctx.HawkerCodes.FirstOrDefault(
-                   c => c.HawkerCodeDesc.ToLower() == name.ToLower());
+               ctx.BannerCodes.FirstOrDefault(
+                   c => c.BannerCodeID != id && c.BannerCodeDesc.ToLower() == name.ToLower())
+               : ctx.BannerCodes.FirstOrDefault(
+                   c => c.BannerCodeDesc.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }

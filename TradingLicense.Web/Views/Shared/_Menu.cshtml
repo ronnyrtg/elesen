@@ -8,7 +8,8 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Profile
+                    Profail
+                    <!--Profile-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
@@ -21,16 +22,22 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Profile
+                    Profail
+                    <!--Profile-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li><a href="#">Lesen Tred, Perniagaan &amp; Perindustrian</a></li>
+                    <li><a href="#">Lesen Petempatan Makanan</a></li>
+                    <li><a href="#">Lesen Hotel dan Rumah Tumpangan</a></li>
+                    <li><a href="#">Lesen Barang Lusuh</a></li>
                     <li><a href="#">Lesen Penjaja</a></li>
                     <li><a href="#">Lesen Pasar</a></li>
-                    <li><a href="#">Lesen Iklan (Banting/Banner)</a></li>
-                    <li><a href="#">Lesen Menjual Minuman Keras</a></li>
-                    <li><a href="#">Lesen Pusat Hiburan</a></li>
+                    <li><a href="#">Lesen Hiburan</a></li>
+                    <li><a href="#">Lesen Premis Pemberi Pinjam Wang</a></li>
+                    <li><a href="#">Permit Iklan Pemberi Pinjam Wang</a></li>
+                    <li><a href="#">Lesen Minuman Keras</a></li>
+                    <li><a href="#">Lesen Iklan</a></li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
                 </ul>
@@ -40,16 +47,22 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Process
+                    Proses
+                    <!--Process-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>@Html.ActionLink("Lesen Tred, Perniagaan & Perindustrian (Test)", "PremiseApplication", "PremiseApplication")</li>
+                    <li><a href="#">Lesen Petempatan Makanan</a></li>
+                    <li><a href="#">Lesen Hotel dan Rumah Tumpangan</a></li>
+                    <li><a href="#">Lesen Barang Lusuh</a></li>
                     <li><a href="#">Lesen Penjaja</a></li>
                     <li><a href="#">Lesen Pasar</a></li>
-                    <li><a href="#">Lesen Iklan (Banting/Banner)</a></li>
-                    <li><a href="#">Lesen Menjual Minuman Keras</a></li>
-                    <li><a href="#">Lesen Pusat Hiburan</a></li>
+                    <li><a href="#">Lesen Hiburan</a></li>
+                    <li><a href="#">Lesen Premis Pemberi Pinjam Wang</a></li>
+                    <li><a href="#">Permit Iklan Pemberi Pinjam Wang</a></li>
+                    <li><a href="#">Lesen Minuman Keras</a></li>
+                    <li><a href="#">Lesen Iklan</a></li>
                 </ul>
             </li>
 }
@@ -57,7 +70,8 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Inquiry
+                    Inkuiri
+                    <!--Inquiry-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
@@ -75,29 +89,35 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Master Setup
+                    Tetapan Utama
+                    <!--Master Setup-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">Zone</a></li>
-                    <li><a href="#">Location</a></li>
-                    <li><a href="#">Road</a></li>
+                    <li>@Html.ActionLink("Zon (Test)", "Zone", "Master")</li>
+                    <li>@Html.ActionLink("Lokasi(Test)", "Location", "Master")</li>
+                    <li>@Html.ActionLink("Jalan(Test)", "Road", "Master")</li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">Kod Kumpulan</a></li>
+                    <li>@Html.ActionLink("Lesen Tred, Perniagaan & Perindustrian (Test)", "Sector", "Master")</li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">Kod Perniagaan</a></li>
+                    <li>@Html.ActionLink("Lesen Tred, Perniagaan & Perindustrian (Test)", "BusinessCode", "Master")</li>
+                    <li>@Html.ActionLink("Lesen Penjaja (Test)", "HawkerCode", "HawkerApplication")</li>
+                    <li>@Html.ActionLink("Lesen Pasar (Test)", "StallCode", "StallApplication")</li>
+                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerCode", "BannerApplication")</li>
+                    <li>@Html.ActionLink("Lesen Minuman Keras (Test)", "LiquorCode", "LiquorApplication")</li>
+                    <li role="separator" class="divider"></li>
                     <li>@Html.ActionLink("Business Type (Test)", "BusinessType", "Master")</li>
-                    <li>@Html.ActionLink("Business Code (Test)", "BusinessCode", "Master")</li>
-                    <li><a href="#">Extra Fees</a></li>
-                    <li>@Html.ActionLink("Holiday (Test)", "Holiday", "Master")</li>
-                    <li><a href="#">Duration</a></li>
-                    <li>@Html.ActionLink("Group (Test)", "Sector", "Master")</li>
+                    <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
                     <li>@Html.ActionLink("Premise Type (Test)", "PremiseType", "Master")</li>
                     <li>@Html.ActionLink("Application Status (Test)", "AppStatus", "Master")</li>
                     <li>@Html.ActionLink("Additional Document (Test)", "AdditionalDoc", "Master")</li>
                     <li>@Html.ActionLink("Required Document (Test)", "RequiredDoc", "Master")</li>
-                    <li>@Html.ActionLink("Hawker Types (Test)", "HawkerType", "HawkerApplication")</li>
                     <li>@Html.ActionLink("Internal Unit (Test)", "Department", "Master")</li>
                     <li><a href="#">External Unit</a></li>
                     <li><a href="#">Unit Comment</a></li>
                     <li><a href="#">Unit Routing</a></li>
-                    <li>@Html.ActionLink("Attachments (Test)", "Attachment", "Master")</li>
                 </ul>
             </li>
 }
@@ -105,7 +125,8 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Reporting
+                    Laporan
+                    <!--Reports-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
@@ -143,7 +164,8 @@
 {
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Administrator
+                    Pentadbir Sistem
+                    <!--Administrator-->
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
@@ -161,14 +183,16 @@
         {
             var fullName = ProjectSession.User.FullName;
             <div class="navbar-text">
-                You are logged in as @fullName.
-                @Html.ActionLink("Log Out", "Logout", "Account", null, new { @class = "btn btn-primary btn-xs" })
+                Anda telah log masuk sebagai @fullName.
+                <!--You are logged in as-->
+                @Html.ActionLink("Log Keluar", "Logout", "Account", null, new { @class = "btn btn-primary btn-xs" })
             </div>
         }
         else
         {
             <div class="navbar-text">
-                You have logged out.
+                Anda telah Log Keluar.
+                <!--You have logged out.-->
             </div>
         }
         </div>

@@ -13,42 +13,42 @@ using TradingLicense.Web.Classes;
 
 namespace TradingLicense.Web.Controllers
 {
-    public class HawkerApplicationController : BaseController
+    public class StallApplicationController : BaseController
     {
-        #region HawkerCode
+        #region StallCode
 
         /// <summary>
-        /// GET: HawkerCode
+        /// GET: StallCode
         /// </summary>
         /// <returns></returns>
-        public ActionResult HawkerCode()
+        public ActionResult StallCode()
         {
             return View();
         }
 
         /// <summary>
-        /// Save Hawker Code Data
+        /// Save Stall Code Data
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult HawkerCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string hawkerCodeDesc)
+        public JsonResult StallCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string stallCodeDesc)
         {
-            List<TradingLicense.Model.HawkerCodeModel> hawkerCode = new List<Model.HawkerCodeModel>();
+            List<TradingLicense.Model.StallCodeModel> stallCode = new List<Model.StallCodeModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<HawkerCode> query = ctx.HawkerCodes;
+                IQueryable<StallCode> query = ctx.StallCodes;
                 totalRecord = query.Count();
 
                 #region Filtering
                 // Apply filters for searching
 
-                if (!string.IsNullOrWhiteSpace(hawkerCodeDesc))
+                if (!string.IsNullOrWhiteSpace(stallCodeDesc))
                 {
                     query = query.Where(p =>
-                                        p.HawkerCodeDesc.Contains(hawkerCodeDesc)
+                                        p.StallCodeDesc.Contains(stallCodeDesc)
                                     );
                 }
 
@@ -69,91 +69,91 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "HawkerCodeID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "StallCodeID asc" : orderByString);
 
                 #endregion Sorting
 
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                hawkerCode = Mapper.Map<List<HawkerCodeModel>>(query.ToList());
+                stallCode = Mapper.Map<List<StallCodeModel>>(query.ToList());
 
             }
-            return Json(new DataTablesResponse(requestModel.Draw, hawkerCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, stallCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
-        /// Get HawkerCode Data by ID
+        /// Get StallCode Data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageHawkerCode(int? Id)
+        public ActionResult ManageStallCode(int? Id)
         {
-            HawkerCodeModel hawkerCodeModel = new HawkerCodeModel();
-            hawkerCodeModel.Active = true;
+            StallCodeModel stallCodeModel = new StallCodeModel();
+            stallCodeModel.Active = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int hawkerCodeID = Convert.ToInt32(Id);
-                    var hawkerCode = ctx.HawkerCodes.Where(a => a.HawkerCodeID == hawkerCodeID).FirstOrDefault();
-                    hawkerCodeModel = Mapper.Map<HawkerCodeModel>(hawkerCode);
+                    int stallCodeID = Convert.ToInt32(Id);
+                    var stallCode = ctx.StallCodes.Where(a => a.StallCodeID == stallCodeID).FirstOrDefault();
+                    stallCodeModel = Mapper.Map<StallCodeModel>(stallCode);
                 }
             }
 
-            return View(hawkerCodeModel);
+            return View(stallCodeModel);
         }
 
         /// <summary>
-        /// Save Hawker Code Infomration
+        /// Save Stall Code Infomration
         /// </summary>
-        /// <param name="hawkerCodeModel"></param>
+        /// <param name="stallCodeModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageHawkerCode(HawkerCodeModel hawkerCodeModel)
+        public ActionResult ManageStallCode(StallCodeModel stallCodeModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    HawkerCode hawkerCode;
-                    if (IsHawkerCodeDuplicate(hawkerCodeModel.HawkerCodeDesc, hawkerCodeModel.HawkerCodeID))
+                    StallCode stallCode;
+                    if (IsStallCodeDuplicate(stallCodeModel.StallCodeDesc, stallCodeModel.StallCodeID))
                     {
-                        TempData["ErrorMessage"] = "Hawker Code already exists in the database.";
-                        return View(hawkerCodeModel);
+                        TempData["ErrorMessage"] = "Stall Code already exists in the database.";
+                        return View(stallCodeModel);
                     }
 
-                    hawkerCode = Mapper.Map<HawkerCode>(hawkerCodeModel);
-                    ctx.HawkerCodes.AddOrUpdate(hawkerCode);
+                    stallCode = Mapper.Map<StallCode>(stallCodeModel);
+                    ctx.StallCodes.AddOrUpdate(stallCode);
                     ctx.SaveChanges();
                 }
 
-                TempData["SuccessMessage"] = "Hawker Code saved successfully.";
+                TempData["SuccessMessage"] = "Stall Code saved successfully.";
 
-                return RedirectToAction("HawkerCode");
+                return RedirectToAction("StallCode");
             }
             else
             {
-                return View(hawkerCodeModel);
+                return View(stallCodeModel);
             }
 
         }
 
         /// <summary>
-        /// Delete Hawker Code Information
+        /// Delete Stall Code Information
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteHawkerCode(int id)
+        public ActionResult DeleteStallCode(int id)
         {
             try
             {
-                var hawkerCode = new TradingLicense.Entities.HawkerCode() { HawkerCodeID = id };
+                var stallCode = new TradingLicense.Entities.StallCode() { StallCodeID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(hawkerCode).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.Entry(stallCode).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
@@ -170,15 +170,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsHawkerCodeDuplicate(string name, int? id = null)
+        private bool IsStallCodeDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.HawkerCodes.FirstOrDefault(
-                   c => c.HawkerCodeID != id && c.HawkerCodeDesc.ToLower() == name.ToLower())
-               : ctx.HawkerCodes.FirstOrDefault(
-                   c => c.HawkerCodeDesc.ToLower() == name.ToLower());
+               ctx.StallCodes.FirstOrDefault(
+                   c => c.StallCodeID != id && c.StallCodeDesc.ToLower() == name.ToLower())
+               : ctx.StallCodes.FirstOrDefault(
+                   c => c.StallCodeDesc.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }

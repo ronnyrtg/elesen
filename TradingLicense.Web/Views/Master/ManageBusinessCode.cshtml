@@ -17,11 +17,17 @@
     modeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
     modeList.Add(new SelectListItem { Text = "Mesyuarat JP", Value = "3" });
     modeList.Add(new SelectListItem { Text = "KPE", Value = "4" });
+
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
 }
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage Business Code</h4>
+        <h4 id="headerTitle">Kemaskini Kod Perniagaan Lesen Tred</h4>
     </div>
     <div class="body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBusinessCode", id = "frmBusinessCode" }))
@@ -32,7 +38,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Group<span class="cfont">*</span></div>
+                        <div class="control-label">Kumpulan Kod<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.SectorID)
                     </div>
@@ -42,7 +48,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.CodeNumber, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.CodeNumber, new { @class = "form-control", @maxlength = "5" })
                         @Html.ValidationMessageFor(m => m.CodeNumber)
                     </div>
@@ -52,7 +58,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.CodeDesc, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Aktiviti Perniagaan<span class="cfont">*</span></div>
                         @Html.TextAreaFor(m => m.CodeDesc, new { @class = "form-control", @maxlength = "255" })
                         @Html.ValidationMessageFor(m => m.CodeDesc)
                     </div>
@@ -62,7 +68,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.DefaultRate, new { @class = "control-label" })<span class="cfont">*</span>
+                        <div class="control-label">Fi Mengikut meter persegi<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.DefaultRate, new { @class = "form-control allownumericwithdecimal" })
                         @Html.ValidationMessageFor(m => m.DefaultRate)
                     </div>
@@ -72,7 +78,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.BaseFee, new { @class = "control-label" })
+                        <div class="control-label">Fi Mengikut Setiap Lesen<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.BaseFee, new { @class = "form-control allownumericwithdecimal" })
                         @Html.ValidationMessageFor(m => m.BaseFee)
                     </div>
@@ -82,9 +88,21 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.ExtraFee, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.ExtraFee, new { @class = "form-control allownumericwithdecimal" })
-                        @Html.ValidationMessageFor(m => m.ExtraFee)
+                        <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.PeriodQuantity, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PeriodQuantity)
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        @Html.DropDownListFor(model => model.Period, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -92,40 +110,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.ExtraUnit, new { @class = "control-label" })
-                        @Html.TextBoxFor(m => m.ExtraUnit, new { @class = "form-control allownumeric" })
-                        @Html.ValidationMessageFor(m => m.ExtraUnit)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Period, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.Period, new { @class = "form-control", @maxlength = "1" })
-                        @Html.ValidationMessageFor(m => m.Period)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.PQuantity, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.PQuantity, new { @class = "form-control allownumeric" })
-                        @Html.ValidationMessageFor(m => m.PQuantity)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <label>
                             <div class="control-label">Kelulusan<span class="cfont">*</span></div>
                             @Html.DropDownListFor(model => model.Mode, new SelectList(modeList, "Value", "Text"), new { @class = "form-control" })
-                        </label>
                     </div>
                 </div>
             </div>
@@ -146,8 +132,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Save" />
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                     </div>
                 </div>
             </div>

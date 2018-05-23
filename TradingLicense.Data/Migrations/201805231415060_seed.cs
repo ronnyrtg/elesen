@@ -60,6 +60,24 @@ namespace TradingLicense.Data.Migrations
                 .PrimaryKey(t => t.AttachmentID);
             
             CreateTable(
+                "LICENSING.BannerCode",
+                c => new
+                    {
+                        BannerCodeID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        BCodeNumber = c.String(nullable: false, maxLength: 5, unicode: false),
+                        BannerCodeDesc = c.String(nullable: false, maxLength: 255, unicode: false),
+                        ProcessingFee = c.Single(nullable: false),
+                        ExtraFee = c.Single(nullable: false),
+                        QuantityFee = c.Single(nullable: false),
+                        Period = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        PeriodQuantity = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        PeriodFee = c.Single(nullable: false),
+                        Mode = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        Active = c.Decimal(nullable: false, precision: 1, scale: 0),
+                    })
+                .PrimaryKey(t => t.BannerCodeID);
+            
+            CreateTable(
                 "LICENSING.BCLinkAD",
                 c => new
                     {
@@ -95,10 +113,8 @@ namespace TradingLicense.Data.Migrations
                         SectorID = c.Decimal(nullable: false, precision: 10, scale: 0),
                         DefaultRate = c.Single(nullable: false),
                         BaseFee = c.Single(nullable: false),
-                        ExtraFee = c.Single(nullable: false),
-                        ExtraUnit = c.Decimal(nullable: false, precision: 10, scale: 0),
-                        Period = c.String(maxLength: 1, unicode: false),
-                        PQuantity = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        Period = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        PeriodQuantity = c.Decimal(nullable: false, precision: 10, scale: 0),
                         Mode = c.Decimal(nullable: false, precision: 10, scale: 0),
                         Active = c.Decimal(nullable: false, precision: 1, scale: 0),
                     })
@@ -152,17 +168,19 @@ namespace TradingLicense.Data.Migrations
                 .PrimaryKey(t => t.CompanyID);
             
             CreateTable(
-                "LICENSING.HawkerType",
+                "LICENSING.HawkerCode",
                 c => new
                     {
-                        HawkerTypeID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
-                        HawkerTypeDesc = c.String(nullable: false, maxLength: 60, unicode: false),
+                        HawkerCodeID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        HCodeNumber = c.String(nullable: false, maxLength: 5, unicode: false),
+                        HawkerCodeDesc = c.String(nullable: false, maxLength: 60, unicode: false),
                         Fee = c.Single(nullable: false),
                         Period = c.Decimal(nullable: false, precision: 10, scale: 0),
                         PeriodQuantity = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        Mode = c.Decimal(nullable: false, precision: 10, scale: 0),
                         Active = c.Decimal(nullable: false, precision: 1, scale: 0),
                     })
-                .PrimaryKey(t => t.HawkerTypeID);
+                .PrimaryKey(t => t.HawkerCodeID);
             
             CreateTable(
                 "LICENSING.Holiday",
@@ -208,18 +226,18 @@ namespace TradingLicense.Data.Migrations
                 .Index(t => t.CompanyID);
             
             CreateTable(
-                "LICENSING.LoginLog",
+                "LICENSING.Location",
                 c => new
                     {
-                        LoginLogID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
-                        LogDate = c.DateTime(nullable: false),
-                        LogDesc = c.String(nullable: false, maxLength: 100, unicode: false),
-                        IpAddress = c.String(nullable: false, maxLength: 20, unicode: false),
-                        LoginStatus = c.Decimal(nullable: false, precision: 1, scale: 0),
-                        UsersID = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        LocationID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        LocationCode = c.String(nullable: false, maxLength: 4, unicode: false),
+                        LocationDesc = c.String(nullable: false, maxLength: 255, unicode: false),
+                        UsersID = c.Decimal(precision: 10, scale: 0),
+                        LastUpdated = c.DateTime(),
+                        Active = c.Decimal(nullable: false, precision: 1, scale: 0),
                     })
-                .PrimaryKey(t => t.LoginLogID)
-                .ForeignKey("LICENSING.Users", t => t.UsersID, cascadeDelete: true)
+                .PrimaryKey(t => t.LocationID)
+                .ForeignKey("LICENSING.Users", t => t.UsersID)
                 .Index(t => t.UsersID);
             
             CreateTable(
@@ -241,6 +259,21 @@ namespace TradingLicense.Data.Migrations
                 .ForeignKey("LICENSING.RoleTemplate", t => t.RoleTemplateID)
                 .Index(t => t.RoleTemplateID)
                 .Index(t => t.DepartmentID);
+            
+            CreateTable(
+                "LICENSING.LoginLog",
+                c => new
+                    {
+                        LoginLogID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        LogDate = c.DateTime(nullable: false),
+                        LogDesc = c.String(nullable: false, maxLength: 100, unicode: false),
+                        IpAddress = c.String(nullable: false, maxLength: 20, unicode: false),
+                        LoginStatus = c.Decimal(nullable: false, precision: 1, scale: 0),
+                        UsersID = c.Decimal(nullable: false, precision: 10, scale: 0),
+                    })
+                .PrimaryKey(t => t.LoginLogID)
+                .ForeignKey("LICENSING.Users", t => t.UsersID, cascadeDelete: true)
+                .Index(t => t.UsersID);
             
             CreateTable(
                 "LICENSING.PAComment",
@@ -372,10 +405,57 @@ namespace TradingLicense.Data.Migrations
                     })
                 .PrimaryKey(t => t.RequiredDocID);
             
+            CreateTable(
+                "LICENSING.Road",
+                c => new
+                    {
+                        RoadID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        RoadCode = c.String(nullable: false, maxLength: 4, unicode: false),
+                        RoadDesc = c.String(nullable: false, maxLength: 255, unicode: false),
+                        UsersID = c.Decimal(precision: 10, scale: 0),
+                        LastUpdated = c.DateTime(),
+                        Active = c.Decimal(nullable: false, precision: 1, scale: 0),
+                    })
+                .PrimaryKey(t => t.RoadID)
+                .ForeignKey("LICENSING.Users", t => t.UsersID)
+                .Index(t => t.UsersID);
+            
+            CreateTable(
+                "LICENSING.StallCode",
+                c => new
+                    {
+                        StallCodeID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        SCodeNumber = c.String(nullable: false, maxLength: 5, unicode: false),
+                        StallCodeDesc = c.String(nullable: false, maxLength: 255, unicode: false),
+                        Fee = c.Single(nullable: false),
+                        Period = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        PeriodQuantity = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        Mode = c.Decimal(nullable: false, precision: 10, scale: 0),
+                        Active = c.Decimal(nullable: false, precision: 1, scale: 0),
+                    })
+                .PrimaryKey(t => t.StallCodeID);
+            
+            CreateTable(
+                "LICENSING.Zone",
+                c => new
+                    {
+                        ZoneID = c.Decimal(nullable: false, precision: 10, scale: 0, identity: true),
+                        ZoneCode = c.String(nullable: false, maxLength: 4, unicode: false),
+                        ZoneDesc = c.String(nullable: false, maxLength: 255, unicode: false),
+                        UsersID = c.Decimal(precision: 10, scale: 0),
+                        LastUpdated = c.DateTime(),
+                        Active = c.Decimal(nullable: false, precision: 1, scale: 0),
+                    })
+                .PrimaryKey(t => t.ZoneID)
+                .ForeignKey("LICENSING.Users", t => t.UsersID)
+                .Index(t => t.UsersID);
+            
         }
         
         public override void Down()
         {
+            DropForeignKey("LICENSING.Zone", "UsersID", "LICENSING.Users");
+            DropForeignKey("LICENSING.Road", "UsersID", "LICENSING.Users");
             DropForeignKey("LICENSING.BTLinkReqDoc", "RequiredDocID", "LICENSING.RequiredDoc");
             DropForeignKey("LICENSING.BTLinkReqDoc", "BusinessTypeID", "LICENSING.BusinessType");
             DropForeignKey("LICENSING.PALinkReqDoc", "PremiseApplicationID", "LICENSING.PremiseApplication");
@@ -391,6 +471,7 @@ namespace TradingLicense.Data.Migrations
             DropForeignKey("LICENSING.PremiseApplication", "BusinessTypeID", "LICENSING.BusinessType");
             DropForeignKey("LICENSING.PremiseApplication", "AppStatusID", "LICENSING.AppStatus");
             DropForeignKey("LICENSING.LoginLog", "UsersID", "LICENSING.Users");
+            DropForeignKey("LICENSING.Location", "UsersID", "LICENSING.Users");
             DropForeignKey("LICENSING.Users", "RoleTemplateID", "LICENSING.RoleTemplate");
             DropForeignKey("LICENSING.Users", "DepartmentID", "LICENSING.Department");
             DropForeignKey("LICENSING.IndLinkCom", "IndividualID", "LICENSING.Individual");
@@ -400,6 +481,8 @@ namespace TradingLicense.Data.Migrations
             DropForeignKey("LICENSING.BusinessCode", "SectorID", "LICENSING.Sector");
             DropForeignKey("LICENSING.BCLinkAD", "AdditionalDocID", "LICENSING.AdditionalDoc");
             DropForeignKey("LICENSING.AccessPage", "RoleTemplateID", "LICENSING.RoleTemplate");
+            DropIndex("LICENSING.Zone", new[] { "UsersID" });
+            DropIndex("LICENSING.Road", new[] { "UsersID" });
             DropIndex("LICENSING.BTLinkReqDoc", new[] { "RequiredDocID" });
             DropIndex("LICENSING.BTLinkReqDoc", new[] { "BusinessTypeID" });
             DropIndex("LICENSING.PALinkReqDoc", new[] { "PremiseApplicationID" });
@@ -414,9 +497,10 @@ namespace TradingLicense.Data.Migrations
             DropIndex("LICENSING.PremiseApplication", new[] { "BusinessTypeID" });
             DropIndex("LICENSING.PAComment", new[] { "UsersID" });
             DropIndex("LICENSING.PAComment", new[] { "PremiseApplicationID" });
+            DropIndex("LICENSING.LoginLog", new[] { "UsersID" });
             DropIndex("LICENSING.Users", new[] { "DepartmentID" });
             DropIndex("LICENSING.Users", new[] { "RoleTemplateID" });
-            DropIndex("LICENSING.LoginLog", new[] { "UsersID" });
+            DropIndex("LICENSING.Location", new[] { "UsersID" });
             DropIndex("LICENSING.IndLinkCom", new[] { "CompanyID" });
             DropIndex("LICENSING.IndLinkCom", new[] { "IndividualID" });
             DropIndex("LICENSING.BusinessCode", new[] { "SectorID" });
@@ -424,6 +508,9 @@ namespace TradingLicense.Data.Migrations
             DropIndex("LICENSING.BCLinkDep", new[] { "BusinessCodeID" });
             DropIndex("LICENSING.BCLinkAD", new[] { "AdditionalDocID" });
             DropIndex("LICENSING.AccessPage", new[] { "RoleTemplateID" });
+            DropTable("LICENSING.Zone");
+            DropTable("LICENSING.StallCode");
+            DropTable("LICENSING.Road");
             DropTable("LICENSING.RequiredDoc");
             DropTable("LICENSING.BTLinkReqDoc");
             DropTable("LICENSING.PALinkReqDoc");
@@ -433,12 +520,13 @@ namespace TradingLicense.Data.Migrations
             DropTable("LICENSING.PremiseType");
             DropTable("LICENSING.PremiseApplication");
             DropTable("LICENSING.PAComment");
-            DropTable("LICENSING.Users");
             DropTable("LICENSING.LoginLog");
+            DropTable("LICENSING.Users");
+            DropTable("LICENSING.Location");
             DropTable("LICENSING.IndLinkCom");
             DropTable("LICENSING.Individual");
             DropTable("LICENSING.Holiday");
-            DropTable("LICENSING.HawkerType");
+            DropTable("LICENSING.HawkerCode");
             DropTable("LICENSING.Company");
             DropTable("LICENSING.BusinessType");
             DropTable("LICENSING.Department");
@@ -446,6 +534,7 @@ namespace TradingLicense.Data.Migrations
             DropTable("LICENSING.BusinessCode");
             DropTable("LICENSING.BCLinkDep");
             DropTable("LICENSING.BCLinkAD");
+            DropTable("LICENSING.BannerCode");
             DropTable("LICENSING.Attachment");
             DropTable("LICENSING.AppStatus");
             DropTable("LICENSING.AdditionalDoc");

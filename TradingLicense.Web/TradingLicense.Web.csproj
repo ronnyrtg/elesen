@@ -172,11 +172,13 @@
     <Compile Include="Classes\BaseController.cs" />
     <Compile Include="Classes\TradingLicenseCommon.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BannerApplicationController.cs" />
     <Compile Include="Controllers\HawkerApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
+    <Compile Include="Controllers\StallApplicationController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -396,8 +398,18 @@
     <Content Include="Views\Master\ManageHoliday.cshtml" />
     <Content Include="Views\Master\AdditionalDoc.cshtml" />
     <Content Include="Views\Master\ManageAdditionalDoc.cshtml" />
-    <Content Include="Views\HawkerApplication\HawkerType.cshtml" />
-    <Content Include="Views\HawkerApplication\ManageHawkerType.cshtml" />
+    <Content Include="Views\HawkerApplication\HawkerCode.cshtml" />
+    <Content Include="Views\HawkerApplication\ManageHawkerCode.cshtml" />
+    <Content Include="Views\StallApplication\StallCode.cshtml" />
+    <Content Include="Views\StallApplication\ManageStallCode.cshtml" />
+    <Content Include="Views\BannerApplication\BannerCode.cshtml" />
+    <Content Include="Views\BannerApplication\ManageBannerCode.cshtml" />
+    <Content Include="Views\Master\Zone.cshtml" />
+    <Content Include="Views\Master\Location.cshtml" />
+    <Content Include="Views\Master\Road.cshtml" />
+    <Content Include="Views\Master\ManageZone.cshtml" />
+    <Content Include="Views\Master\ManageLocation.cshtml" />
+    <Content Include="Views\Master\ManageRoad.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

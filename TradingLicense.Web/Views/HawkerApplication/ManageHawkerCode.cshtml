@@ -1,0 +1,124 @@
+﻿@model TradingLicense.Model.HawkerCodeModel
+@{
+    ViewBag.Title = "ManageHawkerCode";
+}
+@{ 
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+
+    List<SelectListItem> modeList = new List<SelectListItem>();
+    modeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
+    modeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
+    modeList.Add(new SelectListItem { Text = "Mesyuarat JP", Value = "3" });
+    modeList.Add(new SelectListItem { Text = "KPE", Value = "4" });
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Kod Penjaja</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmHawkerCode", id = "frmHawkerCode" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.HawkerCodeID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Kod Penjaja<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.HCodeNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.HCodeNumber)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Tajuk<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.HawkerCodeDesc, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.HawkerCodeDesc)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.Fee, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Fee)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.PeriodQuantity, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PeriodQuantity)
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        @Html.DropDownListFor(model => model.Period, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                            <div class="control-label">Kelulusan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(model => model.Mode, new SelectList(modeList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("HawkerCode", "HawkerApplication")';
+        window.location.href = link;
+    }
+    </script>
+}

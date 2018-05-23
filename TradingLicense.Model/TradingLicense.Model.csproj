@@ -62,12 +62,14 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
-    <Compile Include="HawkerTypeModel.cs" />
+    <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
+    <Compile Include="LocationModel.cs" />
     <Compile Include="LoginLogModel.cs" />
     <Compile Include="LoginModel.cs" />
     <Compile Include="HolidayModel.cs" />
     <Compile Include="AppStatusModel.cs" />
+    <Compile Include="BannerCodeModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
@@ -76,9 +78,12 @@
     <Compile Include="RegularExpressions.cs" />
     <Compile Include="RequiredDocModel.cs" />
     <Compile Include="ResetPasswordModel.cs" />
+    <Compile Include="RoadModel.cs" />
     <Compile Include="RoleTemplateModel.cs" />
     <Compile Include="SectorModel.cs" />
+    <Compile Include="StallCodeModel.cs" />
     <Compile Include="UsersModel.cs" />
+    <Compile Include="ZoneModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

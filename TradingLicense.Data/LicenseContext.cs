@@ -67,7 +67,17 @@ namespace TradingLicense.Data
 
         public DbSet<PAComment> PAComments { get; set; }
 
-        public DbSet<HawkerType> HawkerTypes { get; set; }
+        public DbSet<HawkerCode> HawkerCodes { get; set; }
+
+        public DbSet<StallCode> StallCodes { get; set; }
+
+        public DbSet<BannerCode> BannerCodes { get; set; }
+
+        public DbSet<Zone> Zones { get; set; }
+
+        public DbSet<Location> Locations { get; set; }
+
+        public DbSet<Road> Roads { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

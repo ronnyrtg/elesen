@@ -13,7 +13,7 @@ namespace TradingLicense.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201805200746290_seed"; }
+            get { return "201805231415060_seed"; }
         }
         
         string IMigrationMetadata.Source

@@ -1,0 +1,74 @@
+﻿@model TradingLicense.Model.LocationModel
+@{
+    ViewBag.Title = "ManageLocation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Manage Location</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmLocation", id = "frmLocation" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.LocationID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LocationCode, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.LocationCode, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.LocationCode)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LocationDesc, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.LocationDesc, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.LocationDesc)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Save" />
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("Location", "Master")';
+        window.location.href = link;
+        }
+    </script>
+}

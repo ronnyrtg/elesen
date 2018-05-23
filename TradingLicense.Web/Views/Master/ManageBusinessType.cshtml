@@ -1,8 +1,16 @@
 ﻿@model TradingLicense.Model.BusinessTypeModel
+@using AutoMapper;
 @{
     ViewBag.Title = "ManageBusinessType";
 }
-
+@{ 
+    List<TradingLicense.Model.RequiredDocModel> requiredDocList = new List<TradingLicense.Model.RequiredDocModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var requiredDoc = ctx.RequiredDocs.ToList();
+        requiredDocList = Mapper.Map<List<TradingLicense.Model.RequiredDocModel>>(requiredDoc);
+    }
+}
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
@@ -29,6 +37,14 @@
                         @Html.LabelFor(m => m.BusinessTypeDesc, new { @class = "control-label" }) <span class="cfont">*</span>
                         @Html.TextBoxFor(m => m.BusinessTypeDesc, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.BusinessTypeDesc)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Required Documents.<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.RequiredDocID, new SelectList(requiredDocList.OrderBy(x => x.RequiredDocDesc), "RequiredDocID", "RequiredDocDesc"), "Select Required Document", new { @class = "form-control", @onchange = "requiredDocChange()" })
                     </div>
                 </div>
             </div>

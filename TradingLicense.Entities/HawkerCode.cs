@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
 namespace TradingLicense.Entities
 {
-    public class HawkerType
+    public class HawkerCode
     {
         [Key]
-        public int HawkerTypeID { get; set; }
+        public int HawkerCodeID { get; set; }
+        [Required]
+        [StringLength(5)]
+        [Column(TypeName = "VARCHAR2")]
+        public string HCodeNumber { get; set; }
         [Required]
         [StringLength(60)]
         [Column(TypeName = "VARCHAR2")]
-        public string HawkerTypeDesc { get; set; }
+        public string HawkerCodeDesc { get; set; }
         public float Fee { get; set; }
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
+        public int Mode { get; set; }
         public bool Active { get; set; }
-        public HawkerType()
+        public HawkerCode()
         {
             Active = true;
         }

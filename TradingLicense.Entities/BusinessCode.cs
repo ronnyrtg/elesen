@@ -21,12 +21,8 @@ namespace TradingLicense.Entities
         public int SectorID { get; set; }
         public float DefaultRate { get; set; }
         public float BaseFee { get; set; }
-        public float ExtraFee { get; set; }
-        public int ExtraUnit { get; set; }
-        [StringLength(1)]
-        [Column(TypeName = "VARCHAR2")]
-        public string Period { get; set; }
-        public int PQuantity { get; set; }
+        public int Period { get; set; }
+        public int PeriodQuantity { get; set; }
         public int Mode { get; set; }
         public bool Active { get; set; }
         public BusinessCode()

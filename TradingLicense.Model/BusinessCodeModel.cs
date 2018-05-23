@@ -30,22 +30,13 @@ namespace TradingLicense.Model
         [Display(Name = "Base Fee")]
         public float BaseFee { get; set; }
 
-        [Required(ErrorMessage = "Please Enter Extra Fee")]
-        [Display(Name = "Extra Fee")]
-        public float ExtraFee { get; set; }
-
-        [Required(ErrorMessage = "Please Enter Extra Unit")]
-        [Display(Name = "Extra Unit")]
-        public int ExtraUnit { get; set; }
-
         [Required(ErrorMessage = "Please Enter Period")]
         [Display(Name = "Period")]
-        [StringLength(1)]
-        public string Period { get; set; }
+        public int Period { get; set; }
 
         [Required(ErrorMessage = "Please Enter Period Quantity")]
         [Display(Name = "Period Quantity")]
-        public int PQuantity { get; set; }
+        public int PeriodQuantity { get; set; }
 
         [Required(ErrorMessage = "Please Select Mode")]
         [Display(Name = "Mode")]

@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TradingLicense.Model
 {
-    public class HawkerTypeModel
+    public class HawkerCodeModel
     {
-        public int HawkerTypeID { get; set; }
+        public int HawkerCodeID { get; set; }
 
+        [Display(Name = "Hawker Code")]
+        [Required(ErrorMessage = "Please enter Hawker Code")]
+        [StringLength(5)]
+        public string HCodeNumber { get; set; }
         [Display(Name = "Hawker Type Description")]
         [Required(ErrorMessage = "Please enter Hawker Type Description")]
         [StringLength(60)]
-        public string HawkerTypeDesc { get; set; }
+        public string HawkerCodeDesc { get; set; }
         [Display(Name = "Hawker Type Fee")]
         [Required(ErrorMessage = "Please enter Hawker Type Fee")]
         public float Fee { get; set; }
@@ -24,6 +23,9 @@ namespace TradingLicense.Model
         [Display(Name = "Valid Period Multiplier")]
         [Required(ErrorMessage = "Please enter period multiplier, default is 1")]
         public int PeriodQuantity { get; set; }
+        [Required(ErrorMessage = "Sila pilih jenis kelulusan")]
+        [Display(Name = "Mode")]
+        public int Mode { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }

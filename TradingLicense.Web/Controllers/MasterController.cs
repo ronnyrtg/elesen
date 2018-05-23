@@ -2681,5 +2681,509 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region Zone
+
+        /// <summary>
+        /// GET: Zone
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Zone()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Zone Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Zone([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string zoneDesc)
+        {
+            List<TradingLicense.Model.ZoneModel> Zone = new List<Model.ZoneModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Zone> query = ctx.Zones;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+                if (!string.IsNullOrWhiteSpace(zoneDesc))
+                {
+                    query = query.Where(p =>
+                                        p.ZoneDesc.Contains(zoneDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "ZoneID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Zone = Mapper.Map<List<ZoneModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Zone, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Zone Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageZone(int? Id)
+        {
+            ZoneModel ZoneModel = new ZoneModel();
+            ZoneModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int ZoneID = Convert.ToInt32(Id);
+                    var Zone = ctx.Zones.Where(a => a.ZoneID == ZoneID).FirstOrDefault();
+                    ZoneModel = Mapper.Map<ZoneModel>(Zone);
+                }
+            }
+
+            return View(ZoneModel);
+        }
+
+        /// <summary>
+        /// Save Zone Infomration
+        /// </summary>
+        /// <param name="ZoneModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageZone(ZoneModel ZoneModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    Zone Zone;
+                    if (IsZoneDuplicate(ZoneModel.ZoneDesc, ZoneModel.ZoneID))
+                    {
+                        TempData["ErrorMessage"] = "Zone is already exist in the database.";
+                        return View(ZoneModel);
+                    }
+                    Zone = Mapper.Map<Zone>(ZoneModel);
+                    ctx.Zones.AddOrUpdate(Zone);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Zone saved successfully.";
+
+                return RedirectToAction("Zone");
+            }
+            else
+            {
+                return View(ZoneModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Zone Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteZone(int id)
+        {
+            try
+            {
+                var Zone = new TradingLicense.Entities.Zone() { ZoneID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(Zone).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsZoneDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.Zones.FirstOrDefault(
+                   c => c.ZoneID != id && c.ZoneDesc.ToLower() == name.ToLower())
+               : ctx.Zones.FirstOrDefault(
+                   c => c.ZoneDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
+
+        #region Location
+
+        /// <summary>
+        /// GET: Location
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Location()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Location Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Location([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string locationDesc)
+        {
+            List<TradingLicense.Model.LocationModel> Location = new List<Model.LocationModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Location> query = ctx.Locations;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+                if (!string.IsNullOrWhiteSpace(locationDesc))
+                {
+                    query = query.Where(p =>
+                                        p.LocationDesc.Contains(locationDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "LocationID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Location = Mapper.Map<List<LocationModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Location, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Location Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageLocation(int? Id)
+        {
+            LocationModel LocationModel = new LocationModel();
+            LocationModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int LocationID = Convert.ToInt32(Id);
+                    var Location = ctx.Locations.Where(a => a.LocationID == LocationID).FirstOrDefault();
+                    LocationModel = Mapper.Map<LocationModel>(Location);
+                }
+            }
+
+            return View(LocationModel);
+        }
+
+        /// <summary>
+        /// Save Location Infomration
+        /// </summary>
+        /// <param name="LocationModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageLocation(LocationModel LocationModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    Location Location;
+                    if (IsLocationDuplicate(LocationModel.LocationDesc, LocationModel.LocationID))
+                    {
+                        TempData["ErrorMessage"] = "Location is already exist in the database.";
+                        return View(LocationModel);
+                    }
+                    Location = Mapper.Map<Location>(LocationModel);
+                    ctx.Locations.AddOrUpdate(Location);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Location saved successfully.";
+
+                return RedirectToAction("Location");
+            }
+            else
+            {
+                return View(LocationModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Location Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteLocation(int id)
+        {
+            try
+            {
+                var Location = new TradingLicense.Entities.Location() { LocationID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(Location).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsLocationDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.Locations.FirstOrDefault(
+                   c => c.LocationID != id && c.LocationDesc.ToLower() == name.ToLower())
+               : ctx.Locations.FirstOrDefault(
+                   c => c.LocationDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
+
+        #region Road
+
+        /// <summary>
+        /// GET: Road
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Road()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Road Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Road([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string roadDesc)
+        {
+            List<TradingLicense.Model.RoadModel> Road = new List<Model.RoadModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Road> query = ctx.Roads;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+                if (!string.IsNullOrWhiteSpace(roadDesc))
+                {
+                    query = query.Where(p =>
+                                        p.RoadDesc.Contains(roadDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "RoadID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Road = Mapper.Map<List<RoadModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Road, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Road Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageRoad(int? Id)
+        {
+            RoadModel RoadModel = new RoadModel();
+            RoadModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int RoadID = Convert.ToInt32(Id);
+                    var Road = ctx.Roads.Where(a => a.RoadID == RoadID).FirstOrDefault();
+                    RoadModel = Mapper.Map<RoadModel>(Road);
+                }
+            }
+
+            return View(RoadModel);
+        }
+
+        /// <summary>
+        /// Save Road Infomration
+        /// </summary>
+        /// <param name="RoadModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageRoad(RoadModel RoadModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    Road Road;
+                    if (IsRoadDuplicate(RoadModel.RoadDesc, RoadModel.RoadID))
+                    {
+                        TempData["ErrorMessage"] = "Road is already exist in the database.";
+                        return View(RoadModel);
+                    }
+                    Road = Mapper.Map<Road>(RoadModel);
+                    ctx.Roads.AddOrUpdate(Road);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Road saved successfully.";
+
+                return RedirectToAction("Road");
+            }
+            else
+            {
+                return View(RoadModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Road Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteRoad(int id)
+        {
+            try
+            {
+                var Road = new TradingLicense.Entities.Road() { RoadID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(Road).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsRoadDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.Roads.FirstOrDefault(
+                   c => c.RoadID != id && c.RoadDesc.ToLower() == name.ToLower())
+               : ctx.Roads.FirstOrDefault(
+                   c => c.RoadDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
     }
 }
