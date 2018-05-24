@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TradingLicense.Model
 {
     public class LoginLogModel
     {
-
+        [Key]
         public int LoginLogID { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime LogDate { get; set; }
 
         [Required]

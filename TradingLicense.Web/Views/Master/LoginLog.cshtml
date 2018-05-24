@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "Senarai Masuk Pengguna";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4>Users</h4>
+    </div>
+    <div class="filter-block">
+        <div class="row small-gutter">
+            <form>
+                <div class="col-xs-4">
+                    <input type="text" name="txtusersName" id="txtusersName" class="form-control" placeholder="User Name" maxlength="50" />
+                </div>
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="grid" id="divtblLogins">
+        <table cellspacing="0" class="table table-striped" id="tblLogins"></table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(function () {
+        $('.form-control').keypress(function (e) {
+            if (e.which == 13) {
+                bindTable();
+                return false;
+            }
+        });
+         var success = '@(TempData["SuccessMessage"])';
+                if (success != null && success != "") {
+                    successMessage(success);
+                }
+        bindTable();
+        });
+
+     function bindTable() {
+         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+         if ($.fn.DataTable.isDataTable("#tblLogins")) {
+             $('#tblLogins').dataTable().fnDestroy();
+             $('#divtblLogins').html('<table class="table table-striped" width="100%"  id="tblLogins"></table>');
+         }
+
+         table = $("#tblLogins").dataTable({
+             "autoWidth": false,
+             "searching": false,
+             "paging": true,
+             "sPaginationType": "full_numbers",
+             "language": {
+                 "lengthMenu": "Page Size : _MENU_ ",
+                 "info": "Records _START_ to _END_ of (_TOTAL_)",
+                 "emptyTable": "No Record(s) Found"
+             },
+             "processing": true,
+             "serverSide": true,
+             "pageLength": 10,
+                    "ajax": {
+                        url: '@Url.Action("LoginLog", "Master")',
+                        type: "POST",
+                        data: bindSearch()
+                    },
+             "columns": [
+                        { "title": "Username", "data": "LogDesc" },
+                        { "title": "IP", "data": "IpAddress" },
+                        {
+                            "title": "Date",
+                            "data": "LogDate",
+                            "render": function (data, type, row) {
+                                var dt = parseInt(new String(data).substr(6));
+                                return new Date(dt).toLocaleString();
+                            }
+                        },
+                 {
+                     "title": "Status",
+                     "data": "LoginStatus",
+                     "render": function (data, type, row) {
+                         if (data) {
+                             return '<label class="label label-success">Success</label>';
+                         }
+                         else {
+                             return '<label class="label label-danger">Failed</label>';
+                         }
+                     },
+                     "width": "10%",
+                     "orderable": true,
+                 }
+             ],
+             "drawCallback": function (settings) {
+                 //hide paging and info when empty datattable
+                 var api = this.api();
+                 if (api.rows({ page: 'current' }).data().length <= 0) {
+                     $('#tblUsers_info').hide();
+                     $('#tblUsers_paginate').hide();
+                     $('#tblUsers_length').hide();
+                 }
+                 else {
+                     $('#tblUsers_info').show();
+                     $('#tblUsers_paginate').show();
+                     $('#tblUsers_length').show();
+                 }
+                 bindSortingArrow();
+             }
+           });
+        }
+
+        function clearControls() {
+            $("#txtusersName").val('');
+            bindTable();
+        }
+
+        function bindSearch() {
+            var param = {};
+            param["LogDesc"] = $('#txtusersName').val();
+            return param;
+        }
+
+        function isValidSearchCriteria(formName) {
+            var isValid = true;
+
+            $("form#" + formName + " input[type=text]").each(function () {
+                if ($(this).val().match(/[<>]/)) {
+                    $(this).addClass('input-validation-error');
+                    isValid = false;
+                }
+                else {
+                    $(this).removeClass('input-validation-error');
+                }
+            });
+            return isValid;
+        }
+
+    </script>
+}
