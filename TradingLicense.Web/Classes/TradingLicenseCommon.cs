@@ -112,11 +112,11 @@ namespace TradingLicense.Web.Classes
             if (_crudCollection == null)
             {
                 var crudColl = new List<KeyValuePair<string, int>>();
-                crudColl.Add(new KeyValuePair<string, int>("No Access", 0));
-                crudColl.Add(new KeyValuePair<string, int>("View Only", 1));
-                crudColl.Add(new KeyValuePair<string, int>("View & Create", 2));
-                crudColl.Add(new KeyValuePair<string, int>("View, Create & Edit", 3));
-                crudColl.Add(new KeyValuePair<string, int>("View, Create, Edit & Delete", 4));
+                crudColl.Add(new KeyValuePair<string, int>("Tiada Akses", 0));
+                crudColl.Add(new KeyValuePair<string, int>("Baca Sahaja", 1));
+                crudColl.Add(new KeyValuePair<string, int>("Baca & Cipta", 2));
+                crudColl.Add(new KeyValuePair<string, int>("Baca, Cipta & Ubah", 3));
+                crudColl.Add(new KeyValuePair<string, int>("Baca, Cipta, Ubah & Padam", 4));
                 _crudCollection = crudColl;
             }
 

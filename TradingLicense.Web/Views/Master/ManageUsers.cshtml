@@ -24,7 +24,7 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage User</h4>
+        <h4 id="headerTitle">Kemaskini Pengguna</h4>
     </div>
     <div class="body">
 
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.FullName, new { @class = "control-label" })<span class="cfont">*</span>
+                    <div class="control-label">Nama Penuh<span class="cfont">*</span></div>
                     @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
                     @Html.ValidationMessageFor(m => m.FullName)
                 </div>
@@ -47,7 +47,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Username, new { @class = "control-label" })<span class="cfont">*</span>
+                    <div class="control-label">Nama Pengguna<span class="cfont">*</span></div>
                     @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @maxlength = "30" })
                     @Html.ValidationMessageFor(m => m.Username)
                 </div>
@@ -57,7 +57,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "control-label" })<span class="cfont">*</span>
+                    <div class="control-label">Emel<span class="cfont">*</span></div>
                     @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @maxlength = "200" })
                     @Html.ValidationMessageFor(m => m.Email)
                 </div>
@@ -67,7 +67,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.DepartmentID, new { @class = "control-label" })<span class="cfont">*</span>
+                    <div class="control-label">Jabatan<span class="cfont">*</span></div>
                     @Html.DropDownListFor(m => m.DepartmentID, new SelectList(DepartmentList, "DepartmentID", "DepartmentCode"), new { @class = "form-control" })
                 </div>
             </div>
@@ -77,7 +77,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.RoleTemplateID, new { @class = "control-label" })<span class="cfont">*</span>
+                    <div class="control-label">Peranan Pengguna<span class="cfont">*</span></div>
                     @Html.DropDownListFor(m => m.RoleTemplateID, new SelectList(RoleTemplateList, "RoleTemplateID", "RoleTemplateDesc"), new { @class = "form-control" })
                 </div>
             </div>
@@ -99,8 +99,8 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
-                    <input type="submit" class="btn btn-primary" value="Save" />
-                    <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                    <input type="submit" class="btn btn-primary" value="Simpan" />
+                    <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                 </div>
             </div>
         </div>

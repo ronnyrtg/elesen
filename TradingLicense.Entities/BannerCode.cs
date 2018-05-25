@@ -16,7 +16,6 @@ namespace TradingLicense.Entities
         public string BannerCodeDesc { get; set; }
         public float ProcessingFee { get; set; }
         public float ExtraFee { get; set; }
-        public float QuantityFee { get; set; }
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
         public float PeriodFee { get; set; }

@@ -7,20 +7,20 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4>UnLock Users</h4>
+        <h4>Senarai Pengguna Terkunci</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Full Name" maxlength="100" />
+                    <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Nama Penuh" maxlength="100" />
                 </div>
                 <div class="col-xs-4">
-                    <input type="text" name="txtusersName" id="txtusersName" class="form-control" placeholder="User Name" maxlength="50" />
+                    <input type="text" name="txtusersName" id="txtusersName" class="form-control" placeholder="Nama Pengguna" maxlength="50" />
                 </div>
                 <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
                 </div>
             </form>
         </div>
@@ -82,29 +82,29 @@
                          return meta.settings._iDisplayStart + meta.row + 1;
                      }
                  },
-                 { "title": "Full Name", "data": "FullName" },
-                 { "title": "Username", "data": "Username" },
-                 { "title": "Email", "data": "Email" },
+                 { "title": "Nama Penuh", "data": "FullName" },
+                 { "title": "Nama Pengguna", "data": "Username" },
+                 { "title": "Emel", "data": "Email" },
                  {
-                     "title": "Active",
+                     "title": "Aktif",
                      "data": "Active",
                      "render": function (data, type, row) {
                          if (data) {
-                             return '<label class="label label-success">Active</label>';
+                             return '<label class="label label-success">Aktif</label>';
                          }
                          else {
-                             return '<label class="label label-danger">InActive</label>';
+                             return '<label class="label label-danger">Tidak Aktif</label>';
                          }
                      },
                      "width": "10%",
                      "orderable": true,
                  },
                         {
-                    "title": "Action",
+                    "title": "Buka Kunci",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["UsersID"] + '" onclick="bindUnlockUser(this);" title="Unlock User"><img src="@Url.Content("~/images/correct.png")" alt="Unlock User" /></a>';
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["UsersID"] + '" onclick="bindUnlockUser(this);" title="Buka Kunci"><img src="@Url.Content("~/images/correct.png")" alt="Unlock User" /></a>';
                         return appendstring
                     },
                             "width": "80px",
@@ -160,7 +160,7 @@
         }
 
         function bindUnlockUser(item) {
-            var x = confirm("Are you sure you want to unlock user?");
+            var x = confirm("Adakah anda pasti untuk membuka kunci pengguna?");
             if (x) {
                 $.ajax({
                     type: "POST",

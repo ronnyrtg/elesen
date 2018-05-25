@@ -53,6 +53,7 @@
     <Compile Include="HawkerCode.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
+    <Compile Include="LiquorCode.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="PAComment.cs" />
     <Compile Include="PALinkAddDoc.cs" />

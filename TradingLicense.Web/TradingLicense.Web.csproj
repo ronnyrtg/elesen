@@ -175,6 +175,7 @@
     <Compile Include="Controllers\BannerApplicationController.cs" />
     <Compile Include="Controllers\HawkerApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LiquorApplicationController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
@@ -410,6 +411,9 @@
     <Content Include="Views\Master\ManageZone.cshtml" />
     <Content Include="Views\Master\ManageLocation.cshtml" />
     <Content Include="Views\Master\ManageRoad.cshtml" />
+    <Content Include="Views\LiquorApplication\LiquorCode.cshtml" />
+    <Content Include="Views\LiquorApplication\ManageLiquorCode.cshtml" />
+    <Content Include="Views\Master\IntDepartment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

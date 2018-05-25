@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TradingLicense.Entities
+﻿namespace TradingLicense.Entities
 {
-   public class BCLinkAD
+    public class BCLinkAD
     {
         public int BCLinkADID { get; set; }
 

@@ -2,23 +2,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
-    public class BannerCodeModel
+    public class LiquorCodeModel
     {
-        public int BannerCodeID { get; set; }
+        public int LiquorCodeID { get; set; }
 
-        [Display(Name = "Banner License Code")]
-        [Required(ErrorMessage = "Sila masukkan kod lesen iklan")]
+        [Display(Name = "Liquor License Code")]
+        [Required(ErrorMessage = "Sila masukkan kod lesen minuman keras")]
         [StringLength(5)]
-        public string BCodeNumber { get; set; }
-        [Display(Name = "Banner Type Description")]
-        [Required(ErrorMessage = "Sila masukkan penerangan jenis iklan")]
+        public string LCodeNumber { get; set; }
+        [Display(Name = "Liquor Type Description")]
+        [Required(ErrorMessage = "Sila masukkan penerangan jenis minuman keras")]
         [StringLength(255)]
-        public string BannerCodeDesc { get; set; }
-        [Display(Name = "Processing Fee")]
-        [Required(ErrorMessage = "Sila masukkan Yuran Pemprosesan")]
-        public float ProcessingFee { get; set; }
-        [Display(Name = "Extra Fee after first 8 meter square")]
-        public float ExtraFee { get; set; }
+        public string LiquorCodeDesc { get; set; }
+        [Display(Name = "Start & Stop time")]
+        [StringLength(255)]
+        public string DefaultHours { get; set; }
+        [Display(Name = "Extra hourly fee after allocated time")]
+        public float ExtraHourFee { get; set; }
         [Display(Name = "Period")]
         [Required(ErrorMessage = "Sila pilih tahunan,bulanan,mingguan atau harian")]
         public int Period { get; set; }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TradingLicense.Entities;
 
 namespace TradingLicense.Data
@@ -78,6 +73,8 @@ namespace TradingLicense.Data
         public DbSet<Location> Locations { get; set; }
 
         public DbSet<Road> Roads { get; set; }
+
+        public DbSet<LiquorCode> LiquorCodes { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

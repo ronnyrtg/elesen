@@ -70,6 +70,7 @@
     <Compile Include="HolidayModel.cs" />
     <Compile Include="AppStatusModel.cs" />
     <Compile Include="BannerCodeModel.cs" />
+    <Compile Include="LiquorCodeModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />

@@ -27,6 +27,9 @@ namespace TradingLicense.Data.Migrations
                 new Sector {SectorID=4,SectorDesc="Bengkel"},
                 new Sector {SectorID=5,SectorDesc="Pertanian/Penternakan"},
                 new Sector {SectorID=6,SectorDesc="Lain-lain"},
+                new Sector {SectorID=7,SectorDesc="Petempatan Makanan"},
+                new Sector {SectorID=8,SectorDesc="Hotel dan Rumah Tumpangan"},
+                new Sector {SectorID=9,SectorDesc="Pengurusan Skrap"},
             };
             sector.ForEach(s => context.Sectors.Add(s));
             context.SaveChanges();
@@ -554,11 +557,12 @@ namespace TradingLicense.Data.Migrations
 
             var bannerCodes = new List<BannerCode>
             {
-                new BannerCode {BCodeNumber="O001",BannerCodeDesc="Kain Rentang",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f,Mode=2},
-                new BannerCode {BCodeNumber="O002",BannerCodeDesc="Banting",ProcessingFee=25.0f,QuantityFee=10.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f,Mode=2},
-                new BannerCode {BCodeNumber="O003",BannerCodeDesc="Papantanda Tidak Bercahaya / Billboard",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f,Mode=2},
-                new BannerCode {BCodeNumber="O004",BannerCodeDesc="Papantanda Bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f,Mode=2},
-                new BannerCode {BCodeNumber="O005",BannerCodeDesc="Iklan Kecil",ProcessingFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f,Mode=2},
+                new BannerCode {BCodeNumber="O001",BannerCodeDesc="Iklan Tidak Bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f,Mode=2},
+                new BannerCode {BCodeNumber="O002",BannerCodeDesc="Iklan Bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f,Mode=2},
+                new BannerCode {BCodeNumber="O003",BannerCodeDesc="Iklan Kecil",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f,Mode=2},
+                new BannerCode {BCodeNumber="O004",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – tidak bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f,Mode=2},
+                new BannerCode {BCodeNumber="O005",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=200.0f,Mode=2},
+                new BannerCode {BCodeNumber="O006",BannerCodeDesc="Tanda Langit",ProcessingFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f,Mode=2},
             };
             bannerCodes.ForEach(s => context.BannerCodes.Add(s));
             context.SaveChanges();
@@ -609,6 +613,22 @@ namespace TradingLicense.Data.Migrations
                 new Road {RoadCode="010",RoadDesc="Jalan Tanjung Pasir"},
             };
             roads.ForEach(s => context.Roads.Add(s));
+            context.SaveChanges();
+
+            var liquorCodes = new List<LiquorCode>
+            {
+                new LiquorCode {LCodeNumber="N001",LiquorCodeDesc="Runcit",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N002",LiquorCodeDesc="Borong",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=45.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N003",LiquorCodeDesc="Rumah Awam (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=110.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N004",LiquorCodeDesc="Rumah Awam (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=80.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N005",LiquorCodeDesc="Rumah Awam (Kelas 3)",DefaultHours="10.00pg. hingga 9.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N006",LiquorCodeDesc="Rumah Bir (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N007",LiquorCodeDesc="Rumah Bir (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N008",LiquorCodeDesc="Lesen Sementara",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=4,PeriodQuantity=1,PeriodFee=30.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N009",LiquorCodeDesc="Lesen Kedai Todi (Estet/Swasta)",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=4.5f,Mode=3},
+                new LiquorCode {LCodeNumber="N010",LiquorCodeDesc="Lesen Sadapan Todi",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=15.0f,Mode=3},
+            };
+            liquorCodes.ForEach(s => context.LiquorCodes.Add(s));
             context.SaveChanges();
         }
     }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using TradingLicense.Data;
 using TradingLicense.Entities;
@@ -30,6 +29,15 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        public ActionResult IntDepartment()
+        {
+            Department db = new Department();
+            var intdep = from d in db.Internal
+                         where d.Internal == true
+                         select d;
+
+            return View(intdep.ToList());
+        }
         /// <summary>
         /// Save Department Data
         /// </summary>

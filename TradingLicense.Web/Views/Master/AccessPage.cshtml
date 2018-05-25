@@ -18,7 +18,7 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4>Access Pages</h4>
+        <h4>Had Capaian Pengguna</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
@@ -29,7 +29,7 @@
                 <div class="col-xs-8">
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel3))
                     {
-                        <a id="lnkEditButton" href="#" title="Manage Access" onclick="return manageAccessPage();"><img src="@Url.Content("~/images/edit.png")" alt="Access Page"></a>
+                        <a id="lnkEditButton" href="#" title="Kemaskini" onclick="return manageAccessPage();"><img src="@Url.Content("~/images/edit.png")" alt="Access Page"></a>
                     }
                 </div>
             </form>
@@ -112,8 +112,29 @@
                     data: bindSearch()
                 },
                 "columns": [
-                    { "title": "Role Template", "data": "RoleTemplateDesc", "orderable": false },
-                    { "title": "Crud Level", "data": "CrudLevel", "orderable": false }
+                    { "title": "Peranan Pengguna", "data": "RoleTemplateDesc", "orderable": false },
+                    {
+                        "title": "Tahap Capaian",
+                        "data": "CrudLevel",
+                        "orderable": false,
+                        "render": function (data, type, row) {
+                            if (data==0) {
+                                return '<label class="label label-danger">Tiada Akses</label>';
+                            }
+                            if (data==1) {
+                                return '<label class="label label-success">Baca Sahaja</label>';
+                            }
+                            if (data == 2) {
+                                return '<label class="label label-success">Baca & Cipta</label>';
+                            }
+                            if (data == 3) {
+                                return '<label class="label label-success">Baca, Cipta & Ubah</label>';
+                            }
+                            if (data == 4) {
+                                return '<label class="label label-success">Baca, Cipta, Ubah & Padam</label>';
+                            }
+                        },
+                    }
 
                 ],
                 "drawCallback": function (settings) {

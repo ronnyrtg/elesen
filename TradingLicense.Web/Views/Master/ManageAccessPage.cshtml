@@ -17,7 +17,7 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage Access Page</h4>
+        <h4 id="headerTitle">Kemaskini Had Capaian Pengguna</h4>
     </div>
     <div class="">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmAccessPage", id = "frmAccessPage" }))
@@ -30,12 +30,12 @@
                     <thead>
                         <tr>
                             <th colspan="2">
-                                Page: @Model.PageDesc
+                                Mukasurat: @Model.PageDesc
                             </th>
                         </tr>
                         <tr role="row">
-                            <th>Role Template</th>
-                            <th>CRUD Level</th>
+                            <th>Peranan Pengguna</th>
+                            <th>Tahap Capaian</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,9 +73,9 @@
                     <div class="form-group">
                         @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel2))
                         {
-                            <input type="submit" class="btn btn-primary" value="Save" />
+                            <input type="submit" class="btn btn-primary" value="Simpan" />
                         }
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                     </div>
                 </div>
             </div>

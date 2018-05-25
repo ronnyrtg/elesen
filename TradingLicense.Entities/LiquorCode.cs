@@ -1,31 +1,29 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace TradingLicense.Entities
 {
-    public class BusinessCode
+    public class LiquorCode
     {
         [Key]
-        public int BusinessCodeID { get; set; }
+        public int LiquorCodeID { get; set; }
+        [Required]
         [StringLength(5)]
         [Column(TypeName = "VARCHAR2")]
-        public string CodeNumber { get; set; }
+        public string LCodeNumber { get; set; }
+        [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string CodeDesc { get; set; }
-        public int SectorID { get; set; }
-        public float DefaultRate { get; set; }
-        public float BaseFee { get; set; }
+        public string LiquorCodeDesc { get; set; }
+        public string DefaultHours { get; set; }
+        public float ExtraHourFee { get; set; }
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
+        public float PeriodFee { get; set; }
         public int Mode { get; set; }
         public bool Active { get; set; }
-        public BusinessCode()
+        public LiquorCode()
         {
             Active = true;
         }
-
-        public virtual Sector Sector { get; set; }
-        
     }
 }

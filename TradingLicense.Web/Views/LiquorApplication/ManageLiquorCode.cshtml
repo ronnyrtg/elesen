@@ -1,6 +1,6 @@
-﻿@model TradingLicense.Model.BannerCodeModel
+﻿@model TradingLicense.Model.LiquorCodeModel
 @{
-    ViewBag.Title = "ManageBannerCode";
+    ViewBag.Title = "ManageLiquorCode";
 }
 @{
     List<SelectListItem> periodList = new List<SelectListItem>();
@@ -18,20 +18,20 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Kemaskini Kod Iklan</h4>
+        <h4 id="headerTitle">Kemaskini Kod Minuman Keras</h4>
     </div>
     <div class="body">
 
-        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerCode", id = "frmBannerCode" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmLiquorCode", id = "frmLiquorCode" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.BannerCodeID)
+            @Html.HiddenFor(m => m.LiquorCodeID)
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Kod Iklan<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.BCodeNumber, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BCodeNumber)
+                        <div class="control-label">Kod Minuman Keras<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.LCodeNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LCodeNumber)
                     </div>
                 </div>
             </div>
@@ -40,8 +40,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Tajuk<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.BannerCodeDesc, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BannerCodeDesc)
+                        @Html.TextBoxFor(m => m.LiquorCodeDesc, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LiquorCodeDesc)
                     </div>
                 </div>
             </div>
@@ -49,9 +49,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Fi Pemprosesan<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ProcessingFee, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ProcessingFee)
+                        <div class="control-label">Waktu Pembukaan</div>
+                        @Html.TextBoxFor(m => m.DefaultHours, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.DefaultHours)
                     </div>
                 </div>
             </div>
@@ -59,7 +59,17 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Fi Lesen<span class="cfont">*</span></div>
+                        <div class="control-label">Fi bagi lanjutan masa<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ExtraHourFee, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ExtraHourFee)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PeriodFee, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.PeriodFee)
                     </div>
@@ -127,7 +137,7 @@
                 errorMessage(actionError);
             }
     function back() {
-         var link = '@Url.Action("BannerCode", "BannerApplication")';
+         var link = '@Url.Action("LiquorCode", "LiquorApplication")';
         window.location.href = link;
     }
     </script>

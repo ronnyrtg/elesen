@@ -14,23 +14,20 @@
     </ul>
     }
     <div class="header">
-        <h4>Individuals</h4>
+        <h4>Senarai Individu</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
-                <div class="col-xs-3">
-                    <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Full Name" maxlength="100" />
+                <div class="col-xs-4">
+                    <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Nama Penuh" maxlength="100" />
                 </div>
-                <div class="col-xs-3">
-                    <input type="text" name="txtmykadPassport" id="txtmykadPassport" class="form-control" placeholder="MyKad/Passport" maxlength="100" />
+                <div class="col-xs-4">
+                    <input type="text" name="txtmykadPassport" id="txtmykadPassport" class="form-control" placeholder="MyKad/Paspot" maxlength="100" />
                 </div>
-                <div class="col-xs-3">
-                    <input type="text" name="txtphoneNo" id="txtphoneNo" class="form-control" placeholder="Phone Number" maxlength="20" />
-                </div>
-                <div class="col-xs-3">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
                 </div>
             </form>
         </div>
@@ -102,26 +99,39 @@
                          return meta.settings._iDisplayStart + meta.row + 1;
                      }
                  },
-                 { "title": "Full Name", "data": "FullName" },
-                 { "title": "Mykad/Passport", "data": "MykadNo" },
-                 { "title": "Individual Email", "data": "IndividualEmail" },
-                 { "title": "Phone No", "data": "PhoneNo" },
+                 { "title": "Nama Penuh", "data": "FullName" },
+                 { "title": "Mykad/Paspot", "data": "MykadNo" },
                  {
-                     "title": "Active",
+                     "title": "Rental",
+                     "data": "Rental",
+                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
+                 },
+                 {
+                     "title": "Assessment",
+                     "data": "Assessment",
+                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
+                 },
+                 {
+                     "title": "Compound",
+                     "data": "Compound",
+                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
+                 },
+                 {
+                     "title": "Aktif",
                      "data": "Active",
                      "render": function (data, type, row) {
                          if (data) {
-                             return '<label class="label label-success">Active</label>';
+                             return '<label class="label label-success">Aktif</label>';
                          }
                          else {
-                             return '<label class="label label-danger">InActive</label>';
+                             return '<label class="label label-danger">Tidak Aktif</label>';
                          }
                      },
                      "width": "10%",
                      "orderable": true,
                  },
                          {
-                    "title": "Action",
+                    "title": "Ubah/Padam",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
