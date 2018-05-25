@@ -5,10 +5,11 @@ namespace TradingLicense.Model
 {
     public class LoginLogModel
     {
-
+        [Key]
         public int LoginLogID { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime LogDate { get; set; }
 
         [Required]

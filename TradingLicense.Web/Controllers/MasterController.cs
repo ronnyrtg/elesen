@@ -3193,5 +3193,59 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region loginlog
+        /// <summary>
+        /// GET: LoginLog
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult LoginLog()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Request Login Log
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult LoginLog([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string logDesc)
+        {
+            List<TradingLicense.Model.LoginLogModel> Login = new List<Model.LoginLogModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable <LoginLog> query = ctx.LoginLogs;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+                if (!string.IsNullOrWhiteSpace(logDesc))
+                {
+                    query = query.Where(z => z.LogDesc.Contains(logDesc));
+                }
+
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+
+                query = query.OrderByDescending(c => c.LogDate);
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Login = Mapper.Map<List<LoginLogModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Login, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }
