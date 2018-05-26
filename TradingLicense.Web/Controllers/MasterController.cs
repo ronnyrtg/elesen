@@ -29,15 +29,7 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
-        public ActionResult IntDepartment()
-        {
-            Department db = new Department();
-            var intdep = from d in db.Internal
-                         where d.Internal == true
-                         select d;
 
-            return View(intdep.ToList());
-        }
         /// <summary>
         /// Save Department Data
         /// </summary>
@@ -46,7 +38,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult Department([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string departmentCode, string departmentDesc)
         {
-            List<TradingLicense.Model.DepartmentModel> Department = new List<Model.DepartmentModel>();
+            List<DepartmentModel> Department = new List<Model.DepartmentModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())

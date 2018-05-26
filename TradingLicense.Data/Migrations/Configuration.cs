@@ -183,15 +183,15 @@ namespace TradingLicense.Data.Migrations
 
             var departments = new List<Department>
             {
-                new Department {DepartmentCode="Pelesenan",DepartmentDesc="Bahagian Pelesenan",Internal=true},
-                new Department {DepartmentCode="ICT",DepartmentDesc="Jabatan Pengurusan Maklumat",Internal=true},
-                new Department {DepartmentCode="BPP",DepartmentDesc="Jabatan Perancangan & Kawalan Bangunan",Internal=true},
-                new Department {DepartmentCode="JPPPH",DepartmentDesc="Jabatan Penilaian, Pelaburan dan Pengurusan Harta",Internal=true},
-                new Department {DepartmentCode="UKS",DepartmentDesc="Unit Kesihatan",Internal=true},
-                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif",Internal=true},
-                new Department {DepartmentCode="JBPM",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia",Internal=false},
-                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia",Internal=false},
-                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia",Internal=false},
+                new Department {DepartmentCode="Pelesenan",DepartmentDesc="Bahagian Pelesenan",Internal=1},
+                new Department {DepartmentCode="ICT",DepartmentDesc="Jabatan Pengurusan Maklumat",Internal=1},
+                new Department {DepartmentCode="BPP",DepartmentDesc="Jabatan Perancangan & Kawalan Bangunan",Internal=1},
+                new Department {DepartmentCode="JPPPH",DepartmentDesc="Jabatan Penilaian, Pelaburan dan Pengurusan Harta",Internal=1},
+                new Department {DepartmentCode="UKS",DepartmentDesc="Unit Kesihatan",Internal=1},
+                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif",Internal=1},
+                new Department {DepartmentCode="JBPM",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia",Internal=2},
+                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia",Internal=2},
+                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia",Internal=2},
             };
             departments.ForEach(s => context.Departments.Add(s));
             context.SaveChanges();

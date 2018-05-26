@@ -17,7 +17,7 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string DepartmentDesc { get; set; }
-        public bool Internal { get; set; }
+        public int Internal { get; set; }
         public bool Active { get; set; }
         public Department()
         {

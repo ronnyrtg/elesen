@@ -16,7 +16,7 @@ namespace TradingLicense.Model
         [StringLength(255)]
         public string DepartmentDesc { get; set; }
         [Display(Name = "Internal?")]
-        public bool Internal { get; set; }
+        public int Internal { get; set; }
         [Display(Name = "Active")]
         public bool Active { get; set; }
     }

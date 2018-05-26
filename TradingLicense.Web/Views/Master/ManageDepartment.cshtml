@@ -3,6 +3,11 @@
     ViewBag.Title = "ManageDepartment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    List<SelectListItem> internalList = new List<SelectListItem>();
+    internalList.Add(new SelectListItem { Text = "Dalaman", Value = "1" });
+    internalList.Add(new SelectListItem { Text = "Luaran", Value = "2" });
+}
 
 <div id="divMessage"></div>
 <div class="card">
@@ -39,12 +44,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                @Html.CheckBoxFor(model => model.Internal)
-                                <span>Jabatan Dalam Perbadanan Labuan</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
-                            </label>
-                        </div>
+                        <div class="control-label">Dalam atau Luar PL?<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(model => model.Internal, new SelectList(internalList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>
