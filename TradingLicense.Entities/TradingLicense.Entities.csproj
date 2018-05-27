@@ -49,6 +49,9 @@
     <Compile Include="AccessPage.cs" />
     <Compile Include="AdditionalDoc.cs" />
     <Compile Include="Attachment.cs" />
+    <Compile Include="BannerObject.cs" />
+    <Compile Include="BALinkReqDoc.cs" />
+    <Compile Include="BannerApplication.cs" />
     <Compile Include="BannerCode.cs" />
     <Compile Include="BusinessCode.cs" />
     <Compile Include="BCLinkDep.cs" />

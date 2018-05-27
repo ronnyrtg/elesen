@@ -76,6 +76,8 @@ namespace TradingLicense.Data
 
         public DbSet<LiquorCode> LiquorCodes { get; set; }
 
+        public DbSet<BannerApplication> BannerApplications { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
