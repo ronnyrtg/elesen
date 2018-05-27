@@ -8,20 +8,20 @@
         <li><a href="#" title="Add Banner Application" onclick="addBannerApplication();"><img src="@Url.Content("~/images/add.png")" alt="Add Banner Application"></a></li>
     </ul>
     <div class="header">
-        <h4>Banner License Applications</h4>
+        <h4>Senarai Permohonan Lesen Iklan</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtBannerApplicationID" id="txtBannerApplicationID" class="form-control" placeholder="Reference No." maxlength="100" />
+                    <input type="text" name="txtBannerApplicationID" id="txtBannerApplicationID" class="form-control" placeholder="Nombor Rujukan" maxlength="100" />
                 </div>
                 @*<div class="col-xs-4">
                         <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
                     </div>*@
                 <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
                 </div>
             </form>
         </div>
@@ -92,13 +92,12 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Reference No.", "data": "BannerApplicationID" },
-                        { "title": "Business Type.", "data": "BannerDesc" },
-                        { "title": "Banner Address", "data": "BannerAddress" },
-                        { "title": "Banner Area", "data": "BannerArea" },
-                        { "title": "Submitted", "data": "DateSubmitted", render: renderDate },
-                        { "title": "Updated", "data": "UpdatedBy" },
-                        { "title": "Status", "data": "StatusDesc" },
+                        { "title": "No. Rujukan", "data": "BannerApplicationID" },
+                        { "title": "Nama Pemohon.", "data": "IndividualID" },
+                        { "title": "Nama Perniagaan", "data": "CompanyID" },
+                        { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
+                        { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
+                        { "title": "Status", "data": "AppStatusID" },
                         {
                     "title": "Action",
                     "data": null,

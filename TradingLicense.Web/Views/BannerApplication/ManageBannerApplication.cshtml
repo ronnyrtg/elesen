@@ -1,0 +1,71 @@
+﻿@model TradingLicense.Model.BannerApplicationModel
+@{
+    ViewBag.Title = "ManageBannerApplication";
+}
+@{
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Iklan</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerApplication", id = "frmBannerApplication" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.BannerApplicationID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.IndividualID, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.IndividualID)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Perniagaan (Jika ada)</div>
+                        @Html.TextBoxFor(m => m.CompanyID, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CompanyID)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <hr />
+                </div>
+            </div>
+           
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("BannerApplication", "BannerApplication")';
+        window.location.href = link;
+    }
+    </script>
+}

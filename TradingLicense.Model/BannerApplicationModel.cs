@@ -7,13 +7,10 @@ namespace TradingLicense.Model
     public class BannerApplicationModel
     {
         public int BannerApplicationID { get; set; }
-
-        [Required(ErrorMessage = "Please Select Business Type")]
-        public int BusinessTypeID { get; set; }
-
+        public int IndividualID { get; set; }
+        public int CompanyID { get; set; }
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
-
         public string UpdatedBy { get; set; }
 
         public int AppStatusID { get; set; }
