@@ -51,7 +51,7 @@
         });
 
         function addDepartment() {
-           var link = '@Url.Action("ManageDepartment", "Master")';
+            var link = '@Url.Action("ManageDepartment", "Master")?Type=@ViewBag.DepartmentType';
              window.location.href = link;
         }
 
@@ -128,7 +128,7 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + '&Type=@ViewBag.DepartmentType" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
                         appendstring += '<a href="javascript:void(0);" data-id="' + row["DepartmentID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
@@ -165,6 +165,7 @@
             var param = {};
             param["departmentCode"] = $('#txtDepartmentCode').val();
             param["departmentDesc"] = $('#txtDepartmentDesc').val();
+            param["departmentType"] = @ViewBag.DepartmentType;
             return param;
         }
 

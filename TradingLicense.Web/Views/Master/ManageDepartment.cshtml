@@ -16,7 +16,7 @@
     </div>
     <div class="body">
 
-        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmDepartment", id = "frmDepartment" }))
+        @using (Html.BeginForm(null, null, new { Type = ViewBag.DepartmentType }, FormMethod.Post, new { name = "frmDepartment", id = "frmDepartment" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.DepartmentID)
@@ -83,7 +83,7 @@
             }
 
     function back() {
-         var link = '@Url.Action("Department", "Master")';
+         var link = '@Url.Action("Department", "Master", new { Type = ViewBag.DepartmentType })';
         window.location.href = link;
     }
     </script>
