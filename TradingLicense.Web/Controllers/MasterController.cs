@@ -24,30 +24,10 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <returns></returns>
 
-        public ActionResult Department()
+        public ActionResult Department(int Type)
         {
+            ViewBag.DepartmentType = Type;
             return View();
-        }
-
-        /// <summary>
-        /// Get list of all the Internal Departments (Internal = 1)
-        /// </summary>
-        /// <returns>A view to display all internal departments</returns>
-        public ActionResult InternalDepartment()
-        {
-            ViewBag.DepartmentType = 1;
-            return View("Department");
-        }
-
-        /// <summary>
-        /// Get list of all the External Departments (Internal = 2)
-        /// </summary>
-        /// <returns>A view to display all external departments</returns>
-        public ActionResult ExternalDepartment()
-        {
-            ViewBag.DepartmentType = 2;
-            return View("Department");
-
         }
 
         /// <summary>
@@ -114,10 +94,11 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageDepartment(int? Id)
+        public ActionResult ManageDepartment(int Type, int? Id)
         {
             DepartmentModel departmentModel = new DepartmentModel();
             departmentModel.Active = true;
+            ViewBag.DepartmentType = Type;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -138,7 +119,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageDepartment(DepartmentModel departmentModel)
+        public ActionResult ManageDepartment(int Type, DepartmentModel departmentModel)
         {
             if (ModelState.IsValid)
             {
@@ -156,22 +137,11 @@ namespace TradingLicense.Web.Controllers
                 }
 
                 TempData["SuccessMessage"] = "Department saved successfully.";
-
-                string targetAction = null;
-                switch(departmentModel.Internal)
-                {
-                    case 2:
-                        targetAction = "ExternalDepartment";
-                        break;
-                    case 1:
-                    default:
-                        targetAction = "InternalDepartment";
-                        break;
-                }
-                return RedirectToAction(targetAction);
+                return RedirectToAction("Department", new { Type = Type });
             }
             else
             {
+                ViewBag.DepartmentType = Type;
                 return View(departmentModel);
             }
 
