@@ -29,6 +29,26 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Get list of all the Internal Departments (Internal = 1)
+        /// </summary>
+        /// <returns>A view to display all internal departments</returns>
+        public ActionResult InternalDepartment()
+        {
+            ViewBag.DepartmentType = 1;
+            return View("Department");
+        }
+
+        /// <summary>
+        /// Get list of all the External Departments (Internal = 2)
+        /// </summary>
+        /// <returns>A view to display all external departments</returns>
+        public ActionResult ExternalDepartment()
+        {
+            ViewBag.DepartmentType = 2;
+            return View("Department");
+
+        }
 
         /// <summary>
         /// Save Department Data
@@ -36,14 +56,19 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Department([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string departmentCode, string departmentDesc)
+        public JsonResult Department([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string departmentCode, string departmentDesc, int departmentType)
+        {
+            return FetchDepartmentUnit(requestModel, departmentCode, departmentDesc, departmentType);
+        }
+
+        private JsonResult FetchDepartmentUnit(IDataTablesRequest requestModel, string departmentCode, string departmentDesc, int unitType)
         {
             List<DepartmentModel> Department = new List<Model.DepartmentModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Department> query = ctx.Departments;
+                IQueryable<Department> query = ctx.Departments.Where(d => d.Internal == unitType);
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -132,7 +157,18 @@ namespace TradingLicense.Web.Controllers
 
                 TempData["SuccessMessage"] = "Department saved successfully.";
 
-                return RedirectToAction("Department");
+                string targetAction = null;
+                switch (departmentModel.Internal)
+                {
+                    case 2:
+                        targetAction = "ExternalDepartment";
+                        break;
+                    case 1:
+                    default:
+                        targetAction = "InternalDepartment";
+                        break;
+                }
+                return RedirectToAction(targetAction);
             }
             else
             {
@@ -1203,7 +1239,7 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
             int totalRecord = 0;
-           // int filteredRecord = 0;
+            // int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BusinessCode> query = ctx.BusinessCodes;
@@ -1240,7 +1276,7 @@ namespace TradingLicense.Web.Controllers
                 }
 
                 // Filter End
-                
+
                 #endregion Filtering
 
                 #region Sorting
@@ -1255,7 +1291,7 @@ namespace TradingLicense.Web.Controllers
                       (column.SortDirection ==
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
-                
+
                 var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
@@ -3210,7 +3246,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable <LoginLog> query = ctx.LoginLogs;
+                IQueryable<LoginLog> query = ctx.LoginLogs;
                 totalRecord = query.Count();
 
                 #region Filtering
