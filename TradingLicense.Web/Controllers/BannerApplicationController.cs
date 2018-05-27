@@ -184,5 +184,140 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region BannerApplication
+
+        /// <summary>
+        /// GET: BannerApplication
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BannerApplication()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Banner Application Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string bannerApplicationID)
+        {
+            List<TradingLicense.Model.BannerApplicationModel> bannerApplication = new List<Model.BannerApplicationModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BannerApplication> query = ctx.BannerApplications;
+                totalRecord = query.Count();
+
+                
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "BannerApplicationID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                bannerApplication = Mapper.Map<List<BannerApplicationModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, bannerApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get BannerApplication Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageBannerApplication(int? Id)
+        {
+            BannerApplicationModel bannerApplicationModel = new BannerApplicationModel();
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int bannerApplicationID = Convert.ToInt32(Id);
+                    var bannerApplication = ctx.BannerApplications.Where(a => a.BannerApplicationID == bannerApplicationID).FirstOrDefault();
+                    bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
+                }
+            }
+
+            return View(bannerApplicationModel);
+        }
+
+        /// <summary>
+        /// Save Banner Application Infomration
+        /// </summary>
+        /// <param name="bannerApplicationModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBannerApplication(BannerApplicationModel bannerApplicationModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    BannerApplication bannerApplication;
+                    
+
+                    bannerApplication = Mapper.Map<BannerApplication>(bannerApplicationModel);
+                    ctx.BannerApplications.AddOrUpdate(bannerApplication);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Banner Application saved successfully.";
+
+                return RedirectToAction("BannerApplication");
+            }
+            else
+            {
+                return View(bannerApplicationModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Banner Application Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBannerApplication(int id)
+        {
+            try
+            {
+                var bannerApplication = new TradingLicense.Entities.BannerApplication() { BannerApplicationID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(bannerApplication).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        
+
+        #endregion
     }
 }

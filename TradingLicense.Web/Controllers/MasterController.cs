@@ -29,7 +29,7 @@ namespace TradingLicense.Web.Controllers
             ViewBag.DepartmentType = Type;
             return View();
         }
-
+        
         /// <summary>
         /// Save Department Data
         /// </summary>
@@ -1209,7 +1209,7 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
             int totalRecord = 0;
-           // int filteredRecord = 0;
+            // int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BusinessCode> query = ctx.BusinessCodes;
@@ -1246,7 +1246,7 @@ namespace TradingLicense.Web.Controllers
                 }
 
                 // Filter End
-                
+
                 #endregion Filtering
 
                 #region Sorting
@@ -1261,7 +1261,7 @@ namespace TradingLicense.Web.Controllers
                       (column.SortDirection ==
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
-                
+
                 var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
@@ -3216,7 +3216,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable <LoginLog> query = ctx.LoginLogs;
+                IQueryable<LoginLog> query = ctx.LoginLogs;
                 totalRecord = query.Count();
 
                 #region Filtering
