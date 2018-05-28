@@ -2257,14 +2257,17 @@ namespace TradingLicense.Web.Controllers
         {
             BusinessTypeModel businessTypeModel = new BusinessTypeModel();
             businessTypeModel.Active = true;
-            if (Id != null && Id > 0)
+            using (var ctx = new LicenseApplicationContext())
             {
-                using (var ctx = new LicenseApplicationContext())
+                if (Id != null && Id > 0)
                 {
                     int businessTypeID = Convert.ToInt32(Id);
                     var businessType = ctx.BusinessTypes.Where(a => a.BusinessTypeID == businessTypeID).FirstOrDefault();
                     businessTypeModel = Mapper.Map<BusinessTypeModel>(businessType);
+                    businessTypeModel.RequiredDocs = ctx.PALinkReqDocs.Where(a => a.BusinessTypeID == businessTypeID).Select(a => a.RequiredDocID).ToList();
                 }
+                var requiredDocs = ctx.RequiredDocs;
+                ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());                
             }
 
             return View(businessTypeModel);
@@ -2289,9 +2292,44 @@ namespace TradingLicense.Web.Controllers
                         TempData["ErrorMessage"] = "Business Type already exists in the database.";
                         return View(businessTypeModel);
                     }
-
+                    bool isNew = businessTypeModel.BusinessTypeID == 0;
                     businessType = Mapper.Map<BusinessType>(businessTypeModel);
                     ctx.BusinessTypes.AddOrUpdate(businessType);
+                    List<BTLinkReqDoc> addReqDocs = new List<BTLinkReqDoc>();
+                    if (isNew)
+                    {
+                        addReqDocs.AddRange(businessTypeModel
+                                                .RequiredDocs
+                                                .Select(rd =>
+                                                            new BTLinkReqDoc
+                                                            {
+                                                                BusinessTypeID = businessType.BusinessTypeID,
+                                                                RequiredDocID = rd
+                                                            }));
+
+                    }
+                    else
+                    {
+                        var selectedDocs = ctx.PALinkReqDocs.Where(bt => bt.BusinessTypeID == businessType.BusinessTypeID).ToList();
+                        foreach (var rd in businessTypeModel.RequiredDocs)
+                        {
+                            if (!selectedDocs.Any(sd => sd.RequiredDocID == rd))
+                            {
+                                addReqDocs.Add(new BTLinkReqDoc { BusinessTypeID = businessType.BusinessTypeID, RequiredDocID = rd });
+                            }
+                        }
+                        foreach (var btReqDoc in selectedDocs)
+                        {
+                            if (!businessTypeModel.RequiredDocs.Any(rd => rd == btReqDoc.RequiredDocID))
+                            {
+                                ctx.Entry(btReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                            }
+                        }
+                    }
+                    if (addReqDocs.Count > 0)
+                    {
+                        ctx.PALinkReqDocs.AddOrUpdate(addReqDocs.ToArray());
+                    }
                     ctx.SaveChanges();
                 }
 

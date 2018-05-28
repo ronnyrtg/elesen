@@ -41,6 +41,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
                 cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));
                 cfg.CreateMap<BCLinkADModel, BCLinkAD>();
+                cfg.CreateMap<BusinessType, BusinessTypeModel>().ForMember(dest => dest.RequiredDocs, opt => opt.Ignore());
             });
         }
     }
