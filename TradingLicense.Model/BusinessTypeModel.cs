@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
@@ -15,6 +16,8 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please enter Business Description")]
         [StringLength(255)]
         public string BusinessTypeDesc { get; set; }
+
+        public List<int> RequiredDocs { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
