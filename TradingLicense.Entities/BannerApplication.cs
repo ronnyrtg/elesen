@@ -22,6 +22,7 @@ namespace TradingLicense.Entities
         public string UpdatedBy { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
+        public virtual Company Company { get; set; }
         public virtual Individual Individual { get; set; }
         public virtual Users Users { get; set; }
     }

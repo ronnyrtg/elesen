@@ -78,6 +78,8 @@ namespace TradingLicense.Data
 
         public DbSet<BannerApplication> BannerApplications { get; set; }
 
+        public DbSet<BannerObject> BannerObjects { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
