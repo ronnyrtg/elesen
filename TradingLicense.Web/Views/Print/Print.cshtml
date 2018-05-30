@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Print Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="divMessage"></div>
+
+<div class="card">
+    <div class="header">
+        <h4>Print Table Data</h4>
+    </div>
+
+    <div class="body">
+        @using(Html.BeginForm("Print","Print"))
+        {
+        <div class="filter-block">
+            <div class="row small-gutter">
+                <form>
+                    <div class="col-xs-1">
+                        
+
+                    </div>
+                    <div class="col-xs-8">
+                        @Html.DropDownList("Items", (IEnumerable<SelectListItem>
+                            )ViewBag.Items, new {name="ddlItems", id = "ddlItems", @class = "form-control" })
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="submit" name="btnPrint" value="Print" class="btn btn-primary">Generate</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+   
+
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Print Details</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p><iframe height="500" width="800"  src="~/Reports/reportview.aspx" frameborder="0"></iframe></p>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        }
+
+
+    </div>
+</div>
+
+@section scripts{
+<script>
+  
+    $(document).ready(function () {
+
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
+        var dprint = '@ViewBag.Print'
+        if (dprint != null && dprint == "Yes") {
+            $('#myModal').modal('show');
+        }
+        else
+        {
+            $('#myModal').modal('hide');
+        }
+    });
+</script>
+}
+

@@ -48,6 +48,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
+                
                 IQueryable<Department> query = ctx.Departments.Where(d => d.Internal == unitType);
                 totalRecord = query.Count();
 
