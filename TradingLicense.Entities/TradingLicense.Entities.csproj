@@ -53,6 +53,7 @@
     <Compile Include="BALinkReqDoc.cs" />
     <Compile Include="BannerApplication.cs" />
     <Compile Include="BannerCode.cs" />
+    <Compile Include="BAReqDoc.cs" />
     <Compile Include="BusinessCode.cs" />
     <Compile Include="BCLinkDep.cs" />
     <Compile Include="BusinessType.cs" />

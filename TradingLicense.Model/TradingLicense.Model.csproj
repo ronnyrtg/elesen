@@ -57,6 +57,7 @@
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BannerApplicationModel.cs" />
     <Compile Include="BannerObjectModel.cs" />
+    <Compile Include="BAReqDocModel.cs" />
     <Compile Include="BCLinkADModel.cs" />
     <Compile Include="BTLinkReqDocModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
