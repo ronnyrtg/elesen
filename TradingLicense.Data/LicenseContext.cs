@@ -80,10 +80,14 @@ namespace TradingLicense.Data
 
         public DbSet<BannerObject> BannerObjects { get; set; }
 
+        public DbSet<BAReqDoc> BAReqDocs { get; set; }
+
+        public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.HasDefaultSchema("LICENSING");
+            modelBuilder.HasDefaultSchema("C##LICENSING");
             //modelBuilder.HasDefaultSchema("C##TRADING");
         }
     }

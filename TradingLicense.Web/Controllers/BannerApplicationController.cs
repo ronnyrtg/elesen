@@ -211,7 +211,7 @@ namespace TradingLicense.Web.Controllers
                 IQueryable<BannerApplication> query = ctx.BannerApplications;
                 totalRecord = query.Count();
 
-                
+
 
                 #region Sorting
                 // Sorting
@@ -274,7 +274,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     BannerApplication bannerApplication;
-                    
+
 
                     bannerApplication = Mapper.Map<BannerApplication>(bannerApplicationModel);
                     ctx.BannerApplications.AddOrUpdate(bannerApplication);
@@ -316,8 +316,137 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
-        
+
 
         #endregion
+
+        #region BAReqDoc
+
+        /// <summary>
+        /// GET: BAReqDoc
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BAReqDoc()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Banner Code Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BAReqDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BAReqDocDesc)
+        {
+            List<TradingLicense.Model.BAReqDocModel> BAReqDoc = new List<Model.BAReqDocModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BAReqDoc> query = ctx.BAReqDocs;
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "BAReqDocID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, BAReqDoc, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get BAReqDoc Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageBAReqDoc(int? Id)
+        {
+            BAReqDocModel BAReqDocModel = new BAReqDocModel();
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int BAReqDocID = Convert.ToInt32(Id);
+                    var BAReqDoc = ctx.BAReqDocs.Where(a => a.BAReqDocID == BAReqDocID).FirstOrDefault();
+                    BAReqDocModel = Mapper.Map<BAReqDocModel>(BAReqDoc);
+                }
+            }
+
+            return View(BAReqDocModel);
+        }
+
+        /// <summary>
+        /// Save BAReqDoc Information
+        /// </summary>
+        /// <param name="BAReqDocModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBAReqDoc(BAReqDocModel BAReqDocModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    BAReqDoc BAReqDoc;
+                    BAReqDoc = Mapper.Map<BAReqDoc>(BAReqDocModel);
+                    ctx.BAReqDocs.AddOrUpdate(BAReqDoc);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Banner Code saved successfully.";
+
+                return RedirectToAction("BAReqDoc");
+            }
+            else
+            {
+                return View(BAReqDocModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Banner Code Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBAReqDoc(int id)
+        {
+            try
+            {
+                var BAReqDoc = new TradingLicense.Entities.BAReqDoc() { BAReqDocID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(BAReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+
+            #endregion
+        }
     }
 }
