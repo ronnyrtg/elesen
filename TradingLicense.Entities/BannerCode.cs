@@ -25,5 +25,7 @@ namespace TradingLicense.Entities
         {
             Active = true;
         }
+
+        public virtual BannerApplication BannerApplication { get; set; }
     }
 }

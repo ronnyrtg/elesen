@@ -1,8 +1,16 @@
 ﻿@model TradingLicense.Model.BannerApplicationModel
+@using AutoMapper;
 @{
     ViewBag.Title = "ManageBannerApplication";
 }
 @{
+    List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var bannerCode = ctx.BannerCodes.ToList();
+        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
+    }
+
     List<SelectListItem> periodList = new List<SelectListItem>();
     periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
@@ -16,36 +24,80 @@
     </div>
     <div class="body">
 
-        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerApplication", id = "frmBannerApplication" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.BannerApplicationID)
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.IndividualID, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.IndividualID)
-                    </div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerApplication", id = "frmBannerApplication" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BannerApplicationID)
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FullName)
                 </div>
             </div>
+        </div>
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Perniagaan (Jika ada)</div>
-                        @Html.TextBoxFor(m => m.CompanyID, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CompanyID)
+                        @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CompanyName)
+                    </div>
+                </div>
+            </div>
+            <hr /><div class="h4">Senarai Iklan</div><br />
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Kod Iklan</div>
+                        @Html.DropDownList("BannerCode", new SelectList(bannerCodeList.OrderBy(x => x.BannerCodeDesc), "BannerCodeID", "BCodeNumber"), "Pilih Kod Iklan", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Lokasi Dipohon</div>
+                        <input type="text" name="LocationID" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Saiz Iklan Dipohon</div>
+                        <input type="text" name="BannerSize" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Bilangan Iklan</div>
+                        <input type="text" name="BannerQuantity" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-primary" value="Tambah Iklan" />
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="h4">Dokumen Wajib <br /><br /></div>
+                            <div class="text-left">
+                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan Borang A Permohonan Lesen Iklan<br />
+                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan kad pengenalan, lesen perniagaan / pendaftaran pertubuhan (Borang 9 dan 49 atau borang D berserta maklumat perniagaan dan pemilik)<br />
+                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan lakaran yang menunjukkan maklumat lengkap visual mengenai iklan berkenaan yang mempunyai cap kelulusan daripada pihak Dewan Bahasa dan Pustaka.<br />
+                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan lakaran pelan tapak/lokasi yang menunjukkan lokasi iklan tersebut.<br />
+                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan pelan struktur yang hendak didirikan bagi maksud mempamerkan iklan itu dan telah diperakukan oleh arkitek/jurutera berdaftar* jika berkaitan<br />
+                            </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <hr />
-                </div>
-            </div>
-           
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -59,13 +111,14 @@
 </div>
 @section scripts{
     <script>
-           var actionError = '@(TempData["ErrorMessage"])';
-           if (actionError != null && actionError != "") {
-                errorMessage(actionError);
-            }
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
     function back() {
          var link = '@Url.Action("BannerApplication", "BannerApplication")';
         window.location.href = link;
     }
+    
     </script>
 }

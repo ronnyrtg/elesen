@@ -17,7 +17,15 @@ namespace TradingLicense.Model
 
         public string BannerObjectids { get; set; }
 
+        public string BannerCodeids { get; set; }
+
         public string RequiredDocIds { get; set; }
+
+        public string FullName { get; set; }
+
+        public string CompanyName { get; set; }
+
+        public string StatusDesc { get; set; }
 
         public int UserRollTemplate { get; set; }
 
@@ -26,5 +34,6 @@ namespace TradingLicense.Model
         public string UploadRequiredDocids { get; set; }
 
         public List<SelectedBannerObjectModel> selectedbannerobjectList = new List<SelectedBannerObjectModel>();
+        public List<SelectedBannerCodeModel> selectedbannercodeList = new List<SelectedBannerCodeModel>();
     }
 }

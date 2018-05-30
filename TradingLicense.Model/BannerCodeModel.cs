@@ -35,4 +35,9 @@ namespace TradingLicense.Model
         [Display(Name = "Aktif?")]
         public bool Active { get; set; }
     }
+    public class SelectedBannerCodeModel
+    {
+        public int id { get; set; }
+        public string text { get; set; }
+    }
 }

@@ -4,11 +4,15 @@
 }
 <div id="divMessage"></div>
 <div class="card">
-    <ul class="page-action-button">
-        <li><a href="#" title="Add Banner Application" onclick="addBannerApplication();"><img src="@Url.Content("~/images/add.png")" alt="Add Banner Application"></a></li>
-    </ul>
     <div class="header">
-        <h4>Senarai Permohonan Lesen Iklan</h4>
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>Senarai Permohonan Lesen Iklan</h4>
+            </div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-primary" onclick="addBannerApplication();">Permohonan Baru</button>
+            </div>
+        </div>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
@@ -92,12 +96,18 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "No. Rujukan", "data": "BannerApplicationID" },
-                        { "title": "Nama Pemohon.", "data": "IndividualID" },
-                        { "title": "Nama Perniagaan", "data": "CompanyID" },
+                        {
+                            "title": "No. Rujukan",
+                            "data": "BannerApplicationID",
+                            "render": function (data, type, row) {
+                                return '2018/B/NEW/0000'+ data;
+                            }
+                        },
+                        { "title": "Nama Pemohon.", "data": "FullName" },
+                        { "title": "Nama Perniagaan", "data": "CompanyName" },
                         { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
                         { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
-                        { "title": "Status", "data": "AppStatusID" },
+                        { "title": "Status", "data": "StatusDesc" },
                         {
                     "title": "Action",
                     "data": null,
