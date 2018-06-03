@@ -1,30 +1,55 @@
-﻿@model TradingLicense.Model.BannerCodeModel
+﻿@model TradingLicense.Model.EntmtObjectModel
 @{
-    ViewBag.Title = "ManageBannerCode";
+    ViewBag.Title = "ManageEntmtObject";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
     List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "-", Value = "0" });
     periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
     periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
     periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
 }
+
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Kemaskini Kod Iklan</h4>
+        <h4 id="headerTitle">Kemaskini Fi Lesen Hiburan</h4>
     </div>
     <div class="body">
-
-        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerCode", id = "frmBannerCode" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmEntmtObject", id = "frmEntmtObject" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.BannerCodeID)
+            @Html.HiddenFor(m => m.EntmtObjectID)
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Kod Iklan<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.BCodeNumber, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BCodeNumber)
+                        <div class="control-label">Kategori Lesen Hiburan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.EntmtObjectDesc, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.EntmtObjectDesc)
+                    </div>
+                </div>
+            </div>
+                if (Model.BaseFee > 0)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Sarkas - Fi Pertunjukan pertama</div>
+                                @Html.TextBoxFor(m => m.BaseFee, new { @class = "form-control", @maxlength = "30" })
+                                @Html.ValidationMessageFor(m => m.BaseFee)
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi bagi setiap objek<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ObjectFee, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.ObjectFee)
                     </div>
                 </div>
             </div>
@@ -32,9 +57,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Tajuk<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.BannerCodeDesc, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BannerCodeDesc)
+                        <div class="control-label">Nama Objek<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ObjectName, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.ObjectName)
                     </div>
                 </div>
             </div>
@@ -42,27 +67,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Fi Pemprosesan<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ProcessingFee, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ProcessingFee)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Fi Lesen<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PeriodFee, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PeriodFee)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
+                        <div class="control-label">Tempoh Fi Lesen<span class="cfont">*</span></div>
                     </div>
                 </div>
             </div>
@@ -87,12 +92,13 @@
                         <div class="checkbox">
                             <label>
                                 @Html.CheckBoxFor(model => model.Active)
-                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -104,15 +110,16 @@
         }
     </div>
 </div>
+
 @section scripts{
     <script>
-           var actionError = '@(TempData["ErrorMessage"])';
+         var actionError = '@(TempData["ErrorMessage"])';
            if (actionError != null && actionError != "") {
                 errorMessage(actionError);
             }
     function back() {
-         var link = '@Url.Action("BannerCode", "BannerApplication")';
+         var link = '@Url.Action("EntmtObject", "EntmtApplication")';
         window.location.href = link;
-    }
+        }
     </script>
 }

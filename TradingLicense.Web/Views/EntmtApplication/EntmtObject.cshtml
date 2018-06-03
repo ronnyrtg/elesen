@@ -1,19 +1,19 @@
 ﻿
 @{
-    ViewBag.Title = "Sector";
+    ViewBag.Title = "EntmtObject";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
-        <li><a href="#" title="Add Sector" onclick="addSector();"><img src="@Url.Content("~/images/add.png")" alt="Add Sector"></a></li>
+        <li><a href="#" title="Add EntmtObject" onclick="addEntmtObject();"><img src="@Url.Content("~/images/add.png")" alt="Add EntmtObject"></a></li>
     </ul>
     <div class="header">
-        <h4>Senarai Kumpulan Lesen Berniaga</h4>
+        <h4>Senarai Fi Lesen Hiburan</h4>
     </div>
-    <div class="grid" id="divtblSector">
-        <table cellspacing="0" class="table table-striped" id="tblSector"></table>
+    <div class="grid" id="divtblEntmtObject">
+        <table cellspacing="0" class="table table-striped" id="tblEntmtObject"></table>
     </div>
 </div>
 
@@ -33,19 +33,19 @@
         bindTable();
         });
 
-        function addSector() {
-           var link = '@Url.Action("ManageSector", "Master")';
+        function addEntmtObject() {
+           var link = '@Url.Action("ManageEntmtObject", "EntmtApplication")';
              window.location.href = link;
         }
 
      function bindTable() {
          if (!isValidSearchCriteria('SearchCriteria')) { return false; }
-         if ($.fn.DataTable.isDataTable("#tblSector")) {
-             $('#tblSector').dataTable().fnDestroy();
-             $('#divtblSector').html('<table class="table table-striped" width="100%"  id="tblSector"></table>');
+         if ($.fn.DataTable.isDataTable("#tblEntmtObject")) {
+             $('#tblEntmtObject').dataTable().fnDestroy();
+             $('#divtblEntmtObject').html('<table class="table table-striped" width="100%"  id="tblEntmtObject"></table>');
           }
 
-         table = $("#tblSector").dataTable({
+         table = $("#tblEntmtObject").dataTable({
              "autoWidth": false,
              "searching": false,
              "paging": true,
@@ -59,7 +59,7 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("Sector", "Master")',
+                        url: '@Url.Action("EntmtObject", "EntmtApplication")',
                         type: "POST",
                         data: bindSearch()
                     },
@@ -74,48 +74,75 @@
                          return meta.settings._iDisplayStart + meta.row + 1;
                      }
                  },
-                 { "title": "Nama Kumpulan", "data": "SectorDesc" },
+                 { "title": "Aktiviti", "data": "EntmtObjectDesc" },
                  {
-                     "title": "Aktif",
-                     "data": "Active",
+                     "title": "Fi",
+                     "data": "ObjectFee",
+                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
+                 },
+                 { "title": "Bagi Setiap", "data": "ObjectName" },
+                 {
+                     "title": "Tempoh",
+                     "data": "Period",
                      "render": function (data, type, row) {
-                         if (data) {
-                             return '<label class="label label-success">Aktif</label>';
+                         if (data == 1) {
+                             return 'setahun';
+                         }
+                         if (data == 2) {
+                             return 'sebulan';
+                         }
+                         if (data == 3) {
+                             return 'seminggu';
+                         }
+                         if (data == 4) {
+                             return 'sehari';
                          }
                          else {
-                             return '<label class="label label-danger">Tidak Aktif</label>';
+                             return '-';
                          }
-                     },
-                     "width": "10%",
-                     "orderable": true,
+                     }
                  },
-                        {
+                 {
                     "title": "Ubah/Padam",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageSector", "Master")?Id=' + row["SectorID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["SectorID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageEntmtObject", "EntmtApplication")?Id=' + row["EntmtObjectID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["EntmtObjectID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
                     "orderable": false,
                     "class": "action-icons"
-                }
+                 },
+                 {
+                     "title": "Aktif",
+                     "data": "Active",
+                     "render": function (data, type, row) {
+                         if (data) {
+                             return '<label class="label label-success">Active</label>';
+                         }
+                         else {
+                             return '<label class="label label-danger">InActive</label>';
+                         }
+                     },
+                     "width": "10%",
+                     "orderable": true,
+                 },
 
              ],
              "drawCallback": function (settings) {
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblSector_info').hide();
-                     $('#tblSector_paginate').hide();
-                     $('#tblSector_length').hide();
+                     $('#tblEntmtObject_info').hide();
+                     $('#tblEntmtObject_paginate').hide();
+                     $('#tblEntmtObject_length').hide();
                  }
                  else {
-                     $('#tblSector_info').show();
-                     $('#tblSector_paginate').show();
-                     $('#tblSector_length').show();
+                     $('#tblEntmtObject_info').show();
+                     $('#tblEntmtObject_paginate').show();
+                     $('#tblEntmtObject_length').show();
                  }
                  bindSortingArrow();
              }
@@ -123,13 +150,13 @@
         }
 
         function clearControls() {
-            $("#txtsectorDesc").val('');
+            $("#txtentmtObjectDesc").val('');
             bindTable();
         }
 
         function bindSearch() {
             var param = {};
-            param["sectorDesc"] = $('#txtsectorDesc').val();
+            param["entmtObjectDesc"] = $('#txtentmtObjectDesc').val();
             return param;
         }
 
@@ -153,7 +180,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteSector", "Master")'),
+                    url: encodeURI('@Url.Action("DeleteEntmtObject", "EntmtApplication")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',

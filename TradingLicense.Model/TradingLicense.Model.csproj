@@ -65,6 +65,8 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
+    <Compile Include="EntmtCodeModel.cs" />
+    <Compile Include="EntmtGroupModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="LocationModel.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="AppStatusModel.cs" />
     <Compile Include="BannerCodeModel.cs" />
     <Compile Include="LiquorCodeModel.cs" />
+    <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />

@@ -59,6 +59,9 @@
     <Compile Include="BusinessType.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Department.cs" />
+    <Compile Include="EntmtCode.cs" />
+    <Compile Include="EntmtGroup.cs" />
+    <Compile Include="EntmtObject.cs" />
     <Compile Include="HawkerCode.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />

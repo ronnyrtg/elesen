@@ -185,6 +185,7 @@
     <Compile Include="Classes\TradingLicenseCommon.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BannerApplicationController.cs" />
+    <Compile Include="Controllers\EntmtApplicationController.cs" />
     <Compile Include="Controllers\HawkerApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LiquorApplicationController.cs" />
@@ -458,6 +459,14 @@
     <Content Include="Views\BannerApplication\BannerApplication.cshtml" />
     <Content Include="Views\BannerApplication\ManageBannerApplication.cshtml" />
     <Content Include="Views\Print\Print.cshtml" />
+    <Content Include="Views\BannerApplication\BAReqDoc.cshtml" />
+    <Content Include="Views\BannerApplication\ManageBAReqDoc.cshtml" />
+    <Content Include="Views\EntmtApplication\EntmtGroup.cshtml" />
+    <Content Include="Views\EntmtApplication\ManageEntmtGroup.cshtml" />
+    <Content Include="Views\EntmtApplication\EntmtObject.cshtml" />
+    <Content Include="Views\EntmtApplication\ManageEntmtObject.cshtml" />
+    <Content Include="Views\EntmtApplication\EntmtCode.cshtml" />
+    <Content Include="Views\EntmtApplication\ManageEntmtCode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
