@@ -10,18 +10,20 @@ namespace TradingLicense.Entities
         public int PremiseApplicationID { get; set; }
         public int BusinessTypeID { get; set; }
         //public int IndividualID { get; set; }
+        public int SectorID { get; set; }
+        public int CompanyID { get; set; }
 
         public int UsersID { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string PremiseAddress { get; set; }
-        public int PremiseStatus { get; set; }
+        public int? PremiseStatus { get; set; }
 
-        public float PremiseArea { get; set; }
+        public float? PremiseArea { get; set; }
 
-        public int PremiseTypeID { get; set; }
-        public int PremiseModification { get; set; }
+        public int? PremiseTypeID { get; set; }
+        public int? PremiseModification { get; set; }
         public DateTime DateSubmitted { get; set; }
     
         [StringLength(50)]
@@ -38,5 +40,9 @@ namespace TradingLicense.Entities
         public virtual BusinessType BusinessType { get; set; }
 
         public virtual Users Users { get; set; }
+
+        public virtual Company Company { get; set; }
+
+        public virtual Sector Sector { get; set; }
     }
 }

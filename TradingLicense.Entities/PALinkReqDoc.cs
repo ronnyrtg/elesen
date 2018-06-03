@@ -15,5 +15,6 @@ namespace TradingLicense.Entities
 
         public virtual PremiseApplication PremiseApplication { get; set; }
 
+        public virtual RequiredDoc RequiredDoc { get; set; }
     }
 }
