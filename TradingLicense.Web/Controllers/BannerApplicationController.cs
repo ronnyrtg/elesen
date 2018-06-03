@@ -246,15 +246,21 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageBannerApplication(int? Id)
         {
+            List<TradingLicense.Model.BAReqDocModel> BAReqDoc = new List<Model.BAReqDocModel>();
             BannerApplicationModel bannerApplicationModel = new BannerApplicationModel();
-            if (Id != null && Id > 0)
+            using (var ctx = new LicenseApplicationContext())
             {
-                using (var ctx = new LicenseApplicationContext())
+                IQueryable<BAReqDoc> query = ctx.BAReqDocs;
+                BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
+                ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
+                if (Id != null && Id > 0)
                 {
+
                     int bannerApplicationID = Convert.ToInt32(Id);
                     var bannerApplication = ctx.BannerApplications.Where(a => a.BannerApplicationID == bannerApplicationID).FirstOrDefault();
                     bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
                 }
+
             }
 
             return View(bannerApplicationModel);
@@ -393,34 +399,34 @@ namespace TradingLicense.Web.Controllers
             return View(BAReqDocModel);
         }
 
-        /// <summary>
-        /// Save BAReqDoc Information
-        /// </summary>
-        /// <param name="BAReqDocModel"></param>
-        /// <returns></returns>
-        [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBAReqDoc(BAReqDocModel BAReqDocModel)
+        public JsonResult SaveBAReqDoc(List<BAReqDoc> lstBarReqDoc)
         {
-            if (ModelState.IsValid)
+            try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    BAReqDoc BAReqDoc;
-                    BAReqDoc = Mapper.Map<BAReqDoc>(BAReqDocModel);
-                    ctx.BAReqDocs.AddOrUpdate(BAReqDoc);
-                    ctx.SaveChanges();
+                    foreach (var item in lstBarReqDoc)
+                    {
+                        var DocCnt = ctx.BAReqDocs.Where(x => x.RequiredDocID == item.RequiredDocID).Count();
+                        if (DocCnt == 0)
+                        {
+                            BAReqDoc BAReqDoc = new BAReqDoc();
+                            BAReqDoc.BAReqDocID = 0;
+                            BAReqDoc.RequiredDocID = item.RequiredDocID;
+                            ctx.BAReqDocs.AddOrUpdate(BAReqDoc);
+                            ctx.SaveChanges();
+                        }
+                    }
                 }
 
-                TempData["SuccessMessage"] = "Banner Code saved successfully.";
-
-                return RedirectToAction("BAReqDoc");
+                TempData["SuccessMessage"] = "Banner Required Documents successfully.";
+                return Json(Convert.ToString(1));
             }
-            else
+            catch (Exception)
             {
-                return View(BAReqDocModel);
+                return Json(Convert.ToString(0));
             }
-
         }
 
         /// <summary>
