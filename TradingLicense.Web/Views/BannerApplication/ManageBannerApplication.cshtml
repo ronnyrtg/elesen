@@ -5,10 +5,11 @@
 }
 @{
     List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var bannerCode = ctx.BannerCodes.ToList();
-        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
+    List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
+            using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+            {
+            var bannerCode = ctx.BannerCodes.ToList();
+            bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
     }
 
     List<SelectListItem> periodList = new List<SelectListItem>();
@@ -88,11 +89,26 @@
                     <div class="form-group">
                         <div class="h4">Dokumen Wajib <br /><br /></div>
                             <div class="text-left">
-                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan Borang A Permohonan Lesen Iklan<br />
-                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan kad pengenalan, lesen perniagaan / pendaftaran pertubuhan (Borang 9 dan 49 atau borang D berserta maklumat perniagaan dan pemilik)<br />
-                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan lakaran yang menunjukkan maklumat lengkap visual mengenai iklan berkenaan yang mempunyai cap kelulusan daripada pihak Dewan Bahasa dan Pustaka.<br />
-                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan lakaran pelan tapak/lokasi yang menunjukkan lokasi iklan tersebut.<br />
-                                <input type="checkbox" name="RequiredDocs" /> Satu (1) salinan pelan struktur yang hendak didirikan bagi maksud mempamerkan iklan itu dan telah diperakukan oleh arkitek/jurutera berdaftar* jika berkaitan<br />
+                                <table class="table table-striped dataTable table-hover" id="Docs">
+                                    @foreach (var item in  ViewBag.bannerDocList)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input type="file" value='@item.RequiredDocID' />
+                                              
+                                            </label>
+
+                                        </td>
+                                        <td>
+                                            <label>
+                                                @item.RequiredDoc.RequiredDocDesc
+                                            </label>
+
+                                        </td>
+                                    </tr>
+                                    }
+                                </table>
                             </div>
                     </div>
                 </div>
@@ -119,6 +135,6 @@
          var link = '@Url.Action("BannerApplication", "BannerApplication")';
         window.location.href = link;
     }
-    
+
     </script>
 }

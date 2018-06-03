@@ -84,11 +84,17 @@ namespace TradingLicense.Data
 
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
 
+        public DbSet<EntmtGroup> EntmtGroups { get; set; }
+
+        public DbSet<EntmtObject> EntmtObjects { get; set; }
+
+        public DbSet<EntmtCode> EntmtCodes { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.HasDefaultSchema("C##LICENSING");
-            //modelBuilder.HasDefaultSchema("C##TRADING");
+            //modelBuilder.HasDefaultSchema("C##LICENSING");
+            modelBuilder.HasDefaultSchema("LICENSING");
         }
     }
 }
