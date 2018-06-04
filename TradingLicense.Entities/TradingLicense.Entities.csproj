@@ -62,6 +62,12 @@
     <Compile Include="BusinessType.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Department.cs" />
+    <Compile Include="EAComment.cs" />
+    <Compile Include="EALinkEC.cs" />
+    <Compile Include="EALinkInd.cs" />
+    <Compile Include="EALinkReqDoc.cs" />
+    <Compile Include="ECLinkDep.cs" />
+    <Compile Include="EntmtApplication.cs" />
     <Compile Include="EntmtCode.cs" />
     <Compile Include="EntmtGroup.cs" />
     <Compile Include="EntmtObject.cs" />
@@ -86,7 +92,10 @@
     <Compile Include="RequiredDoc.cs" />
     <Compile Include="Road.cs" />
     <Compile Include="RoleTemplate.cs" />
+    <Compile Include="SALinkReqDoc.cs" />
+    <Compile Include="SAReqDoc.cs" />
     <Compile Include="Sector.cs" />
+    <Compile Include="StallApplication.cs" />
     <Compile Include="StallCode.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Zone.cs" />

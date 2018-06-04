@@ -6,10 +6,10 @@
 @{
     List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
     List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
-            using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-            {
-            var bannerCode = ctx.BannerCodes.ToList();
-            bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+    var bannerCode = ctx.BannerCodes.ToList();
+    bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
     }
 
     List<SelectListItem> periodList = new List<SelectListItem>();

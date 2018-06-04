@@ -49,6 +49,7 @@
              "autoWidth": false,
              "searching": false,
              "paging": true,
+             "stateSave": true,
              "sPaginationType": "full_numbers",
              "language": {
                  "lengthMenu": "Page Size : _MENU_ ",
@@ -79,7 +80,14 @@
                  {
                      "title": "Fi",
                      "data": "Fee",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
+                     "render": function (data, type, row) {
+                         if (data == 0) {
+                             return 'Mengikut bilangan';
+                         }
+                         else {
+                             return 'RM' + data;
+                         }
+                     }
                  },
                  { "title": "Bagi Setiap", "data": "ObjectName" },
                  {

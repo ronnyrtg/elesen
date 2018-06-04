@@ -184,5 +184,274 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region StallApplication
+
+        /// <summary>
+        /// GET: StallApplication
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult StallApplication()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Stall Application Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult StallApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string stallApplicationID)
+        {
+            List<TradingLicense.Model.StallApplicationModel> stallApplication = new List<Model.StallApplicationModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<StallApplication> query = ctx.StallApplications;
+                totalRecord = query.Count();
+
+
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "StallApplicationID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                stallApplication = Mapper.Map<List<StallApplicationModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, stallApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get StallApplication Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageStallApplication(int? Id)
+        {
+            List<TradingLicense.Model.SAReqDocModel> SAReqDoc = new List<Model.SAReqDocModel>();
+            StallApplicationModel stallApplicationModel = new StallApplicationModel();
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<SAReqDoc> query = ctx.SAReqDocs;
+                SAReqDoc = Mapper.Map<List<SAReqDocModel>>(query.ToList());
+                ViewBag.bannerDocList = ctx.SAReqDocs.ToList();
+                if (Id != null && Id > 0)
+                {
+
+                    int stallApplicationID = Convert.ToInt32(Id);
+                    var stallApplication = ctx.StallApplications.Where(a => a.StallApplicationID == stallApplicationID).FirstOrDefault();
+                    stallApplicationModel = Mapper.Map<StallApplicationModel>(stallApplication);
+                }
+
+            }
+
+            return View(stallApplicationModel);
+        }
+
+        /// <summary>
+        /// Save Stall Application Infomration
+        /// </summary>
+        /// <param name="stallApplicationModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageStallApplication(StallApplicationModel stallApplicationModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    StallApplication stallApplication;
+
+
+                    stallApplication = Mapper.Map<StallApplication>(stallApplicationModel);
+                    ctx.StallApplications.AddOrUpdate(stallApplication);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Stall Application saved successfully.";
+
+                return RedirectToAction("StallApplication");
+            }
+            else
+            {
+                return View(stallApplicationModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Stall Application Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteStallApplication(int id)
+        {
+            try
+            {
+                var stallApplication = new TradingLicense.Entities.StallApplication() { StallApplicationID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(stallApplication).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
+        #endregion
+
+        #region SAReqDoc
+
+        /// <summary>
+        /// GET: SAReqDoc
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SAReqDoc()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Stall Code Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SAReqDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string SAReqDocDesc)
+        {
+            List<TradingLicense.Model.SAReqDocModel> SAReqDoc = new List<Model.SAReqDocModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<SAReqDoc> query = ctx.SAReqDocs;
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "SAReqDocID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                SAReqDoc = Mapper.Map<List<SAReqDocModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, SAReqDoc, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get SAReqDoc Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageSAReqDoc(int? Id)
+        {
+            SAReqDocModel SAReqDocModel = new SAReqDocModel();
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int SAReqDocID = Convert.ToInt32(Id);
+                    var SAReqDoc = ctx.SAReqDocs.Where(a => a.SAReqDocID == SAReqDocID).FirstOrDefault();
+                    SAReqDocModel = Mapper.Map<SAReqDocModel>(SAReqDoc);
+                }
+            }
+
+            return View(SAReqDocModel);
+        }
+
+        [HttpPost]
+        public JsonResult SaveSAReqDoc(List<SAReqDoc> lstBarReqDoc)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    foreach (var item in lstBarReqDoc)
+                    {
+                        var DocCnt = ctx.SAReqDocs.Where(x => x.RequiredDocID == item.RequiredDocID).Count();
+                        if (DocCnt == 0)
+                        {
+                            SAReqDoc SAReqDoc = new SAReqDoc();
+                            SAReqDoc.SAReqDocID = 0;
+                            SAReqDoc.RequiredDocID = item.RequiredDocID;
+                            ctx.SAReqDocs.AddOrUpdate(SAReqDoc);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Banner Required Documents successfully.";
+                return Json(Convert.ToString(1));
+            }
+            catch (Exception)
+            {
+                return Json(Convert.ToString(0));
+            }
+        }
+
+        /// <summary>
+        /// Delete Stall Code Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteSAReqDoc(int id)
+        {
+            try
+            {
+                var SAReqDoc = new TradingLicense.Entities.SAReqDoc() { SAReqDocID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(SAReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
     }
 }

@@ -44,6 +44,9 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BusinessType, BusinessTypeModel>().ForMember(dest => dest.RequiredDocs, opt => opt.Ignore());
                 cfg.CreateMap<BAReqDoc, BAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
                 cfg.CreateMap<EntmtCode, EntmtCodeModel>().ForMember(dest => dest.EntmtGroupDesc, opt => opt.MapFrom(s => s.EntmtGroup.EntmtGroupDesc));
+                cfg.CreateMap<EntmtApplication, EntmtApplicationModel>().ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
+                cfg.CreateMap<SAReqDoc, SAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+
             });
         }
     }

@@ -90,6 +90,24 @@ namespace TradingLicense.Data
 
         public DbSet<EntmtCode> EntmtCodes { get; set; }
 
+        public DbSet<EntmtApplication> EntmtApplications { get; set; }
+
+        public DbSet<EALinkReqDoc> EALinkReqDocs { get; set; }
+
+        public DbSet<EALinkEC> EALinkEC { get; set; }
+
+        public DbSet<EALinkInd> EALinkInds { get; set; }
+
+        public DbSet<ECLinkDep> ECLinkDeps { get; set; }
+
+        public DbSet<EAComment> EAComments { get; set; }
+
+        public DbSet<StallApplication> StallApplications { get; set; }
+
+        public DbSet<SAReqDoc> SAReqDocs { get; set; }
+
+        public DbSet<SALinkReqDoc> SALinkReqDocs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

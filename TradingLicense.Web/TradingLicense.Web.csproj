@@ -467,6 +467,12 @@
     <Content Include="Views\EntmtApplication\ManageEntmtObject.cshtml" />
     <Content Include="Views\EntmtApplication\EntmtCode.cshtml" />
     <Content Include="Views\EntmtApplication\ManageEntmtCode.cshtml" />
+    <Content Include="Views\EntmtApplication\EntmtApplication.cshtml" />
+    <Content Include="Views\EntmtApplication\ManageEntmtApplication.cshtml" />
+    <Content Include="Views\StallApplication\StallApplication.cshtml" />
+    <Content Include="Views\StallApplication\ManageStallApplication.cshtml" />
+    <Content Include="Views\StallApplication\SAReqDoc.cshtml" />
+    <Content Include="Views\StallApplication\ManageSAReqDoc.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

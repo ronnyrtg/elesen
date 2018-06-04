@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Fi<span class="cfont">*</span></div>
+                        <div class="control-label">Fi</div>
                         @Html.TextBoxFor(m => m.Fee, new { @class = "form-control", @maxlength = "30" })
                         @Html.ValidationMessageFor(m => m.Fee)
                     </div>
@@ -45,19 +45,29 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Fi bagi setiap objek<span class="cfont">*</span></div>
+                        <div class="control-label">Fi Permulaan</div>
+                        @Html.TextBoxFor(m => m.BaseFee, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.BaseFee)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi bagi setiap objek</div>
                         @Html.TextBoxFor(m => m.ObjectFee, new { @class = "form-control"})
                         @Html.ValidationMessageFor(m => m.ObjectFee)
                     </div>
                 </div>
             </div>
 
-            if (Model.ObjectName != null)
+            if (Model.ObjectFee != null)
             {
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Bagi setiap<span class="cfont">*</span></div>
+                        <div class="control-label">Bagi setiap</div>
                         @Html.TextBoxFor(m => m.ObjectName, new { @class = "form-control", @maxlength = "30" })
                         @Html.ValidationMessageFor(m => m.ObjectName)
                     </div>

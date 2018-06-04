@@ -50,12 +50,12 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>@Html.ActionLink("Lesen Berniaga (Test)", "PremiseApplication", "PremiseApplication")</li>
-                    <li><a href="#">Lesen Penjaja</a></li>
-                    <li><a href="#">Lesen Pasar</a></li>
-                    <li><a href="#">Lesen Hiburan</a></li>
+                    <li>@Html.ActionLink("Lesen Penjaja (Test)", "HawkerApplication", "HawkerApplication")</li>
+                    <li>@Html.ActionLink("Lesen Pasar (Test)", "StallApplication", "StallApplication")</li>
+                    <li>@Html.ActionLink("Lesen Hiburan (Test)", "EntmtApplication", "EntmtApplication")</li>
                     <li><a href="#">Lesen Premis Pemberi Pinjam Wang</a></li>
                     <li><a href="#">Permit Iklan Pemberi Pinjam Wang</a></li>
-                    <li><a href="#">Lesen Minuman Keras</a></li>
+                    <li>@Html.ActionLink("Lesen Minuman Keras (Test)", "LiquorApplication", "LiquorApplication")</li>
                     <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerApplication", "BannerApplication")</li>
                 </ul>
             </li>
@@ -105,7 +105,10 @@
                     <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerCode", "BannerApplication")</li>
                     <li>@Html.ActionLink("Lesen Minuman Keras (Test)", "LiquorCode", "LiquorApplication")</li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("Dokumen Wajib untuk Lesen Iklan (Test)", "BAReqDoc", "BannerApplication")</li>
+                    <li><a href="#">Dokumen Wajib</a></li>
+                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BAReqDoc", "BannerApplication")</li>
+                    <li>@Html.ActionLink("Lesen Pasar (Test)", "SAReqDoc", "StallApplication")</li>
+                    <li role="separator" class="divider"></li>
                     <li>@Html.ActionLink("Jenis Perniagaan (Test)", "BusinessType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
                     <li>@Html.ActionLink("Jenis Premis (Test)", "PremiseType", "Master")</li>

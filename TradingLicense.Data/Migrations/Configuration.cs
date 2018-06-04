@@ -240,9 +240,9 @@ namespace TradingLicense.Data.Migrations
 
             var individuals = new List<Individual>
             {
-                new Individual{FullName="Ali Bin Abu",MykadNo="710213-12-4820",NationalityID=1,PhoneNo="0108103140",AddressIC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IndividualEmail="aliabu@yahoo.com",Gender=1,Rental=0.10f,Assessment=10.0f,Compound=2.5f},
-                new Individual{FullName="Siti Aminah",MykadNo="610122-12-4933",NationalityID=1,PhoneNo="0112546778",AddressIC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IndividualEmail="sitiaminah@gmail.com",Gender=2,Rental=0.0f,Assessment=0.0f,Compound=0.0f},
-                new Individual{FullName="Chin Chee Kiong",MykadNo="500101-12-5129",NationalityID=1,PhoneNo="0148552370",AddressIC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IndividualEmail="chinchee70@gmail.com",Gender=1,Rental=100.0f,Assessment=0.25f,Compound=0.0f},
+                new Individual{FullName="Ali Bin Abu",MykadNo="710213-12-4820",NationalityID=1,PhoneNo="0108103140",AddressIC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IndividualEmail="aliabu@yahoo.com",Gender=1},
+                new Individual{FullName="Siti Aminah",MykadNo="610122-12-4933",NationalityID=1,PhoneNo="0112546778",AddressIC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IndividualEmail="sitiaminah@gmail.com",Gender=2},
+                new Individual{FullName="Chin Chee Kiong",MykadNo="500101-12-5129",NationalityID=1,PhoneNo="0148552370",AddressIC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IndividualEmail="chinchee70@gmail.com",Gender=1},
             };
             individuals.ForEach(s => context.Individuals.Add(s));
             context.SaveChanges();

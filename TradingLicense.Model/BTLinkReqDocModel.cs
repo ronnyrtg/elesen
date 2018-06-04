@@ -17,5 +17,7 @@
         public int AttachmentId { get; set; }
 
         public int PremiseApplicationID { get; set; }
+
+        public int EntmtApplicationID { get; set; }
     }
 }

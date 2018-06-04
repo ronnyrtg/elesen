@@ -10,8 +10,7 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please enter Entertainment Object Description")]
         [StringLength(255)]
         public string EntmtCodeDesc { get; set; }
-        [Required(ErrorMessage = "Please enter Fee")]
-        public float Fee { get; set; }
+        public float? Fee { get; set; }
         public float? BaseFee { get; set; }
         public float? ObjectFee { get; set; }
         public string ObjectName { get; set; }
@@ -22,5 +21,10 @@ namespace TradingLicense.Model
         public bool Active { get; set; }
 
         public string EntmtGroupDesc { get; set; }
+    }
+    public class SelectedEntmtCodeModel
+    {
+        public int id { get; set; }
+        public string text { get; set; }
     }
 }

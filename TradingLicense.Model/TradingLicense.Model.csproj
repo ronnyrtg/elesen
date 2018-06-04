@@ -65,6 +65,7 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
+    <Compile Include="EntmtApplicationModel.cs" />
     <Compile Include="EntmtCodeModel.cs" />
     <Compile Include="EntmtGroupModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />
@@ -87,7 +88,9 @@
     <Compile Include="ResetPasswordModel.cs" />
     <Compile Include="RoadModel.cs" />
     <Compile Include="RoleTemplateModel.cs" />
+    <Compile Include="SAReqDocModel.cs" />
     <Compile Include="SectorModel.cs" />
+    <Compile Include="StallApplicationModel.cs" />
     <Compile Include="StallCodeModel.cs" />
     <Compile Include="UsersModel.cs" />
     <Compile Include="ZoneModel.cs" />

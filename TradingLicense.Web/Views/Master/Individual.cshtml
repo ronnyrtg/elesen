@@ -7,25 +7,32 @@
 
 <div id="divMessage"></div>
 <div class="card">
-    @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel2))
-    {
-    <ul class="page-action-button">
-        <li><a href="#" title="Add Individual" onclick="addIndividual();"><img src="@Url.Content("~/images/add.png")" alt="Add Individual"></a></li>
-    </ul>
-    }
     <div class="header">
-        <h4>Senarai Individu</h4>
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>Senarai Individu</h4>
+            </div>
+            @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel2))
+            {
+                <div class="col-lg-2">
+                    <button type="button" class="btn btn-primary" onclick="addIndividual();">Tambah Individu Baru</button>
+                </div>
+            }
+        </div>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
-                <div class="col-xs-4">
+                <div class="col-xs-3">
                     <input type="text" name="txtfullName" id="txtfullName" class="form-control" placeholder="Nama Penuh" maxlength="100" />
                 </div>
-                <div class="col-xs-4">
-                    <input type="text" name="txtmykadPassport" id="txtmykadPassport" class="form-control" placeholder="MyKad/Paspot" maxlength="100" />
+                <div class="col-xs-3">
+                    <input type="text" name="txtmykadPassport" id="txtmykadPassport" class="form-control" placeholder="MyKad/Paspot" maxlength="30" />
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-3">
+                    <input type="text" name="txtphoneNo" id="txtphoneNo" class="form-control" placeholder="Nombor Telefon" maxlength="20" />
+                </div>
+                <div class="col-xs-3">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
                     <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
                 </div>
@@ -36,196 +43,180 @@
         <table cellspacing="0" class="table table-striped" id="tblIndividual"></table>
     </div>
 </div>
-@section scripts{
-<script type="text/javascript">
-    var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel3)';
-    var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel4)';
-    var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel)';
+        @section scripts{
+            <script type="text/javascript">
+                var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel3)';
+                var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel4)';
+                var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel)';
 
-    $(function () {
-        $('.form-control').keypress(function (e) {
-            if (e.which == 13) {
-                bindTable();
-                return false;
-            }
-        });
-         var success = '@(TempData["SuccessMessage"])';
-                if (success != null && success != "") {
-                    successMessage(success);
+                $(function () {
+                    $('.form-control').keypress(function (e) {
+                        if (e.which == 13) {
+                            bindTable();
+                            return false;
+                        }
+                    });
+                    var success = '@(TempData["SuccessMessage"])';
+                    if (success != null && success != "") {
+                        successMessage(success);
+                    }
+                    bindTable();
+                });
+
+                function addIndividual() {
+                    var link = '@Url.Action("ManageIndividual", "Master")';
+                    window.location.href = link;
                 }
-                bindTable();
-        });
 
-        function addIndividual() {
-           var link = '@Url.Action("ManageIndividual", "Master")';
-             window.location.href = link;
-        }
+                function bindTable() {
+                    if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+                    if ($.fn.DataTable.isDataTable("#tblIndividual")) {
+                        $('#tblIndividual').dataTable().fnDestroy();
+                        $('#divtblIndividual').html('<table class="table table-striped" width="100%"  id="tblIndividual"></table>');
+                    }
 
-        function bindTable() {
-
-         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
-
-         if ($.fn.DataTable.isDataTable("#tblIndividual")) {
-             $('#tblIndividual').dataTable().fnDestroy();
-             $('#divtblIndividual').html('<table class="table table-striped" width="100%"  id="tblIndividual"></table>');
-         }
-
-         table = $("#tblIndividual").dataTable({
-             "autoWidth": false,
-             "searching": false,
-             "paging": true,
-             "sPaginationType": "full_numbers",
-             "language": {
-                 "lengthMenu": "Page Size : _MENU_ ",
-                 "info": "Records _START_ to _END_ of (_TOTAL_)",
-                 "emptyTable": "No Record(s) Found"
-             },
-             "processing": true,
-             "serverSide": true,
-             "pageLength": 10,
-                    "ajax": {
-                        url: '@Url.Action("Individual", "Master")',
-                        type: "POST",
-                        data: bindSearch()
-                    },
-             "columns": [
-                 {
-                     "targets": 0,
-                     "searchable": false,
-                     "orderable": false,
-                     "title": "No.",
-                     "data": null,
-                     "render": function (data, type, full, meta) {
-                         return meta.settings._iDisplayStart + meta.row + 1;
-                     }
-                 },
-                 { "title": "Nama Penuh", "data": "FullName" },
-                 { "title": "Mykad/Paspot", "data": "MykadNo" },
-                 {
-                     "title": "Rental",
-                     "data": "Rental",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
-                     "title": "Assessment",
-                     "data": "Assessment",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
-                     "title": "Compound",
-                     "data": "Compound",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
-                     "title": "Aktif",
-                     "data": "Active",
-                     "render": function (data, type, row) {
-                         if (data) {
-                             return '<label class="label label-success">Aktif</label>';
-                         }
-                         else {
-                             return '<label class="label label-danger">Tidak Aktif</label>';
-                         }
-                     },
-                     "width": "10%",
-                     "orderable": true,
-                 },
-                         {
-                    "title": "Ubah/Padam",
-                    "data": null,
-                    "render": function (data, type, row) {
-                        var appendstring = '';
-                        if (IsEdit != "False" || IsView != "False") {
-                            if (IsEdit != "False") {
-                                appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                    table = $("#tblIndividual").dataTable({
+                        "autoWidth": false,
+                        "searching": false,
+                        "paging": true,
+                        "sPaginationType": "full_numbers",
+                        "language": {
+                            "lengthMenu": "Page Size : _MENU_ ",
+                            "info": "Records _START_ to _END_ of (_TOTAL_)",
+                            "emptyTable": "No Record(s) Found"
+                        },
+                        "processing": true,
+                        "serverSide": true,
+                        "pageLength": 10,
+                        "ajax": {
+                            url: '@Url.Action("Individual", "Master")',
+                            type: "POST",
+                            data: bindSearch()
+                        },
+                        "columns": [
+                            {
+                                "targets": 0,
+                                "searchable": false,
+                                "orderable": false,
+                                "title": "No.",
+                                "data": null,
+                                "render": function (data, type, full, meta) {
+                                    return meta.settings._iDisplayStart + meta.row + 1;
+                                }
+                            },
+                            { "title": "Nama Penuh", "searchable": true, "data": "FullName" },
+                            { "title": "Mykad/Paspot", "data": "MykadNo" },
+                            { "title": "Nombor Telefon", "data": "PhoneNo" },
+                            {
+                                "title": "Aktif",
+                                "data": "Active",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return '<label class="label label-success">Aktif</label>';
+                                    }
+                                    else {
+                                        return '<label class="label label-danger">Tidak Aktif</label>';
+                                    }
+                                },
+                                "width": "10%",
+                                "orderable": true,
+                            },
+                                    {
+                                        "title": "Ubah/Padam",
+                                        "data": null,
+                                        "render": function (data, type, row) {
+                                            var appendstring = '';
+                                            if (IsEdit != "False" || IsView != "False") {
+                                                if (IsEdit != "False") {
+                                                    appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                                                }
+                                                else {
+                                                    appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="Edit" /></a>&nbsp; '
+                                                }
+                                            }
+                                            if (IsDelete != "False") {
+                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                            }
+                                            return appendstring
+                                        },
+                                        "width": "80px",
+                                        "orderable": false,
+                                        "class": "action-icons"
+                                    }
+                        ],
+                        "drawCallback": function (settings) {
+                            //hide paging and info when empty datattable
+                            var api = this.api();
+                            if (api.rows({ page: 'current' }).data().length <= 0) {
+                                $('#tblIndividual_info').hide();
+                                $('#tblIndividual_paginate').hide();
+                                $('#tblIndividual_length').hide();
                             }
                             else {
-                                appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="Edit" /></a>&nbsp; '
+                                $('#tblIndividual_info').show();
+                                $('#tblIndividual_paginate').show();
+                                $('#tblIndividual_length').show();
                             }
+                            bindSortingArrow();
                         }
-                        if (IsDelete != "False") {
-                            appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                        }
-                        return appendstring
-                    },
-                             "width": "80px",
-                    "orderable": false,
-                    "class": "action-icons"
+                    });
                 }
-             ],
-             "drawCallback": function (settings) {
-                 //hide paging and info when empty datattable
-                 var api = this.api();
-                 if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblIndividual_info').hide();
-                     $('#tblIndividual_paginate').hide();
-                     $('#tblIndividual_length').hide();
-                 }
-                 else {
-                     $('#tblIndividual_info').show();
-                     $('#tblIndividual_paginate').show();
-                     $('#tblIndividual_length').show();
-                 }
-                 bindSortingArrow();
-             }
-                });
-        }
 
-        function clearControls() {
-            $("#txtfullName").val('');
-            $("#txtmykadPassport").val('');
-            $("#txtphoneNo").val('');
-            bindTable();
-        }
-
-        function bindSearch() {
-            var param = {};
-            param["fullName"] = $('#txtfullName').val();
-            param["MykadNo"] = $('#txtmykadPassport').val();
-            param["phoneNo"] = $('#txtphoneNo').val();
-            return param;
-        }
-
-        function isValidSearchCriteria(formName) {
-            var isValid = true;
-
-            $("form#" + formName + " input[type=text]").each(function () {
-                if ($(this).val().match(/[<>]/)) {
-                    $(this).addClass('input-validation-error');
-                    isValid = false;
+                function clearControls() {
+                    $("#txtfullName").val('');
+                    $("#txtmykadPassport").val('');
+                    $("#txtphoneNo").val('');
+                    bindTable();
                 }
-                else {
-                    $(this).removeClass('input-validation-error');
+
+                function bindSearch() {
+                    var param = {};
+                    param["fullName"] = $('#txtfullName').val();
+                    param["mykadPassport"] = $('#txtmykadPassport').val();
+                    param["phoneNo"] = $('#txtphoneNo').val();
+                    return param;
                 }
-            });
-            return isValid;
-        }
 
-        function bindDelete(item) {
-            var x = confirm("Are you sure you want to delete?");
-            if (x) {
-                $.ajax({
-                    type: "POST",
-                    url: encodeURI('@Url.Action("DeleteIndividual", "Master")'),
-                    data: { "Id": $(item).attr('data-id') },
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data, textStatus, XMLHttpRequest) {
-                        if (data.success) {
-                            bindTable();
-                            successMessage(data.message);
+                function isValidSearchCriteria(formName) {
+                    var isValid = true;
 
+                    $("form#" + formName + " input[type=text]").each(function () {
+                        if ($(this).val().match(/[<>]/)) {
+                            $(this).addClass('input-validation-error');
+                            isValid = false;
                         }
                         else {
-                            successMessage(data.message);
+                            $(this).removeClass('input-validation-error');
                         }
-                    },
-                    error: function (jqXHR, exception, errMsg) {
-                    }
-                });
-            }
-        }
+                    });
+                    return isValid;
+                }
 
-        </script>
-    }
+                function bindDelete(item) {
+                    var x = confirm("Are you sure you want to delete?");
+                    if (x) {
+                        $.ajax({
+                            type: "POST",
+                            url: encodeURI('@Url.Action("DeleteIndividual", "Master")'),
+                            data: { "Id": $(item).attr('data-id') },
+                            cache: false,
+                            dataType: 'json',
+                            success: function (data, textStatus, XMLHttpRequest) {
+                                if (data.success) {
+                                    bindTable();
+                                    successMessage(data.message);
+
+                                }
+                                else {
+                                    successMessage(data.message);
+                                }
+                            },
+                            error: function (jqXHR, exception, errMsg) {
+                            }
+                        });
+                    }
+                }
+
+            </script>
+        }
 
