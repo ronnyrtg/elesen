@@ -6,10 +6,18 @@
 }
 @{
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var businessType = ctx.BusinessTypes.ToList();
         businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+
+        var sectors = ctx.Sectors.ToList();
+        sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
+
+        var companies = ctx.Companies.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
     }
 
     List<TradingLicense.Model.SelectedBusinessCodeModel> businessCodeList = new List<TradingLicense.Model.SelectedBusinessCodeModel>();
@@ -63,6 +71,15 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
+                        <div class="control-label">Sectors.<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorDesc), "SectorID", "SectorDesc"), "Select Sector", new { @class = "form-control", @onchange = "filterBusinessCodes()" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
                         <div class="control-label">Business Type.<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Select Business Type", new { @class = "form-control", @onchange = "businessTypeChange()" })
                     </div>
@@ -86,9 +103,18 @@
                         @Html.HiddenFor(model => model.BusinessCodeids)
                     </div>
                 </div>
-                <div class="col-sm-4">
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindBusinessCodeTable(); return false;'>View</button>
+                        <div class="control-label">
+                            Full Name (Mykad/Passport No.).   @if (Model.UserRollTemplate > 2)
+                            {<span class="cfont">*</span>}
+                        </div>
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        @Html.HiddenFor(model => model.Individualids)
+                        @Html.HiddenFor(model => model.newIndividualsList)
                     </div>
                 </div>
             </div>
@@ -96,51 +122,43 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">
-                            Mykad/Passport No.   @if (Model.UserRollTemplate > 2)
-                            {<span class="cfont">*</span>}
+                        <div class="control-label">Company.<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+            {
+                <div class="row">
+                    <div class="col-md-3 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Premise Area<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
+                            @Html.ValidationMessageFor(m => m.PremiseArea)
                         </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Premise Status<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.PremiseStatus, new SelectList(PremiseStatusList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PremiseStatus)
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Premise Type<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Select Premise Type", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.PremiseModification, new { @class = "control-label" })<span class="cfont">*</span>
+                            @Html.DropDownListFor(m => m.PremiseModification, new SelectList(PremiseModificationList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PremiseModification)
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindMykadTable(); return false;'>View</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Area<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
-                        @Html.ValidationMessageFor(m => m.PremiseArea)
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Status<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseStatus, new SelectList(PremiseStatusList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PremiseStatus)
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Type<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Select Premise Type", new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.PremiseModification, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.DropDownListFor(m => m.PremiseModification, new SelectList(PremiseModificationList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PremiseModification)
-                    </div>
-                </div>
-            </div>
-            
+            }
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
@@ -168,15 +186,12 @@
 
                         @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                         {
-                            if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                            {
-                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(false); return false;' id="btnsubmitdraft" value="Save Draft " /> }
-                            }
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Save Draft " /> }
 
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(false); return false;' id="btnsubmit" />
                             }
                         }
 
@@ -225,38 +240,34 @@
     </div>
 </div>
 
-<!--Business Code Modal -->
-<div id="businessCodeModal" class="modal fade" role="dialog">
+<div id="editIndividual" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Business Code</h4>
+                <h4 class="modal-title">Individual Details</h4>
             </div>
             <div class="modal-body">
-                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessCode"></table>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="control-label">Full Name.<span class="cfont">*</span></div>
+                            <input id="newIndividualFullName" type="text" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="control-label">Mykad/Passport No.<span class="cfont">*</span></div>
+                            <input id="newIndividualPassport" type="text" value="" />
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--mykadCodeModal-->
-<div id="mykadCodeModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Mykad/Passport</h4>
-            </div>
-            <div class="modal-body">
-                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblMykad"></table>
-            </div>
-            <div class="modal-footer">
+                <button id="modalUpdateIndividual" type="button" class="btn btn-primary">OK</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -342,6 +353,7 @@
 
     var requiredDocList = [];
     var addtionalDocList = [];
+    var selectedMode = @ViewBag.SelectedMode;
 
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
@@ -351,6 +363,12 @@
     $(function () {
 
         userRollTemplate = $("#UserRollTemplate").val();
+
+        var success = '@(TempData["SuccessMessage"])';
+        if (success != null && success != "") {
+            successMessage(success);
+        }
+
         visibleGridUploadColume = true;
             if (userRollTemplate > 1) {
                 visibleGridColume = true;
@@ -358,19 +376,26 @@
 
             $("#businessCodeList").select2();
             $("#individualList").select2();
+            $("#companyList").select2({
+                placeholder: "Select Company"
+            });
 
             AddRules();
 
             $("#businessCodeList").select2({
                 placeholder: "Search for a Business Code",
-                minimumInputLength: 2,
+                minimumInputLength: 0,
                 ajax: {
                     type: "POST",
                     url: encodeURI('@Url.Action("FillBusinessCode", "PremiseApplication")'),
                     //Data: allows us to pass a parameter to the controller
                     data: function (query) {
                         //console.log(query)
-                        return { query: query.term }
+                        return { 
+                            query: query.term, 
+                            selectedMode: selectedMode,
+                            selectedSector:  $("#SectorID").val()
+                        }
                     },
                     //processes the results from the JSON method and gives us the select list
                     processResults: function (data) {
@@ -381,10 +406,77 @@
                     }
                 }
             });
+            
+            $("#businessCodeList").on('select2:select', function(e) {
+                var data = e.params.data;
+                selectedMode = data.mode;
+            });
+            
+            $("#businessCodeList").on('select2:unselect', function(e) {
+                if(!$("#businessCodeList").val()) {
+                    selectedMode = 0;
+                }
+            });
+
+            function showIndividualModal(data) {
+                $('#modalUpdateIndividual').off('click');
+                $('#modalUpdateIndividual').on('click', function() {
+                    data.fullName = $('#newIndividualFullName').val();
+                    data.passportNo = $('#newIndividualPassport').val();
+                    $("#individualList").trigger('change');
+                    $('#editIndividual').modal('hide');
+                });
+                $('#newIndividualFullName').val(data.fullName);
+                $('#newIndividualPassport').val(data.passportNo);
+                $('#editIndividual').modal('show');
+            }
+
+            function individualFormating(state) {
+                if (!state.isNew) {
+                    return state.text;
+                }
+                
+                state.text = state.fullName + ' (' + state.passportNo +')';
+                var $state = $(
+                  '<span>' + state.text +'&nbsp;</span>'
+                );
+                if(state.isNew) {
+                    var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                    editLink.on('click', function() {
+                        showIndividualModal(state);
+                    });
+                    $state.append(editLink);
+                }
+                return $state;
+            }
 
              $("#individualList").select2({
-                placeholder: "Select  Mykad/Passport No",
+                placeholder: "Select Full Name or Mykad/Passport No",
                 minimumInputLength: 2,
+                tags: true,
+                tokenSeparators: [';'],
+                templateSelection: individualFormating,
+                createTag: function (params) {
+                    var term = params.term;
+                    var indexOfPassport = term.indexOf('(');
+                    var fullName= '';
+                    var passportNo = '';
+                    if(indexOfPassport > 0) {
+                        var endIndex = term.indexOf(')', indexOfPassport);
+                        passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                        fullName = term.substring(0, indexOfPassport);
+                    } else {
+                        fullName = term;
+                    }
+
+                    return {
+                        id: term,
+                        text: fullName + ' (' + passportNo +')',
+                        fullName: fullName,
+                        passportNo: passportNo,
+                        isNew: true
+                    };                    
+                },
                 ajax: {
                     type: "POST",
                     url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
@@ -401,7 +493,7 @@
                         };
                     }
                 }
-            });
+             });
 
             var businessSelecteId = [];
             if ('@Model.BusinessCodeids' != null && '@Model.BusinessCodeids' != '') {
@@ -500,17 +592,41 @@
                 alert("Please select all checkbox for Additional Document");
                 return false;
             }else {
+                var individuals = $("#individualList").select2('data');
+                var newIndividuals = [];
+                for(var i =0; i< individuals.length; i++) {
+                    var ind = individuals[i];
+                    if(ind.isNew) {
+                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                    }
+                }
+                if(newIndividuals.length >0) {
+                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                }
                 $("#frmPremiseApplication").submit();
             }
+    }
+
+    function filterBusinessCodes() {
+
     }
 
     function changeBussinesscode() {
             $('#BusinessCodeids').val($('#businessCodeList').val());
             bindAdditionalTable();
+            checkButtonState();
     }
 
     function changeIndindividual() {
-            $('#Individualids').val($('#individualList').val());
+        var individuals = $("#individualList").select2('data');
+        var newIndividuals = [];
+        for(var i =0; i< individuals.length; i++) {
+            var ind = individuals[i];
+            if(!ind.isNew) {
+                newIndividuals.push(ind.id);
+            }
+        }
+        $('#Individualids').val(newIndividuals.join(','));
     }
 
     function back() {
@@ -522,6 +638,7 @@
         if ($("#BusinessTypeID").val() > 0) {
              bindTable();
         }
+        checkButtonState();
     }
 
     function bindDownload(attechmentID) {
@@ -530,85 +647,6 @@
         }
     }
 
-    function bindSearchBusinessCode() {
-
-        var param = {};
-        param["BusinessCodeids"] = $("#BusinessCodeids").val();
-        return param;
-    }
-
-    function bindBusinessCodeTable() {
-
-            if ($("#BusinessCodeids").val() == "") {
-                return false;
-            }
-
-            $('#businessCodeModal').modal('show');
-
-            if ($.fn.DataTable.isDataTable("#tblBusinessCode")) {
-                $('#tblBusinessCode').dataTable().fnDestroy();
-            }
-
-            table = $("#tblBusinessCode").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("BusinessCode", "PremiseApplication")',
-                    type: "POST",
-                    data: bindSearchBusinessCode()
-                },
-                "columns": [
-                    { "title": "Code Number", "data": "CodeNumber", "orderable": false },
-                    { "title": "Code Description", "data": "CodeDesc", "orderable": false }
-                ]
-            });
-    }
-
-    function bindSearchMykad() {
-
-        var param = {};
-        param["Individualids"] = $("#Individualids").val();
-        return param;
-    }
-
-    function bindMykadTable() {
-
-            if ($("#Individualids").val() == "") {
-                return false;
-            }
-
-            $('#mykadCodeModal').modal('show');
-
-            if ($.fn.DataTable.isDataTable("#tblMykad")) {
-                $('#tblMykad').dataTable().fnDestroy();
-            }
-
-            table = $("#tblMykad").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("Mykad", "PremiseApplication")',
-                    type: "POST",
-                    data: bindSearchMykad()
-                },
-                "columns": [
-                    { "title": "Full Name", "data": "FullName", "orderable": false },
-                    { "title": "Mykad No", "data": "MykadNo", "orderable": false }
-                ]
-            });
-    }
 
     function bindSearch() {
         var param = {};

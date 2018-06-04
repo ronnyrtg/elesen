@@ -93,6 +93,7 @@
     <Compile Include="StallApplicationModel.cs" />
     <Compile Include="StallCodeModel.cs" />
     <Compile Include="UsersModel.cs" />
+    <Compile Include="ViewPremiseApplicationModel.cs" />
     <Compile Include="ZoneModel.cs" />
   </ItemGroup>
   <ItemGroup>

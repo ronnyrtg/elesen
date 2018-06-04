@@ -38,6 +38,11 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<PremiseApplication, PremiseApplicationModel>()
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
+                cfg.CreateMap<PremiseApplication, ViewPremiseApplicationModel>()
+                            .ForMember(dest => dest.Sector, opt => opt.MapFrom(s => s.Sector.SectorDesc))
+                            .ForMember(dest => dest.Company, opt => opt.MapFrom(s => s.Company.CompanyName))
+                            .ForMember(dest => dest.BusinessType, opt => opt.MapFrom(s => s.BusinessType.BusinessTypeDesc))
+                            .ForMember(dest => dest.PremiseType, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
                 cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
                 cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));
                 cfg.CreateMap<BCLinkADModel, BCLinkAD>();

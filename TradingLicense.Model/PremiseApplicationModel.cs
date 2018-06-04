@@ -8,6 +8,11 @@ namespace TradingLicense.Model
     {
         public int PremiseApplicationID { get; set; }
 
+        public int SectorID { get; set; }
+
+        [Required(ErrorMessage = "Please Select Company")]
+        public int CompanyID { get; set; }
+
         [Required(ErrorMessage = "Please Select Business Type")]
         public int BusinessTypeID { get; set; }
 
@@ -20,16 +25,16 @@ namespace TradingLicense.Model
         public string PremiseAddress { get; set; }
 
         [Required(ErrorMessage = "Please Select Premise Status")]
-        public int PremiseStatus { get; set; }
+        public int? PremiseStatus { get; set; }
 
         [Required(ErrorMessage = "Please Select Premise Type")]
-        public int PremiseTypeID { get; set; }
+        public int? PremiseTypeID { get; set; }
 
         [Required(ErrorMessage = "Please Enter Premise Area")]
-        public float PremiseArea { get; set; }
+        public float? PremiseArea { get; set; }
 
         [Required(ErrorMessage = "Please Select Premise Modification")]
-        public int PremiseModification { get; set; }
+        public int? PremiseModification { get; set; }
 
         public DateTime DateSubmitted { get; set; }
         
@@ -57,8 +62,16 @@ namespace TradingLicense.Model
 
         public string UploadAdditionalDocids { get; set; }
 
+        public string newIndividualsList { get; set; }
+
         public List<SelectedBusinessCodeModel> selectedbusinessCodeList = new List<SelectedBusinessCodeModel>();
 
         public List<SelectedIndividualModel> selectedIndividualList = new List<SelectedIndividualModel>();
+    }
+
+    public class NewIndividualModel
+    {
+        public string fullName { get; set; }
+        public string passportNo { get; set; }
     }
 }
