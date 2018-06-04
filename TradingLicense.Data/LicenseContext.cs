@@ -53,7 +53,6 @@ namespace TradingLicense.Data
 
         public DbSet<BusinessType> BusinessTypes { get; set; }
 
-        public DbSet<PALinkInd> PALinkInds { get; set; }
         public DbSet<Holiday> Holidays { get; set; }
 
         public DbSet<PALinkAddDoc> PALinkAddDocs { get; set; }
@@ -84,11 +83,35 @@ namespace TradingLicense.Data
 
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
 
+        public DbSet<EntmtGroup> EntmtGroups { get; set; }
+
+        public DbSet<EntmtObject> EntmtObjects { get; set; }
+
+        public DbSet<EntmtCode> EntmtCodes { get; set; }
+
+        public DbSet<EntmtApplication> EntmtApplications { get; set; }
+
+        public DbSet<EALinkReqDoc> EALinkReqDocs { get; set; }
+
+        public DbSet<EALinkEC> EALinkEC { get; set; }
+
+        public DbSet<EALinkInd> EALinkInds { get; set; }
+
+        public DbSet<ECLinkDep> ECLinkDeps { get; set; }
+
+        public DbSet<EAComment> EAComments { get; set; }
+
+        public DbSet<StallApplication> StallApplications { get; set; }
+
+        public DbSet<SAReqDoc> SAReqDocs { get; set; }
+
+        public DbSet<SALinkReqDoc> SALinkReqDocs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.HasDefaultSchema("C##LICENSING");
-            //modelBuilder.HasDefaultSchema("C##TRADING");
+            //modelBuilder.HasDefaultSchema("C##LICENSING");
+            modelBuilder.HasDefaultSchema("LICENSING");
         }
     }
 }

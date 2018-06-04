@@ -55,5 +55,7 @@ namespace TradingLicense.Model
     {
         public int id { get; set; }
         public string text { get; set; }
+        public string fullName { get; set; }
+        public string passportNo { get; set; }
     }
 }

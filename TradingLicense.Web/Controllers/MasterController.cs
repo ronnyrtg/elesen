@@ -1566,7 +1566,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Individual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string fullName, string individualEmail, string phoneNo)
+        public JsonResult Individual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string fullName, string mykadPassport, string phoneNo)
         {
             List<TradingLicense.Model.IndividualModel> Individual = new List<Model.IndividualModel>();
             int totalRecord = 0;
@@ -1579,11 +1579,11 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if (!string.IsNullOrWhiteSpace(fullName) || !string.IsNullOrWhiteSpace(individualEmail) || !string.IsNullOrWhiteSpace(phoneNo))
+                if (!string.IsNullOrWhiteSpace(fullName) || !string.IsNullOrWhiteSpace(mykadPassport) || !string.IsNullOrWhiteSpace(phoneNo))
                 {
                     query = query.Where(p =>
                                     p.FullName.Contains(fullName) &&
-                                    p.IndividualEmail.Contains(individualEmail) &&
+                                    p.MykadNo.Contains(mykadPassport) &&
                                     p.PhoneNo.Contains(phoneNo)
                                 );
                 }

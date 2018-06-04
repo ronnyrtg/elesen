@@ -2,17 +2,17 @@
 
 namespace TradingLicense.Entities
 {
-    public class PALinkInd
+    public class EALinkInd
     {
         [Key]
-        public int PALinkIndID { get; set; }
-        
-        public int PremiseApplicationID { get; set; }
+        public int EALinkIndID { get; set; }
+
+        public int EntmtApplicationID { get; set; }
 
         public int IndividualID { get; set; }
 
         public virtual Individual Individual { get; set; }
 
-        public virtual PremiseApplication PremiseApplication { get; set; }
+        public virtual EntmtApplication EntmtApplication { get; set; }
     }
 }

@@ -17,7 +17,7 @@
         <li><a href="#" title="Add Business Code" onclick="addBusinessCode();"><img src="@Url.Content("~/images/add.png")" alt="Add Business Code"></a></li>
     </ul>
     <div class="header">
-        <h4>Business Codes</h4>
+        <h4>Senarai Kod Lesen Berniaga</h4>
     </div>
     <div class="grid" id="divtblBusinessCode">
         <table cellspacing="0" class="table table-striped" id="tblBusinessCode"></table>
@@ -100,11 +100,11 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Group", "data": "SectorDesc" },
-                        { "title": "Code Number", "data": "CodeNumber" },
-                        { "title": "Code Description", "data": "CodeDesc"},
+                        { "title": "Kumpulan", "data": "SectorDesc" },
+                        { "title": "Kod", "data": "CodeNumber" },
+                        { "title": "Aktiviti", "data": "CodeDesc"},
                         {
-                            "title": "Fee (RM/m&sup2;)",
+                            "title": "Fi (RM/m&sup2;)",
                             "data": "DefaultRate",
                             "render": $.fn.dataTable.render.number( ',', '.', 2, 'RM' ),
                             "orderable": true,
@@ -113,16 +113,16 @@
                             "title": "Kelulusan",
                             "data": "Mode",
                             "render": function (data, type, row) {
-                                if (data=1) {
+                                if (data == 1) {
                                     return '<label class="label label-success">Ekspres</label>';
                                 }
-                                if (data=2) {
+                                if (data == 2) {
                                     return '<label class="label label-danger">Pengarah</label>';
                                 }
-                                if (data = 3) {
+                                if (data == 3) {
                                     return '<label class="label label-danger">Mesyuarat JP</label>';
                                 }
-                                if (data = 4) {
+                                if (data == 4) {
                                     return '<label class="label label-danger">KPE</label>';
                                 }
                             },
@@ -130,21 +130,21 @@
                             "orderable": true,
                         },
                         {
-                            "title": "Active",
+                            "title": "Aktif",
                             "data": "Active",
                             "render": function (data, type, row) {
                                 if (data) {
-                                    return '<label class="label label-success">Active</label>';
+                                    return '<label class="label label-success">Aktif</label>';
                                 }
                                 else {
-                                    return '<label class="label label-danger">InActive</label>';
+                                    return '<label class="label label-danger">Tidak Aktif</label>';
                                 }
                             },
                             "width": "10%",
                             "orderable": true,
                         },
                         {
-                    "title": "Action",
+                    "title": "Ubah/Padam",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';

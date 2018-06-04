@@ -24,6 +24,7 @@ namespace TradingLicense.Entities
         public BannerCode()
         {
             Active = true;
+            Mode = 2;
         }
 
         public virtual BannerApplication BannerApplication { get; set; }

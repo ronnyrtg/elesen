@@ -1,0 +1,215 @@
+﻿
+@{
+    ViewBag.Title = "EntmtCode";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <ul class="page-action-button">
+        <li><a href="#" title="Add EntmtCode" onclick="addEntmtCode();"><img src="@Url.Content("~/images/add.png")" alt="Add EntmtCode"></a></li>
+    </ul>
+    <div class="header">
+        <h4>Senarai Fi Lesen Membuka Tempat Hiburan</h4>
+    </div>
+    <div class="grid" id="divtblEntmtCode">
+        <table cellspacing="0" class="table table-striped" id="tblEntmtCode"></table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('.form-control').keypress(function (e) {
+                if (e.which == 13) {
+                    bindTable();
+                    return false;
+                }
+            });
+         var success = '@(TempData["SuccessMessage"])';
+                if (success != null && success != "") {
+                    successMessage(success);
+                }
+        bindTable();
+        });
+
+        function addEntmtCode() {
+           var link = '@Url.Action("ManageEntmtCode", "EntmtApplication")';
+             window.location.href = link;
+        }
+
+     function bindTable() {
+         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+         if ($.fn.DataTable.isDataTable("#tblEntmtCode")) {
+             $('#tblEntmtCode').dataTable().fnDestroy();
+             $('#divtblEntmtCode').html('<table class="table table-striped" width="100%"  id="tblEntmtCode"></table>');
+          }
+
+         table = $("#tblEntmtCode").dataTable({
+             "autoWidth": false,
+             "searching": false,
+             "paging": true,
+             "stateSave": true,
+             "sPaginationType": "full_numbers",
+             "language": {
+                 "lengthMenu": "Page Size : _MENU_ ",
+                 "info": "Records _START_ to _END_ of (_TOTAL_)",
+                 "emptyTable": "No Record(s) Found"
+             },
+             "processing": true,
+             "serverSide": true,
+             "pageLength": 10,
+                    "ajax": {
+                        url: '@Url.Action("EntmtCode", "EntmtApplication")',
+                        type: "POST",
+                        data: bindSearch()
+                    },
+             "columns": [
+                 {
+                     "targets": 0,
+                     "searchable": false,
+                     "orderable": false,
+                     "title": "No.",
+                     "data": null,
+                     "render": function (data, type, full, meta) {
+                         return meta.settings._iDisplayStart + meta.row + 1;
+                     }
+                 },
+                 { "title": "Kumpulan", "data": "EntmtGroupDesc" },
+                 { "title": "Aktiviti", "data": "EntmtCodeDesc" },
+                 {
+                     "title": "Fi",
+                     "data": "Fee",
+                     "render": function (data, type, row) {
+                         if (data == 0) {
+                             return 'Mengikut bilangan';
+                         }
+                         else {
+                             return 'RM' + data;
+                         }
+                     }
+                 },
+                 { "title": "Bagi Setiap", "data": "ObjectName" },
+                 {
+                     "title": "Tempoh",
+                     "data": "Period",
+                     "render": function (data, type, row) {
+                         if (data == 1) {
+                             return 'setahun';
+                         }
+                         if (data == 2) {
+                             return 'sebulan';
+                         }
+                         if (data == 3) {
+                             return 'seminggu';
+                         }
+                         if (data == 4) {
+                             return 'sehari';
+                         }
+                         else {
+                             return '-';
+                         }
+                     }
+                 },
+                 {
+                    "title": "Ubah/Padam",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        appendstring += '<a  href="@Url.Action("ManageEntmtCode", "EntmtApplication")?Id=' + row["EntmtCodeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["EntmtCodeID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        return appendstring
+                    },
+                            "width": "80px",
+                    "orderable": false,
+                    "class": "action-icons"
+                 },
+                 {
+                     "title": "Aktif",
+                     "data": "Active",
+                     "render": function (data, type, row) {
+                         if (data) {
+                             return '<label class="label label-success">Active</label>';
+                         }
+                         else {
+                             return '<label class="label label-danger">InActive</label>';
+                         }
+                     },
+                     "width": "10%",
+                     "orderable": true,
+                 },
+
+             ],
+             "drawCallback": function (settings) {
+                 //hide paging and info when empty datattable
+                 var api = this.api();
+                 if (api.rows({ page: 'current' }).data().length <= 0) {
+                     $('#tblEntmtCode_info').hide();
+                     $('#tblEntmtCode_paginate').hide();
+                     $('#tblEntmtCode_length').hide();
+                 }
+                 else {
+                     $('#tblEntmtCode_info').show();
+                     $('#tblEntmtCode_paginate').show();
+                     $('#tblEntmtCode_length').show();
+                 }
+                 bindSortingArrow();
+             }
+                });
+        }
+
+        function clearControls() {
+            $("#txtentmtCodeDesc").val('');
+            bindTable();
+        }
+
+        function bindSearch() {
+            var param = {};
+            param["entmtCodeDesc"] = $('#txtentmtCodeDesc').val();
+            return param;
+        }
+
+        function isValidSearchCriteria(formName) {
+            var isValid = true;
+
+            $("form#" + formName + " input[type=text]").each(function () {
+                if ($(this).val().match(/[<>]/)) {
+                    $(this).addClass('input-validation-error');
+                    isValid = false;
+                }
+                else {
+                    $(this).removeClass('input-validation-error');
+                }
+            });
+            return isValid;
+        }
+
+        function bindDelete(item) {
+            var x = confirm("Are you sure you want to delete?");
+            if (x) {
+                $.ajax({
+                    type: "POST",
+                    url: encodeURI('@Url.Action("DeleteEntmtCode", "EntmtApplication")'),
+                    data: { "Id": $(item).attr('data-id') },
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data, textStatus, XMLHttpRequest) {
+                        if (data.success) {
+                            bindTable();
+                            successMessage(data.message);
+
+                        }
+                        else {
+                            successMessage(data.message);
+                        }
+                    },
+                    error: function (jqXHR, exception, errMsg) {
+                    }
+                });
+            }
+        }
+
+    </script>
+}
+
+

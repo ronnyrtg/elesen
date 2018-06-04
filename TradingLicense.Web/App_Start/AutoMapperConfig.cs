@@ -37,12 +37,22 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();
                 cfg.CreateMap<PremiseApplication, PremiseApplicationModel>()
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc))
+                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
+                cfg.CreateMap<PremiseApplication, ViewPremiseApplicationModel>()
+                            .ForMember(dest => dest.Sector, opt => opt.MapFrom(s => s.Sector.SectorDesc))
+                            .ForMember(dest => dest.Company, opt => opt.MapFrom(s => s.Company.CompanyName))
+                            .ForMember(dest => dest.BusinessType, opt => opt.MapFrom(s => s.BusinessType.BusinessTypeDesc))
+                            .ForMember(dest => dest.PremiseType, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
                 cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
                 cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));
                 cfg.CreateMap<BCLinkADModel, BCLinkAD>();
                 cfg.CreateMap<BusinessType, BusinessTypeModel>().ForMember(dest => dest.RequiredDocs, opt => opt.Ignore());
                 cfg.CreateMap<BAReqDoc, BAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+                cfg.CreateMap<EntmtCode, EntmtCodeModel>().ForMember(dest => dest.EntmtGroupDesc, opt => opt.MapFrom(s => s.EntmtGroup.EntmtGroupDesc));
+                cfg.CreateMap<EntmtApplication, EntmtApplicationModel>().ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
+                cfg.CreateMap<SAReqDoc, SAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+
             });
         }
     }

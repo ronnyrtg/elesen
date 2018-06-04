@@ -34,6 +34,26 @@ namespace TradingLicense.Data.Migrations
             sector.ForEach(s => context.Sectors.Add(s));
             context.SaveChanges();
 
+            var entmtGroup = new List<EntmtGroup>
+            {
+                new EntmtGroup {EntmtGroupID=1,EntmtGroupCode="L001",EntmtGroupDesc="Oditorium/Dewan"},
+                new EntmtGroup {EntmtGroupID=2,EntmtGroupCode="L002",EntmtGroupDesc="Panggung Wayang/Panggung"},
+                new EntmtGroup {EntmtGroupID=3,EntmtGroupCode="L003",EntmtGroupDesc="Pusat Hiburan (Dalam Bangunan)"},
+                new EntmtGroup {EntmtGroupID=4,EntmtGroupCode="L004",EntmtGroupDesc="Pusat Hiburan/Taman Hiburan (Luar Bangunan)"},
+                new EntmtGroup {EntmtGroupID=5,EntmtGroupCode="L005",EntmtGroupDesc="Lorong Boling"},
+                new EntmtGroup {EntmtGroupID=6,EntmtGroupCode="L006",EntmtGroupDesc="Gelanggang Luncur"},
+                new EntmtGroup {EntmtGroupID=7,EntmtGroupCode="L007",EntmtGroupDesc="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan"},
+                new EntmtGroup {EntmtGroupID=8,EntmtGroupCode="L008",EntmtGroupDesc="Dewan Tarian/Disko/Kabaret"},
+                new EntmtGroup {EntmtGroupID=9,EntmtGroupCode="L009",EntmtGroupDesc="Dewan Biliard/Snuker"},
+                new EntmtGroup {EntmtGroupID=10,EntmtGroupCode="L010",EntmtGroupDesc="Stadium"},
+                new EntmtGroup {EntmtGroupID=11,EntmtGroupCode="L011",EntmtGroupDesc="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran"},
+                new EntmtGroup {EntmtGroupID=12,EntmtGroupCode="L012",EntmtGroupDesc="Hiburan bagi maksud pendidikan yang disediakan oleh sekolah, universiti, maktab, PIBG, kumpulan guru atau murid"},
+                new EntmtGroup {EntmtGroupID=13,EntmtGroupCode="L013",EntmtGroupDesc="Sukan atau permainan bertaraf amatur"},
+                new EntmtGroup {EntmtGroupID=14,EntmtGroupCode="L014",EntmtGroupDesc="Hiburan yang disediakan oleh jabatan kerajaan, Badan berkanun, pertubuhan, orang, kelab, persatuan, organisasi, jawatankuasa atau institut bagi maksud agama, kebajikan atau khairat"},
+            };
+            entmtGroup.ForEach(s => context.EntmtGroups.Add(s));
+            context.SaveChanges();
+
             var businesstypes = new List<BusinessType>
             {
                 new BusinessType {BusinessTypeCode="I",BusinessTypeDesc="HAK MILIK PERSEORANGAN" },
@@ -208,21 +228,21 @@ namespace TradingLicense.Data.Migrations
 
             var premisetypes = new List<PremiseType>
             {
-                new PremiseType {PremiseDesc="Rumah Kedai/ Kedai Pejabat/ Pusat Perniagaan Komersil"},
-                new PremiseType {PremiseDesc="Kompleks Beli Belah"},
-                new PremiseType {PremiseDesc="Kilang, Bengkel, Hotel"},
-                new PremiseType {PremiseDesc="SOHO/ SOFO"},
-                new PremiseType {PremiseDesc="Kompleks Pembangunan Bercampur"},
-                new PremiseType {PremiseDesc="Lain-lain"},
+                new PremiseType {PremiseDesc="Hotel, Kompleks Perniagaan"},
+                new PremiseType {PremiseDesc="Kompleks Pejabat"},
+                new PremiseType {PremiseDesc="Rumah Kedai"},
+                new PremiseType {PremiseDesc="Kedai Pejabat"},
+                new PremiseType {PremiseDesc="Bangunan Kerajaan"},
+                new PremiseType {PremiseDesc="Lain-lain - Sila nyatakan dalam ruang di bawah"},
             };
             premisetypes.ForEach(s => context.PremiseTypes.Add(s));
             context.SaveChanges();
 
             var individuals = new List<Individual>
             {
-                new Individual{FullName="Ali Bin Abu",MykadNo="710213-12-4820",NationalityID=1,PhoneNo="0108103140",AddressIC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IndividualEmail="aliabu@yahoo.com",Gender=1,Rental=0.10f,Assessment=10.0f,Compound=2.5f},
-                new Individual{FullName="Siti Aminah",MykadNo="610122-12-4933",NationalityID=1,PhoneNo="0112546778",AddressIC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IndividualEmail="sitiaminah@gmail.com",Gender=2,Rental=0.0f,Assessment=0.0f,Compound=0.0f},
-                new Individual{FullName="Chin Chee Kiong",MykadNo="500101-12-5129",NationalityID=1,PhoneNo="0148552370",AddressIC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IndividualEmail="chinchee70@gmail.com",Gender=1,Rental=100.0f,Assessment=0.25f,Compound=0.0f},
+                new Individual{FullName="Ali Bin Abu",MykadNo="710213-12-4820",NationalityID=1,PhoneNo="0108103140",AddressIC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IndividualEmail="aliabu@yahoo.com",Gender=1},
+                new Individual{FullName="Siti Aminah",MykadNo="610122-12-4933",NationalityID=1,PhoneNo="0112546778",AddressIC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IndividualEmail="sitiaminah@gmail.com",Gender=2},
+                new Individual{FullName="Chin Chee Kiong",MykadNo="500101-12-5129",NationalityID=1,PhoneNo="0148552370",AddressIC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IndividualEmail="chinchee70@gmail.com",Gender=1},
             };
             individuals.ForEach(s => context.Individuals.Add(s));
             context.SaveChanges();
@@ -407,7 +427,7 @@ namespace TradingLicense.Data.Migrations
             var requireddocs = new List<RequiredDoc>
             {
                 new RequiredDoc {RequiredDocDesc="Borang Komposit bagi Permohonan Lesen Premis Perniagaan dan Iklan"},
-                new RequiredDoc {RequiredDocDesc="Satu (1) Salinan Kad Pengenalan ATAU Pasport"},
+                new RequiredDoc {RequiredDocDesc="Satu (1) Salinan Kad Pengenalan ATAU Pasport (depan dan belakang)"},
                 new RequiredDoc {RequiredDocDesc="*Salinan Perakuan Pemerbadanan Syarikat/Perakuan Pendaftaran Syarikat/Perakuan Pendaftaran Perniagaan/Perakuan Pendaftaran Perkongsian Liabiliti Terhad (Borang 9, Borang 24 dan Borang 49) ATAU Sijil Pendaftaran Pertubuhan/Persatuan/Kelab/Badan Profesional"},
                 new RequiredDoc {RequiredDocDesc="Lakaran Pelan Lokasi Perniagaan & 1 Gambar Premis (1 keping Pandangan hadapan/dalam premis)"},
                 new RequiredDoc {RequiredDocDesc="Salinan Sijil Kelayakan Menduduki Bangunan (CF) ATAU Sijil Pematuhan (CCC/CFO) (Untuk bangunan baru siap/jika berkaitan)"},
@@ -639,6 +659,84 @@ namespace TradingLicense.Data.Migrations
                 new LiquorCode {LCodeNumber="N010",LiquorCodeDesc="Lesen Sadapan Todi",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=15.0f,Mode=3},
             };
             liquorCodes.ForEach(s => context.LiquorCodes.Add(s));
+            context.SaveChanges();
+
+            var entmtObjects = new List<EntmtObject>
+            {
+                new EntmtObject {EntmtObjectDesc="Billiard/Snuker",ObjectFee=10.0f,ObjectName="meja",Period=2,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Boling",ObjectFee=5.0f,ObjectName="lorong",Period=2,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Pameran Filem Sinematograf - Dalam penggung/panggung wayang",ObjectFee=5.0f,ObjectName="pertunjukan",Period=0,PeriodQuantity=0},
+                new EntmtObject {EntmtObjectDesc="Pameran Filem Sinematograf - Di tempat terbuka",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Sarkas",BaseFee=5.0f,ObjectFee=2.5f,ObjectName="pertunjukan",Period=0,PeriodQuantity=0},
+                new EntmtObject {EntmtObjectDesc="Hiburan dengan Mesin Hiburan - Kiddy Rides",ObjectFee=2.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan dengan Mesin Hiburan - Mesin video",ObjectFee=5.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",ObjectFee=4.0f,ObjectName="sehingga 12 malam",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",ObjectFee=8.0f,ObjectName="selepas 12 malam",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",ObjectFee=4.0f,ObjectName="sehingga 12 malam",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",ObjectFee=14.0f,ObjectName="selepas 12 malam",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Pameran",ObjectFee=5.0f,ObjectName="gerai",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Pertunjukan Fesyen oleh Artis Profesional/Pertandingan Ratu Cantik",ObjectFee=10.0f,ObjectName="artis/peserta",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Pesta ria",ObjectFee=2.0f,ObjectName="gerai",Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Hiburan Juke Box",ObjectFee=10.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Pertunjukan Patung",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Apa-apa hiburan di luar kuil",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
+                new EntmtObject {EntmtObjectDesc="Apa-apa hiburan lain",ObjectFee=10.0f,Period=4,PeriodQuantity=1},
+            };
+            entmtObjects.ForEach(s => context.EntmtObjects.Add(s));
+            context.SaveChanges();
+
+            var entmtCodes = new List<EntmtCode>
+            {
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Tidak melebihi 200 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="200 hingga 400 kerusi",Fee=800.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="400 hingga 600 kerusi",Fee=1000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="600 hingga 800 kerusi",Fee=1400.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="800 hingga 1,000 kerusi",Fee=1600.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="1,000 hingga 1,200 kerusi",Fee=1800.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Lebih 1,200 kerusi",Fee=2000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Lesen Sementara",Fee=10.0f,Period=4,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Tidak melebihi 200 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 200 kerusi tetapi tidak melebihi 400 kerusi",Fee=900.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 400 kerusi tetapi tidak melebihi 600 kerusi",Fee=1100.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 600 kerusi tetapi tidak melebihi 800 kerusi",Fee=1550.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 800 kerusi tetapi tidak melebihi 1,000 kerusi",Fee=1800.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 1,000 kerusi tetapi tidak melebihi 1,200 kerusi",Fee=2000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Lebih 1,200 kerusi",Fee=2200.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Lesen Sementara",Fee=20.0f,Period=4,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai tidak melebihi 30 meter persegi",Fee=300.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai melebihi 30 meter persegi tetapi tidak melebihi 60 meter persegi",Fee=500.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai melebihi 60 meter persegi tetapi tidak melebihi 90 meter persegi",Fee=800.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Lebih 90 meter persegi",Fee=1100.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=4,EntmtCodeDesc="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",Fee=10.0f,Period=4,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=5,EntmtCodeDesc="Lorong Boling",Fee=1100.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=6,EntmtCodeDesc="Gelanggang Luncur",Fee=1000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=7,EntmtCodeDesc="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",ObjectFee=20.0f,ObjectName="mesin",Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Luas lantai tidak melebihi 30 meter persegi",Fee=400.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="30 hingga 60 meter persegi",Fee=600.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="60 hingga 90 meter persegi",Fee=900.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Lebih 90 meter persegi",Fee=1200.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Kabaret - Lebih 90 meter persegi",Fee=2200.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Tidak melebihi 5 meja",Fee=500.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 5 meja tetapi tidak melebihi 10 meja",Fee=1000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 10 meja tetapi tidak melebihi 20 meja",Fee=1500.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 20 meja tetapi tidak melebihi 30 meja",Fee=2000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 30 meja tetapi tidak melebihi 40 meja",Fee=2500.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 40 meja tetapi tidak melebihi 50 meja",Fee=3000.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 50 meja",BaseFee=3000.0f,ObjectFee=50.0f,ObjectName="meja",Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Tidak melebihi 1000 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Melebihi 1000 kerusi",Fee=800.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Lesen sementara",Fee=50.0f,Period=4,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai tidak melebihi 100 meter persegi",Fee=100.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 100 meter persegi tetapi tidak melebihi 150 meter persegi",Fee=200.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",Fee=300.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 200 meter persegi",Fee=500.0f,Period=1,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Lesen sementara",Fee=10.0f,Period=4,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=12,EntmtCodeDesc="Apa-apa hiburan bagi maksud pendidikan yang disediakan oleh mana-mana sekolah, university, maktab, PIBG, kumpulan guru atau murid",Fee=0.0f,Period=2,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=13,EntmtCodeDesc="Apa-apa sukan atau permainan yang bertaraf amatur yang disediakan oleh sesuatu pertubuhan atau badan",Fee=0.0f,Period=2,PeriodQuantity=1},
+                new EntmtCode {EntmtGroupID=14,EntmtCodeDesc="Apa-apa hiburan yang disediakan oleh mana-mana jabatan ke bagi maksud keagamaan, kebajikan atau khairat, tetapi tidak termasuk hiburan di luar bangunan kuil.",Fee=0.0f,Period=2,PeriodQuantity=1},
+
+            };
+            entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();
         }
     }

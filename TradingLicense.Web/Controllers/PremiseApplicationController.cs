@@ -189,6 +189,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManagePremiseApplication(int? Id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+            ViewBag.SelectedMode = 0;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -203,11 +204,13 @@ namespace TradingLicense.Web.Controllers
                         premiseApplicationModel.BusinessCodeids = (string.Join(",", paLinkBC.Select(x => x.BusinessCodeID.ToString()).ToArray()));
 
                         List<SelectedBusinessCodeModel> businessCodesList = new List<SelectedBusinessCodeModel>();
+                        int selectedMode = 0;
                         foreach (var item in paLinkBC)
                         {
                             var buinesscode = ctx.BusinessCodes.Where(b => b.BusinessCodeID == item.BusinessCodeID).FirstOrDefault();
                             if (buinesscode != null && buinesscode.BusinessCodeID > 0)
                             {
+                                selectedMode = buinesscode.Mode;
                                 SelectedBusinessCodeModel selectedBusinessCodeModel = new SelectedBusinessCodeModel();
                                 selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
                                 selectedBusinessCodeModel.text = buinesscode.CodeDesc;
@@ -215,28 +218,10 @@ namespace TradingLicense.Web.Controllers
                             }
                         }
                         premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
+                        ViewBag.SelectedMode = selectedMode;
                     }
 
-                    var paLinkInd = ctx.PALinkInds.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkInd != null && paLinkInd.Count > 0)
-                    {
-                        premiseApplicationModel.Individualids = (string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray()));
-
-                        List<SelectedIndividualModel> individualList = new List<SelectedIndividualModel>();
-                        foreach (var item in paLinkInd)
-                        {
-                            var Individual = ctx.Individuals.Where(b => b.IndividualID == item.IndividualID).FirstOrDefault();
-                            if (Individual != null && Individual.IndividualID > 0)
-                            {
-                                SelectedIndividualModel selectedIndividualModel = new SelectedIndividualModel();
-                                selectedIndividualModel.id = Individual.IndividualID;
-                                selectedIndividualModel.text = Individual.MykadNo;
-                                individualList.Add(selectedIndividualModel);
-                            }
-                        }
-                        premiseApplicationModel.selectedIndividualList = individualList;
-
-                    }
+                    
 
                     var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
@@ -262,6 +247,53 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get PremiseApplication Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ViewPremiseApplication(int Id)
+        {
+            ViewPremiseApplicationModel premiseApplicationModel = new ViewPremiseApplicationModel();
+            if (Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int PremiseApplicationID = Convert.ToInt32(Id);
+                    var premiseApplication = ctx.PremiseApplications.Where(a => a.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
+                    premiseApplicationModel = Mapper.Map<ViewPremiseApplicationModel>(premiseApplication);
+
+                    var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
+                    if (paLinkBC != null && paLinkBC.Count > 0)
+                    {
+                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => x.BusinessCode.CodeDesc).ToList();
+                    }
+                    else { premiseApplicationModel.BusinessCodes = new List<string>(); }
+
+                    var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
+                    if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
+                    {
+                        premiseApplicationModel.RequiredDocs = PALinkReqDocUmentList.Select(par => par.RequiredDoc.RequiredDocDesc).ToList();
+                    }
+                    else { premiseApplicationModel.RequiredDocs = new List<string>(); }
+
+                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
+                    if (paLinkAddDocumentlist != null && paLinkAddDocumentlist.Count > 0)
+                    {
+                        premiseApplicationModel.AdditionalDocs = paLinkAddDocumentlist.Select(pad => pad.AdditionalDoc.DocDesc).ToList();
+                    }
+                    else { premiseApplicationModel.AdditionalDocs = new List<string>(); }
+
+                }
+            }
+
+            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            {
+                premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+            }
+            return View(premiseApplicationModel);
+        }
+
+        /// <summary>
         /// Save PremiseApplication Information
         /// </summary>
         /// <param name="premiseApplicationModel"></param>
@@ -270,6 +302,16 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public ActionResult ManagePremiseApplication(PremiseApplicationModel premiseApplicationModel)
         {
+            if (ProjectSession.User != null && ProjectSession.UserID > 0 && ProjectSession.User.RoleTemplateID.HasValue)
+            {
+                if(ProjectSession.User.RoleTemplateID.Value == (int)RollTemplate.DeskOfficer)
+                {
+                    ModelState.Remove("PremiseArea");
+                    ModelState.Remove("PremiseStatus");
+                    ModelState.Remove("PremiseTypeID");
+                    ModelState.Remove("PremiseModification");
+                }
+            }
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -289,7 +331,7 @@ namespace TradingLicense.Web.Controllers
                             UserroleTemplate = ProjectSession.User.RoleTemplateID.Value;
                         }
 
-                        if (premiseApplicationModel.IsDraft)
+                        if (!premiseApplicationModel.IsDraft)
                         {
                             if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
                             {
@@ -657,49 +699,43 @@ namespace TradingLicense.Web.Controllers
                         }
 
                         List<int> existingRecord = new List<int>();
-                        var dbEntryIndividual = ctx.PALinkInds.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryIndividual != null && dbEntryIndividual.Count > 0)
-                        {
-                            foreach (var item in dbEntryIndividual)
-                            {
-                                if (Individualidslist.Where(q => q == item.IndividualID).Count() == 0)
-                                {
-                                    ctx.PALinkInds.Remove(item);
-                                }
-                                else
-                                {
-                                    existingRecord.Add(item.IndividualID);
-                                }
-                            }
-                            ctx.SaveChanges();
-                        }
+                        
+                    }
 
-                        foreach (var individual in Individualidslist)
+                    if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
+                    {
+                        try
                         {
-                            if (existingRecord.Where(q => q == individual).Count() == 0)
+                            List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(premiseApplicationModel.newIndividualsList);
+                            foreach (var indModel in individuals)
                             {
-                                PALinkInd PALinkInd = new PALinkInd();
-                                PALinkInd.PremiseApplicationID = premiseApplicationID;
-                                PALinkInd.IndividualID = individual;
-                                ctx.PALinkInds.Add(PALinkInd);
+                                Individual ind = new Individual();
+                                ind.FullName = indModel.fullName;
+                                ind.MykadNo = indModel.passportNo;
+                                ctx.Individuals.Add(ind);
                                 ctx.SaveChanges();
                             }
                         }
-                    }
-                    else
-                    {
-                        var dbEntryPALinkInds = ctx.PALinkInds.Where(va => va.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryPALinkInds != null && dbEntryPALinkInds.Count > 0)
+                        catch
                         {
-                            ctx.PALinkInds.RemoveRange(dbEntryPALinkInds);
-                            ctx.SaveChanges();
+
                         }
                     }
+                    premiseApplicationModel.PremiseApplicationID = premiseApplicationID;
                 }
 
-                TempData["SuccessMessage"] = "Premise License Application saved successfully.";
+                if (premiseApplicationModel.IsDraft)
+                {
+                    TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
 
-                return RedirectToAction("PremiseApplication");
+                    return RedirectToAction("ManagePremiseApplication", new { Id = premiseApplicationModel.PremiseApplicationID });
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Premise License Application saved successfully.";
+
+                    return RedirectToAction("PremiseApplication");
+                }
             }
             else
             {
@@ -737,11 +773,24 @@ namespace TradingLicense.Web.Controllers
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult FillBusinessCode(string query)
+        public JsonResult FillBusinessCode(string query, int selectedMode, int selectedSector)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var businessCode = ctx.BusinessCodes.Where(t => t.CodeDesc.ToLower().Contains(query.ToLower())).Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc }).ToList();
+                IQueryable<BusinessCode> primaryQuery = ctx.BusinessCodes;
+                if (selectedMode > 0)
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.Mode == selectedMode);
+                }
+                if (selectedSector > 0)
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.SectorID == selectedSector);
+                }
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()));
+                }
+                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc, mode = x.Mode }).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
@@ -756,7 +805,7 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var individual = ctx.Individuals.Where(t => t.MykadNo.ToLower().Contains(query.ToLower())).Select(x => new { id = x.IndividualID, text = x.MykadNo }).ToList();
+                var individual = ctx.Individuals.Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower())).Select(x => new SelectedIndividualModel { id = x.IndividualID, text = x.FullName + " (" + x.MykadNo + ")", fullName = x.FullName, passportNo = x.MykadNo }).ToList();
                 return Json(individual, JsonRequestBehavior.AllowGet);
             }
         }

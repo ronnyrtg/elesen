@@ -10,20 +10,7 @@
         <li><a href="#" title="Add Sector" onclick="addSector();"><img src="@Url.Content("~/images/add.png")" alt="Add Sector"></a></li>
     </ul>
     <div class="header">
-        <h4>Sector</h4>
-    </div>
-    <div class="filter-block">
-        <div class="row small-gutter">
-            <form>
-                <div class="col-xs-4">
-                    <input type="text" name="txtsectorDesc" id="txtsectorDesc" class="form-control" placeholder="Sector Description" maxlength="30" />
-                </div>
-                <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
-                </div>
-            </form>
-        </div>
+        <h4>Senarai Kumpulan Lesen Berniaga</h4>
     </div>
     <div class="grid" id="divtblSector">
         <table cellspacing="0" class="table table-striped" id="tblSector"></table>
@@ -87,23 +74,23 @@
                          return meta.settings._iDisplayStart + meta.row + 1;
                      }
                  },
-                 { "title": "Sector Description", "data": "SectorDesc" },
+                 { "title": "Nama Kumpulan", "data": "SectorDesc" },
                  {
-                     "title": "Active",
+                     "title": "Aktif",
                      "data": "Active",
                      "render": function (data, type, row) {
                          if (data) {
-                             return '<label class="label label-success">Active</label>';
+                             return '<label class="label label-success">Aktif</label>';
                          }
                          else {
-                             return '<label class="label label-danger">InActive</label>';
+                             return '<label class="label label-danger">Tidak Aktif</label>';
                          }
                      },
                      "width": "10%",
                      "orderable": true,
                  },
                         {
-                    "title": "Action",
+                    "title": "Ubah/Padam",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
