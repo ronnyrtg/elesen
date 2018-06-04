@@ -228,12 +228,12 @@ namespace TradingLicense.Data.Migrations
 
             var premisetypes = new List<PremiseType>
             {
-                new PremiseType {PremiseDesc="Rumah Kedai/ Kedai Pejabat/ Pusat Perniagaan Komersil"},
-                new PremiseType {PremiseDesc="Kompleks Beli Belah"},
-                new PremiseType {PremiseDesc="Kilang, Bengkel, Hotel"},
-                new PremiseType {PremiseDesc="SOHO/ SOFO"},
-                new PremiseType {PremiseDesc="Kompleks Pembangunan Bercampur"},
-                new PremiseType {PremiseDesc="Lain-lain"},
+                new PremiseType {PremiseDesc="Hotel, Kompleks Perniagaan"},
+                new PremiseType {PremiseDesc="Kompleks Pejabat"},
+                new PremiseType {PremiseDesc="Rumah Kedai"},
+                new PremiseType {PremiseDesc="Kedai Pejabat"},
+                new PremiseType {PremiseDesc="Bangunan Kerajaan"},
+                new PremiseType {PremiseDesc="Lain-lain - Sila nyatakan dalam ruang di bawah"},
             };
             premisetypes.ForEach(s => context.PremiseTypes.Add(s));
             context.SaveChanges();
@@ -427,7 +427,7 @@ namespace TradingLicense.Data.Migrations
             var requireddocs = new List<RequiredDoc>
             {
                 new RequiredDoc {RequiredDocDesc="Borang Komposit bagi Permohonan Lesen Premis Perniagaan dan Iklan"},
-                new RequiredDoc {RequiredDocDesc="Satu (1) Salinan Kad Pengenalan ATAU Pasport"},
+                new RequiredDoc {RequiredDocDesc="Satu (1) Salinan Kad Pengenalan ATAU Pasport (depan dan belakang)"},
                 new RequiredDoc {RequiredDocDesc="*Salinan Perakuan Pemerbadanan Syarikat/Perakuan Pendaftaran Syarikat/Perakuan Pendaftaran Perniagaan/Perakuan Pendaftaran Perkongsian Liabiliti Terhad (Borang 9, Borang 24 dan Borang 49) ATAU Sijil Pendaftaran Pertubuhan/Persatuan/Kelab/Badan Profesional"},
                 new RequiredDoc {RequiredDocDesc="Lakaran Pelan Lokasi Perniagaan & 1 Gambar Premis (1 keping Pandangan hadapan/dalam premis)"},
                 new RequiredDoc {RequiredDocDesc="Salinan Sijil Kelayakan Menduduki Bangunan (CF) ATAU Sijil Pematuhan (CCC/CFO) (Untuk bangunan baru siap/jika berkaitan)"},

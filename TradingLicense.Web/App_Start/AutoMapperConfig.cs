@@ -37,6 +37,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();
                 cfg.CreateMap<PremiseApplication, PremiseApplicationModel>()
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc))
+                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
                 cfg.CreateMap<PremiseApplication, ViewPremiseApplicationModel>()
                             .ForMember(dest => dest.Sector, opt => opt.MapFrom(s => s.Sector.SectorDesc))

@@ -221,28 +221,7 @@ namespace TradingLicense.Web.Controllers
                         ViewBag.SelectedMode = selectedMode;
                     }
 
-                    var paLinkInd = ctx.PALinkInds.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkInd != null && paLinkInd.Count > 0)
-                    {
-                        premiseApplicationModel.Individualids = (string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray()));
-
-                        List<SelectedIndividualModel> individualList = new List<SelectedIndividualModel>();
-                        foreach (var item in paLinkInd)
-                        {
-                            var Individual = ctx.Individuals.Where(b => b.IndividualID == item.IndividualID).FirstOrDefault();
-                            if (Individual != null && Individual.IndividualID > 0)
-                            {
-                                SelectedIndividualModel selectedIndividualModel = new SelectedIndividualModel();
-                                selectedIndividualModel.id = Individual.IndividualID;
-                                selectedIndividualModel.text = $"{Individual.FullName} ({Individual.MykadNo})";
-                                selectedIndividualModel.fullName = Individual.FullName;
-                                selectedIndividualModel.passportNo = Individual.MykadNo;
-                                individualList.Add(selectedIndividualModel);
-                            }
-                        }
-                        premiseApplicationModel.selectedIndividualList = individualList;
-
-                    }
+                    
 
                     var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
@@ -290,13 +269,6 @@ namespace TradingLicense.Web.Controllers
                     }
                     else { premiseApplicationModel.BusinessCodes = new List<string>(); }
 
-                    var paLinkInd = ctx.PALinkInds.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkInd != null && paLinkInd.Count > 0)
-                    {
-                        premiseApplicationModel.Individuals = paLinkInd.Select(pai => $" {pai.Individual.FullName} ({pai.Individual.MykadNo})").ToList();
-                    }
-                    else { premiseApplicationModel.Individuals = new List<string>(); }
-
                     var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
                     {
@@ -311,35 +283,6 @@ namespace TradingLicense.Web.Controllers
                     }
                     else { premiseApplicationModel.AdditionalDocs = new List<string>(); }
 
-                    switch (premiseApplication.PremiseStatus)
-                    {
-                        case 0:
-                        default:
-                            premiseApplicationModel.PremiseStatus = string.Empty;
-                            break;
-                        case 1:
-                            premiseApplicationModel.PremiseStatus = "Kekal";
-                            break;
-                        case 2:
-                            premiseApplicationModel.PremiseStatus = "Separuh Kekal";
-                            break;
-                        case 3:
-                            premiseApplicationModel.PremiseStatus = "Sementara";
-                            break;
-                    }
-
-                    switch (premiseApplication.PremiseModification)
-                    {
-                        case 0:
-                            premiseApplicationModel.PremiseModification = "Tiada";
-                            break;
-                        case 1:
-                            premiseApplicationModel.PremiseModification = "Ada";
-                            break;
-                        default:
-                            premiseApplicationModel.PremiseModification = string.Empty;
-                            break;
-                    }
                 }
             }
 
@@ -756,43 +699,7 @@ namespace TradingLicense.Web.Controllers
                         }
 
                         List<int> existingRecord = new List<int>();
-                        var dbEntryIndividual = ctx.PALinkInds.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryIndividual != null && dbEntryIndividual.Count > 0)
-                        {
-                            foreach (var item in dbEntryIndividual)
-                            {
-                                if (Individualidslist.Where(q => q == item.IndividualID).Count() == 0)
-                                {
-                                    ctx.PALinkInds.Remove(item);
-                                }
-                                else
-                                {
-                                    existingRecord.Add(item.IndividualID);
-                                }
-                            }
-                            ctx.SaveChanges();
-                        }
-
-                        foreach (var individual in Individualidslist)
-                        {
-                            if (existingRecord.Where(q => q == individual).Count() == 0)
-                            {
-                                PALinkInd PALinkInd = new PALinkInd();
-                                PALinkInd.PremiseApplicationID = premiseApplicationID;
-                                PALinkInd.IndividualID = individual;
-                                ctx.PALinkInds.Add(PALinkInd);
-                                ctx.SaveChanges();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var dbEntryPALinkInds = ctx.PALinkInds.Where(va => va.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryPALinkInds != null && dbEntryPALinkInds.Count > 0)
-                        {
-                            ctx.PALinkInds.RemoveRange(dbEntryPALinkInds);
-                            ctx.SaveChanges();
-                        }
+                        
                     }
 
                     if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
@@ -807,13 +714,6 @@ namespace TradingLicense.Web.Controllers
                                 ind.MykadNo = indModel.passportNo;
                                 ctx.Individuals.Add(ind);
                                 ctx.SaveChanges();
-
-                                PALinkInd PALinkInd = new PALinkInd();
-                                PALinkInd.PremiseApplicationID = premiseApplicationID;
-                                PALinkInd.IndividualID = ind.IndividualID;
-                                ctx.PALinkInds.Add(PALinkInd);
-                                ctx.SaveChanges();
-
                             }
                         }
                         catch

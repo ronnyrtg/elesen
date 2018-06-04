@@ -53,7 +53,6 @@ namespace TradingLicense.Data
 
         public DbSet<BusinessType> BusinessTypes { get; set; }
 
-        public DbSet<PALinkInd> PALinkInds { get; set; }
         public DbSet<Holiday> Holidays { get; set; }
 
         public DbSet<PALinkAddDoc> PALinkAddDocs { get; set; }

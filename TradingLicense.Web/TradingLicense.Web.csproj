@@ -473,6 +473,7 @@
     <Content Include="Views\StallApplication\ManageStallApplication.cshtml" />
     <Content Include="Views\StallApplication\SAReqDoc.cshtml" />
     <Content Include="Views\StallApplication\ManageSAReqDoc.cshtml" />
+    <Content Include="Views\PremiseApplication\ViewPremiseApplication.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

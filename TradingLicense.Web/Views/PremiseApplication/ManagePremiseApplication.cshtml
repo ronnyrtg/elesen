@@ -38,21 +38,16 @@
         appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
     }
 
-    List<SelectListItem> PremiseStatusList = new List<SelectListItem>();
-    PremiseStatusList.Add(new SelectListItem { Text = "Select Premise Status", Value = "" });
-    PremiseStatusList.Add(new SelectListItem { Text = "Kekal", Value = "1" });
-    PremiseStatusList.Add(new SelectListItem { Text = "Separuh Kekal", Value = "2" });
-    PremiseStatusList.Add(new SelectListItem { Text = "Sementara", Value = "3" });
 
-    List<SelectListItem> PremiseModificationList = new List<SelectListItem>();
-    PremiseModificationList.Add(new SelectListItem { Text = "Tiada", Value = "0" });
-    PremiseModificationList.Add(new SelectListItem { Text = "Ada", Value = "1" });
+    List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "0" });
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "1" });
 
 }
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage Premise License Application</h4>
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Berniaga</h4>
     </div>
     <div class="body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPremiseApplication", id = "frmPremiseApplication" }))
@@ -71,17 +66,43 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
-                        <div class="control-label">Sectors.<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorDesc), "SectorID", "SectorDesc"), "Select Sector", new { @class = "form-control", @onchange = "filterBusinessCodes()" })
+                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.NamaPemohon, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.NamaPemohon)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">No. Kad Pengenalan / No. Syarikat<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ICPaspot, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ICPaspot)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Perniagaan/Syarikat<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.NamaSyarikat, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.NamaSyarikat)
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
-                        <div class="control-label">Business Type.<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Select Business Type", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                        <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control", @onchange = "filterBusinessCodes()" })
                     </div>
                 </div>
 
@@ -98,13 +119,14 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">Business Code.<span class="cfont">*</span></div>
-                        @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Select Bussiness code", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
+                        <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
+                        @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
                         @Html.HiddenFor(model => model.BusinessCodeids)
                     </div>
                 </div>
             </div>
-
+            if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+            {
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
@@ -127,8 +149,7 @@
                     </div>
                 </div>
             </div>
-            if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-            {
+            
                 <div class="row">
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
@@ -139,22 +160,15 @@
                     </div>
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
-                            <div class="control-label">Premise Status<span class="cfont">*</span></div>
-                            @Html.DropDownListFor(m => m.PremiseStatus, new SelectList(PremiseStatusList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.PremiseStatus)
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div class="form-group">
                             <div class="control-label">Premise Type<span class="cfont">*</span></div>
                             @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Select Premise Type", new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
-                            @Html.LabelFor(m => m.PremiseModification, new { @class = "control-label" })<span class="cfont">*</span>
-                            @Html.DropDownListFor(m => m.PremiseModification, new SelectList(PremiseModificationList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.PremiseModification)
+                            <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PremiseOwnership)
                         </div>
                     </div>
                 </div>
@@ -163,7 +177,7 @@
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Document List.   @if (Model.UserRollTemplate > 1)
+                            Senarai Dokumen Wajib   @if (Model.UserRollTemplate > 1)
                             {<span class="cfont">*</span>}
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
@@ -187,11 +201,11 @@
                         @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                         {
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                            {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Save Draft " /> }
+                            {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
 
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(false); return false;' id="btnsubmit" />
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' id="btnsubmit" />
                             }
                         }
 
@@ -231,7 +245,7 @@
 
                         }
 
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                         
                     </div>
                 </div>
@@ -684,7 +698,7 @@
                 },
                 "columns": [
                     {
-                        "title": "Action",
+                        "title": "Disertakan?",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
@@ -697,9 +711,9 @@
                         "orderable": false,
                         "visible": visibleGridColume,
                     },
-                    { "title": "Required Document", "data": "RequiredDocDesc", "orderable": false },
+                    { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
                     {
-                        "title": "Action",
+                        "title": "Muat Naik",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
@@ -716,7 +730,7 @@
                         "visible": visibleGridUploadColume,
                     },
                     {
-                        "title": "File Name",
+                        "title": "Nama Fail",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';

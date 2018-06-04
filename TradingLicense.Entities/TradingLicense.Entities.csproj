@@ -78,7 +78,6 @@
     <Compile Include="Location.cs" />
     <Compile Include="PAComment.cs" />
     <Compile Include="PALinkAddDoc.cs" />
-    <Compile Include="PALinkInd.cs" />
     <Compile Include="IndLinkCom.cs" />
     <Compile Include="LoginLog.cs" />
     <Compile Include="BCLinkAD.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="BTLinkReqDoc.cs" />
     <Compile Include="PALinkReqDoc.cs" />
     <Compile Include="AppStatus.cs" />
+    <Compile Include="PremiseAddress.cs" />
     <Compile Include="PremiseApplication.cs" />
     <Compile Include="PremiseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
