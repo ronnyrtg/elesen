@@ -253,6 +253,7 @@ namespace TradingLicense.Web.Controllers
                 IQueryable<BAReqDoc> query = ctx.BAReqDocs;
                 BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
                 ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
+                var qry= ctx.Individuals.Where(e => e.IndividualID == 1);
                 if (Id != null && Id > 0)
                 {
 
@@ -298,6 +299,15 @@ namespace TradingLicense.Web.Controllers
 
         }
 
+        [HttpPost]
+        public JsonResult FillIndividual(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var Individual = ctx.Individuals.Where(t => t.FullName.ToLower().Contains(query.ToLower())).Select(x => new { IndividualID = x.IndividualID, FullName = x.FullName }).ToList();
+                return Json(Individual, JsonRequestBehavior.AllowGet);
+            }
+        }
         /// <summary>
         /// Delete Banner Application Information
         /// </summary>
