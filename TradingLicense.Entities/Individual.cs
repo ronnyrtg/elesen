@@ -18,18 +18,19 @@ namespace TradingLicense.Entities
 
         public int NationalityID { get; set; }
 
-        [StringLength(200)]
+        [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string AddressIC { get; set; }
 
-        [StringLength(200)]
+        [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]
         public string PhoneNo { get; set; }
 
-        [StringLength(200)]
+        [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
         public string IndividualEmail { get; set; }
 
+        public int? AttachmentID { get; set; }
         public int Gender { get; set; }
         public bool Active { get; set; }
         public Individual()

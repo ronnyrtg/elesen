@@ -2,9 +2,11 @@
 @{
     ViewBag.Title = "ManageBAReqDoc";
 
-    List<TradingLicense.Model.RequiredDocModel> requiredDocList = new List<TradingLicense.Model.RequiredDocModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
+    List<TradingLicense.Model.RequiredDocModel>
+    requiredDocList = new List<TradingLicense.Model.RequiredDocModel>
+        ();
+        using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+        {
         var requiredDoc = ctx.RequiredDocs.ToList();
         requiredDocList = Mapper.Map<List<TradingLicense.Model.RequiredDocModel>>(requiredDoc);
     }
@@ -19,13 +21,26 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBAReqDoc", id = "frmBAReqDoc" }))
         {
             @Html.AntiForgeryToken()
-          
-            
+
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Kelulusan<span class="cfont">*</span></div>
-                        @Html.DropDownList("RequiredDoc", new SelectList(requiredDocList.OrderBy(x => x.RequiredDocDesc), "RequiredDocID", "RequiredDocDesc"), "Pilih Dokumen Wajib", new { @class = "form-control" })
+                        @*@Html.DropDownList("RequiredDoc", new SelectList(requiredDocList.OrderBy(x => x.RequiredDocDesc), "RequiredDocID", "RequiredDocDesc"), "Pilih Dokumen Wajib", new { @class = "form-control" })*@
+                        <table class="table table-striped dataTable table-hover" id="Docs">
+                            @foreach (var item in requiredDocList)
+                            {
+                               <tr>
+                                <td>
+                                    <div class="checkbox">
+                                        <label><input style="opacity:1;" class="chkDoc" value='@item.RequiredDocID' type="checkbox">@item.RequiredDocDesc</label>
+                                    </div>
+                                    
+                                </td>
+                            </tr>
+                            }
+                        </table>
                     </div>
                 </div>
             </div>
@@ -33,7 +48,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <button id="btnSubmit" type="button" class="btn btn-primary">
+                                  Simpan
+                        </button>
                         <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                     </div>
                 </div>
@@ -51,5 +68,42 @@
          var link = '@Url.Action("BAReqDoc", "BannerApplication")';
         window.location.href = link;
     }
+    $(document).ready(function () {
+    $('#btnSubmit').click(function () {
+            var list = [];
+            var errorItemCount = 0;
+            $(".chkDoc:checked").each(function() {
+                var DocItems = {
+                        BAReqDocID: 0,
+                        RequiredDocID: $(this).val(),
+                    }
+                    list.push(DocItems);
+            });
+            if (list.length == 0)
+            {
+                errorMessage('Please Select Atleast One Document');
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/BannerApplication/SaveBAReqDoc',
+                data: JSON.stringify(list),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data == "0") {
+                        errorMessage('Problem In Saving Data...Try Again.');
+                    }
+                    else {
+                        window.location.href = '/BannerApplication/BAReqDoc';
+                    }
+                },
+                error: function (error) {
+                    errorMessage(error);
+                }
+            });
+
+    });
+    });
     </script>
 }

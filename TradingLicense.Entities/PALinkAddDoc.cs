@@ -14,5 +14,7 @@ namespace TradingLicense.Entities
         public int? AttachmentID { get; set; }
 
         public virtual PremiseApplication PremiseApplication { get; set; }
+
+        public virtual AdditionalDoc AdditionalDoc { get; set; }
     }
 }

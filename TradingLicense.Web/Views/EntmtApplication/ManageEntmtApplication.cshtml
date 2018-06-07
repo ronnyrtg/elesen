@@ -1,0 +1,904 @@
+﻿@model TradingLicense.Model.EntmtApplicationModel
+@using AutoMapper;
+@using Mvc.CascadeDropDown
+@{
+    ViewBag.Title = "Manage Entmt License Application";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessType = ctx.BusinessTypes.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+    }
+
+    List<TradingLicense.Model.EntmtGroupModel> entmtGroupList = new List<TradingLicense.Model.EntmtGroupModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var entmtGroup = ctx.EntmtGroups.ToList();
+        entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtGroupModel>>(entmtGroup);
+    }
+
+    List<TradingLicense.Model.SelectedEntmtCodeModel> entmtCodeList = new List<TradingLicense.Model.SelectedEntmtCodeModel>();
+
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+
+    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var appStatus = ctx.AppStatus.ToList();
+        appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
+    }
+
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Untuk Membuka Tempat Hiburan</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmEntmtApplication", id = "frmEntmtApplication" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.EntmtApplicationID)
+            @Html.HiddenFor(m => m.UsersID)
+            @Html.HiddenFor(m => m.UserRollTemplate)
+            @Html.HiddenFor(m => m.RequiredDocIds)
+            @Html.HiddenFor(m => m.IsDraft)
+
+            @Html.HiddenFor(m => m.UploadRequiredDocids)
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                    </div>
+                </div>
+
+                <div class="col-md-offset-3 col-lg-3 col-md-3">
+                    <div class="form-group">
+                        @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                        {
+                            <div class="control-label" style="color:green;">Submitted to Clerk</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <div class="control-label">Kategori Tempat Hiburan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.EntmtGroupID, new SelectList(entmtGroupList.OrderBy(x => x.EntmtGroupID), "EntmtGroupID", "EntmtGroupDesc"), "Pilih Kategori", new { @class = "form-control"})
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Ciri-ciri Premis Hiburan<span class="cfont">*</span></div>
+                        @Html.DropDownList("EntmtCode", new SelectList(Model.selectedEntmtCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtCodeList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
+                        @Html.HiddenFor(model => model.EntmtCodeids)
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindEntmtCodeTable(); return false;'>View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Mykad/Passport No.   @if (Model.UserRollTemplate > 2)
+                            {<span class="cfont">*</span>}
+                        </div>
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        @Html.HiddenFor(model => model.Individualids)
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindMykadTable(); return false;'>View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Document List.   @if (Model.UserRollTemplate > 1)
+                            {<span class="cfont">*</span>}
+                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                        {
+                            if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                            {
+                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(false); return false;' id="btnsubmitdraft" value="Save Draft " /> }
+                            }
+
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                            }
+                        }
+
+                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                            {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                            }*@
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.EntmtApplicationID > 0)
+                        {
+                            <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
+                            <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.EntmtApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.EntmtApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.EntmtApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.EntmtApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.EntmtApplicationID > 0)
+                        {
+
+                        }
+
+                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Entmt Code Modal -->
+<div id="entmtCodeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Entmt Code</h4>
+            </div>
+            <div class="modal-body">
+                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblEntmtCode"></table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--mykadCodeModal-->
+<div id="mykadCodeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Mykad/Passport</h4>
+            </div>
+            <div class="modal-body">
+                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblMykad"></table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Upload Doc-->
+<div id="uploadDocumentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        @using (Html.BeginForm("UploadDocument", "EntmtApplication", FormMethod.Post, new { name = "frmuploadDocument", id = "frmuploadDocument", enctype = "multipart/form-data" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload Document</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="reqDocid" id="reqDocid">
+                    <input type="hidden" name="addDocid" id="addDocid">
+                    <input type="hidden" name="isReqDoc" id="isReqDoc">
+
+                    <input type="file" id="DocumentFile" name="file" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf, image/*" /><br />
+                </div>
+                <div class="modal-footer">
+                    @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                    {
+                        <input type="button" class="btn btn-primary" onclick="return UploadDocument()" value="Upload" />
+                    }
+                    else
+                    {
+                        if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                        {
+                            <input type="button" class="btn btn-primary" onclick="return UploadAttechment()" value="Upload" />
+                        }
+                    }
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--approved/reject-->
+<div id="approvedrejectModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+
+        @using (Html.BeginForm("SaveComment", "EntmtApplication", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><lable id="lblheaderTitle"></lable></h4>
+                </div>
+                <div class="modal-body">
+                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="return SaveComment()"><lable id="lblapprovedreject"></lable> </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<style type="text/css">
+    label.error {
+        color: red;
+    }
+</style>
+
+@section scripts{
+    <script>
+
+    var userRollTemplate = 0;
+    var visibleGridColume = false;
+    var visibleGridUploadColume = false;
+
+    var requiredDocList = [];
+    var addtionalDocList = [];
+
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+         errorMessage(actionError);
+    }
+
+    $(function () {
+
+        userRollTemplate = $("#UserRollTemplate").val();
+        visibleGridUploadColume = true;
+            if (userRollTemplate > 1) {
+                visibleGridColume = true;
+            }
+
+            $("#entmtCodeList").select2();
+            $("#individualList").select2();
+
+            AddRules();
+
+            $("#entmtCodeList").select2({
+                placeholder: "Search for a Entmt Code",
+                minimumInputLength: 2,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillEntmtCode", "EntmtApplication")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return { query: query.term }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
+             $("#individualList").select2({
+                placeholder: "Select  Mykad/Passport No",
+                minimumInputLength: 2,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillIndividual", "EntmtApplication")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return { query: query.term }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
+            var businessSelecteId = [];
+            if ('@Model.EntmtCodeids' != null && '@Model.EntmtCodeids' != '') {
+                var EntmtCodeIds = '@Model.EntmtCodeids';
+
+                var arr = EntmtCodeIds.split(',');
+                $.each(arr, function (index, value) {
+                    businessSelecteId.push(value);
+                });
+                $('#entmtCodeList').val(businessSelecteId);
+                $('#entmtCodeList').trigger('change');
+            } else {
+                businessSelecteId = [];
+            }
+
+            var individualSelecteId = [];
+            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
+                var individualIds = '@Model.Individualids';
+
+                var arr = individualIds.split(',');
+                $.each(arr, function (index, value) {
+                    individualSelecteId.push(value);
+                });
+                $('#individualList').val(individualSelecteId);
+                $('#individualList').trigger('change');
+            } else {
+                individualSelecteId = [];
+            }
+
+           if(@Model.BusinessTypeID >0)
+           {
+               $("#BusinessTypeID").val(@Model.BusinessTypeID);
+               bindTable();
+           }
+
+            if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+                var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+                var arr = UploadRequiredDocumentlist.split(',');
+                $.each(arr, function (index, value) {
+                    requiredDocList.push(value);
+                });
+            }
+
+            
+
+            $("#preAppid").val(@Model.EntmtApplicationID);
+
+            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                    event.preventDefault();
+                }
+            });
+    });
+
+    function frmSubmit(isdraft) {
+
+        $("#IsDraft").val(isdraft);
+        $("#UploadRequiredDocids").val(requiredDocList);
+
+        AdditionalChecked();
+
+        RequiredDocument();
+
+            if (!$("#frmEntmtApplication").valid()) {
+                return false;
+            }else if ($('#EntmtCodeids').val() == "") {
+                alert("Please select Entmt Code");
+                return false;
+            }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
+                alert("Please select Mykad/Passport No");
+                return false;
+            } else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+                alert("Please Upload all Required Document");
+                return false;
+            }
+            
+            else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
+                alert("Please select all checkbox for Required Document");
+                return false;
+            
+            }else {
+                $("#frmEntmtApplication").submit();
+            }
+    }
+
+    function changeEntmtcode() {
+            $('#EntmtCodeids').val($('#entmtCodeList').val());
+            bindAdditionalTable();
+    }
+
+    function changeIndindividual() {
+            $('#Individualids').val($('#individualList').val());
+    }
+
+    function back() {
+        var link = '@Url.Action("EntmtApplication", "EntmtApplication")';
+        window.location.href = link;
+    }
+
+    function businessTypeChange() {
+        if ($("#BusinessTypeID").val() > 0) {
+             bindTable();
+        }
+    }
+
+    function bindDownload(attechmentID) {
+        if (attechmentID > 0) {
+            window.location.href = "@Url.Action("Download", "EntmtApplication")" + "?attechmentID=" + attechmentID;
+        }
+    }
+
+    function bindSearchEntmtCode() {
+
+        var param = {};
+        param["EntmtCodeids"] = $("#EntmtCodeids").val();
+        return param;
+    }
+
+    function bindEntmtCodeTable() {
+
+            if ($("#EntmtCodeids").val() == "") {
+                return false;
+            }
+
+            $('#entmtCodeModal').modal('show');
+
+            if ($.fn.DataTable.isDataTable("#tblEntmtCode")) {
+                $('#tblEntmtCode').dataTable().fnDestroy();
+            }
+
+            table = $("#tblEntmtCode").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("EntmtCode", "EntmtApplication")',
+                    type: "POST",
+                    data: bindSearchEntmtCode()
+                },
+                "columns": [
+                    { "title": "Code Number", "data": "CodeNumber", "orderable": false },
+                    { "title": "Code Description", "data": "CodeDesc", "orderable": false }
+                ]
+            });
+    }
+
+    function bindSearchMykad() {
+
+        var param = {};
+        param["Individualids"] = $("#Individualids").val();
+        return param;
+    }
+
+    function bindMykadTable() {
+
+            if ($("#Individualids").val() == "") {
+                return false;
+            }
+
+            $('#mykadCodeModal').modal('show');
+
+            if ($.fn.DataTable.isDataTable("#tblMykad")) {
+                $('#tblMykad').dataTable().fnDestroy();
+            }
+
+            table = $("#tblMykad").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("Mykad", "EntmtApplication")',
+                    type: "POST",
+                    data: bindSearchMykad()
+                },
+                "columns": [
+                    { "title": "Full Name", "data": "FullName", "orderable": false },
+                    { "title": "Mykad No", "data": "MykadNo", "orderable": false }
+                ]
+            });
+    }
+
+    function bindSearch() {
+        var param = {};
+        param["businessTypeID"] = $("#BusinessTypeID").val();
+
+        if ($("#EntmtApplicationID").val() > 0) {
+            param["entmtApplicationID"] = $("#EntmtApplicationID").val();
+        } else {
+            param["entmtApplicationID"] = "";
+        }
+
+        return param;
+    }
+
+    function bindTable() {
+
+            $('#RequiredDocument').show();
+            if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+                $('#tblBusinessType').dataTable().fnDestroy();
+            }
+
+            table = $("#tblBusinessType").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("RequiredDocument", "EntmtApplication")',
+                    type: "POST",
+                    data: bindSearch()
+                },
+                "columns": [
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (userRollTemplate > 1) {
+                                appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            }
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Required Document", "data": "RequiredDocDesc", "orderable": false },
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (userRollTemplate == 1) {
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                            }
+                            else if (userRollTemplate > 2) {
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                            }
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridUploadColume,
+                    },
+                    {
+                        "title": "File Name",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (visibleGridUploadColume) {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+
+                                } else {
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
+                                }
+
+                            } else {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["EntmtApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                } else {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                                }
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+                    }
+                ]
+        });
+    }
+
+   
+   
+
+    function RequiredDocument() {
+
+        var RequiredArray = [];
+        $('.chkreqdoc').each(function () {
+            if ($(this).is(":checked")) {
+                RequiredArray.push($(this).val());
+            }
+        });
+        $("#RequiredDocIds").val(RequiredArray);
+    }
+
+    function checkButtonState() {
+        var isAddtional = false;
+        if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
+            isAddtional = true;
+        }
+
+        var isDocument = false;
+        if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
+            isDocument = true;
+        }
+
+        if (isAddtional && isDocument) {
+            $('.btSubmit').show();
+        } else {
+            $('.btSubmit').hide();
+        }
+    }
+
+    
+
+    function RequiredDocumentModel(Requiredid) {
+            $("#reqDocid").val(Requiredid);
+            $("#addDocid").val("0");
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+   
+
+        var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
+        var _validFileExtensions = [];
+        _validFileExtensions = strValidateFileFormate.split(",");
+
+        function UploadDocument(){
+
+            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+
+                var data = new FormData();
+                var files = $("#DocumentFile").get(0).files;
+
+                if (files.length > 0) {
+                    data.append("DocumentFile", files[0]);
+                }
+
+                data.append("EntmtApplicationID", @Model.EntmtApplicationID);
+                data.append("reqDocid", $("#reqDocid").val());
+                data.append("addDocid", $("#addDocid").val());
+                data.append("isReqDoc", $("#isReqDoc").val());
+
+                var ajaxRequest = $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UploadDocument", "EntmtApplication")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    async: false,
+                    success: function (result) {
+                        if (result != null) {
+                            $("#DocumentFile").val("");
+                            if (result.status == 1) {
+                                successMessage(result.message);
+
+                                if ($("#isReqDoc").val() > 0) {
+                                    bindTable();
+                                } 
+                            }
+                            else {
+                                errorMessage(result.message);
+                            }
+                        }
+                        $("#uploadDocumentModal").modal('hide');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        errorMessage(xhr.responseText);
+                    }
+                });
+
+        } else {
+                alert("Please Select Valid File");
+            }
+    }
+
+     function UploadAttechment(){
+
+            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+
+                var data = new FormData();
+                var files = $("#DocumentFile").get(0).files;
+
+                if (files.length > 0) {
+                    data.append("DocumentFile", files[0]);
+                }
+
+                data.append("reqDocid", $("#reqDocid").val());
+                data.append("addDocid", $("#addDocid").val());
+                data.append("isReqDoc", $("#isReqDoc").val());
+
+                var ajaxRequest = $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UploadAttechment", "EntmtApplication")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    async: false,
+                    success: function (result) {
+                        if (result != null) {
+                            $("#DocumentFile").val("");
+                            if (result.status == 1) {
+                                successMessage("Document Upload Successfully");
+
+                                console.log(result.result);
+                                if ($("#isReqDoc").val() > 0) {
+                                    var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
+                                    $('.lablereqdocument').each(function () {
+                                        if ($(this).attr('id') == lblreqAttachment) {
+                                            $("#" + lblreqAttachment).html(result.result.AttachmentName);
+                                            RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
+                                        }
+                                    });
+                                } else {
+                                    var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
+                                    $('.lableadddocument').each(function () {
+                                        if ($(this).attr('id') == lbladdAttachment) {
+                                            $("#" + lbladdAttachment).html(result.result.AttachmentName);
+                                            AdditionalDocumentDublicateCheck(result.result.AdditionalDocID, result.result.AttachmentID)
+                                        }
+                                    });
+                                }
+                            }
+                            else {
+                                errorMessage(result.message);
+                            }
+                        }
+                        $("#uploadDocumentModal").modal('hide');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        errorMessage(xhr.responseText);
+                    }
+                });
+
+            } else {
+                alert("Please Select Valid File");
+            }
+    }
+
+    function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
+        var itemfound = 0;
+        var itemFoundbool = false;
+
+            for (var i = 0; i < requiredDocList.length; i++) {
+                var doc = requiredDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == RequiredDocID ) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = requiredDocList.length+1;
+                }
+            }
+
+            if (itemFoundbool) {
+                requiredDocList.splice(itemfound, 1);
+            }
+
+            var requiredDocument = RequiredDocID + ":" + AttachmentID;
+            requiredDocList.push(requiredDocument);
+        }
+
+    function AddRules()
+    {
+        //validation implementation will go here.
+        $("#frmsaveComment").validate({
+            rules: {
+                txtComment: {
+                    required: true
+                }
+            }
+        });
+    }
+
+        function Approvedreject(name) {
+            if (name == "approved") {
+                $("#lblapprovedreject").html("Approve");
+                $("#txtComment").rules("remove", "required");
+            }
+            else {
+                AddRules();
+                $("#lblapprovedreject").html("Reject");
+                $("#txtComment").rules("add", "required");
+            }
+            $("#lblheaderTitle").html("Add Comment");
+            $('#approvedrejectModal').modal('show');
+        }
+
+        function SaveComment() {
+
+            if (!$("#frmsaveComment").valid()) {
+                return false;
+            } else {
+
+            var data = new FormData();
+            data.append("EntmtApplicationID", @Model.EntmtApplicationID);
+            data.append("comment", $("#txtComment").val());
+
+            if ($("#lblapprovedreject").html() == "Approve") {
+                data.append("approveRejectType", "Approve");
+            } else {
+                data.append("approveRejectType", "Reject");
+            }
+
+                 var ajaxRequest = $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("SaveComment", "EntmtApplication")',
+                        contentType: false,
+                        processData: false,
+                        data: data,
+                        async: false,
+                        success: function (result) {
+                            if (result != null) {
+                                $("#txtComment").val("");
+                                if (result.status == 1) {
+                                    successMessage(result.message);
+                                    back();
+                                }
+                                else {
+                                    errorMessage(result.message);
+                                }
+                            }
+                            $("#approvedrejectModal").modal('hide');
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            errorMessage(xhr.responseText);
+                        }
+                 });
+
+            }
+        }
+    </script>
+}

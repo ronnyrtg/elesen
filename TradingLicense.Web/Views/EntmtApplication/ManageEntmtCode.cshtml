@@ -1,0 +1,135 @@
+﻿@model TradingLicense.Model.EntmtCodeModel
+@{
+    ViewBag.Title = "ManageEntmtCode";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "-", Value = "0" });
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Fi Lesen Hiburan</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmEntmtCode", id = "frmEntmtCode" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.EntmtCodeID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Kategori Lesen Hiburan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.EntmtCodeDesc, new { @class = "form-control", @maxlength = "255" })
+                        @Html.ValidationMessageFor(m => m.EntmtCodeDesc)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi</div>
+                        @Html.TextBoxFor(m => m.Fee, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.Fee)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi Permulaan</div>
+                        @Html.TextBoxFor(m => m.BaseFee, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.BaseFee)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Fi bagi setiap objek</div>
+                        @Html.TextBoxFor(m => m.ObjectFee, new { @class = "form-control"})
+                        @Html.ValidationMessageFor(m => m.ObjectFee)
+                    </div>
+                </div>
+            </div>
+
+            if (Model.ObjectFee != null)
+            {
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Bagi setiap</div>
+                        @Html.TextBoxFor(m => m.ObjectName, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.ObjectName)
+                    </div>
+                </div>
+            </div>
+            }
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Tempoh Fi Lesen<span class="cfont">*</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.PeriodQuantity, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PeriodQuantity)
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        @Html.DropDownListFor(model => model.Period, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+         var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("EntmtCode", "EntmtApplication")';
+        window.location.href = link;
+        }
+    </script>
+}

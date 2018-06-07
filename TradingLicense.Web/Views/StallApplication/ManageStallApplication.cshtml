@@ -1,0 +1,109 @@
+﻿@model TradingLicense.Model.StallApplicationModel
+@using AutoMapper;
+@{
+    ViewBag.Title = "ManageStallApplication";
+}
+@{
+    List<TradingLicense.Model.StallCodeModel> stallCodeList = new List<TradingLicense.Model.StallCodeModel>();
+
+    List<TradingLicense.Entities.SAReqDoc> stallDocList = new List<TradingLicense.Entities.SAReqDoc>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var stallCode = ctx.StallCodes.ToList();
+        stallCodeList = Mapper.Map<List<TradingLicense.Model.StallCodeModel>>(stallCode);
+    }
+
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Pasar</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmStallApplication", id = "frmStallApplication" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.StallApplicationID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Kod Lesen Pasar</div>
+                        @Html.DropDownList("StallCode", new SelectList(stallCodeList.OrderBy(x => x.StallCodeID), "StallCodeID","StallCodeDesc"), "Pilih Kod Lesen Pasar", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <hr /><div class="h4">Senarai Pembantu</div><br />
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="h4">Dokumen Wajib <br /><br /></div>
+                        <div class="text-left">
+                            <table class="table table-striped dataTable table-hover" id="Docs">
+                                @if (ViewBag.stallDocList != null) {
+                                    foreach (var item in ViewBag.stallDocList)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input type="file" value='@item.RequiredDocID' />
+
+                                            </label>
+
+                                        </td>
+                                        <td>
+                                            <label>
+                                                @item.RequiredDoc.RequiredDocDesc
+                                            </label>
+
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
+    function back() {
+         var link = '@Url.Action("StallApplication", "StallApplication")';
+        window.location.href = link;
+    }
+
+    </script>
+}

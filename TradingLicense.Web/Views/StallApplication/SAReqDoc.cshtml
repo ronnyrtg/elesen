@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Stall Application Required Documents";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>Dokumen wajib untuk Lesen Pasar</h4>
+            </div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-primary" onclick="addSAReqDoc();">Tambah Dokumen Wajib</button>
+            </div>
+        </div>
+    </div>
+    <div class="grid" id="divtblSAReqDoc">
+        <table cellspacing="0" class="table table-striped" id="tblSAReqDoc"></table>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    $(function () {
+        $('.form-control').keypress(function (e) {
+            if (e.which == 13) {
+                bindTable();
+                return false;
+            }
+        });
+         var success = '@(TempData["SuccessMessage"])';
+                if (success != null && success != "") {
+                    successMessage(success);
+                }
+        bindTable();
+        });
+
+        function addSAReqDoc() {
+           var link = '@Url.Action("ManageSAReqDoc", "StallApplication")';
+             window.location.href = link;
+        }
+
+     function bindTable() {
+
+         if ($.fn.DataTable.isDataTable("#tblSAReqDoc")) {
+             $('#tblSAReqDoc').dataTable().fnDestroy();
+             $('#divtblSAReqDoc').html('<table class="table table-striped" width="100%"  id="tblSAReqDoc"></table>');
+                }
+
+         table = $("#tblSAReqDoc").dataTable({
+             "autoWidth": false,
+             "searching": false,
+             "paging": true,
+             "sPaginationCode": "full_numbers",
+             "language": {
+                 "lengthMenu": "Page Size : _MENU_ ",
+                 "info": "Records _START_ to _END_ of (_TOTAL_)",
+                 "emptyTable": "No Record(s) Found"
+             },
+             "processing": true,
+             "serverSide": true,
+             "pageLength": 10,
+                    "ajax": {
+                        url: '@Url.Action("SAReqDoc", "StallApplication")',
+                        type: "POST",
+
+                    },
+                    "columns": [
+                        {
+                            "targets": 0,
+                            "searchable": false,
+                            "orderable": false,
+                            "title": "No.",
+                            "data": null,
+                            "render": function (data, type, full, meta) {
+                                return meta.settings._iDisplayStart + meta.row + 1;
+                            }
+                        },
+                        { "title": "Kod Iklan", "data": "RequiredDocDesc" },
+                        {
+                            "title": "Padam",
+                            "data": null,
+                            "render": function (data, type, row) {
+                                var appendstring = '';
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["SAReqDocID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                return appendstring
+                        },
+                            "width": "80px",
+                    "orderable": false,
+                    "class": "action-icons"
+                }
+             ],
+             "drawCallback": function (settings) {
+                 //hide paging and info when empty datattable
+                 var api = this.api();
+                 if (api.rows({ page: 'current' }).data().length <= 0) {
+                     $('#tblSAReqDoc_info').hide();
+                     $('#tblSAReqDoc_paginate').hide();
+                     $('#tblSAReqDoc_length').hide();
+                 }
+                 else {
+                     $('#tblSAReqDoc_info').show();
+                     $('#tblSAReqDoc_paginate').show();
+                     $('#tblSAReqDoc_length').show();
+                 }
+                 bindSortingArrow();
+             }
+                });
+        }
+
+        function bindDelete(item) {
+            var x = confirm("Are you sure you want to delete?");
+            if (x) {
+                $.ajax({
+                    type: "POST",
+                    url: encodeURI('@Url.Action("DeleteSAReqDoc", "StallApplication")'),
+                    data: { "Id": $(item).attr('data-id') },
+                    cache: false,
+                    dataCode: 'json',
+                    success: function (data, textStatus, XMLHttpRequest) {
+                        if (data.success) {
+                            bindTable();
+                            successMessage(data.message);
+                        }
+                        else {
+                            successMessage(data.message);
+                        }
+                    },
+                    error: function (jqXHR, exception, errMsg) {
+                    }
+                });
+            }
+        }
+
+    </script>
+}

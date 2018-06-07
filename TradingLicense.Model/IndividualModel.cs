@@ -6,36 +6,35 @@ namespace TradingLicense.Model
     {
         public int IndividualID { get; set; }
 
-        [Required(ErrorMessage = "Please Enter Full Name")]
+        [Required(ErrorMessage = "SIla masukkan nama penuh")]
         [Display(Name = "Full Name")]
         [StringLength(50)]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Please Enter Mykad No")]
+        [Required(ErrorMessage = "Masukkan nombor MyKad atau Paspot")]
         [Display(Name = "Mykad No")]
         [StringLength(30)]
         public string MykadNo { get; set; }
 
-       // [Required(ErrorMessage = "Please Select Nationality")]
-        [Display(Name = "Nationality")]
-        //[StringLength(30)]
+        [Display(Name = "Kewarganegaraan")]
         public int NationalityID { get; set; }
 
-        [Required(ErrorMessage = "Please Select Address")]
+        [Required(ErrorMessage = "Sila masukkan alamat mengikut IC")]
         [Display(Name = "Address")]
         [StringLength(200)]
         public string AddressIC { get; set; }
 
-        [Required(ErrorMessage = "Please Select Phone No")]
+        [Required(ErrorMessage = "Sila masukkan nombor telefon")]
         [Display(Name = "Phone No")]
         [StringLength(200)]
         public string PhoneNo { get; set; }
 
-        [Required(ErrorMessage = "Please Select Individual Email")]
-        [Display(Name = "Individual Email")]
+        [Required(ErrorMessage = "Sila masukkan Email")]
+        [Display(Name = "Email")]
         [StringLength(200)]
         public string IndividualEmail { get; set; }
-
+        [Display(Name = "Gambar")]
+        public int AttachmentID { get; set; }
         [Display(Name = "Gender")]
         public int Gender { get; set; }
 
