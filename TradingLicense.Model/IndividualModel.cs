@@ -39,15 +39,6 @@ namespace TradingLicense.Model
         [Display(Name = "Gender")]
         public int Gender { get; set; }
 
-        [Display(Name = "Rental")]
-        public float Rental { get; set; }
-
-        [Display(Name = "Assessment")]
-        public float Assessment { get; set; }
-
-        [Display(Name = "Compound")]
-        public float Compound { get; set; }
-
         [Display(Name = "Active")]
         public bool Active { get; set; }
     }

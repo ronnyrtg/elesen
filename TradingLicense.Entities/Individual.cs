@@ -31,9 +31,6 @@ namespace TradingLicense.Entities
         public string IndividualEmail { get; set; }
 
         public int Gender { get; set; }
-        public float Rental { get; set; }
-        public float Assessment { get; set; }
-        public float Compound { get; set; }
         public bool Active { get; set; }
         public Individual()
         {

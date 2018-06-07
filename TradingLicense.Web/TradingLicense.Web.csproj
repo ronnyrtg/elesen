@@ -458,6 +458,8 @@
     <Content Include="Views\BannerApplication\BannerApplication.cshtml" />
     <Content Include="Views\BannerApplication\ManageBannerApplication.cshtml" />
     <Content Include="Views\Print\Print.cshtml" />
+    <Content Include="Views\BannerApplication\BAReqDoc.cshtml" />
+    <Content Include="Views\BannerApplication\ManageBAReqDoc.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

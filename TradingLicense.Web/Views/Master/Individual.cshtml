@@ -102,21 +102,6 @@
                  { "title": "Nama Penuh", "data": "FullName" },
                  { "title": "Mykad/Paspot", "data": "MykadNo" },
                  {
-                     "title": "Rental",
-                     "data": "Rental",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
-                     "title": "Assessment",
-                     "data": "Assessment",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
-                     "title": "Compound",
-                     "data": "Compound",
-                     "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
-                 },
-                 {
                      "title": "Aktif",
                      "data": "Active",
                      "render": function (data, type, row) {
@@ -174,7 +159,6 @@
         function clearControls() {
             $("#txtfullName").val('');
             $("#txtmykadPassport").val('');
-            $("#txtphoneNo").val('');
             bindTable();
         }
 
@@ -182,7 +166,6 @@
             var param = {};
             param["fullName"] = $('#txtfullName').val();
             param["MykadNo"] = $('#txtmykadPassport').val();
-            param["phoneNo"] = $('#txtphoneNo').val();
             return param;
         }
 
