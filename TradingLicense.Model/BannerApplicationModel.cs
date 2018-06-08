@@ -36,4 +36,5 @@ namespace TradingLicense.Model
         public List<SelectedBannerObjectModel> selectedbannerobjectList = new List<SelectedBannerObjectModel>();
         public List<SelectedBannerCodeModel> selectedbannercodeList = new List<SelectedBannerCodeModel>();
     }
+   
 }

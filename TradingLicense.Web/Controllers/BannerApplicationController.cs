@@ -10,11 +10,16 @@ using System.Linq.Dynamic;
 using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
+using System.Web.Script.Serialization;
+using System.Web;
+using System.IO;
+using TradingLicense.Infrastructure;
 
 namespace TradingLicense.Web.Controllers
 {
     public class BannerApplicationController : BaseController
     {
+        LicenseApplicationContext db = new LicenseApplicationContext();
         #region BannerCode
 
         /// <summary>
@@ -206,37 +211,48 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BannerApplicationModel> bannerApplication = new List<Model.BannerApplicationModel>();
             int totalRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
+            
+            try
             {
-                IQueryable<BannerApplication> query = ctx.BannerApplications;
-                totalRecord = query.Count();
-
-
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
+                using (var ctx = new LicenseApplicationContext())
                 {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                    IQueryable<BannerApplication> query = ctx.BannerApplications;
+                    totalRecord = query.Count();
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = String.Empty;
+
+                    foreach (var column in sortedColumns)
+                    {
+                        orderByString += orderByString != String.Empty ? "," : "";
+                        orderByString += (column.Data) +
+                          (column.SortDirection ==
+                          Column.OrderDirection.Ascendant ? " asc" : " desc");
+                    }
+
+                    query = query.OrderBy(orderByString == string.Empty ? "BannerApplicationID asc" : orderByString);
+
+                    #endregion Sorting
+                    // Paging
+                    query = query.Skip(requestModel.Start).Take(requestModel.Length);
+                    var Dtls = db.BannerApplications
+                                        .Include("AppStatus")
+                                        .Include("Company")
+                                        .Include("Individual").OrderBy(m => m.BannerApplicationID).ToList();
+
+                    
+                      //Mapper.Map<List<BannerApplicationModel>>(query.ToList());
+                    return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
                 }
-
-                query = query.OrderBy(orderByString == string.Empty ? "BannerApplicationID asc" : orderByString);
-
-                #endregion Sorting
-
-                // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
-
-                bannerApplication = Mapper.Map<List<BannerApplicationModel>>(query.ToList());
-
             }
-            return Json(new DataTablesResponse(requestModel.Draw, bannerApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            catch (Exception ex)
+            {
+                return null;
+                
+            }
+            
+
         }
 
         /// <summary>
@@ -253,17 +269,14 @@ namespace TradingLicense.Web.Controllers
                 IQueryable<BAReqDoc> query = ctx.BAReqDocs;
                 BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
                 ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
-                var qry= ctx.Individuals.Where(e => e.IndividualID == 1);
+                var qry = ctx.Individuals.Where(e => e.IndividualID == 1);
                 if (Id != null && Id > 0)
                 {
-
                     int bannerApplicationID = Convert.ToInt32(Id);
                     var bannerApplication = ctx.BannerApplications.Where(a => a.BannerApplicationID == bannerApplicationID).FirstOrDefault();
                     bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
                 }
-
             }
-
             return View(bannerApplicationModel);
         }
 
@@ -298,6 +311,93 @@ namespace TradingLicense.Web.Controllers
             }
 
         }
+       
+        [HttpPost]
+        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string ImgModel, string gridItems, string BannerApplist,FormCollection Frm)
+        {
+
+
+            List<BannerObject> BannerObjectData;
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            BannerObjectData = jss.Deserialize<List<BannerObject>>(gridItems);
+
+            List<BannerApplication> BannerApp;
+            JavaScriptSerializer jss1 = new JavaScriptSerializer();
+            BannerApp = jss1.Deserialize<List<BannerApplication>>(BannerApplist);
+
+            List<Attchments> Attchment;
+            JavaScriptSerializer jss2 = new JavaScriptSerializer();
+            Attchment = jss2.Deserialize<List<Attchments>>(ImgModel);
+
+            int scope_id = 0;
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var item in BannerApp)
+                    {
+                        item.UsersID = ProjectSession.UserID;
+                        item.UpdatedBy = ProjectSession.User.FullName;
+                        db.BannerApplications.AddOrUpdate(item);
+                        db.SaveChanges();
+                        scope_id = item.BannerApplicationID;
+                    }
+                    foreach (var item in BannerObjectData)
+                    {
+                        item.BannerApplicationID = scope_id;
+                        db.BannerObjects.AddOrUpdate(item);
+                        db.SaveChanges();
+                    }
+                    foreach (var item in Attchment)
+                    {
+                        Attachment Atch = new Attachment();
+                        Atch.AttachmentID = 0;
+                        Atch.FileName = item.filename;
+                        db.Attachments.AddOrUpdate(Atch);
+                        db.SaveChanges();
+                        var AtchId = Atch.AttachmentID;
+                        BALinkReqDoc ReqDoc = new BALinkReqDoc();
+                        ReqDoc.AttachmentID = AtchId;
+                        ReqDoc.BALinkReqDocID = 0;
+                        ReqDoc.BannerApplicationID = scope_id;
+                        ReqDoc.RequiredDocID = item.Id;
+                        db.BALinkReqDocs.AddOrUpdate(ReqDoc);
+                        db.SaveChanges();
+                    }
+                    if (Request.Files.Count > 0)
+                    {
+                        HttpFileCollectionBase files = Request.Files;
+                        for (int i = 0; i < files.Count; i++)
+                        {
+                            
+                            HttpPostedFileBase file = files[i];
+                            string fname;
+                            if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                            {
+                                string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                                fname = testfiles[testfiles.Length - 1];
+                            }
+                            else
+                            {
+                                fname = file.FileName;
+                            }
+                            fname = Path.Combine(Server.MapPath("~/Documents/Attachment"), fname);
+                            file.SaveAs(fname);
+                            
+                        }
+                    }
+                    transaction.Commit();
+                    TempData["SuccessMessage"] = "Banner Application saved successfully.";
+                    return Json(Convert.ToString(1));
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Json(Convert.ToString(0));
+                }
+            }
+        }
+
 
         [HttpPost]
         public JsonResult FillIndividual(string query)
@@ -463,5 +563,20 @@ namespace TradingLicense.Web.Controllers
             }
         }
         #endregion
+        public class Attchments
+        {
+            public int Id { get; set; }
+            public string filename { get; set; }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
+
 }
