@@ -102,7 +102,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control", @onchange = "filterBusinessCodes()" })
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
                     </div>
                 </div>
 
@@ -644,10 +644,6 @@
                 }
                 $("#frmPremiseApplication").submit();
             }
-    }
-
-    function filterBusinessCodes() {
-
     }
 
     function changeBussinesscode() {
