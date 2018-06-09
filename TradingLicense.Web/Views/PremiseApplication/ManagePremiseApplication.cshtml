@@ -396,9 +396,32 @@
 
             AddRules();
 
+            function formatBusinessCodes(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-9">' + r[0] + '</div>' +
+                        '<div class="col-md-3">' + r[1] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatSelectionBusinessCodes(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[0] + ' ('  + r[1] + ')' +
+                    '</span>'
+                );
+                return $result;
+            }
+
             $("#businessCodeList").select2({
                 placeholder: "Search for a Business Code",
                 minimumInputLength: 0,
+                templateResult: formatBusinessCodes,
+                templateSelection: formatSelectionBusinessCodes,
                 ajax: {
                     type: "POST",
                     url: encodeURI('@Url.Action("FillBusinessCode", "PremiseApplication")'),
@@ -607,15 +630,17 @@
                 return false;
             }else {
                 var individuals = $("#individualList").select2('data');
-                var newIndividuals = [];
-                for(var i =0; i< individuals.length; i++) {
-                    var ind = individuals[i];
-                    if(ind.isNew) {
-                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                if (individuals) {
+                    var newIndividuals = [];
+                    for(var i =0; i< individuals.length; i++) {
+                        var ind = individuals[i];
+                        if(ind.isNew) {
+                            newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                        }
                     }
-                }
-                if(newIndividuals.length >0) {
-                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                    if(newIndividuals.length >0) {
+                        $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                    }
                 }
                 $("#frmPremiseApplication").submit();
             }

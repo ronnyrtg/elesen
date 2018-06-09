@@ -213,7 +213,7 @@ namespace TradingLicense.Web.Controllers
                                 selectedMode = buinesscode.Mode;
                                 SelectedBusinessCodeModel selectedBusinessCodeModel = new SelectedBusinessCodeModel();
                                 selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
-                                selectedBusinessCodeModel.text = buinesscode.CodeDesc;
+                                selectedBusinessCodeModel.text = $"{buinesscode.CodeDesc}~{buinesscode.CodeNumber}";
                                 businessCodesList.Add(selectedBusinessCodeModel);
                             }
                         }
@@ -261,11 +261,12 @@ namespace TradingLicense.Web.Controllers
                     int PremiseApplicationID = Convert.ToInt32(Id);
                     var premiseApplication = ctx.PremiseApplications.Where(a => a.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
                     premiseApplicationModel = Mapper.Map<ViewPremiseApplicationModel>(premiseApplication);
+                    premiseApplicationModel.Individuals = new List<string>();
 
                     var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (paLinkBC != null && paLinkBC.Count > 0)
                     {
-                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => x.BusinessCode.CodeDesc).ToList();
+                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => $"{x.BusinessCode.CodeDesc} ({x.BusinessCode.CodeNumber})").ToList();
                     }
                     else { premiseApplicationModel.BusinessCodes = new List<string>(); }
 
@@ -310,6 +311,7 @@ namespace TradingLicense.Web.Controllers
                     ModelState.Remove("PremiseStatus");
                     ModelState.Remove("PremiseTypeID");
                     ModelState.Remove("PremiseModification");
+                    ModelState.Remove("PremiseOwnership");
                 }
             }
             if (ModelState.IsValid)
@@ -739,6 +741,7 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
+                ViewBag.SelectedMode = 0;
                 return View(premiseApplicationModel);
             }
         }
@@ -788,9 +791,9 @@ namespace TradingLicense.Web.Controllers
                 }
                 if (!String.IsNullOrWhiteSpace(query))
                 {
-                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()));
+                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
                 }
-                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc, mode = x.Mode }).ToList();
+                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc + "~" + x.CodeNumber, mode = x.Mode }).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
