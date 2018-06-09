@@ -14,8 +14,8 @@
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
-                    <div class="control-label">Sectors.</div>
-                    <div class="well">@Model.Sector</div>
+                    <div class="control-label">Jenis Perniagaan</div>
+                    <div class="well">@Model.BusinessType</div>
                 </div>
             </div>
         </div>
@@ -23,8 +23,33 @@
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
-                    <div class="control-label">Business Type.</div>
-                    <div class="well">@Model.BusinessType</div>
+                    <div class="control-label">Nama Pemohon</div>
+                    <div class="well">@Model.NamaPemohon</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">No. Kad Pengenalan / No. Syarikat</div>
+                    <div class="well">@Model.ICPaspot</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Nama Perniagaan/Syarikat</div>
+                    <div class="well">@Model.NamaSyarikat</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="form-group">
+                    <div class="control-label">Kumpulan Kod Perniagaan</div>
+                    <div class="well">@Model.Sector</div>
                 </div>
             </div>
 
@@ -37,7 +62,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -52,63 +76,65 @@
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <div class="control-label">
-                        Full Name (Mykad/Passport No.).
+        @if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+        {
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Full Name (Mykad/Passport No.).
+                        </div>
+                        <div class="well">
+                            @for (int i = 0; i < Model.Individuals.Count; i++)
+                            {
+                                <label>@Model.Individuals[i]</label>
+                                <br />
+                            }
+                        </div>
                     </div>
-                    <div class="well">
-                        @for (int i = 0; i < Model.Individuals.Count; i++)
-                        {
-                            <label>@Model.Individuals[i]</label>
-                            <br />
-                        }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Company.</div>
+                        <div class="well">@Model.Company</div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <div class="control-label">Company.</div>
-                    <div class="well">@Model.Company</div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Premise Area</div>
+                        <div class="well">@Model.PremiseArea</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Premise Status</div>
+                        <div class="well">@Model.PremiseStatus</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Premise Type</div>
+                        <div class="well">@Model.PremiseType</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Pemilikan Premis</div>
+                        <div class="well">@Model.PremiseOwnership</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Premise Area</div>
-                    <div class="well">@Model.PremiseArea</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Premise Status</div>
-                    <div class="well">@Model.PremiseStatus</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Premise Type</div>
-                    <div class="well">@Model.PremiseType</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Premise Type</div>
-                    <div class="well">@Model.PremiseModification</div>
-                </div>
-            </div>
-        </div>
+        }
         <div class="row">
             <div class="col-lg-12 col-md-12" id="RequiredDocument">
                 <div class="form-group">
                     <div class="control-label">
-                        Document List.   
+                        Document List.
                     </div>
                     <div class="well">
                         @if (Model.RequiredDocs.Count == 0)
@@ -118,7 +144,7 @@
                         @for (int i = 0; i < Model.RequiredDocs.Count; i++)
                         {
                             <label>@Model.RequiredDocs[i]</label>
-                            <br />
+                                <br />
                         }
                     </div>
                 </div>
@@ -136,7 +162,7 @@
                         @for (int i = 0; i < Model.AdditionalDocs.Count; i++)
                         {
                             <label>@Model.AdditionalDocs[i]</label>
-                            <br />
+                                <br />
                         }
                     </div>
                 </div>

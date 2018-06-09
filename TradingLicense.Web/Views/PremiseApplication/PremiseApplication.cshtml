@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Premise Application";
+    int? userRollTemplate = TradingLicense.Infrastructure.ProjectSession.User?.RoleTemplateID;
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -52,7 +53,7 @@
                         }
                         bindTable();
                     });
-
+                    var restrictSubmittedApps = @((userRollTemplate.HasValue && userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer).ToString().ToLower());
                     function addPremiseApplication() {
                         var link = '@Url.Action("ManagePremiseApplication", "PremiseApplication")';
                         window.location.href = link;
@@ -107,8 +108,11 @@
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-                                        appendstring += '<a  href="@Url.Action("ManagePremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                                        appendstring += '<a href="javascript:void(0);" data-id="' + row["PremiseApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                        appendstring += '<a  href="@Url.Action("ViewPremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                                        if (!(restrictSubmittedApps && data['AppStatusID'] == 2)) {
+                                            appendstring += '<a  href="@Url.Action("ManagePremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                            appendstring += '<a href="javascript:void(0);" data-id="' + row["PremiseApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                        }
                                         return appendstring
                                     },
                                     "width": "80px",
