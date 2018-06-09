@@ -107,11 +107,15 @@ namespace TradingLicense.Data
 
         public DbSet<SALinkReqDoc> SALinkReqDocs { get; set; }
 
+        public DbSet<HawkerApplication> HawkerApplications { get; set; }
+
+        public DbSet<HAReqDoc> HAReqDocs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            //modelBuilder.HasDefaultSchema("C##LICENSING");
-            modelBuilder.HasDefaultSchema("LICENSING");
+            modelBuilder.HasDefaultSchema("C##LICENSING");
+            //modelBuilder.HasDefaultSchema("LICENSING");
         }
     }
 }

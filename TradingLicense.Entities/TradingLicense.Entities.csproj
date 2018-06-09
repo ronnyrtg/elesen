@@ -71,9 +71,12 @@
     <Compile Include="EntmtCode.cs" />
     <Compile Include="EntmtGroup.cs" />
     <Compile Include="EntmtObject.cs" />
+    <Compile Include="HAReqDoc.cs" />
+    <Compile Include="HawkerApplication.cs" />
     <Compile Include="HawkerCode.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
+    <Compile Include="IndLinkAtt.cs" />
     <Compile Include="LiquorCode.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="PAComment.cs" />
@@ -85,6 +88,8 @@
     <Compile Include="BTLinkReqDoc.cs" />
     <Compile Include="PALinkReqDoc.cs" />
     <Compile Include="AppStatus.cs" />
+    <Compile Include="PaymentDue.cs" />
+    <Compile Include="PaymentReceived.cs" />
     <Compile Include="PremiseAddress.cs" />
     <Compile Include="PremiseApplication.cs" />
     <Compile Include="PremiseType.cs" />

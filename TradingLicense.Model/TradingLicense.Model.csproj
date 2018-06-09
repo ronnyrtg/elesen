@@ -68,6 +68,8 @@
     <Compile Include="EntmtApplicationModel.cs" />
     <Compile Include="EntmtCodeModel.cs" />
     <Compile Include="EntmtGroupModel.cs" />
+    <Compile Include="HAReqDocModel.cs" />
+    <Compile Include="HawkerApplicationModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="LocationModel.cs" />
