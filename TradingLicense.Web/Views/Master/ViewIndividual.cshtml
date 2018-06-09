@@ -1,0 +1,60 @@
+﻿@using TradingLicense.Model;
+@{
+    ViewBag.Title = "ViewIndividual";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>View Individual</h4>
+            </div>
+        </div>
+    </div>
+    <div id="tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#tabs-1">Master Detail</a></li>
+            <li><a data-toggle="tab" href="#tabs-2">Trading Detail</a></li>
+            <li><a data-toggle="tab" href="#tabs-3">Payment Detail</a></li>
+            <li><a data-toggle="tab"href="#tabs-4">Attachments</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="tabs-1" class="tab-pane fade in active">
+                @{ Html.RenderAction("MasterDetails", "Master", new { Id = ViewBag.IndividualId });}
+            </div>
+            <div id="tabs-2" class="tab-pane fade">
+                <p>Tab Two Contents Here</p>
+            </div>
+            <div id="tabs-3" class="tab-pane fade">
+                <p>Tab Three Contents Here.</p>
+            </div>
+            <div id="tabs-4" class="tab-pane fade">
+                <p>Tab Four Contents Here.</p>
+            </div>
+        </div>
+        
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmViewIndividual", id = "frmViewIndividual" }))
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }   
+    </div>
+</div>
+@section scripts{
+    <script>
+        function back() {
+            var link = '@Url.Action("Individual", "Master")';
+            window.location.href = link;
+        }
+    </script>
+}
+

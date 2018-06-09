@@ -1619,6 +1619,40 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// View Individual Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ViewIndividual(int? Id)
+        {
+            ViewBag.IndividualId = Id;
+
+            return View();
+        }
+
+        /// <summary>
+        /// View Master details of an individual by Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public PartialViewResult MasterDetails(int? Id)
+        {
+            IndividualModel IndividualModel = new IndividualModel();
+            IndividualModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int individualID = Convert.ToInt32(Id);
+                    var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
+                    IndividualModel = Mapper.Map<IndividualModel>(individual);
+                }
+            }
+
+            return PartialView("_MasterDetails", IndividualModel);
+        }
+
+        /// <summary>
         /// Get Individual Data by ID
         /// </summary>
         /// <param name="Id"></param>
