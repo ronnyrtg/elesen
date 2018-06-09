@@ -1,17 +1,18 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TradingLicense.Entities
+namespace TradingLicense.Model
 {
-    public class PaymentDue
+    public class PaymentDueModel
     {
-        [Key]
         public int PaymentDueID { get; set; }
         public int IndividualID { get; set; }
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
+        [Display(Name = "Tujuan Pembayaran")]
+        [Required(ErrorMessage = "Sila masukkan tujuan pembayaran")]
         public string PaymentFor { get; set; }
+        [Display(Name = "Jumlah Bayaran")]
+        [Required(ErrorMessage = "Sila masukkan nilai yang perlu dibayar")]
         public float AmountDue { get; set; }
         public DateTime DateBilled { get; set; }
         public DateTime DueDate { get; set; }
@@ -19,12 +20,5 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string BilledBy { get; set; }
         public int BillStatus { get; set; }
-
-        public PaymentDue() 
-        {
-            BillStatus = 0;
-        }
-        
-        public virtual Individual Individual { get; set; } 
     }
 }

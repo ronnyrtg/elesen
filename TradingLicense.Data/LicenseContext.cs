@@ -27,7 +27,9 @@ namespace TradingLicense.Data
 
         public DbSet<Individual> Individuals { get; set; }
 
-        public DbSet<IndLinkCom> IndLinkComs { get; set; }  // Individual Link Com
+        public DbSet<IndLinkCom> IndLinkComs { get; set; }  // Individual Link Company
+
+        public DbSet<IndLinkAtt> IndLinkAtts { get; set; }  // Individual Link Attachments
 
         public DbSet<LoginLog> LoginLogs { get; set; }
 
@@ -111,11 +113,14 @@ namespace TradingLicense.Data
 
         public DbSet<HAReqDoc> HAReqDocs { get; set; }
 
+        public DbSet<PaymentDue> PaymentDues { get; set; }
+
+        public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.HasDefaultSchema("C##LICENSING");
-            //modelBuilder.HasDefaultSchema("LICENSING");
         }
     }
 }

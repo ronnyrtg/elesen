@@ -28,6 +28,7 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
+        public DateTime LastUpdated { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

@@ -8,8 +8,7 @@ namespace TradingLicense.Data.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationDataLossAllowed = true;
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
             ContextKey = "TradingLicense.Data.LicenseApplicationContext";
         }
 

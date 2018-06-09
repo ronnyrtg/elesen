@@ -82,6 +82,8 @@
     <Compile Include="LiquorCodeModel.cs" />
     <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
+    <Compile Include="PaymentDueModel.cs" />
+    <Compile Include="PaymentReceivedModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
