@@ -30,4 +30,9 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
     }
+    public class SelectedStallCodeModel
+    {
+        public int id { get; set; }
+        public string text { get; set; }
+    }
 }

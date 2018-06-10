@@ -124,7 +124,7 @@ namespace TradingLicense.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.HasDefaultSchema("C##LICENSING");
+            modelBuilder.HasDefaultSchema("LICENSING");
         }
     }
 }

@@ -4,9 +4,9 @@
     ViewBag.Title = "ManageStallApplication";
 }
 @{
-    List<TradingLicense.Model.StallCodeModel> stallCodeList = new List<TradingLicense.Model.StallCodeModel>();
-
     List<TradingLicense.Entities.SAReqDoc> stallDocList = new List<TradingLicense.Entities.SAReqDoc>();
+
+    List<TradingLicense.Model.StallCodeModel> stallCodeList = new List<TradingLicense.Model.StallCodeModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var stallCode = ctx.StallCodes.ToList();

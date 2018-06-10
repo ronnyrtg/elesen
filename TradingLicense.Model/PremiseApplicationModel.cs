@@ -60,7 +60,7 @@ namespace TradingLicense.Model
 
         public string newIndividualsList { get; set; }
 
-        public List<SelectedBusinessCodeModel> selectedbusinessCodeList = new List<SelectedBusinessCodeModel>();
+        public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
 
         public List<SelectedIndividualModel> selectedIndividualList = new List<SelectedIndividualModel>();
     }
