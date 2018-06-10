@@ -244,7 +244,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         premiseApplicationModel.BusinessCodeids = (string.Join(",", paLinkBC.Select(x => x.BusinessCodeID.ToString()).ToArray()));
 
-                        List<SelectedBusinessCodeModel> businessCodesList = new List<SelectedBusinessCodeModel>();
+                        List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
                         int selectedMode = 0;
                         foreach (var item in paLinkBC)
                         {
@@ -252,7 +252,7 @@ namespace TradingLicense.Web.Controllers
                             if (buinesscode != null && buinesscode.BusinessCodeID > 0)
                             {
                                 selectedMode = buinesscode.Mode;
-                                SelectedBusinessCodeModel selectedBusinessCodeModel = new SelectedBusinessCodeModel();
+                                Select2ListItem selectedBusinessCodeModel = new Select2ListItem();
                                 selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
                                 selectedBusinessCodeModel.text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}";
                                 businessCodesList.Add(selectedBusinessCodeModel);
@@ -1459,6 +1459,30 @@ namespace TradingLicense.Web.Controllers
                     int businessCodeID = Convert.ToInt32(Id);
                     var businessCode = ctx.BusinessCodes.Where(a => a.BusinessCodeID == businessCodeID).FirstOrDefault();
                     businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
+
+                    var additionalDocs = ctx.BCLinkAD.Where(blAD => blAD.BusinessCodeID == businessCodeID);
+                    if (additionalDocs.Count() > 0)
+                    {
+                        businessCodeModel.AdditionalDocs = additionalDocs.Select(blAD => blAD.AdditionalDocID).ToList();
+                    }
+                    else
+                    {
+                        businessCodeModel.AdditionalDocs = new List<int>();
+                    }
+
+                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeID);
+                    if (departments.Count() > 0)
+                    {
+                        foreach (var dep in departments)
+                        {
+                            if (dep.Department != null)
+                            {
+                                businessCodeModel.selectedDepartments.Add(new Select2ListItem() { id = dep.DepartmentID, text = $"{dep.Department.DepartmentCode} - {dep.Department.DepartmentDesc }" });
+                            }
+                        }
+                        businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DepartmentID).ToArray());
+                    }
+
                 }
             }
 
@@ -1486,6 +1510,65 @@ namespace TradingLicense.Web.Controllers
                     }
                     businessCode = Mapper.Map<BusinessCode>(businessCodeModel);
                     ctx.BusinessCodes.AddOrUpdate(businessCode);
+                    ctx.SaveChanges();
+
+                    if (!string.IsNullOrEmpty(businessCodeModel.DepartmentIDs))
+                    {
+                        List<BCLinkDep> selectedDepartments = new List<BCLinkDep>();
+                        var selectedDeps = ctx.BCLinkDeps.Where(bd => bd.BusinessCodeID == businessCode.BusinessCodeID).ToList();
+                        var deptIds = businessCodeModel.DepartmentIDs.Split(',');
+                        foreach (var dep in deptIds)
+                        {
+                            var depId = Convert.ToInt32(dep);
+                            if (selectedDeps == null || !selectedDeps.Any(sd => sd.DepartmentID == depId))
+                            {
+                                selectedDepartments.Add(new BCLinkDep { BusinessCodeID = businessCode.BusinessCodeID, DepartmentID = depId });
+                            }
+                        }
+                        if (selectedDeps != null && selectedDeps.Count > 0)
+                        {
+                            foreach (var bcDep in selectedDeps)
+                            {
+                                if (!deptIds.Any(rd => rd == bcDep.DepartmentID.ToString()))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedDepartments.Count > 0)
+                        {
+                            ctx.BCLinkDeps.AddOrUpdate(selectedDepartments.ToArray());
+                        }
+                    }
+
+                    if (businessCodeModel.AdditionalDocs.Count > 0)
+                    {
+                        List<BCLinkAD> selectedAdditionalDocs = new List<BCLinkAD>();
+                        var selectedADocs = ctx.BCLinkAD.Where(bd => bd.BusinessCodeID == businessCode.BusinessCodeID).ToList();
+                        var addDocIds = businessCodeModel.AdditionalDocs;
+                        foreach (var addDocId in addDocIds)
+                        {
+                            if (selectedADocs == null || !selectedADocs.Any(sd => sd.AdditionalDocID == addDocId))
+                            {
+                                selectedAdditionalDocs.Add(new BCLinkAD { BusinessCodeID = businessCode.BusinessCodeID, AdditionalDocID = addDocId });
+                            }
+                        }
+                        if (selectedADocs != null && selectedADocs.Count > 0)
+                        {
+                            foreach (var bcDep in selectedADocs)
+                            {
+                                if (!addDocIds.Any(rd => rd == bcDep.AdditionalDocID))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedAdditionalDocs.Count > 0)
+                        {
+                            ctx.BCLinkAD.AddOrUpdate(selectedAdditionalDocs.ToArray());
+                        }
+
+                    }
                     ctx.SaveChanges();
                 }
 
@@ -1540,6 +1623,28 @@ namespace TradingLicense.Web.Controllers
                : ctx.BusinessCodes.FirstOrDefault(
                    c => c.CodeNumber.ToLower() == name.ToLower());
                 return existObj != null;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Get Departments List
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillDepartments(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Department> primaryQuery = ctx.Departments;
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.DepartmentDesc.ToLower().Contains(query.ToLower()) || bc.DepartmentCode.ToLower().Contains(query.ToLower()));
+                }
+                var businessCode = primaryQuery.Select(x => new { id = x.DepartmentID, text = x.DepartmentCode + "~" + x.DepartmentDesc }).ToList();
+                return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
 
