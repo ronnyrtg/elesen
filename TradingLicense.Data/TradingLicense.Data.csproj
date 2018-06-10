@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LicenseContext.cs" />
-    <Compile Include="Migrations\201806090215223_seed.cs" />
-    <Compile Include="Migrations\201806090215223_seed.Designer.cs">
-      <DependentUpon>201806090215223_seed.cs</DependentUpon>
+    <Compile Include="Migrations\201806091639143_seed.cs" />
+    <Compile Include="Migrations\201806091639143_seed.Designer.cs">
+      <DependentUpon>201806091639143_seed.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="MyDbConfiguration.cs" />
@@ -74,8 +74,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201806090215223_seed.resx">
-      <DependentUpon>201806090215223_seed.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201806091639143_seed.resx">
+      <DependentUpon>201806091639143_seed.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

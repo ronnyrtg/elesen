@@ -107,8 +107,6 @@ namespace TradingLicense.Data
 
         public DbSet<SAReqDoc> SAReqDocs { get; set; }
 
-        public DbSet<SALinkReqDoc> SALinkReqDocs { get; set; }
-
         public DbSet<HawkerApplication> HawkerApplications { get; set; }
 
         public DbSet<HAReqDoc> HAReqDocs { get; set; }
@@ -116,6 +114,12 @@ namespace TradingLicense.Data
         public DbSet<PaymentDue> PaymentDues { get; set; }
 
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
+
+        public DbSet<LiquorApplication> LiquorApplications { get; set; }
+
+        public DbSet<SALinkReqDoc> LAReqDocs { get; set; }
+
+        public DbSet<LAComment> LAComments { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

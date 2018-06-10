@@ -77,6 +77,10 @@
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
     <Compile Include="IndLinkAtt.cs" />
+    <Compile Include="LAComment.cs" />
+    <Compile Include="LAReqDoc.cs" />
+    <Compile Include="SALinkReqDoc.cs" />
+    <Compile Include="LiquorApplication.cs" />
     <Compile Include="LiquorCode.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="PAComment.cs" />
@@ -97,7 +101,6 @@
     <Compile Include="RequiredDoc.cs" />
     <Compile Include="Road.cs" />
     <Compile Include="RoleTemplate.cs" />
-    <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="SAReqDoc.cs" />
     <Compile Include="Sector.cs" />
     <Compile Include="StallApplication.cs" />

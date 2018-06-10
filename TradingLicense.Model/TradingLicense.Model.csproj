@@ -73,6 +73,8 @@
     <Compile Include="HawkerApplicationModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
+    <Compile Include="LAReqDocModel.cs" />
+    <Compile Include="LiquorApplicationModel.cs" />
     <Compile Include="LocationModel.cs" />
     <Compile Include="LoginLogModel.cs" />
     <Compile Include="LoginModel.cs" />

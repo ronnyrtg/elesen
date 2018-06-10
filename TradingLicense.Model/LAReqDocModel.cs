@@ -1,10 +1,9 @@
-﻿namespace TradingLicense.Model
+using System.Collections.Generic;
+namespace TradingLicense.Model
 {
-    public class BTLinkReqDocModel
+    public class LAReqDocModel
     {
-        public int BTLinkReqDocID { get; set; }
-
-        public int BusinessTypeID { get; set; }
+        public int LAReqDocID { get; set; }
 
         public int RequiredDocID { get; set; }
 
@@ -16,8 +15,8 @@
 
         public int AttachmentId { get; set; }
 
-        public int PremiseApplicationID { get; set; }
+        public List<int> RequiredDocs { get; set; }
+
         public int LiquorApplicationID { get; set; }
-        public int EntmtApplicationID { get; set; }
     }
 }
