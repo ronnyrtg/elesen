@@ -12,7 +12,6 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
-using TradingLicense.Web.Models;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -687,6 +686,27 @@ namespace TradingLicense.Web.Controllers
                : ctx.Companies.FirstOrDefault(
                    c => c.CompanyName.ToLower() == name.ToLower());
                 return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Get Company
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillCompany(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Company> primaryQuery = ctx.Companies;
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(c => c.CompanyName.ToLower().Contains(query.ToLower()));
+                }
+                var company = primaryQuery.ToList();
+                var companyModel = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(company);
+                return Json(companyModel, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -1577,9 +1597,9 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageIndividual(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
-            ManageIndividualModel ManageIndividualModel = new ManageIndividualModel();
-
             IndividualModel.Active = true;
+
+            ManageIndividualModel model = new ManageIndividualModel();
 
             if (Id != null && Id > 0)
             {
@@ -1588,27 +1608,13 @@ namespace TradingLicense.Web.Controllers
                     int individualID = Convert.ToInt32(Id);
                     var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
-
-                    var allCompanies = ctx.Companies.ToList();
-
-                    var checkBoxListItems = new List<CheckBoxListItem>();
-                    foreach (var company in allCompanies)
-                    {
-                        checkBoxListItems.Add(new CheckBoxListItem()
-                        {
-                            ID = company.CompanyID,
-                            Display = company.CompanyName,
-                            IsChecked = ctx.IndLinkComs.Where(x => x.CompanyID == company.CompanyID && x.IndividualID == Id).Any()
-                        });
-                    }
-
-                    ManageIndividualModel.Individual = IndividualModel;
-                    ManageIndividualModel.Companies = checkBoxListItems;
-
+                    
+                    model.CompanyIds = (string.Join(",", ctx.IndLinkComs.Where(x => x.IndividualID == Id).Select(x => x.CompanyID.ToString()).ToArray()));
                 }
+                model.Individual = IndividualModel;
             }
 
-            return View(ManageIndividualModel);
+            return View(model);
         }
 
         /// <summary>
@@ -1639,12 +1645,12 @@ namespace TradingLicense.Web.Controllers
 
                     List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
 
-                    foreach(CheckBoxListItem item in model.Companies.Where(x => x.IsChecked).ToList())
+                    foreach (string id in model.CompanyIds.Split(',').ToList())
                     {
                         IndLinkCom LinkedCompany = new IndLinkCom()
                         {
                             IndividualID = model.Individual.IndividualID,
-                            CompanyID = item.ID
+                            CompanyID = int.Parse(id)
                         };
 
                         LinkedCompanies.Add(LinkedCompany);

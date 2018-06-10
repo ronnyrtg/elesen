@@ -1,4 +1,5 @@
-﻿@model TradingLicense.Web.Models.ManageIndividualModel
+﻿@model TradingLicense.Model.ManageIndividualModel
+@using AutoMapper;
 @{
     ViewBag.Title = "Manage Individual";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -13,6 +14,13 @@
     List<SelectListItem> genderList = new List<SelectListItem>();
     genderList.Add(new SelectListItem { Text = "Lelaki", Value = "1" });
     genderList.Add(new SelectListItem { Text = "Perempuan", Value = "2" });
+
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var companies = ctx.Companies.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+    }
 }
 
 <div id="divMessage"></div>
@@ -109,16 +117,12 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-sm-12">
-                    <h3 id="subHeaderTitle">Link Companies</h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                        <div class="form-group">
-                        @Html.EditorFor(model => model.Companies)
+                    <div class="form-group">
+                        <div class="control-label">Companies</div>
+                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
+                        @Html.HiddenFor(model => model.CompanyIds)
                     </div>
                 </div>
             </div>
@@ -136,6 +140,26 @@
 
             @section scripts{
                 <script>
+                    $(function () {
+                        $("#companyList").select2({
+                            placeholder: "Select Company"
+                        });
+
+                        var companySelectedId = [];
+                        if ('@Model.CompanyIds' != null && '@Model.CompanyIds' != '') {
+                            var CompanyIds = '@Model.CompanyIds';
+
+                            var arr = CompanyIds.split(',');
+                            $.each(arr, function (index, value) {
+                                companySelectedId.push(value);
+                            });
+                            $('#companyList').val(companySelectedId);
+                            $('#companyList').trigger('change');
+                        } else {
+                            companySelectedId = [];
+                        }
+                    });
+
                     var actionError = '@(TempData["ErrorMessage"])';
                     if (actionError != null && actionError != "") {
                         errorMessage(actionError);
@@ -143,6 +167,9 @@
                     function back() {
                         var link = '@Url.Action("Individual", "Master")';
                         window.location.href = link;
+                    }
+                    function changeCompany() {
+                        $('#CompanyIds').val($('#companyList').val());
                     }
                 </script>
             }
