@@ -417,8 +417,8 @@
     <Content Include="Views\Master\ManageRoleTemplate.cshtml" />
     <Content Include="Views\Master\AppStatus.cshtml" />
     <Content Include="Views\Master\ManageAppStatus.cshtml" />
-    <Content Include="Views\Master\BusinessCode.cshtml" />
-    <Content Include="Views\Master\ManageBusinessCode.cshtml" />
+    <Content Include="Views\PremiseApplication\BusinessCode.cshtml" />
+    <Content Include="Views\PremiseApplication\ManageBusinessCode.cshtml" />
     <Content Include="Views\Master\PremiseType.cshtml" />
     <Content Include="Views\Master\ManagePremiseType.cshtml" />
     <Content Include="Views\Master\Individual.cshtml" />
