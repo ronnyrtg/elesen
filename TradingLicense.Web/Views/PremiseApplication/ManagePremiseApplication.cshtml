@@ -400,8 +400,8 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<div class="row">' +
-                        '<div class="col-md-9">' + r[0] + '</div>' +
-                        '<div class="col-md-3">' + r[1] + '</div>' +
+                        '<div class="col-md-1">' + r[1] + '</div>' +
+                        '<div class="col-md-11">' + r[0] + '</div>' +
                     '</div>'
                 );
                 return $result;
@@ -411,7 +411,7 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<span>' +
-                        r[0] + ' ('  + r[1] + ')' +
+                        r[1] + ' | '  + r[0] +
                     '</span>'
                 );
                 return $result;

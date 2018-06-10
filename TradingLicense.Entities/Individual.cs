@@ -30,7 +30,9 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string IndividualEmail { get; set; }
 
+        //Profile Picture
         public int? AttachmentID { get; set; }
+
         public int Gender { get; set; }
         public bool Active { get; set; }
         public Individual()

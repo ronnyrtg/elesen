@@ -254,7 +254,7 @@ namespace TradingLicense.Web.Controllers
                                 selectedMode = buinesscode.Mode;
                                 SelectedBusinessCodeModel selectedBusinessCodeModel = new SelectedBusinessCodeModel();
                                 selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
-                                selectedBusinessCodeModel.text = $"{buinesscode.CodeDesc}~{buinesscode.CodeNumber}";
+                                selectedBusinessCodeModel.text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}";
                                 businessCodesList.Add(selectedBusinessCodeModel);
                             }
                         }
@@ -307,7 +307,7 @@ namespace TradingLicense.Web.Controllers
                     var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (paLinkBC != null && paLinkBC.Count > 0)
                     {
-                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => $"{x.BusinessCode.CodeDesc} ({x.BusinessCode.CodeNumber})").ToList();
+                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => $"{x.BusinessCode.CodeNumber} | {x.BusinessCode.CodeDesc}").ToList();
                     }
                     else { premiseApplicationModel.BusinessCodes = new List<string>(); }
 
