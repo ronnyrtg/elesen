@@ -12,6 +12,7 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
+using TradingLicense.Web.Models;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -1766,7 +1767,10 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageIndividual(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
+            ManageIndividualModel ManageIndividualModel = new ManageIndividualModel();
+
             IndividualModel.Active = true;
+
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -1774,10 +1778,27 @@ namespace TradingLicense.Web.Controllers
                     int individualID = Convert.ToInt32(Id);
                     var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
+
+                    var allCompanies = ctx.Companies.ToList();
+
+                    var checkBoxListItems = new List<CheckBoxListItem>();
+                    foreach (var company in allCompanies)
+                    {
+                        checkBoxListItems.Add(new CheckBoxListItem()
+                        {
+                            ID = company.CompanyID,
+                            Display = company.CompanyName,
+                            IsChecked = ctx.IndLinkComs.Where(x => x.CompanyID == company.CompanyID && x.IndividualID == Id).Any()
+                        });
+                    }
+
+                    ManageIndividualModel.Individual = IndividualModel;
+                    ManageIndividualModel.Companies = checkBoxListItems;
+
                 }
             }
 
-            return View(IndividualModel);
+            return View(ManageIndividualModel);
         }
 
         /// <summary>
@@ -1787,21 +1808,40 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageIndividual(IndividualModel IndividualModel)
+        public ActionResult ManageIndividual(ManageIndividualModel model)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     Individual Individual;
-                    if (IsIndividualDuplicate(IndividualModel.IndividualEmail, IndividualModel.IndividualID))
+                    if (IsIndividualDuplicate(model.Individual.IndividualEmail, model.Individual.IndividualID))
                     {
                         TempData["ErrorMessage"] = "Individual Email is already exist in the database.";
-                        return View(IndividualModel);
+                        return View(model);
                     }
 
-                    Individual = Mapper.Map<Individual>(IndividualModel);
+                    Individual = Mapper.Map<Individual>(model.Individual);
                     ctx.Individuals.AddOrUpdate(Individual);
+
+                    var oldLinkedCompanies = ctx.IndLinkComs.Where(i => i.IndividualID == model.Individual.IndividualID).ToList();
+                    ctx.IndLinkComs.RemoveRange(oldLinkedCompanies);
+
+                    List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
+
+                    foreach(CheckBoxListItem item in model.Companies.Where(x => x.IsChecked).ToList())
+                    {
+                        IndLinkCom LinkedCompany = new IndLinkCom()
+                        {
+                            IndividualID = model.Individual.IndividualID,
+                            CompanyID = item.ID
+                        };
+
+                        LinkedCompanies.Add(LinkedCompany);
+                    }
+
+                    ctx.IndLinkComs.AddRange(LinkedCompanies);
+
                     ctx.SaveChanges();
                 }
 
@@ -1811,7 +1851,7 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
-                return View(IndividualModel);
+                return View(model);
             }
 
         }

@@ -198,6 +198,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CheckBoxListItem.cs" />
+    <Compile Include="Models\ManageIndividualModel.cs" />
     <Compile Include="Pages\Actions.cs" />
     <Compile Include="Pages\Controllers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -484,12 +486,12 @@
     <Content Include="Views\Master\_TradingDetail.cshtml" />
     <Content Include="Views\Master\_PaymentDetail.cshtml" />
     <Content Include="Views\Master\_Attachments.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CheckBoxListItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
     <Folder Include="Documents\Attachment\" />
-    <Folder Include="Models\" />
     <Folder Include="Views\Payment\" />
   </ItemGroup>
   <ItemGroup>

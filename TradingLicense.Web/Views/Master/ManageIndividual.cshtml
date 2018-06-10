@@ -1,4 +1,4 @@
-﻿@model TradingLicense.Model.IndividualModel
+﻿@model TradingLicense.Web.Models.ManageIndividualModel
 @{
     ViewBag.Title = "Manage Individual";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -25,14 +25,14 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.IndividualID)
+            @Html.HiddenFor(m => m.Individual.IndividualID)
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
-                        @Html.ValidationMessageFor(m => m.FullName)
+                        @Html.TextBoxFor(m => m.Individual.FullName, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.Individual.FullName)
                     </div>
                 </div>
             </div>
@@ -41,8 +41,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">No. Kad Pengenalan/No. Pasport<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.MykadNo, new { @class = "form-control", @maxlength = "30" })
-                        @Html.ValidationMessageFor(m => m.MykadNo)
+                        @Html.TextBoxFor(m => m.Individual.MykadNo, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.Individual.MykadNo)
                     </div>
                 </div>
             </div>
@@ -51,8 +51,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Warganegara<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NationalityID)
+                        @Html.DropDownListFor(m => m.Individual.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.NationalityID)
                     </div>
                 </div>
             </div>
@@ -61,8 +61,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Alamat<span class="cfont">*</span></div>
-                        @Html.TextAreaFor(m => m.AddressIC, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.AddressIC)
+                        @Html.TextAreaFor(m => m.Individual.AddressIC, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.AddressIC)
                     </div>
                 </div>
             </div>
@@ -71,8 +71,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Email Individu</div>
-                        @Html.TextBoxFor(m => m.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.IndividualEmail)
+                        @Html.TextBoxFor(m => m.Individual.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.IndividualEmail)
                     </div>
                 </div>
             </div>
@@ -81,28 +81,28 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nombor Telefon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control", @maxlength = "20" })
-                        @Html.ValidationMessageFor(m => m.PhoneNo)
+                        @Html.TextBoxFor(m => m.Individual.PhoneNo, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.Individual.PhoneNo)
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <div class="control-label">Jantina</div>
-                            @Html.DropDownListFor(m => m.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Gender)
-                        </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Jantina</div>
+                        @Html.DropDownListFor(m => m.Individual.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.Gender)
                     </div>
                 </div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                @Html.CheckBoxFor(model => model.Active)
+                                @Html.CheckBoxFor(model => model.Individual.Active)
                                 <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
@@ -110,6 +110,18 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 id="subHeaderTitle">Link Companies</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                        <div class="form-group">
+                        @Html.EditorFor(model => model.Companies)
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -122,15 +134,15 @@
     </div>
 </div>
 
-@section scripts{
-    <script>
-         var actionError = '@(TempData["ErrorMessage"])';
-           if (actionError != null && actionError != "") {
-                errorMessage(actionError);
+            @section scripts{
+                <script>
+                    var actionError = '@(TempData["ErrorMessage"])';
+                    if (actionError != null && actionError != "") {
+                        errorMessage(actionError);
+                    }
+                    function back() {
+                        var link = '@Url.Action("Individual", "Master")';
+                        window.location.href = link;
+                    }
+                </script>
             }
-    function back() {
-         var link = '@Url.Action("Individual", "Master")';
-        window.location.href = link;
-    }
-    </script>
-}
