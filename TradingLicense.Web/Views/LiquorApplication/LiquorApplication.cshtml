@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "Liquor Application";
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>Senarai Permohonan Lesen Minuman Keras</h4>
+            </div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-primary" onclick="addLiquorApplication();">Permohonan Baru</button>
+            </div>
+        </div>
+    </div>
+    <div class="filter-block">
+        <div class="row small-gutter">
+            <form>
+                <div class="col-xs-4">
+                    <input type="text" name="txtLiquorApplicationID" id="txtLiquorApplicationID" class="form-control" placeholder="Nombor Rujukan" maxlength="100" />
+                </div>
+                @*<div class="col-xs-4">
+                        <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
+                    </div>*@
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="grid" id="divLiquorApplicationTable">
+        <table cellspacing="0" class="table table-striped" id="tblLiquorApplication"></table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+                $(function () {
+
+                    $('.form-control').keypress(function (e) {
+                        if (e.which == 13) {
+                            bindTable();
+                            return false;
+                        }
+                    });
+
+                    var success = '@(TempData["SuccessMessage"])';
+                    if (success != null && success != "") {
+                        successMessage(success);
+                    }
+                    bindTable();
+                });
+
+                function addLiquorApplication() {
+                    var link = '@Url.Action("ManageLiquorApplication", "LiquorApplication")';
+                    window.location.href = link;
+                }
+
+                function bindTable() {
+
+                    if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+
+                    if ($.fn.DataTable.isDataTable("#tblLiquorApplication")) {
+                        $('#tblLiquorApplication').dataTable().fnDestroy();
+                        $('#divLiquorApplicationTable').html('<table class="table table-striped" width="100%"  id="tblLiquorApplication"></table>');
+                    }
+
+                    table = $("#tblLiquorApplication").dataTable({
+                        "autoWidth": false,
+                        "searching": false,
+                        "paging": true,
+                        "sPaginationType": "full_numbers",
+                        "language": {
+                            "lengthMenu": "Page Size : _MENU_ ",
+                            "info": "Records _START_ to _END_ of (_TOTAL_)",
+                            "emptyTable": "No Record(s) Found"
+                        },
+                        "processing": true,
+                        "serverSide": true,
+                        "pageLength": 10,
+                        "ajax": {
+                            url: '@Url.Action("LiquorApplication", "LiquorApplication")',
+                            type: "POST",
+                            data: bindSearch()
+                        },
+                        "columns": [
+                            {
+                                "targets": 0,
+                                "searchable": false,
+                                "orderable": false,
+                                "title": "No.",
+                                "data": null,
+                                "render": function (data, type, full, meta) {
+                                    return meta.settings._iDisplayStart + meta.row + 1;
+                                }
+                            },
+                            { "title": "Nombor Rujukan", "data": "LiquorApplicationID" },
+                            { "title": "Syarikat", "data": "CompanyID" },
+                            { "title": "Pemohon", "data": "IndividualID" },
+                            { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
+                            { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
+                            { "title": "Status", "data": "StatusDesc" },
+                            {
+                                "title": "Ubah/Padam",
+                                "data": null,
+                                "render": function (data, type, row) {
+                                    var appendstring = '';
+                                    appendstring += '<a  href="@Url.Action("ManageLiquorApplication", "LiquorApplication")?Id=' + row["LiquorApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                                    appendstring += '<a href="javascript:void(0);" data-id="' + row["LiquorApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                    return appendstring
+                                },
+                                "width": "80px",
+                                "orderable": false,
+                                "class": "action-icons"
+                            }
+                        ],
+                        "drawCallback": function (settings) {
+                            //hide paging and info when empty datattable
+                            var api = this.api();
+                            if (api.rows({ page: 'current' }).data().length <= 0) {
+                                $('#tblLiquorApplication_info').hide();
+                                $('#tblLiquorApplication_paginate').hide();
+                                $('#tblLiquorApplication_length').hide();
+                            }
+                            else {
+                                $('#tblLiquorApplication_info').show();
+                                $('#tblLiquorApplication_paginate').show();
+                                $('#tblLiquorApplication_length').show();
+                            }
+                            bindSortingArrow();
+                        }
+                    });
+                }
+
+                function clearControls() {
+                    $("#txtLiquorApplicationID").val('');
+                    $("#txtIndividualID").val('');
+                    bindTable();
+                }
+
+                function bindSearch() {
+                    var param = {};
+                    param["LiquorApplicationID"] = $('#txtLiquorApplicationID').val();
+                    param["IndividualMkNo"] = $('#txtIndividualID').val();
+                    return param;
+                }
+
+                function isValidSearchCriteria(formName) {
+                    var isValid = true;
+                    $("form#" + formName + " input[type=text]").each(function () {
+                        if ($(this).val().match(/[<>]/)) {
+                            $(this).addClass('input-validation-error');
+                            isValid = false;
+                        }
+                        else {
+                            $(this).removeClass('input-validation-error');
+                        }
+                    });
+                    return isValid;
+                }
+
+                function bindDelete(item) {
+                    var x = confirm("Are you sure you want to delete?");
+                    if (x) {
+                        $.ajax({
+                            type: "POST",
+                            url: encodeURI('@Url.Action("DeleteLiquorApplication", "LiquorApplication")'),
+                            data: { "Id": $(item).attr('data-id') },
+                            cache: false,
+                            dataType: 'json',
+                            success: function (data, textStatus, XMLHttpRequest) {
+                                if (data.success) {
+                                    bindTable();
+                                    successMessage(data.message);
+                                }
+                                else {
+                                    successMessage(data.message);
+                                }
+                            },
+                            error: function (jqXHR, exception, errMsg) {
+                            }
+                        });
+                    }
+                }
+
+    </script>
+}
