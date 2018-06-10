@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
@@ -43,9 +44,14 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please Select Sector")]
         public int SectorID { get; set; }
         public string SectorDesc { get; set; }
+
+        public string DepartmentIDs { get; set; }
+        public List<int> AdditionalDocs { get; set; }
+
+        public List<Select2ListItem> selectedDepartments = new List<Select2ListItem>();
     }
 
-    public class SelectedBusinessCodeModel
+    public class Select2ListItem
     {
        public int id { get; set; }
        public string text { get; set; }

@@ -20,7 +20,7 @@
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
     }
 
-    List<TradingLicense.Model.SelectedBusinessCodeModel> businessCodeList = new List<TradingLicense.Model.SelectedBusinessCodeModel>();
+    List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
 
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
 
@@ -400,8 +400,8 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<div class="row">' +
-                        '<div class="col-md-9">' + r[0] + '</div>' +
-                        '<div class="col-md-3">' + r[1] + '</div>' +
+                        '<div class="col-md-3">' + r[0] + '</div>' +
+                        '<div class="col-md-9">' + r[1] + '</div>' +
                     '</div>'
                 );
                 return $result;
