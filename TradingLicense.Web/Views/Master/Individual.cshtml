@@ -127,7 +127,7 @@
                                 "render": function (data, type, row) {
                                     var appendstring = '';
                                     if (IsView != "False") {
-                                        appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                                        appendstring += '<a  href="@Url.Action("ViewIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
                                     }
                                     if (IsEdit != "False") {
                                         appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '

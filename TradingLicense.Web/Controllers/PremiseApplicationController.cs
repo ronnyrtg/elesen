@@ -78,6 +78,47 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get PremiseApplication Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PremiseApplicationsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<TradingLicense.Model.PremiseApplicationModel> PremiseApplication = new List<Model.PremiseApplicationModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<PremiseApplication> query = ((ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications).Where(pa => pa.IndividualID == individualId);
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                var result = Mapper.Map<List<PremiseApplicationModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "PremiseApplicationID asc" : orderByString).ToList();
+
+                totalRecord = result.Count();
+
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                PremiseApplication = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, PremiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// get Required Document Data
         /// </summary>
         /// <param name="requestModel"></param>

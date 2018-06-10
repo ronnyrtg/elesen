@@ -546,6 +546,50 @@ namespace TradingLicense.Web.Controllers
             return Json(new DataTablesResponse(requestModel.Draw, Company, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
+
+        /// <summary>
+        /// retrieve individual's associated companies data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="individualId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult CompaniesByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<TradingLicense.Model.CompanyModel> Company = new List<Model.CompanyModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Company> query = ctx.IndLinkComs.Where(i => i.IndividualID == individualId).Select(l => l.Company);
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "CompanyID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Company = Mapper.Map<List<CompanyModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Company, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        
+
         /// <summary>
         /// Get Company Data by ID
         /// </summary>
@@ -711,6 +755,56 @@ namespace TradingLicense.Web.Controllers
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
                 Attachment = Mapper.Map<List<AttachmentModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Attachment Data by Individual
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="individualId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult AttachmentsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<IndLinkAtt> Attachment = new List<IndLinkAtt>(); 
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                // totalRecord = ctx.Attachments.Count();
+                // Attachment = ctx.Attachments.OrderByDescending(a => a.AttachmentID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
+
+                IQueryable<IndLinkAtt> query = from ila in ctx.IndLinkAtts
+                                               join a in ctx.Attachments
+                                               on ila.AttachmentID equals a.AttachmentID
+                                               where ila.IndividualID == individualId
+                                               select ila;
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "AttachmentID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Attachment = query.ToList();
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -1650,6 +1744,18 @@ namespace TradingLicense.Web.Controllers
             }
 
             return PartialView("_MasterDetails", IndividualModel);
+        }
+
+        /// <summary>
+        /// View Trading details of an individual by Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public PartialViewResult TradingDetail(int? Id)
+        {
+            ViewBag.IndividualId = Id;
+
+            return PartialView("_TradingDetail");
         }
 
         /// <summary>
