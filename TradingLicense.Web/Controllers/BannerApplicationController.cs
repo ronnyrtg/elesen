@@ -14,6 +14,7 @@ using System.Web.Script.Serialization;
 using System.Web;
 using System.IO;
 using TradingLicense.Infrastructure;
+using System.Data.Entity;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -211,7 +212,7 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BannerApplicationModel> bannerApplication = new List<Model.BannerApplicationModel>();
             int totalRecord = 0;
-            
+
             try
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -241,17 +242,17 @@ namespace TradingLicense.Web.Controllers
                                         .Include("Company")
                                         .Include("Individual").OrderBy(m => m.BannerApplicationID).ToList();
 
-                    
-                      //Mapper.Map<List<BannerApplicationModel>>(query.ToList());
+
+                    //Mapper.Map<List<BannerApplicationModel>>(query.ToList());
                     return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
             {
                 return null;
-                
+
             }
-            
+
 
         }
 
@@ -323,19 +324,52 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.BAReqDocModel> BAReqDoc = new List<Model.BAReqDocModel>();
             BannerApplicationModel bannerApplicationModel = new BannerApplicationModel();
+            List<BannerObject> BannerObjectModel = new List<BannerObject>();
+            List<BALinkReqDoc> BALinkReqDoc = new List<BALinkReqDoc>();
+            List<Attchments> Attchments = new List<Attchments>();
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BAReqDoc> query = ctx.BAReqDocs;
                 BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
                 ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
+
                 var qry = ctx.Individuals.Where(e => e.IndividualID == 1);
                 if (Id != null && Id > 0)
                 {
+                    BannerObjectModel = db.BannerObjects.Include("BannerCode")
+                                             .Include("Location")
+                                             .Include("Zone")
+                                              .Where(x => x.BannerApplicationID == Id).ToList();
+                    var Docs = (from d in db.BALinkReqDocs
+                                join f in db.Attachments
+                                on d.AttachmentID equals f.AttachmentID
+                                where d.BannerApplicationID == Id
+                                select new
+                                {
+                                    AttachmentID = d.AttachmentID,
+                                    RequiredDocID = d.RequiredDocID,
+                                    FileName = f.FileName
+                                }).ToList();
+                    foreach (var item in Docs)
+                    {
+                        Attchments Atch = new Attchments();
+                        Atch.Id = Convert.ToInt32(item.AttachmentID);
+                        Atch.RequiredDocID = item.RequiredDocID;
+                        Atch.filename = item.FileName;
+                        Attchments.Add(Atch);
+                    }
+
                     int bannerApplicationID = Convert.ToInt32(Id);
                     var bannerApplication = ctx.BannerApplications.Where(a => a.BannerApplicationID == bannerApplicationID).FirstOrDefault();
-                    bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
+                    bannerApplicationModel.BannerApplicationID = bannerApplication.BannerApplicationID;
+                    Int32? CompId = bannerApplication.CompanyID;
+                    bannerApplicationModel.CompanyID = Convert.ToInt32(CompId);
+                    bannerApplicationModel.IndividualID = bannerApplication.IndividualID;
+                    //bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
                 }
             }
+            ViewBag.BALinkReqDoc = Attchments;
+            ViewBag.BannerObjects = BannerObjectModel;
             return View(bannerApplicationModel);
         }
 
@@ -344,35 +378,8 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="bannerApplicationModel"></param>
         /// <returns></returns>
-        [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBannerApplication(BannerApplicationModel bannerApplicationModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    BannerApplication bannerApplication;
-
-
-                    bannerApplication = Mapper.Map<BannerApplication>(bannerApplicationModel);
-                    ctx.BannerApplications.AddOrUpdate(bannerApplication);
-                    ctx.SaveChanges();
-                }
-
-                TempData["SuccessMessage"] = "Banner Application saved successfully.";
-
-                return RedirectToAction("BannerApplication");
-            }
-            else
-            {
-                return View(bannerApplicationModel);
-            }
-
-        }
-       
-        [HttpPost]
-        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string ImgModel, string gridItems, string BannerApplist,FormCollection Frm)
+        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string ImgModel, string gridItems, string BannerApplist, string btnType)
         {
 
 
@@ -389,72 +396,117 @@ namespace TradingLicense.Web.Controllers
             Attchment = jss2.Deserialize<List<Attchments>>(ImgModel);
 
             int scope_id = 0;
-            using (var transaction = db.Database.BeginTransaction())
+
+            int BannerApplicationID = 0;
+            if (btnType != "" && IndividualId != "" && compId != "")
             {
-                try
+                using (var transaction = db.Database.BeginTransaction())
                 {
-                    foreach (var item in BannerApp)
+                    try
                     {
-                        item.UsersID = ProjectSession.UserID;
-                        item.UpdatedBy = ProjectSession.User.FullName;
-                        db.BannerApplications.AddOrUpdate(item);
-                        db.SaveChanges();
-                        scope_id = item.BannerApplicationID;
-                    }
-                    foreach (var item in BannerObjectData)
-                    {
-                        item.BannerApplicationID = scope_id;
-                        db.BannerObjects.AddOrUpdate(item);
-                        db.SaveChanges();
-                    }
-                    foreach (var item in Attchment)
-                    {
-                        Attachment Atch = new Attachment();
-                        Atch.AttachmentID = 0;
-                        Atch.FileName = item.filename;
-                        db.Attachments.AddOrUpdate(Atch);
-                        db.SaveChanges();
-                        var AtchId = Atch.AttachmentID;
-                        BALinkReqDoc ReqDoc = new BALinkReqDoc();
-                        ReqDoc.AttachmentID = AtchId;
-                        ReqDoc.BALinkReqDocID = 0;
-                        ReqDoc.BannerApplicationID = scope_id;
-                        ReqDoc.RequiredDocID = item.Id;
-                        db.BALinkReqDocs.AddOrUpdate(ReqDoc);
-                        db.SaveChanges();
-                    }
-                    if (Request.Files.Count > 0)
-                    {
-                        HttpFileCollectionBase files = Request.Files;
-                        for (int i = 0; i < files.Count; i++)
+                        foreach (var item in BannerApp)
                         {
-                            
-                            HttpPostedFileBase file = files[i];
-                            string fname;
-                            if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                            int AppStatusId = 0;
+                            if (btnType == "btnSubmit")
                             {
-                                string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                                fname = testfiles[testfiles.Length - 1];
+                                if (ProjectSession.User.RoleTemplateID == 3)
+                                {
+                                    AppStatusId = 7;
+                                }
+                                else
+                                {
+                                    AppStatusId = 2;
+                                }
                             }
                             else
                             {
-                                fname = file.FileName;
+                                if (ProjectSession.User.RoleTemplateID == 3)
+                                {
+                                    AppStatusId = 4;
+                                }
+                                else
+                                {
+                                    AppStatusId = 1;
+                                }
                             }
-                            fname = Path.Combine(Server.MapPath("~/Documents/Attachment"), fname);
-                            file.SaveAs(fname);
-                            
+
+                            BannerApplicationID = item.BannerApplicationID;
+                            item.UsersID = ProjectSession.UserID;
+                            item.UpdatedBy = ProjectSession.User.FullName;
+                            item.AppStatusID = AppStatusId;
+                            if (BannerApplicationID > 0)
+                            {
+                                db.Entry(item).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                db.Entry(item).State = EntityState.Added;
+                            }
+                            db.SaveChanges();
+                            scope_id = item.BannerApplicationID;
                         }
+                        db.BannerObjects.RemoveRange(db.BannerObjects.Where(x => x.BannerApplicationID == scope_id));
+                        db.SaveChanges();
+                        foreach (var item in BannerObjectData)
+                        {
+                            item.BannerApplicationID = scope_id;
+                            db.BannerObjects.AddOrUpdate(item);
+                            db.SaveChanges();
+                        }
+                        
+                        foreach (var item in Attchment)
+                        {
+                            Attachment Atch = new Attachment();
+                            Atch.AttachmentID = 0;
+                            Atch.FileName = item.filename;
+                            db.Attachments.AddOrUpdate(Atch);
+                            db.SaveChanges();
+                            var AtchId = Atch.AttachmentID;
+                            BALinkReqDoc ReqDoc = new BALinkReqDoc();
+                            ReqDoc.AttachmentID = AtchId;
+                            ReqDoc.BALinkReqDocID = 0;
+                            ReqDoc.BannerApplicationID = scope_id;
+                            ReqDoc.RequiredDocID = item.Id;
+                            db.BALinkReqDocs.AddOrUpdate(ReqDoc);
+                            db.SaveChanges();
+                        }
+                        if (Request.Files.Count > 0)
+                        {
+                            HttpFileCollectionBase files = Request.Files;
+                            for (int i = 0; i < files.Count; i++)
+                            {
+
+                                HttpPostedFileBase file = files[i];
+                                string fname;
+                                if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                                {
+                                    string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                                    fname = testfiles[testfiles.Length - 1];
+                                }
+                                else
+                                {
+                                    fname = file.FileName;
+                                }
+                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id)))
+                                {
+                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id));
+                                }
+                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id), fname);
+                                file.SaveAs(fname);
+
+                            }
+                        }
+                        transaction.Commit();
+                        TempData["SuccessMessage"] = "Banner Application saved successfully.";
+                        return Json(Convert.ToString(1));
                     }
-                    transaction.Commit();
-                    TempData["SuccessMessage"] = "Banner Application saved successfully.";
-                    return Json(Convert.ToString(1));
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    return Json(Convert.ToString(0));
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                    }
                 }
             }
+            return Json(Convert.ToString(0));
         }
 
 
@@ -475,24 +527,39 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public ActionResult DeleteBannerApplication(int id)
         {
-            try
+            using (var transaction = db.Database.BeginTransaction())
             {
-                var bannerApplication = new TradingLicense.Entities.BannerApplication() { BannerApplicationID = id };
-                using (var ctx = new LicenseApplicationContext())
+                try
                 {
-                    ctx.Entry(bannerApplication).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
+                    Int32[] AtchId = new int[db.BALinkReqDocs.Where(x => x.BannerApplicationID == id).Count()];
+                    var bannerApplication = new TradingLicense.Entities.BannerApplication() { BannerApplicationID = id };
+                    int cnt = 0;
+                    foreach (var item in db.BALinkReqDocs.Where(x => x.BannerApplicationID == id))
+                    {
+                        AtchId[cnt] = Convert.ToInt32(item.AttachmentID);
+                        cnt = cnt + 1;
+                    }
+                    foreach (var item in AtchId)
+                    {
+                        db.BALinkReqDocs.RemoveRange(db.BALinkReqDocs.Where(x => x.AttachmentID == item));
+                        db.SaveChanges();
+                        db.Attachments.RemoveRange(db.Attachments.Where(x => x.AttachmentID == item));
+                        db.SaveChanges();
+                    }
+
+                    db.Entry(bannerApplication).State = System.Data.Entity.EntityState.Deleted;
+                    db.SaveChanges();
+                    transaction.Commit();
+                    return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+
                 }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+                }
             }
         }
-
-
-
         #endregion
 
         #region BAReqDoc
@@ -597,6 +664,34 @@ namespace TradingLicense.Web.Controllers
                 return Json(Convert.ToString(0));
             }
         }
+        [HttpPost]
+        public JsonResult DeleteFile(int? id, string FileName, int BannerAppId)
+        {
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    if ((id != null && id > 0) && FileName != "")
+                    {
+                        db.BALinkReqDocs.RemoveRange(db.BALinkReqDocs.Where(x => x.AttachmentID == id));
+                        db.Attachments.RemoveRange(db.Attachments.Where(x => x.AttachmentID == id));
+                        db.SaveChanges();
+                        string fPath = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + BannerAppId), FileName);
+                        if (System.IO.File.Exists(fPath))
+                        {
+                            System.IO.File.Delete(fPath);
+                        }
+                        transaction.Commit();
+                        return Json(new { Result = "1" });
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                }
+            }
+            return Json(new { Result = "0" });
+        }
 
         /// <summary>
         /// Delete Banner Code Information
@@ -624,6 +719,7 @@ namespace TradingLicense.Web.Controllers
         #endregion
         public class Attchments
         {
+            public int RequiredDocID { get; set; }
             public int Id { get; set; }
             public string filename { get; set; }
         }
