@@ -81,6 +81,7 @@
     <Compile Include="LAComment.cs" />
     <Compile Include="LALinkReqDoc.cs" />
     <Compile Include="LAReqDoc.cs" />
+    <Compile Include="PALinkInd.cs" />
     <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="LiquorApplication.cs" />
     <Compile Include="LiquorCode.cs" />

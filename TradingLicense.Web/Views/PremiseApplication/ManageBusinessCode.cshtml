@@ -136,8 +136,8 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">Dpeartments.</div>
-                        @Html.DropDownList("Departments", new SelectList(Model.selectedDepartments.OrderBy(x => x.text), "id", "text"), "Select Departments", new { @id = "departmentList", @class = "form-control", multiple = "true", onchange = "changeDepartments()" })
+                        <div class="control-label">Unit Teknikal / Jabatan</div>
+                        @Html.DropDownList("Departments", new SelectList(Model.selectedDepartments.OrderBy(x => x.text), "id", "text"), "Sila pilih Jabatan", new { @id = "departmentList", @class = "form-control", multiple = "true", onchange = "changeDepartments()" })
                         @Html.HiddenFor(model => model.DepartmentIDs)
                     </div>
                 </div>
@@ -145,7 +145,7 @@
             <div class="row" style="max-height:180px; overflow:auto;">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Additional Documents.</div>
+                        <div class="control-label">Dokumen Tambahan</div>
                         @foreach (var item in additionalDocsList)
                         {
                             <div class="checkbox">
@@ -184,8 +184,8 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<div class="row">' +
-                        '<div class="col-md-9">' + r[0] + '</div>' +
-                        '<div class="col-md-3">' + r[1] + '</div>' +
+                        '<div class="col-md-2">' + r[0] + '</div>' +
+                        '<div class="col-md-10">' + r[1] + '</div>' +
                     '</div>'
                 );
                 return $result;
@@ -202,7 +202,7 @@
             }
 
             $("#departmentList").select2({
-                placeholder: "Search for a Department",
+                placeholder: "Sila pilih jabatan",
                 minimumInputLength: 0,
                 templateResult: formatDepartments,
                 templateSelection: formatDepartmentSelection,
