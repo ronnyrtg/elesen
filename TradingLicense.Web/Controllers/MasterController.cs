@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TradingLicense.Data;
 using TradingLicense.Entities;
@@ -965,6 +966,69 @@ namespace TradingLicense.Web.Controllers
                : ctx.Attachments.FirstOrDefault(
                    c => c.FileName.ToLower() == name.ToLower());
                 return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Upload File
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult UploadFile()
+        {
+            AttachmentModel attachmentModel = new AttachmentModel();
+            int attachmentID;
+
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    HttpFileCollectionBase files = Request.Files;
+
+                    HttpPostedFileBase file = files[0];
+                    string fname;
+
+                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    {
+                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
+                    }
+                    else
+                    {
+                        fname = file.FileName;
+                    }
+
+                    if (IsAttachmentDuplicate(fname))
+                    {
+                        return Json("File Name is already exist in the database.");
+                    }
+
+                    var fileName = fname;
+
+                    fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                    file.SaveAs(fname);
+
+
+                    attachmentModel.FileName = fileName;
+
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        var attachment = Mapper.Map<Attachment>(attachmentModel);
+                        ctx.Attachments.AddOrUpdate(attachment);
+                        ctx.SaveChanges();
+                        attachmentID = attachment.AttachmentID;
+                    }
+
+                    return Json("File Uploaded Successfully!~" + attachmentID.ToString());
+                }
+                catch (Exception ex)
+                {
+                    return Json("Error occurred. Error details: " + ex.Message);
+                }
+            }
+            else
+            {
+                return Json("No files selected.");
             }
         }
 
