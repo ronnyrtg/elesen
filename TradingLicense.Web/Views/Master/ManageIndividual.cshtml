@@ -15,12 +15,21 @@
     genderList.Add(new SelectListItem { Text = "Lelaki", Value = "1" });
     genderList.Add(new SelectListItem { Text = "Perempuan", Value = "2" });
 
+    string profilePic = string.Empty;
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var companies = ctx.Companies.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+
+        if (Model.Individual.AttachmentID != 0)
+        {
+            profilePic = ctx.Attachments.Where(a => a.AttachmentID == Model.Individual.AttachmentID).ToList()[0].FileName;
+        }
     }
+
+
+
 }
 
 <div id="divMessage"></div>
@@ -41,6 +50,27 @@
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.Individual.FullName, new { @class = "form-control", @maxlength = "50" })
                         @Html.ValidationMessageFor(m => m.Individual.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Profile Picture : 
+                            <a href="@Url.Content(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + @profilePic)" download>
+                               @profilePic
+                            </a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="file" class="btn btn-default" id="FileUpload1" />
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="button" class="btn btn-default" id="btnUpload" value="Upload" />
+                            </div>
+                        </div>
+                        @Html.HiddenFor(m => m.Individual.AttachmentID)
                     </div>
                 </div>
             </div>
@@ -158,6 +188,46 @@
                         } else {
                             companySelectedId = [];
                         }
+
+                        $('#btnUpload').click(function () {
+
+                            if (window.FormData !== undefined) {
+
+                                var fileUpload = $("#FileUpload1").get(0);
+                                var files = fileUpload.files;
+
+                                var fileData = new FormData();
+
+                                for (var i = 0; i < files.length; i++) {
+                                    fileData.append(files[i].name, files[i]);
+                                }
+
+                                $.ajax({
+                                    url: '@Url.Action("UploadFile", "Master")',
+                                    type: "POST",
+                                    contentType: false, // Not to set any content header
+                                    processData: false, // Not to process data
+                                    data: fileData,
+                                    success: function (result) {
+                                        if (result.split('~').length > 1)
+                                        {
+                                            var r = result.split('~');
+                                            $("#Individual_AttachmentID").val(r[1]);
+                                            alert(r[0]);
+                                        }
+                                        else
+                                        {
+                                            alert(result);
+                                        }
+                                    },
+                                    error: function (err) {
+                                        alert(err.statusText);
+                                    }
+                                });
+                            } else {
+                                alert("FormData is not supported.");
+                            }
+                        });
                     });
 
                     var actionError = '@(TempData["ErrorMessage"])';
