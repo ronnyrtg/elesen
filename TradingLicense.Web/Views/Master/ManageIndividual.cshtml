@@ -57,7 +57,11 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Profile Picture : @profilePic</div>
+                        <div class="control-label">Profile Picture : 
+                            <a href="@Url.Content(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + @profilePic)" download>
+                               @profilePic
+                            </a>
+                        </div>
                         <div class="row">
                             <div class="col-sm-3">
                                 <input type="file" class="btn btn-default" id="FileUpload1" />
