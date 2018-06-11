@@ -273,7 +273,6 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Documents\Attachment\IC_Ronny Baru.pdf" />
     <Content Include="Content\bootstrap-datepicker3.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker3.css.map" />
     <Content Include="Content\bootstrap-datepicker.standalone.css.map" />
@@ -281,7 +280,6 @@
     <Content Include="Reports\dsReport.xsc">
       <DependentUpon>dsReport.xsd</DependentUpon>
     </Content>
-    <Content Include="Documents\Attachment\Exported.csv" />
     <None Include="Reports\dsReport.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
@@ -479,6 +477,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
+    <Folder Include="Documents\Attachment\BannerApplication\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
