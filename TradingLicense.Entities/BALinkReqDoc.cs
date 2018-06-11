@@ -15,5 +15,9 @@ namespace TradingLicense.Entities
 
         public virtual BannerApplication BannerApplication { get; set; }
 
+        public virtual Attachment Attachment { get; set; }
+
+        public virtual BAReqDoc BAReqDoc { get; set; }
+
     }
 }

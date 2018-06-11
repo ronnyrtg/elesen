@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TradingLicense.Data;
 using TradingLicense.Entities;
@@ -12,7 +13,6 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
-using TradingLicense.Web.Models;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -690,6 +690,27 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Get Company
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillCompany(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Company> primaryQuery = ctx.Companies;
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(c => c.CompanyName.ToLower().Contains(query.ToLower()));
+                }
+                var company = primaryQuery.ToList();
+                var companyModel = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(company);
+                return Json(companyModel, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         #endregion
 
         #region Attachment
@@ -945,6 +966,69 @@ namespace TradingLicense.Web.Controllers
                : ctx.Attachments.FirstOrDefault(
                    c => c.FileName.ToLower() == name.ToLower());
                 return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Upload File
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult UploadFile()
+        {
+            AttachmentModel attachmentModel = new AttachmentModel();
+            int attachmentID;
+
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    HttpFileCollectionBase files = Request.Files;
+
+                    HttpPostedFileBase file = files[0];
+                    string fname;
+
+                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    {
+                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
+                    }
+                    else
+                    {
+                        fname = file.FileName;
+                    }
+
+                    if (IsAttachmentDuplicate(fname))
+                    {
+                        return Json("File Name is already exist in the database.");
+                    }
+
+                    var fileName = fname;
+
+                    fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                    file.SaveAs(fname);
+
+
+                    attachmentModel.FileName = fileName;
+
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        var attachment = Mapper.Map<Attachment>(attachmentModel);
+                        ctx.Attachments.AddOrUpdate(attachment);
+                        ctx.SaveChanges();
+                        attachmentID = attachment.AttachmentID;
+                    }
+
+                    return Json("File Uploaded Successfully!~" + attachmentID.ToString());
+                }
+                catch (Exception ex)
+                {
+                    return Json("Error occurred. Error details: " + ex.Message);
+                }
+            }
+            else
+            {
+                return Json("No files selected.");
             }
         }
 
@@ -1577,9 +1661,9 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageIndividual(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
-            ManageIndividualModel ManageIndividualModel = new ManageIndividualModel();
-
             IndividualModel.Active = true;
+
+            ManageIndividualModel model = new ManageIndividualModel();
 
             if (Id != null && Id > 0)
             {
@@ -1588,27 +1672,13 @@ namespace TradingLicense.Web.Controllers
                     int individualID = Convert.ToInt32(Id);
                     var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
-
-                    var allCompanies = ctx.Companies.ToList();
-
-                    var checkBoxListItems = new List<CheckBoxListItem>();
-                    foreach (var company in allCompanies)
-                    {
-                        checkBoxListItems.Add(new CheckBoxListItem()
-                        {
-                            ID = company.CompanyID,
-                            Display = company.CompanyName,
-                            IsChecked = ctx.IndLinkComs.Where(x => x.CompanyID == company.CompanyID && x.IndividualID == Id).Any()
-                        });
-                    }
-
-                    ManageIndividualModel.Individual = IndividualModel;
-                    ManageIndividualModel.Companies = checkBoxListItems;
-
+                    
+                    model.CompanyIds = (string.Join(",", ctx.IndLinkComs.Where(x => x.IndividualID == Id).Select(x => x.CompanyID.ToString()).ToArray()));
                 }
+                model.Individual = IndividualModel;
             }
 
-            return View(ManageIndividualModel);
+            return View(model);
         }
 
         /// <summary>
@@ -1639,12 +1709,12 @@ namespace TradingLicense.Web.Controllers
 
                     List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
 
-                    foreach(CheckBoxListItem item in model.Companies.Where(x => x.IsChecked).ToList())
+                    foreach (string id in model.CompanyIds.Split(',').ToList())
                     {
                         IndLinkCom LinkedCompany = new IndLinkCom()
                         {
                             IndividualID = model.Individual.IndividualID,
-                            CompanyID = item.ID
+                            CompanyID = int.Parse(id)
                         };
 
                         LinkedCompanies.Add(LinkedCompany);

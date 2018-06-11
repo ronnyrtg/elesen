@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using TradingLicense.Model;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace TradingLicense.Web.Models
+namespace TradingLicense.Model
 {
     public class ManageIndividualModel
     {
         public IndividualModel Individual { get; set; }
-        public List<CheckBoxListItem> Companies { get; set; }
+        public string CompanyIds { get; set; }
     }
 }

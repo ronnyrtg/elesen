@@ -252,7 +252,7 @@ namespace TradingLicense.Web.Controllers
             {
                 IQueryable<SAReqDoc> query = ctx.SAReqDocs;
                 SAReqDoc = Mapper.Map<List<SAReqDocModel>>(query.ToList());
-                ViewBag.bannerDocList = ctx.SAReqDocs.ToList();
+                ViewBag.stallDocList = ctx.SAReqDocs.ToList();
                 if (Id != null && Id > 0)
                 {
 

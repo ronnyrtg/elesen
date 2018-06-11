@@ -71,6 +71,7 @@
     <Compile Include="EntmtCode.cs" />
     <Compile Include="EntmtGroup.cs" />
     <Compile Include="EntmtObject.cs" />
+    <Compile Include="HALinkReqDoc.cs" />
     <Compile Include="HAReqDoc.cs" />
     <Compile Include="HawkerApplication.cs" />
     <Compile Include="HawkerCode.cs" />
@@ -78,7 +79,9 @@
     <Compile Include="Individual.cs" />
     <Compile Include="IndLinkAtt.cs" />
     <Compile Include="LAComment.cs" />
+    <Compile Include="LALinkReqDoc.cs" />
     <Compile Include="LAReqDoc.cs" />
+    <Compile Include="PALinkInd.cs" />
     <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="LiquorApplication.cs" />
     <Compile Include="LiquorCode.cs" />

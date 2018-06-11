@@ -20,7 +20,7 @@
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
     }
 
-    List<TradingLicense.Model.SelectedBusinessCodeModel> businessCodeList = new List<TradingLicense.Model.SelectedBusinessCodeModel>();
+    List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
 
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
 
@@ -38,6 +38,12 @@
         appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
     }
 
+
+    List<SelectListItem> ModeList = new List<SelectListItem>();
+    ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
+    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "2" });
+    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "3" });
+    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "4" });
 
     List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
     PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "0" });
@@ -66,35 +72,17 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
+                        <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.Mode, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Mode)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
                         <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.NamaPemohon, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NamaPemohon)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">No. Kad Pengenalan / No. Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ICPaspot, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ICPaspot)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nama Perniagaan/Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.NamaSyarikat, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NamaSyarikat)
                     </div>
                 </div>
             </div>
@@ -125,13 +113,11 @@
                     </div>
                 </div>
             </div>
-            if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-            {
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div class="control-label">
-                            Full Name (Mykad/Passport No.).   @if (Model.UserRollTemplate > 2)
+                            Nama Penuh (Mykad/Paspot).   @if (Model.UserRollTemplate > 2)
                             {<span class="cfont">*</span>}
                         </div>
                         @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
@@ -140,39 +126,36 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">Company.<span class="cfont">*</span></div>
+                        <div class="control-label">Nama Syarikat<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control" })
                     </div>
                 </div>
-            </div>
-            
-                <div class="row">
-                    <div class="col-md-3 col-sm-12">
-                        <div class="form-group">
-                            <div class="control-label">Premise Area<span class="cfont">*</span></div>
-                            @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
-                            @Html.ValidationMessageFor(m => m.PremiseArea)
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div class="form-group">
-                            <div class="control-label">Premise Type<span class="cfont">*</span></div>
-                            @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Select Premise Type", new { @class = "form-control" })
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div class="form-group">
-                            <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
-                            @Html.DropDownListFor(m => m.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.PremiseOwnership)
-                        </div>
+            </div> 
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Luas Premis<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.ValidationMessageFor(m => m.PremiseArea)
                     </div>
                 </div>
-            }
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PremiseOwnership)
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
@@ -186,7 +169,7 @@
                 <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Additional Document List.@if (Model.UserRollTemplate > 1)
+                            Senarai Dokumen Tambahan @if (Model.UserRollTemplate > 1)
                             {<span class="cfont">*</span>}
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
@@ -400,8 +383,8 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<div class="row">' +
-                        '<div class="col-md-9">' + r[0] + '</div>' +
-                        '<div class="col-md-3">' + r[1] + '</div>' +
+                        '<div class="col-md-2">' + r[1] + '</div>' +
+                        '<div class="col-md-10">' + r[0] + '</div>' +
                     '</div>'
                 );
                 return $result;
@@ -411,7 +394,7 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<span>' +
-                        r[0] + ' ('  + r[1] + ')' +
+                        r[1] + ' | '  + r[0] +
                     '</span>'
                 );
                 return $result;
