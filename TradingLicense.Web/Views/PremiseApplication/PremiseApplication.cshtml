@@ -1,6 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Premise Application";
+    int? userRollTemplate = TradingLicense.Infrastructure.ProjectSession.User?.RoleTemplateID;
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -18,14 +19,14 @@
         <div class="row small-gutter">
             <form>
                 <div class="col-xs-4">
-                    <input type="text" name="txtPremiseApplicationID" id="txtPremiseApplicationID" class="form-control" placeholder="Reference No." maxlength="100" />
+                    <input type="text" name="txtPremiseApplicationID" id="txtPremiseApplicationID" class="form-control" placeholder="No. Rujukan" maxlength="100" />
                 </div>
                 @*<div class="col-xs-4">
                         <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
                     </div>*@
                 <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
+                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
+                    <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
                 </div>
             </form>
         </div>
@@ -52,7 +53,7 @@
                         }
                         bindTable();
                     });
-
+                    var restrictSubmittedApps = @((userRollTemplate.HasValue && userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer).ToString().ToLower());
                     function addPremiseApplication() {
                         var link = '@Url.Action("ManagePremiseApplication", "PremiseApplication")';
                         window.location.href = link;
@@ -97,21 +98,24 @@
                                     }
                                 },
                                 { "title": "No. Rujukan", "data": "PremiseApplicationID" },
-                                { "title": "Pemohon", "data": "UsersID" },
-                                { "title": "Syarikat", "data": "CompanyName" },
+                                { "title": "Pemohon", "data": "NamaPemohon" },
+                                { "title": "Syarikat", "data": "NamaSyarikat" },
                                 { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
                                 { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
                                 { "title": "Status", "data": "StatusDesc" },
                                 {
-                                    "title": "Action",
+                                    "title": "Tindakan",
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-                                        appendstring += '<a  href="@Url.Action("ManagePremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                                        appendstring += '<a href="javascript:void(0);" data-id="' + row["PremiseApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                        appendstring += '<a  href="@Url.Action("ViewPremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                                        if (!(restrictSubmittedApps && data['AppStatusID'] == 2)) {
+                                            appendstring += '<a  href="@Url.Action("ManagePremiseApplication", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                            appendstring += '<a href="javascript:void(0);" data-id="' + row["PremiseApplicationID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                        }
                                         return appendstring
                                     },
-                                    "width": "80px",
+                                    "width": "100px",
                                     "orderable": false,
                                     "class": "action-icons"
                                 }

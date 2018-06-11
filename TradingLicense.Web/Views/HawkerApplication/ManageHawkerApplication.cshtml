@@ -1,0 +1,137 @@
+﻿@model TradingLicense.Model.HawkerApplicationModel
+@using AutoMapper;
+@{
+    ViewBag.Title = "ManageHawkerApplication";
+}
+@{
+    List<TradingLicense.Model.HawkerCodeModel> hawkerCodeList = new List<TradingLicense.Model.HawkerCodeModel>();
+
+    List<TradingLicense.Entities.HAReqDoc> stallDocList = new List<TradingLicense.Entities.HAReqDoc>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var hawkerCode = ctx.HawkerCodes.ToList();
+        hawkerCodeList = Mapper.Map<List<TradingLicense.Model.HawkerCodeModel>>(hawkerCode);
+    }
+
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Pasar</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmHawkerApplication", id = "frmHawkerApplication" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.HawkerApplicationID)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">No. K/P<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Lokasi Perniagaan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Kod Lesen Pasar</div>
+                        @Html.DropDownList("HawkerCode", new SelectList(hawkerCodeList.OrderBy(x => x.HawkerCodeID), "HawkerCodeID", "HawkerCodeDesc"), "Pilih Kod Lesen Pasar", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <hr /><div class="h4">Senarai Pembantu</div><br />
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <hr /><div class="h4">Dokumen Wajib <br /><br /></div>
+                        <div class="text-left">
+                            <table class="table table-striped dataTable table-hover" id="Docs">
+                                @if (ViewBag.hawkerDocList != null)
+                                {
+                                    foreach (var item in ViewBag.hawkerDocList)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    @if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                                                    {
+                                                        <input type="checkbox" value='@item.RequiredDocID' />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="file" value='@item.RequiredDocID' />
+                                                    }
+
+                                                </label>
+
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    @item.RequiredDoc.RequiredDocDesc
+                                                </label>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
+    function back() {
+         var link = '@Url.Action("HawkerApplication", "HawkerApplication")';
+        window.location.href = link;
+    }
+
+    </script>
+}

@@ -71,9 +71,19 @@
     <Compile Include="EntmtCode.cs" />
     <Compile Include="EntmtGroup.cs" />
     <Compile Include="EntmtObject.cs" />
+    <Compile Include="HALinkReqDoc.cs" />
+    <Compile Include="HAReqDoc.cs" />
+    <Compile Include="HawkerApplication.cs" />
     <Compile Include="HawkerCode.cs" />
     <Compile Include="Holiday.cs" />
     <Compile Include="Individual.cs" />
+    <Compile Include="IndLinkAtt.cs" />
+    <Compile Include="LAComment.cs" />
+    <Compile Include="LALinkReqDoc.cs" />
+    <Compile Include="LAReqDoc.cs" />
+    <Compile Include="PALinkInd.cs" />
+    <Compile Include="SALinkReqDoc.cs" />
+    <Compile Include="LiquorApplication.cs" />
     <Compile Include="LiquorCode.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="PAComment.cs" />
@@ -85,6 +95,8 @@
     <Compile Include="BTLinkReqDoc.cs" />
     <Compile Include="PALinkReqDoc.cs" />
     <Compile Include="AppStatus.cs" />
+    <Compile Include="PaymentDue.cs" />
+    <Compile Include="PaymentReceived.cs" />
     <Compile Include="PremiseAddress.cs" />
     <Compile Include="PremiseApplication.cs" />
     <Compile Include="PremiseType.cs" />
@@ -92,7 +104,6 @@
     <Compile Include="RequiredDoc.cs" />
     <Compile Include="Road.cs" />
     <Compile Include="RoleTemplate.cs" />
-    <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="SAReqDoc.cs" />
     <Compile Include="Sector.cs" />
     <Compile Include="StallApplication.cs" />

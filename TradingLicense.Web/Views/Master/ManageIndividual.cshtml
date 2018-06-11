@@ -1,4 +1,5 @@
-﻿@model TradingLicense.Model.IndividualModel
+﻿@model TradingLicense.Model.ManageIndividualModel
+@using AutoMapper;
 @{
     ViewBag.Title = "Manage Individual";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -13,6 +14,22 @@
     List<SelectListItem> genderList = new List<SelectListItem>();
     genderList.Add(new SelectListItem { Text = "Lelaki", Value = "1" });
     genderList.Add(new SelectListItem { Text = "Perempuan", Value = "2" });
+
+    string profilePic = string.Empty;
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var companies = ctx.Companies.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+
+        if (Model.Individual.AttachmentID != 0)
+        {
+            profilePic = ctx.Attachments.Where(a => a.AttachmentID == Model.Individual.AttachmentID).ToList()[0].FileName;
+        }
+    }
+
+
+
 }
 
 <div id="divMessage"></div>
@@ -25,14 +42,35 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.IndividualID)
+            @Html.HiddenFor(m => m.Individual.IndividualID)
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
-                        @Html.ValidationMessageFor(m => m.FullName)
+                        @Html.TextBoxFor(m => m.Individual.FullName, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.Individual.FullName)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Profile Picture : 
+                            <a href="@Url.Content(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + @profilePic)" download>
+                               @profilePic
+                            </a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="file" class="btn btn-default" id="FileUpload1" />
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="button" class="btn btn-default" id="btnUpload" value="Upload" />
+                            </div>
+                        </div>
+                        @Html.HiddenFor(m => m.Individual.AttachmentID)
                     </div>
                 </div>
             </div>
@@ -41,8 +79,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">No. Kad Pengenalan/No. Pasport<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.MykadNo, new { @class = "form-control", @maxlength = "30" })
-                        @Html.ValidationMessageFor(m => m.MykadNo)
+                        @Html.TextBoxFor(m => m.Individual.MykadNo, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.Individual.MykadNo)
                     </div>
                 </div>
             </div>
@@ -51,8 +89,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Warganegara<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NationalityID)
+                        @Html.DropDownListFor(m => m.Individual.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.NationalityID)
                     </div>
                 </div>
             </div>
@@ -61,8 +99,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Alamat<span class="cfont">*</span></div>
-                        @Html.TextAreaFor(m => m.AddressIC, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.AddressIC)
+                        @Html.TextAreaFor(m => m.Individual.AddressIC, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.AddressIC)
                     </div>
                 </div>
             </div>
@@ -71,8 +109,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Email Individu</div>
-                        @Html.TextBoxFor(m => m.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.IndividualEmail)
+                        @Html.TextBoxFor(m => m.Individual.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.IndividualEmail)
                     </div>
                 </div>
             </div>
@@ -81,35 +119,43 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nombor Telefon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control", @maxlength = "20" })
-                        @Html.ValidationMessageFor(m => m.PhoneNo)
+                        @Html.TextBoxFor(m => m.Individual.PhoneNo, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.Individual.PhoneNo)
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <div class="control-label">Jantina</div>
-                            @Html.DropDownListFor(m => m.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Gender)
-                        </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Jantina</div>
+                        @Html.DropDownListFor(m => m.Individual.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.Gender)
                     </div>
                 </div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                @Html.CheckBoxFor(model => model.Active)
+                                @Html.CheckBoxFor(model => model.Individual.Active)
                                 <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Companies</div>
+                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
+                        @Html.HiddenFor(model => model.CompanyIds)
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -122,15 +168,78 @@
     </div>
 </div>
 
-@section scripts{
-    <script>
-         var actionError = '@(TempData["ErrorMessage"])';
-           if (actionError != null && actionError != "") {
-                errorMessage(actionError);
+            @section scripts{
+                <script>
+                    $(function () {
+                        $("#companyList").select2({
+                            placeholder: "Select Company"
+                        });
+
+                        var companySelectedId = [];
+                        if ('@Model.CompanyIds' != null && '@Model.CompanyIds' != '') {
+                            var CompanyIds = '@Model.CompanyIds';
+
+                            var arr = CompanyIds.split(',');
+                            $.each(arr, function (index, value) {
+                                companySelectedId.push(value);
+                            });
+                            $('#companyList').val(companySelectedId);
+                            $('#companyList').trigger('change');
+                        } else {
+                            companySelectedId = [];
+                        }
+
+                        $('#btnUpload').click(function () {
+
+                            if (window.FormData !== undefined) {
+
+                                var fileUpload = $("#FileUpload1").get(0);
+                                var files = fileUpload.files;
+
+                                var fileData = new FormData();
+
+                                for (var i = 0; i < files.length; i++) {
+                                    fileData.append(files[i].name, files[i]);
+                                }
+
+                                $.ajax({
+                                    url: '@Url.Action("UploadFile", "Master")',
+                                    type: "POST",
+                                    contentType: false, // Not to set any content header
+                                    processData: false, // Not to process data
+                                    data: fileData,
+                                    success: function (result) {
+                                        if (result.split('~').length > 1)
+                                        {
+                                            var r = result.split('~');
+                                            $("#Individual_AttachmentID").val(r[1]);
+                                            alert(r[0]);
+                                        }
+                                        else
+                                        {
+                                            alert(result);
+                                        }
+                                    },
+                                    error: function (err) {
+                                        alert(err.statusText);
+                                    }
+                                });
+                            } else {
+                                alert("FormData is not supported.");
+                            }
+                        });
+                    });
+
+                    var actionError = '@(TempData["ErrorMessage"])';
+                    if (actionError != null && actionError != "") {
+                        errorMessage(actionError);
+                    }
+                    function back() {
+                        var link = '@Url.Action("Individual", "Master")';
+                        window.location.href = link;
+                    }
+                    function changeCompany() {
+                        $('#CompanyIds').val($('#companyList').val());
+                    }
+                </script>
             }
-    function back() {
-         var link = '@Url.Action("Individual", "Master")';
-        window.location.href = link;
-    }
-    </script>
-}

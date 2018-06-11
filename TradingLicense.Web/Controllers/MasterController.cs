@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using TradingLicense.Data;
 using TradingLicense.Entities;
@@ -546,6 +547,50 @@ namespace TradingLicense.Web.Controllers
             return Json(new DataTablesResponse(requestModel.Draw, Company, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
+
+        /// <summary>
+        /// retrieve individual's associated companies data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="individualId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult CompaniesByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<TradingLicense.Model.CompanyModel> Company = new List<Model.CompanyModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Company> query = ctx.IndLinkComs.Where(i => i.IndividualID == individualId).Select(l => l.Company);
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "CompanyID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Company = Mapper.Map<List<CompanyModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Company, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        
+
         /// <summary>
         /// Get Company Data by ID
         /// </summary>
@@ -645,6 +690,27 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Get Company
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillCompany(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Company> primaryQuery = ctx.Companies;
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(c => c.CompanyName.ToLower().Contains(query.ToLower()));
+                }
+                var company = primaryQuery.ToList();
+                var companyModel = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(company);
+                return Json(companyModel, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         #endregion
 
         #region Attachment
@@ -711,6 +777,56 @@ namespace TradingLicense.Web.Controllers
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
                 Attachment = Mapper.Map<List<AttachmentModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Attachment Data by Individual
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="individualId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult AttachmentsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<IndLinkAtt> Attachment = new List<IndLinkAtt>(); 
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                // totalRecord = ctx.Attachments.Count();
+                // Attachment = ctx.Attachments.OrderByDescending(a => a.AttachmentID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
+
+                IQueryable<IndLinkAtt> query = from ila in ctx.IndLinkAtts
+                                               join a in ctx.Attachments
+                                               on ila.AttachmentID equals a.AttachmentID
+                                               where ila.IndividualID == individualId
+                                               select ila;
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "AttachmentID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                Attachment = query.ToList();
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -850,6 +966,69 @@ namespace TradingLicense.Web.Controllers
                : ctx.Attachments.FirstOrDefault(
                    c => c.FileName.ToLower() == name.ToLower());
                 return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Upload File
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult UploadFile()
+        {
+            AttachmentModel attachmentModel = new AttachmentModel();
+            int attachmentID;
+
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    HttpFileCollectionBase files = Request.Files;
+
+                    HttpPostedFileBase file = files[0];
+                    string fname;
+
+                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    {
+                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
+                    }
+                    else
+                    {
+                        fname = file.FileName;
+                    }
+
+                    if (IsAttachmentDuplicate(fname))
+                    {
+                        return Json("File Name is already exist in the database.");
+                    }
+
+                    var fileName = fname;
+
+                    fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                    file.SaveAs(fname);
+
+
+                    attachmentModel.FileName = fileName;
+
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        var attachment = Mapper.Map<Attachment>(attachmentModel);
+                        ctx.Attachments.AddOrUpdate(attachment);
+                        ctx.SaveChanges();
+                        attachmentID = attachment.AttachmentID;
+                    }
+
+                    return Json("File Uploaded Successfully!~" + attachmentID.ToString());
+                }
+                catch (Exception ex)
+                {
+                    return Json("Error occurred. Error details: " + ex.Message);
+                }
+            }
+            else
+            {
+                return Json("No files selected.");
             }
         }
 
@@ -1189,196 +1368,6 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region BusinessCode
-
-        /// <summary>
-        /// GET: BusinessCode
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult BusinessCode()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Save BusinessCode Data
-        /// </summary>
-        /// <param name="requestModel"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorID)
-        {
-            List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
-            int totalRecord = 0;
-           // int filteredRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<BusinessCode> query = ctx.BusinessCodes;
-
-                #region Filtering
-
-                // Apply filters for comman Grid searching
-                if (requestModel.Search.Value != string.Empty)
-                {
-                    var value = requestModel.Search.Value.ToLower().Trim();
-                    query = query.Where(p => p.CodeNumber.ToLower().Contains(value) ||
-                                             p.CodeDesc.ToLower().Contains(value) ||
-                                             p.SectorID.ToString().Contains(value) ||
-                                             p.DefaultRate.ToString().Contains(value) ||
-                                             p.Sector.SectorDesc.ToLower().Contains(value)
-                                       );
-                }
-
-                // Apply filters for searching
-
-                if (!string.IsNullOrWhiteSpace(codeNumber))
-                {
-                    query = query.Where(p => p.CodeNumber.ToLower().Contains(codeNumber.ToLower()));
-                }
-
-                if (!string.IsNullOrWhiteSpace(codeDesc))
-                {
-                    query = query.Where(p => p.CodeDesc.ToLower().Contains(codeDesc.ToLower()));
-                }
-
-                if (!string.IsNullOrWhiteSpace(sectorID))
-                {
-                    query = query.Where(p => p.SectorID.ToString().Contains(sectorID));
-                }
-
-                // Filter End
-                
-                #endregion Filtering
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-                
-                var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
-
-                totalRecord = result.Count();
-                #endregion Sorting
-
-                // Paging
-                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
-
-                BusinessCode = result;
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, BusinessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get BusinessCode Data by ID
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        public ActionResult ManageBusinessCode(int? Id)
-        {
-            BusinessCodeModel businessCodeModel = new BusinessCodeModel();
-            businessCodeModel.Active = true;
-            if (Id != null && Id > 0)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    int businessCodeID = Convert.ToInt32(Id);
-                    var businessCode = ctx.BusinessCodes.Where(a => a.BusinessCodeID == businessCodeID).FirstOrDefault();
-                    businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
-                }
-            }
-
-            return View(businessCodeModel);
-        }
-
-        /// <summary>
-        /// Save BusinessCode Infomration
-        /// </summary>
-        /// <param name="businessCodeModel"></param>
-        /// <returns></returns>
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public ActionResult ManageBusinessCode(BusinessCodeModel businessCodeModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    BusinessCode businessCode;
-                    if (IsBusinessCodeDuplicate(businessCodeModel.CodeNumber, businessCodeModel.BusinessCodeID))
-                    {
-                        TempData["ErrorMessage"] = "Business Code is already exist in the database.";
-                        return View(businessCodeModel);
-                    }
-                    businessCode = Mapper.Map<BusinessCode>(businessCodeModel);
-                    ctx.BusinessCodes.AddOrUpdate(businessCode);
-                    ctx.SaveChanges();
-                }
-
-                TempData["SuccessMessage"] = "Business Code saved successfully.";
-
-                return RedirectToAction("BusinessCode");
-            }
-            else
-            {
-                return View(businessCodeModel);
-            }
-
-        }
-
-        /// <summary>
-        /// Delete BusinessCode Information
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteBusinessCode(int id)
-        {
-            try
-            {
-                var BusinessCode = new TradingLicense.Entities.BusinessCode() { BusinessCodeID = id };
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    ctx.Entry(BusinessCode).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
-                }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
-        /// Check Duplicate
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool IsBusinessCodeDuplicate(string name, int? id = null)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                var existObj = id != null ?
-               ctx.BusinessCodes.FirstOrDefault(
-                   c => c.BusinessCodeID != id && c.CodeNumber.ToLower() == name.ToLower())
-               : ctx.BusinessCodes.FirstOrDefault(
-                   c => c.CodeNumber.ToLower() == name.ToLower());
-                return existObj != null;
-            }
-        }
-
-        #endregion
-
         #region PremiseType
 
         /// <summary>
@@ -1619,11 +1608,23 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get Individual Data by ID
+        /// View Individual Data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageIndividual(int? Id)
+        public ActionResult ViewIndividual(int? Id)
+        {
+            ViewBag.IndividualId = Id;
+
+            return View();
+        }
+
+        /// <summary>
+        /// View Master details of an individual by Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public PartialViewResult MasterDetails(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
             IndividualModel.Active = true;
@@ -1637,7 +1638,47 @@ namespace TradingLicense.Web.Controllers
                 }
             }
 
-            return View(IndividualModel);
+            return PartialView("_MasterDetails", IndividualModel);
+        }
+
+        /// <summary>
+        /// View Trading details of an individual by Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public PartialViewResult TradingDetail(int? Id)
+        {
+            ViewBag.IndividualId = Id;
+
+            return PartialView("_TradingDetail");
+        }
+
+        /// <summary>
+        /// Get Individual Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageIndividual(int? Id)
+        {
+            IndividualModel IndividualModel = new IndividualModel();
+            IndividualModel.Active = true;
+
+            ManageIndividualModel model = new ManageIndividualModel();
+
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int individualID = Convert.ToInt32(Id);
+                    var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
+                    IndividualModel = Mapper.Map<IndividualModel>(individual);
+                    
+                    model.CompanyIds = (string.Join(",", ctx.IndLinkComs.Where(x => x.IndividualID == Id).Select(x => x.CompanyID.ToString()).ToArray()));
+                }
+                model.Individual = IndividualModel;
+            }
+
+            return View(model);
         }
 
         /// <summary>
@@ -1647,21 +1688,40 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageIndividual(IndividualModel IndividualModel)
+        public ActionResult ManageIndividual(ManageIndividualModel model)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     Individual Individual;
-                    if (IsIndividualDuplicate(IndividualModel.IndividualEmail, IndividualModel.IndividualID))
+                    if (IsIndividualDuplicate(model.Individual.IndividualEmail, model.Individual.IndividualID))
                     {
                         TempData["ErrorMessage"] = "Individual Email is already exist in the database.";
-                        return View(IndividualModel);
+                        return View(model);
                     }
 
-                    Individual = Mapper.Map<Individual>(IndividualModel);
+                    Individual = Mapper.Map<Individual>(model.Individual);
                     ctx.Individuals.AddOrUpdate(Individual);
+
+                    var oldLinkedCompanies = ctx.IndLinkComs.Where(i => i.IndividualID == model.Individual.IndividualID).ToList();
+                    ctx.IndLinkComs.RemoveRange(oldLinkedCompanies);
+
+                    List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
+
+                    foreach (string id in model.CompanyIds.Split(',').ToList())
+                    {
+                        IndLinkCom LinkedCompany = new IndLinkCom()
+                        {
+                            IndividualID = model.Individual.IndividualID,
+                            CompanyID = int.Parse(id)
+                        };
+
+                        LinkedCompanies.Add(LinkedCompany);
+                    }
+
+                    ctx.IndLinkComs.AddRange(LinkedCompanies);
+
                     ctx.SaveChanges();
                 }
 
@@ -1671,7 +1731,7 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
-                return View(IndividualModel);
+                return View(model);
             }
 
         }

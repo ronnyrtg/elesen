@@ -45,9 +45,9 @@
 </div>
         @section scripts{
             <script type="text/javascript">
-                var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel3)';
-                var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel4)';
-                var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel)';
+                var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel3)';
+                var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel4)';
+                var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Individual, SystemEnum.PageRight.CrudLevel)';
 
                 $(function () {
                     $('.form-control').keypress(function (e) {
@@ -121,28 +121,26 @@
                                 "width": "10%",
                                 "orderable": true,
                             },
-                                    {
-                                        "title": "Ubah/Padam",
-                                        "data": null,
-                                        "render": function (data, type, row) {
-                                            var appendstring = '';
-                                            if (IsEdit != "False" || IsView != "False") {
-                                                if (IsEdit != "False") {
-                                                    appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                                                }
-                                                else {
-                                                    appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="Edit" /></a>&nbsp; '
-                                                }
-                                            }
-                                            if (IsDelete != "False") {
-                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                            }
-                                            return appendstring
-                                        },
-                                        "width": "80px",
-                                        "orderable": false,
-                                        "class": "action-icons"
+                            {
+                                "title": "Tindakan",
+                                "data": null,
+                                "render": function (data, type, row) {
+                                    var appendstring = '';
+                                    if (IsView != "False") {
+                                        appendstring += '<a  href="@Url.Action("ViewIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
                                     }
+                                    if (IsEdit != "False") {
+                                        appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                                    }
+                                    if (IsDelete != "False") {
+                                        appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                    }
+                                    return appendstring
+                                },
+                                "width": "80px",
+                                "orderable": false,
+                                "class": "action-icons"
+                            }
                         ],
                         "drawCallback": function (settings) {
                             //hide paging and info when empty datattable

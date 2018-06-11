@@ -1,0 +1,468 @@
+﻿@using TradingLicense.Model;
+@{
+    ViewBag.Title = "ViewIndividual";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <!--<div class="header">
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>View Individual</h4>
+            </div>
+        </div>
+    </div>-->
+    <div id="tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#tabs-1">Master Detail</a></li>
+            <li><a data-toggle="tab" href="#tabs-2">Trading Detail</a></li>
+            <li><a data-toggle="tab" href="#tabs-3">Payment Detail</a></li>
+            <li><a data-toggle="tab"href="#tabs-4">Attachments</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="tabs-1" class="tab-pane fade in active">
+                @{ Html.RenderAction("MasterDetails", "Master", new { Id = ViewBag.IndividualId });}
+            </div>
+            <div id="tabs-2" class="tab-pane fade">
+                @{ Html.RenderPartial("_TradingDetail", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
+            </div>
+            <div id="tabs-3" class="tab-pane fade">
+                @{ Html.RenderPartial("_PaymentDetail", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
+            </div>
+            <div id="tabs-4" class="tab-pane fade">
+                @{ Html.RenderPartial("_Attachments", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
+            </div>
+        </div>
+        
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmViewIndividual", id = "frmViewIndividual" }))
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }   
+    </div>
+</div>
+@section scripts{
+    <script>
+        function back() {
+            var link = '@Url.Action("Individual", "Master")';
+            window.location.href = link;
+        }
+        $(function () {
+            bindCompanyTable();
+            bindBannerApplicationsTable();
+            bindPremiseApplicationTable();
+            bindPaymentDueTable();
+            bindPaymentReceivedTable();
+            bindAttachmentsTable();
+        });
+
+        function bindCompanyTable() {
+            if ($.fn.DataTable.isDataTable("#tblCompany")) {
+                $('#tblCompany').dataTable().fnDestroy();
+                $('#divtblCompany').html('<table class="table table-striped" width="100%"  id="tblCompany"></table>');
+            }
+
+            table = $("#tblCompany").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("CompaniesByIndividual", "Master" )',
+                    type: "POST",
+                    data: bindCompanyParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                       {
+                           "targets": 0,
+                           "searchable": false,
+                           "orderable": false,
+                           "title": "No.",
+                           "data": null,
+                           "render": function (data, type, full, meta) {
+                               return meta.settings._iDisplayStart + meta.row + 1;
+                           }
+                       },
+                       { "title": "Company Name", "data": "CompanyName" },
+                       { "title": "Registration No", "data": "RegistrationNo" },
+                       { "title": "Company Address", "data": "CompanyAddress", "orderable": false },
+                       {
+                           "title": "Active",
+                           "data": "Active",
+                           "render": function (data, type, row) {
+                               if (data) {
+                                   return '<label class="label label-success">Active</label>';
+                               }
+                               else {
+                                   return '<label class="label label-danger">InActive</label>';
+                               }
+                           },
+                           "width": "10%",
+                           "orderable": true,
+                       }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblCompany_info').hide();
+                        $('#tblCompany_paginate').hide();
+                        $('#tblCompany_length').hide();
+                    }
+                    else {
+                        $('#tblCompany_info').show();
+                        $('#tblCompany_paginate').show();
+                        $('#tblCompany_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindCompanyParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+
+        function bindBannerApplicationsTable() {
+
+            if ($.fn.DataTable.isDataTable("#tblBannerApplication")) {
+                $('#tblBannerApplication').dataTable().fnDestroy();
+                $('#divBannerApplicationTable').html('<table class="table table-striped" width="100%"  id="tblBannerApplication"></table>');
+            }
+
+            table = $("#tblBannerApplication").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("BannerApplicationsByIndividual", "BannerApplication")',
+                    type: "POST",
+                    data: bindBannerApplicationParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    {
+                        "title": "No. Rujukan",
+                        "data": "BannerApplicationID",
+                        "render": function (data, type, row) {
+                            return '2018/B/NEW/0000' + data;
+                        }
+                    },
+                    { "title": "Nama Pemohon.", "data": "Individual.FullName" },
+                    { "title": "Nama Perniagaan", "data": "Company.CompanyName" },
+                    { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
+                    { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
+                    { "title": "Status", "data": "AppStatus.StatusDesc" }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblBannerApplication_info').hide();
+                        $('#tblBannerApplication_paginate').hide();
+                        $('#tblBannerApplication_length').hide();
+                    }
+                    else {
+                        $('#tblBannerApplication_info').show();
+                        $('#tblBannerApplication_paginate').show();
+                        $('#tblBannerApplication_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindBannerApplicationParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+
+        function bindPremiseApplicationTable() {
+
+            if ($.fn.DataTable.isDataTable("#tblPremiseApplication")) {
+                $('#tblPremiseApplication').dataTable().fnDestroy();
+                $('#divPremiseApplicationTable').html('<table class="table table-striped" width="100%"  id="tblPremiseApplication"></table>');
+            }
+
+            table = $("#tblPremiseApplication").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("PremiseApplicationsByIndividual", "PremiseApplication")',
+                    type: "POST",
+                    data: bindPremiseApplicationParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "No. Rujukan", "data": "PremiseApplicationID" },
+                    { "title": "Pemohon", "data": "UsersID" },
+                    { "title": "Syarikat", "data": "CompanyName" },
+                    { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
+                    { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
+                    { "title": "Status", "data": "StatusDesc" }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblPremiseApplication_info').hide();
+                        $('#tblPremiseApplication_paginate').hide();
+                        $('#tblPremiseApplication_length').hide();
+                    }
+                    else {
+                        $('#tblPremiseApplication_info').show();
+                        $('#tblPremiseApplication_paginate').show();
+                        $('#tblPremiseApplication_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindPremiseApplicationParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+
+        function bindPaymentDueTable() {
+
+            if ($.fn.DataTable.isDataTable("#tblPaymentDue")) {
+                $('#tblPaymentDue').dataTable().fnDestroy();
+                $('#divPaymentDueTable').html('<table class="table table-striped" width="100%"  id="tblPaymentDue"></table>');
+            }
+
+            table = $("#tblPaymentDue").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("PaymentDueByIndividual", "Payment")',
+                    type: "POST",
+                    data: bindPaymentDueParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Payment For", "data": "PaymentFor" },
+                    { "title": "Amount Due", "data": "AmountDue" },
+                    { "title": "Date Billed", "data": "DateBilled", render: renderDate },
+                    { "title": "Due Date", "data": "DueDate", render: renderDate },
+                    { "title": "Billed By", "data": "BilledBy" },
+                    { "title": "Bill Status", "data": "BillStatus" }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblPaymentDue_info').hide();
+                        $('#tblPaymentDue_paginate').hide();
+                        $('#tblPaymentDue_length').hide();
+                    }
+                    else {
+                        $('#tblPaymentDue_info').show();
+                        $('#tblPaymentDue_paginate').show();
+                        $('#tblPaymentDue_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindPaymentDueParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+
+        function bindPaymentReceivedTable() {
+
+            if ($.fn.DataTable.isDataTable("#tblPaymentReceived")) {
+                $('#tblPaymentReceived').dataTable().fnDestroy();
+                $('#divPaymentReceivedTable').html('<table class="table table-striped" width="100%"  id="tblPaymentReceived"></table>');
+            }
+
+            table = $("#tblPaymentReceived").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("PaymentReceivedByIndividual", "Payment")',
+                    type: "POST",
+                    data: bindPaymentReceivedParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Payment For", "data": "PaymentFor" },
+                    { "title": "Amount Paid", "data": "AmountPaid" },
+                    { "title": "Date Paid", "data": "DatePaid", render: renderDate },
+                    { "title": "Received By", "data": "ReceivedBy"}
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblPaymentReceived_info').hide();
+                        $('#tblPaymentReceived_paginate').hide();
+                        $('#tblPaymentReceived_length').hide();
+                    }
+                    else {
+                        $('#tblPaymentReceived_info').show();
+                        $('#tblPaymentReceived_paginate').show();
+                        $('#tblPaymentReceived_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindPaymentReceivedParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+
+        function bindAttachmentsTable() {
+            if ($.fn.DataTable.isDataTable("#tblAttachment")) {
+                $('#tblAttachment').dataTable().fnDestroy();
+                $('#divtblAttachment').html('<table class="table table-striped" width="100%"  id="tblAttachment"></table>');
+            }
+
+            table = $("#tblAttachment").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("AttachmentsByIndividual", "Master")',
+                    type: "POST",
+                    data: bindAttachmentParams('@ViewBag.IndividualId')
+                },
+                "columns": [
+                    { "title": "Attachment", "data": "AttachmentDesc" }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblAttachment_info').hide();
+                        $('#tblAttachment_paginate').hide();
+                        $('#tblAttachment_length').hide();
+                    }
+                    else {
+                        $('#tblAttachment_info').show();
+                        $('#tblAttachment_paginate').show();
+                        $('#tblAttachment_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function bindAttachmentParams(individualId) {
+            var param = {};
+            param["individualId"] = individualId;
+            return param;
+        }
+    </script>
+}
+

@@ -257,6 +257,65 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Save Banner Application Data By Individual
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="individualId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerApplicationsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<Model.BannerApplicationModel> bannerApplication = new List<Model.BannerApplicationModel>();
+            int totalRecord = 0;
+
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<BannerApplication> query = ctx.BannerApplications
+                                                                .Include("AppStatus")
+                                                                .Include("Company")
+                                                                .Include("Individual")
+                                                                .Where(ba => ba.IndividualID == individualId);
+                    totalRecord = query.Count();
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = String.Empty;
+
+                    foreach (var column in sortedColumns)
+                    {
+                        orderByString += orderByString != String.Empty ? "," : "";
+                        orderByString += (column.Data) +
+                          (column.SortDirection ==
+                          Column.OrderDirection.Ascendant ? " asc" : " desc");
+                    }
+
+                    query = query.OrderBy(orderByString == string.Empty ? "BannerApplicationID asc" : orderByString);
+
+                    #endregion Sorting
+                    // Paging
+                    query = query.Skip(requestModel.Start).Take(requestModel.Length);
+                    var Dtls = db.BannerApplications
+                                        .Include("AppStatus")
+                                        .Include("Company")
+                                        .Include("Individual")
+                                        .Where(ba => ba.IndividualID == individualId)
+                                        .OrderBy(m => m.BannerApplicationID).ToList();
+
+
+                    /*var Dtls = query.ToList();*/
+                    return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+
+            }
+        }
+
+        /// <summary>
         /// Get BannerApplication Data by ID
         /// </summary>
         /// <param name="Id"></param>

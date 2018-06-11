@@ -59,7 +59,7 @@
         });
 
         function addBusinessCode() {
-           var link = '@Url.Action("ManageBusinessCode", "Master")';
+           var link = '@Url.Action("ManageBusinessCode", "PremiseApplication")';
              window.location.href = link;
         }
 
@@ -85,7 +85,7 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("BusinessCode", "Master")',
+                        url: '@Url.Action("BusinessCode", "PremiseApplication")',
                         type: "POST",
                         data: bindSearch()
                     },
@@ -148,7 +148,7 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBusinessCode", "Master")?Id=' + row["BusinessCodeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a  href="@Url.Action("ManageBusinessCode", "PremiseApplication")?Id=' + row["BusinessCodeID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
                         appendstring += '<a href="javascript:void(0);" data-id="' + row["BusinessCodeID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
@@ -234,7 +234,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteBusinessCode", "Master")'),
+                    url: encodeURI('@Url.Action("DeleteBusinessCode", "PremiseApplication")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',

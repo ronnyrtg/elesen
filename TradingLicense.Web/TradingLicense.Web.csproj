@@ -190,6 +190,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LiquorApplicationController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
@@ -238,6 +239,7 @@
     <Content Include="Content\Datatables\dataTables.bootstrap.min.css" />
     <Content Include="Content\Datatables\dataTables.bootstrap4.css" />
     <Content Include="Content\Datatables\dataTables.bootstrap4.min.css" />
+    <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\header.png" />
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\select2\select2.min.css" />
@@ -416,8 +418,8 @@
     <Content Include="Views\Master\ManageRoleTemplate.cshtml" />
     <Content Include="Views\Master\AppStatus.cshtml" />
     <Content Include="Views\Master\ManageAppStatus.cshtml" />
-    <Content Include="Views\Master\BusinessCode.cshtml" />
-    <Content Include="Views\Master\ManageBusinessCode.cshtml" />
+    <Content Include="Views\PremiseApplication\BusinessCode.cshtml" />
+    <Content Include="Views\PremiseApplication\ManageBusinessCode.cshtml" />
     <Content Include="Views\Master\PremiseType.cshtml" />
     <Content Include="Views\Master\ManagePremiseType.cshtml" />
     <Content Include="Views\Master\Individual.cshtml" />
@@ -473,12 +475,23 @@
     <Content Include="Views\StallApplication\SAReqDoc.cshtml" />
     <Content Include="Views\StallApplication\ManageSAReqDoc.cshtml" />
     <Content Include="Views\PremiseApplication\ViewPremiseApplication.cshtml" />
+    <Content Include="Views\HawkerApplication\HawkerApplication.cshtml" />
+    <Content Include="Views\HawkerApplication\ManageHawkerApplication.cshtml" />
+    <Content Include="Views\HawkerApplication\HAReqDoc.cshtml" />
+    <Content Include="Views\HawkerApplication\ManageHAReqDoc.cshtml" />
+    <Content Include="Views\Master\ViewIndividual.cshtml" />
+    <Content Include="Views\Master\_MasterDetails.cshtml" />
+    <Content Include="Views\Master\_TradingDetail.cshtml" />
+    <Content Include="Views\Master\_PaymentDetail.cshtml" />
+    <Content Include="Views\Master\_Attachments.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CheckBoxListItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
-    <Folder Include="Documents\Attachment\BannerApplication\" />
+    <Folder Include="Documents\Attachment\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Payment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

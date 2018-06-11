@@ -6,10 +6,14 @@
 }
 @{
     List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
+    List<TradingLicense.Model.AdditionalDocModel> additionalDocsList = new List<TradingLicense.Model.AdditionalDocModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var sector = ctx.Sectors.ToList();
         sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
+
+        var additionaDocs = ctx.AdditionalDocs.ToList();
+        additionalDocsList = Mapper.Map<List<TradingLicense.Model.AdditionalDocModel>>(additionaDocs);
     }
 
     List<SelectListItem> modeList = new List<SelectListItem>();
@@ -130,6 +134,35 @@
             </div>
 
             <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Unit Teknikal / Jabatan</div>
+                        @Html.DropDownList("Departments", new SelectList(Model.selectedDepartments.OrderBy(x => x.text), "id", "text"), "Sila pilih Jabatan", new { @id = "departmentList", @class = "form-control", multiple = "true", onchange = "changeDepartments()" })
+                        @Html.HiddenFor(model => model.DepartmentIDs)
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="max-height:180px; overflow:auto;">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Dokumen Tambahan</div>
+                        @foreach (var item in additionalDocsList)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"
+                                           name="AdditionalDocs"
+                                           value="@item.AdditionalDocID"
+                                           @if (Model.AdditionalDocs?.Any(adID => adID == item.AdditionalDocID) == true) { <text> checked</text> } />
+                                    <span>@item.DocDesc</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <input type="submit" class="btn btn-primary" value="Simpan" />
@@ -146,15 +179,79 @@
 
         $(function () {
             $("#Sectorlist").select2();
+
+            function formatDepartments(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-2">' + r[0] + '</div>' +
+                        '<div class="col-md-10">' + r[1] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatDepartmentSelection(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[0] + ' - ' + r[1] +
+                    '</span>'
+                );
+                return $result;
+            }
+
+            $("#departmentList").select2({
+                placeholder: "Sila pilih jabatan",
+                minimumInputLength: 0,
+                templateResult: formatDepartments,
+                templateSelection: formatDepartmentSelection,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillDepartments", "PremiseApplication")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return {
+                            query: query.term
+                        }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
+            var departmentSelecteId = [];
+            if ('@Model.DepartmentIDs' != null && '@Model.DepartmentIDs' != '') {
+                var DepartmentIds = '@Model.DepartmentIDs';
+
+                var arr = DepartmentIds.split(',');
+                $.each(arr, function (index, value) {
+                    departmentSelecteId.push(value);
+                });
+                $('#departmentList').val(departmentSelecteId);
+                $('#departmentList').trigger('change');
+            } else {
+                businessSelecteId = [];
+            }
         });
-        
+
         var actionError = '@(TempData["ErrorMessage"])';
         if (actionError != null && actionError != "") {
-              errorMessage(actionError);
+            errorMessage(actionError);
         }
         function back() {
-             var link = '@Url.Action("BusinessCode", "Master")';
-             window.location.href = link;
+            var link = '@Url.Action("BusinessCode", "PremiseApplication")';
+            window.location.href = link;
+        }
+
+        function changeDepartments() {
+            $('#DepartmentIDs').val($('#departmentList').val());
         }
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {

@@ -69,8 +69,12 @@
     <Compile Include="EntmtApplicationModel.cs" />
     <Compile Include="EntmtCodeModel.cs" />
     <Compile Include="EntmtGroupModel.cs" />
+    <Compile Include="HAReqDocModel.cs" />
+    <Compile Include="HawkerApplicationModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
+    <Compile Include="LAReqDocModel.cs" />
+    <Compile Include="LiquorApplicationModel.cs" />
     <Compile Include="LocationModel.cs" />
     <Compile Include="LoginLogModel.cs" />
     <Compile Include="LoginModel.cs" />
@@ -79,7 +83,10 @@
     <Compile Include="BannerCodeModel.cs" />
     <Compile Include="LiquorCodeModel.cs" />
     <Compile Include="EntmtObjectModel.cs" />
+    <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
+    <Compile Include="PaymentDueModel.cs" />
+    <Compile Include="PaymentReceivedModel.cs" />
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

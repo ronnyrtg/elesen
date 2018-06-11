@@ -5,15 +5,12 @@ namespace TradingLicense.Entities
     public class SALinkReqDoc
     {
         [Key]
-        public int SALinkReqDocID { get; set; }
-
-        public int StallApplicationID { get; set; }
-
+        public int LAReqDocID { get; set; }
+        public int LiquorApplicationID { get; set; }
         public int RequiredDocID { get; set; }
+        public int AttachmentID { get; set; }
 
-        public int? AttachmentID { get; set; }
-
-        public virtual StallApplication StallApplication { get; set; }
-
+        public virtual RequiredDoc RequiredDoc { get; set; }
+        public virtual LiquorApplication LiquorApplication { get; set; }
     }
 }

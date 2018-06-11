@@ -78,6 +78,47 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get PremiseApplication Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PremiseApplicationsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        {
+            List<TradingLicense.Model.PremiseApplicationModel> PremiseApplication = new List<Model.PremiseApplicationModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<PremiseApplication> query = ((ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications).Where(pa => pa.IndividualID == individualId);
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                var result = Mapper.Map<List<PremiseApplicationModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "PremiseApplicationID asc" : orderByString).ToList();
+
+                totalRecord = result.Count();
+
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                PremiseApplication = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, PremiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// get Required Document Data
         /// </summary>
         /// <param name="requestModel"></param>
@@ -203,7 +244,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         premiseApplicationModel.BusinessCodeids = (string.Join(",", paLinkBC.Select(x => x.BusinessCodeID.ToString()).ToArray()));
 
-                        List<SelectedBusinessCodeModel> businessCodesList = new List<SelectedBusinessCodeModel>();
+                        List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
                         int selectedMode = 0;
                         foreach (var item in paLinkBC)
                         {
@@ -211,9 +252,9 @@ namespace TradingLicense.Web.Controllers
                             if (buinesscode != null && buinesscode.BusinessCodeID > 0)
                             {
                                 selectedMode = buinesscode.Mode;
-                                SelectedBusinessCodeModel selectedBusinessCodeModel = new SelectedBusinessCodeModel();
+                                Select2ListItem selectedBusinessCodeModel = new Select2ListItem();
                                 selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
-                                selectedBusinessCodeModel.text = buinesscode.CodeDesc;
+                                selectedBusinessCodeModel.text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}";
                                 businessCodesList.Add(selectedBusinessCodeModel);
                             }
                         }
@@ -261,11 +302,12 @@ namespace TradingLicense.Web.Controllers
                     int PremiseApplicationID = Convert.ToInt32(Id);
                     var premiseApplication = ctx.PremiseApplications.Where(a => a.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
                     premiseApplicationModel = Mapper.Map<ViewPremiseApplicationModel>(premiseApplication);
+                    premiseApplicationModel.Individuals = new List<string>();
 
                     var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
                     if (paLinkBC != null && paLinkBC.Count > 0)
                     {
-                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => x.BusinessCode.CodeDesc).ToList();
+                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => $"{x.BusinessCode.CodeNumber} | {x.BusinessCode.CodeDesc}").ToList();
                     }
                     else { premiseApplicationModel.BusinessCodes = new List<string>(); }
 
@@ -310,6 +352,7 @@ namespace TradingLicense.Web.Controllers
                     ModelState.Remove("PremiseStatus");
                     ModelState.Remove("PremiseTypeID");
                     ModelState.Remove("PremiseModification");
+                    ModelState.Remove("PremiseOwnership");
                 }
             }
             if (ModelState.IsValid)
@@ -739,6 +782,7 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
+                ViewBag.SelectedMode = 0;
                 return View(premiseApplicationModel);
             }
         }
@@ -788,9 +832,9 @@ namespace TradingLicense.Web.Controllers
                 }
                 if (!String.IsNullOrWhiteSpace(query))
                 {
-                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()));
+                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
                 }
-                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc, mode = x.Mode }).ToList();
+                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc + "~" + x.CodeNumber, mode = x.Mode }).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
@@ -808,62 +852,6 @@ namespace TradingLicense.Web.Controllers
                 var individual = ctx.Individuals.Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower())).Select(x => new SelectedIndividualModel { id = x.IndividualID, text = x.FullName + " (" + x.MykadNo + ")", fullName = x.FullName, passportNo = x.MykadNo }).ToList();
                 return Json(individual, JsonRequestBehavior.AllowGet);
             }
-        }
-
-        /// <summary>
-        /// get Business Code Data
-        /// </summary>
-        /// <param name="BusinessCodeids"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BusinessCodeids)
-        {
-            List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
-            int totalRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-
-                string[] ids = null;
-
-                if (!string.IsNullOrWhiteSpace(BusinessCodeids))
-                {
-                    ids = BusinessCodeids.Split(',');
-                }
-
-                List<int> BusinessCodelist = new List<int>();
-
-                foreach (string id in ids)
-                {
-                    int BusinessCodeID = Convert.ToInt32(id);
-                    BusinessCodelist.Add(BusinessCodeID);
-                }
-
-                IQueryable<BusinessCode> query = ctx.BusinessCodes.Where(r => BusinessCodelist.Contains(r.BusinessCodeID));
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
-
-                totalRecord = result.Count();
-
-                #endregion Sorting
-
-                BusinessCode = result;
-
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, BusinessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1362,6 +1350,301 @@ namespace TradingLicense.Web.Controllers
             catch (Exception ex)
             {
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        #endregion
+
+        #region BusinessCode
+
+        /// <summary>
+        /// GET: BusinessCode
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BusinessCode()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save BusinessCode Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorID)
+        {
+            List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
+            int totalRecord = 0;
+            // int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BusinessCode> query = ctx.BusinessCodes;
+
+                #region Filtering
+
+                // Apply filters for comman Grid searching
+                if (requestModel.Search.Value != string.Empty)
+                {
+                    var value = requestModel.Search.Value.ToLower().Trim();
+                    query = query.Where(p => p.CodeNumber.ToLower().Contains(value) ||
+                                             p.CodeDesc.ToLower().Contains(value) ||
+                                             p.SectorID.ToString().Contains(value) ||
+                                             p.DefaultRate.ToString().Contains(value) ||
+                                             p.Sector.SectorDesc.ToLower().Contains(value)
+                                       );
+                }
+
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(codeNumber))
+                {
+                    query = query.Where(p => p.CodeNumber.ToLower().Contains(codeNumber.ToLower()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(codeDesc))
+                {
+                    query = query.Where(p => p.CodeDesc.ToLower().Contains(codeDesc.ToLower()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(sectorID))
+                {
+                    query = query.Where(p => p.SectorID.ToString().Contains(sectorID));
+                }
+
+                // Filter End
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
+
+                totalRecord = result.Count();
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+
+                BusinessCode = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, BusinessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get BusinessCode Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageBusinessCode(int? Id)
+        {
+            BusinessCodeModel businessCodeModel = new BusinessCodeModel();
+            businessCodeModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int businessCodeID = Convert.ToInt32(Id);
+                    var businessCode = ctx.BusinessCodes.Where(a => a.BusinessCodeID == businessCodeID).FirstOrDefault();
+                    businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
+
+                    var additionalDocs = ctx.BCLinkAD.Where(blAD => blAD.BusinessCodeID == businessCodeID);
+                    if (additionalDocs.Count() > 0)
+                    {
+                        businessCodeModel.AdditionalDocs = additionalDocs.Select(blAD => blAD.AdditionalDocID).ToList();
+                    }
+                    else
+                    {
+                        businessCodeModel.AdditionalDocs = new List<int>();
+                    }
+
+                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeID);
+                    if (departments.Count() > 0)
+                    {
+                        foreach (var dep in departments)
+                        {
+                            if (dep.Department != null)
+                            {
+                                businessCodeModel.selectedDepartments.Add(new Select2ListItem() { id = dep.DepartmentID, text = $"{dep.Department.DepartmentCode} - {dep.Department.DepartmentDesc }" });
+                            }
+                        }
+                        businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DepartmentID).ToArray());
+                    }
+
+                }
+            }
+
+            return View(businessCodeModel);
+        }
+
+        /// <summary>
+        /// Save BusinessCode Infomration
+        /// </summary>
+        /// <param name="businessCodeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBusinessCode(BusinessCodeModel businessCodeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    BusinessCode businessCode;
+                    if (IsBusinessCodeDuplicate(businessCodeModel.CodeNumber, businessCodeModel.BusinessCodeID))
+                    {
+                        TempData["ErrorMessage"] = "Business Code is already exist in the database.";
+                        return View(businessCodeModel);
+                    }
+                    businessCode = Mapper.Map<BusinessCode>(businessCodeModel);
+                    ctx.BusinessCodes.AddOrUpdate(businessCode);
+                    ctx.SaveChanges();
+
+                    if (!string.IsNullOrEmpty(businessCodeModel.DepartmentIDs))
+                    {
+                        List<BCLinkDep> selectedDepartments = new List<BCLinkDep>();
+                        var selectedDeps = ctx.BCLinkDeps.Where(bd => bd.BusinessCodeID == businessCode.BusinessCodeID).ToList();
+                        var deptIds = businessCodeModel.DepartmentIDs.Split(',');
+                        foreach (var dep in deptIds)
+                        {
+                            var depId = Convert.ToInt32(dep);
+                            if (selectedDeps == null || !selectedDeps.Any(sd => sd.DepartmentID == depId))
+                            {
+                                selectedDepartments.Add(new BCLinkDep { BusinessCodeID = businessCode.BusinessCodeID, DepartmentID = depId });
+                            }
+                        }
+                        if (selectedDeps != null && selectedDeps.Count > 0)
+                        {
+                            foreach (var bcDep in selectedDeps)
+                            {
+                                if (!deptIds.Any(rd => rd == bcDep.DepartmentID.ToString()))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedDepartments.Count > 0)
+                        {
+                            ctx.BCLinkDeps.AddOrUpdate(selectedDepartments.ToArray());
+                        }
+                    }
+
+                    if (businessCodeModel.AdditionalDocs.Count > 0)
+                    {
+                        List<BCLinkAD> selectedAdditionalDocs = new List<BCLinkAD>();
+                        var selectedADocs = ctx.BCLinkAD.Where(bd => bd.BusinessCodeID == businessCode.BusinessCodeID).ToList();
+                        var addDocIds = businessCodeModel.AdditionalDocs;
+                        foreach (var addDocId in addDocIds)
+                        {
+                            if (selectedADocs == null || !selectedADocs.Any(sd => sd.AdditionalDocID == addDocId))
+                            {
+                                selectedAdditionalDocs.Add(new BCLinkAD { BusinessCodeID = businessCode.BusinessCodeID, AdditionalDocID = addDocId });
+                            }
+                        }
+                        if (selectedADocs != null && selectedADocs.Count > 0)
+                        {
+                            foreach (var bcDep in selectedADocs)
+                            {
+                                if (!addDocIds.Any(rd => rd == bcDep.AdditionalDocID))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedAdditionalDocs.Count > 0)
+                        {
+                            ctx.BCLinkAD.AddOrUpdate(selectedAdditionalDocs.ToArray());
+                        }
+
+                    }
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Business Code saved successfully.";
+
+                return RedirectToAction("BusinessCode");
+            }
+            else
+            {
+                return View(businessCodeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete BusinessCode Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBusinessCode(int id)
+        {
+            try
+            {
+                var BusinessCode = new TradingLicense.Entities.BusinessCode() { BusinessCodeID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(BusinessCode).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsBusinessCodeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.BusinessCodes.FirstOrDefault(
+                   c => c.BusinessCodeID != id && c.CodeNumber.ToLower() == name.ToLower())
+               : ctx.BusinessCodes.FirstOrDefault(
+                   c => c.CodeNumber.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Get Departments List
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillDepartments(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Department> primaryQuery = ctx.Departments;
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.DepartmentDesc.ToLower().Contains(query.ToLower()) || bc.DepartmentCode.ToLower().Contains(query.ToLower()));
+                }
+                var businessCode = primaryQuery.Select(x => new { id = x.DepartmentID, text = x.DepartmentCode + "~" + x.DepartmentDesc }).ToList();
+                return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
 

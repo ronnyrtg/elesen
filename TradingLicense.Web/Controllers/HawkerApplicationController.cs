@@ -184,5 +184,274 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region HawkerApplication
+
+        /// <summary>
+        /// GET: HawkerApplication
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult HawkerApplication()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Hawker Application Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult HawkerApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string HawkerApplicationID)
+        {
+            List<TradingLicense.Model.HawkerApplicationModel> HawkerApplication = new List<Model.HawkerApplicationModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<HawkerApplication> query = ctx.HawkerApplications;
+                totalRecord = query.Count();
+
+
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "HawkerApplicationID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                HawkerApplication = Mapper.Map<List<HawkerApplicationModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, HawkerApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get HawkerApplication Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageHawkerApplication(int? Id)
+        {
+            List<TradingLicense.Model.HAReqDocModel> HAReqDoc = new List<Model.HAReqDocModel>();
+            HawkerApplicationModel HawkerApplicationModel = new HawkerApplicationModel();
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<HAReqDoc> query = ctx.HAReqDocs;
+                HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
+                ViewBag.hawkerDocList = ctx.HAReqDocs.ToList();
+                if (Id != null && Id > 0)
+                {
+
+                    int HawkerApplicationID = Convert.ToInt32(Id);
+                    var HawkerApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == HawkerApplicationID).FirstOrDefault();
+                    HawkerApplicationModel = Mapper.Map<HawkerApplicationModel>(HawkerApplication);
+                }
+
+            }
+
+            return View(HawkerApplicationModel);
+        }
+
+        /// <summary>
+        /// Save Hawker Application Infomration
+        /// </summary>
+        /// <param name="HawkerApplicationModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageHawkerApplication(HawkerApplicationModel HawkerApplicationModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    HawkerApplication HawkerApplication;
+
+
+                    HawkerApplication = Mapper.Map<HawkerApplication>(HawkerApplicationModel);
+                    ctx.HawkerApplications.AddOrUpdate(HawkerApplication);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Hawker Application saved successfully.";
+
+                return RedirectToAction("HawkerApplication");
+            }
+            else
+            {
+                return View(HawkerApplicationModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Hawker Application Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteHawkerApplication(int id)
+        {
+            try
+            {
+                var HawkerApplication = new TradingLicense.Entities.HawkerApplication() { HawkerApplicationID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(HawkerApplication).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
+        #endregion
+
+        #region HAReqDoc
+
+        /// <summary>
+        /// GET: HAReqDoc
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult HAReqDoc()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Hawker Code Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult HAReqDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string HAReqDocDesc)
+        {
+            List<TradingLicense.Model.HAReqDocModel> HAReqDoc = new List<Model.HAReqDocModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<HAReqDoc> query = ctx.HAReqDocs;
+                totalRecord = query.Count();
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "HAReqDocID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, HAReqDoc, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get HAReqDoc Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageHAReqDoc(int? Id)
+        {
+            HAReqDocModel HAReqDocModel = new HAReqDocModel();
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int HAReqDocID = Convert.ToInt32(Id);
+                    var HAReqDoc = ctx.HAReqDocs.Where(a => a.HAReqDocID == HAReqDocID).FirstOrDefault();
+                    HAReqDocModel = Mapper.Map<HAReqDocModel>(HAReqDoc);
+                }
+            }
+
+            return View(HAReqDocModel);
+        }
+
+        [HttpPost]
+        public JsonResult SaveHAReqDoc(List<HAReqDoc> lstBarReqDoc)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    foreach (var item in lstBarReqDoc)
+                    {
+                        var DocCnt = ctx.HAReqDocs.Where(x => x.RequiredDocID == item.RequiredDocID).Count();
+                        if (DocCnt == 0)
+                        {
+                            HAReqDoc HAReqDoc = new HAReqDoc();
+                            HAReqDoc.HAReqDocID = 0;
+                            HAReqDoc.RequiredDocID = item.RequiredDocID;
+                            ctx.HAReqDocs.AddOrUpdate(HAReqDoc);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Banner Required Documents successfully.";
+                return Json(Convert.ToString(1));
+            }
+            catch (Exception)
+            {
+                return Json(Convert.ToString(0));
+            }
+        }
+
+        /// <summary>
+        /// Delete Hawker Code Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteHAReqDoc(int id)
+        {
+            try
+            {
+                var HAReqDoc = new TradingLicense.Entities.HAReqDoc() { HAReqDocID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(HAReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
     }
 }
