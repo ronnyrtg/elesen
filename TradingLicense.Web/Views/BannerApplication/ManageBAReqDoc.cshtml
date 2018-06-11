@@ -1,15 +1,18 @@
 ﻿@using AutoMapper;
+@using TradingLicense.Entities;
 @{
     ViewBag.Title = "ManageBAReqDoc";
 
     List<TradingLicense.Model.RequiredDocModel>
     requiredDocList = new List<TradingLicense.Model.RequiredDocModel>
         ();
-        using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-        {
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
         var requiredDoc = ctx.RequiredDocs.ToList();
         requiredDocList = Mapper.Map<List<TradingLicense.Model.RequiredDocModel>>(requiredDoc);
     }
+
+    string chk = "";
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -31,14 +34,22 @@
                         <table class="table table-striped dataTable table-hover" id="Docs">
                             @foreach (var item in requiredDocList)
                             {
+                                chk = "";
+                                foreach (var v in ViewData["BAReqDocs"] as IList<BAReqDoc>)
+                                {
+                                    if (item.RequiredDocID.Equals(v.RequiredDocID))
+                                    {
+                                        chk = "checked";
+                                        break;
+                                    }
+                                }
                                <tr>
                                 <td>
                                     <div class="checkbox">
-                                        <label><input style="opacity:1;" class="chkDoc" value='@item.RequiredDocID' type="checkbox">@item.RequiredDocDesc</label>
+                                        <label><input  style="opacity:1;" class="chkDoc" type="checkbox" value='@item.RequiredDocID' @chk>@item.RequiredDocDesc</label>
                                     </div>
-                                    
                                 </td>
-                            </tr>
+                               </tr>
                             }
                         </table>
                     </div>
@@ -75,7 +86,7 @@
             $(".chkDoc:checked").each(function() {
                 var DocItems = {
                         BAReqDocID: 0,
-                        RequiredDocID: $(this).val(),
+                        RequiredDocID: parseInt($(this).val()),
                     }
                     list.push(DocItems);
             });
@@ -84,10 +95,9 @@
                 errorMessage('Please Select Atleast One Document');
                 return false;
             }
-
             $.ajax({
                 type: 'POST',
-                url: '/BannerApplication/SaveBAReqDoc',
+                url: '/BannerApplication/SaveBAReqDoc',             
                 data: JSON.stringify(list),
                 contentType: 'application/json',
                 success: function (data) {

@@ -564,6 +564,9 @@ namespace TradingLicense.Web.Controllers
                     BAReqDocModel = Mapper.Map<BAReqDocModel>(BAReqDoc);
                 }
             }
+            
+            IList<BAReqDoc> list = db.BAReqDocs.ToList();
+            ViewData["BAReqDocs"] = list;
 
             return View(BAReqDocModel);
         }
