@@ -6,4 +6,33 @@
     <div class="grid" id="divtblAttachment">
         <table cellspacing="0" class="table table-striped" id="tblAttachment"></table>
     </div>
+    <div class="header">
+        <h4>Upload Attachments</h4>
+    </div>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmUploadAttachments", id = "frmUploadAttachments" }))
+{
+    <div class="body">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <div class="control-label">Attachment</div>
+                    <input type="file" class="btn btn-default" id="FileUpload1" multiple />
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="control-label">Attachment Description</div>
+                    <input type="text" class="form-control" id="txtAttachmentDesc" maxlength="255"/>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <br/>
+                    <input type="button" class="btn btn-primary" id="btnUpload" value="Upload" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 </div>

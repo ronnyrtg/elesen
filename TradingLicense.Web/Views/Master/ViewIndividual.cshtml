@@ -62,6 +62,41 @@
             bindPaymentDueTable();
             bindPaymentReceivedTable();
             bindAttachmentsTable();
+
+            $('#btnUpload').click(function () {
+
+                if (window.FormData !== undefined) {
+
+                    var fileUpload = $("#FileUpload1").get(0);
+                    var files = fileUpload.files;
+
+                    var fileData = new FormData();
+
+                    for (var i = 0; i < files.length; i++) {
+                        fileData.append(files[i].name, files[i]);
+                    }
+
+                    fileData.append('attachmentdesc', $('#txtAttachmentDesc').val());
+                    fileData.append('individualid', '@ViewBag.IndividualId');
+
+                    $.ajax({
+                        url: '@Url.Action("UploadFilesByIndividual", "Master")?api_token=fb24085da58dad6decb9271fb170ef2ed8c80617',
+                        type: "POST",
+                        contentType: false, // Not to set any content header
+                        processData: false, // Not to process data
+                        data: fileData,
+                        success: function (result) {
+                            alert(result);
+                            $('#tblAttachment').DataTable().ajax.reload();
+                        },
+                        error: function (err) {
+                            alert(err.statusText);
+                        }
+                    });
+                } else {
+                    alert("FormData is not supported.");
+                }
+            });
         });
 
         function bindCompanyTable() {
@@ -438,6 +473,13 @@
                     data: bindAttachmentParams('@ViewBag.IndividualId')
                 },
                 "columns": [
+                    {
+                        "title": "File Name",
+                        "data": "Attachment.FileNameFullPath",
+                        "render": function (data, type, row) {
+                            return '<a href="' + data + '" download>' + data.split('/')[data.split('/').length-1] + '</a>';
+                        }
+                    },
                     { "title": "Attachment", "data": "AttachmentDesc" }
                 ],
                 "drawCallback": function (settings) {
@@ -453,7 +495,6 @@
                         $('#tblAttachment_paginate').show();
                         $('#tblAttachment_length').show();
                     }
-                    bindSortingArrow();
                 }
             });
         }
@@ -463,6 +504,8 @@
             param["individualId"] = individualId;
             return param;
         }
+
+
     </script>
 }
 

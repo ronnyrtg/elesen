@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security.AntiXss;
 using TradingLicense.Data;
 using TradingLicense.Entities;
 using System.Linq.Dynamic;
@@ -13,6 +14,7 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
+using System.Web.UI;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -791,7 +793,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult AttachmentsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
         {
-            List<IndLinkAtt> Attachment = new List<IndLinkAtt>(); 
+            List<IndLinkAttModel> Attachment = new List<IndLinkAttModel>(); 
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -805,28 +807,21 @@ namespace TradingLicense.Web.Controllers
                                                where ila.IndividualID == individualId
                                                select ila;
                 totalRecord = query.Count();
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                query = query.OrderBy(orderByString == string.Empty ? "AttachmentID asc" : orderByString);
-
-                #endregion Sorting
-
+                
                 // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+                query = query.OrderBy("AttachmentID asc").Skip(requestModel.Start).Take(requestModel.Length);
 
-                Attachment = query.ToList();
+                Attachment = Mapper.Map<List<IndLinkAttModel>>(query.ToList());
+
+                var hostingPath = System.Web.Hosting.HostingEnvironment.MapPath("~/");
+                foreach (IndLinkAttModel item in Attachment)
+                {
+                    if (item.Attachment != null)
+                    {
+                        var physicalPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), item.Attachment.FileName);
+                        item.Attachment.FileNameFullPath = physicalPath.Substring(hostingPath.Length).Replace('\\', '/').Insert(0, "../");
+                    }
+                }
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -1032,6 +1027,96 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Upload Files By Individual
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult UploadFilesByIndividual()
+        {
+            AttachmentModel attachmentModel = new AttachmentModel();
+            int attachmentID;
+
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    string attachmentDesc = Request.Params["attachmentdesc"];
+                    int individualId = int.Parse(Request.Params["individualid"]);
+                    HttpFileCollectionBase files = Request.Files;
+
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        HttpPostedFileBase file = files[i];
+                        string fname;
+
+                        if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                        {
+                            string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = file.FileName;
+                        }
+
+                        if (IsAttachmentDuplicate(fname))
+                        {
+                            return Json("File Name '"+ AntiXssEncoder.HtmlEncode(fname, true) + "' already exists in the database.");
+                        }
+                    }
+
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        HttpPostedFileBase file = files[i];
+                        string fname;
+
+                        if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                        {
+                            string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = file.FileName;
+                        }
+
+                        var fileName = fname;
+
+                        fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                        file.SaveAs(fname);
+
+
+                        attachmentModel.FileName = fileName;
+
+                        using (var ctx = new LicenseApplicationContext())
+                        {
+                            var attachment = Mapper.Map<Attachment>(attachmentModel);
+                            ctx.Attachments.AddOrUpdate(attachment);
+                            ctx.SaveChanges();
+                            attachmentID = attachment.AttachmentID;
+
+                            ctx.IndLinkAtts.AddOrUpdate(new Entities.IndLinkAtt()
+                            {
+                                IndividualID = individualId,
+                                AttachmentID = attachmentID,
+                                AttachmentDesc = attachmentDesc
+                            });
+                            ctx.SaveChanges();
+                        }
+                    }
+                    return Json("Files Uploaded Successfully!");
+                }
+                catch (Exception ex)
+                {
+                    return Json("Error occurred. Error details: " + ex.Message);
+                }
+            }
+            else
+            {
+                return Json("No files selected.");
+            }
+        }
         #endregion
 
         #region Role Template
