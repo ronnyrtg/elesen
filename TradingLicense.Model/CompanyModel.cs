@@ -15,6 +15,11 @@ namespace TradingLicense.Model
         [StringLength(100)]
         public string CompanyName { get; set; }
 
+        [Required(ErrorMessage = "Sila masukkan nombor telefon pejabat")]
+        [Display(Name = "No. Telefon Pejabat")]
+        [StringLength(20)]
+        public string CompanyPhone { get; set; }
+
         [Required(ErrorMessage = "Please Enter Company Address")]
         [Display(Name = "Company Address")]
         [StringLength(255)]

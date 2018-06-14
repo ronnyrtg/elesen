@@ -13,28 +13,29 @@ namespace TradingLicense.Model
         public int BusinessTypeID { get; set; }
         [Required(ErrorMessage = "Sila pilih Kumpulan Kod")]
         public int SectorID { get; set; }
-        [Required(ErrorMessage = "Sila masukkan nama pemohon")]
-        public string NamaPemohon { get; set; }
-        [Required(ErrorMessage = "Sila masukkan IC atau No. Paspot")]
-        public string ICPaspot { get; set; }
-        [Required(ErrorMessage = "Sila masukkan nama syarikat")]
-        public string NamaSyarikat { get; set; }
-
+        [Required(ErrorMessage = "Sila pilih Syarikat")]
         public int CompanyID { get; set; }
-        public int UsersID { get; set; }
+        [Required(ErrorMessage = "Sila pilih nama pemohon")]
         public int IndividualID { get; set; }
-        public int PremiseAddressID { get; set; }
+        public string Addra1 { get; set; }
+        public string Addra2 { get; set; }
+        public string Addra3 { get; set; }
+        public string Addra4 { get; set; }
+        public string PcodeA { get; set; }
+        public string AreaA { get; set; }
+        public string TownA { get; set; }
+        public string DistrictA { get; set; }
         [Required(ErrorMessage = "Sila pilih pemilikan premis")]
         public int PremiseOwnership { get; set; }
         public DateTime StartRent { get; set; }
         public DateTime StopRent { get; set; }
-        public string WhichFloor { get; set; }
-        
+        public string WhichFloor { get; set; }       
         public int PremiseTypeID { get; set; }
         public string OtherPremiseType { get; set; }
-        
+        [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
 
+        public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string UpdatedBy { get; set; }
         public int AppStatusID { get; set; }

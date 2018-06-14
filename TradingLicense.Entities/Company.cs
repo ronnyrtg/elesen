@@ -11,7 +11,9 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string RegistrationNo { get; set; }
-
+        [StringLength(20)]
+        [Column(TypeName = "VARCHAR2")]
+        public string CompanyPhone { get; set; }
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyName { get; set; }
