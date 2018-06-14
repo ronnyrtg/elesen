@@ -1762,6 +1762,10 @@ namespace TradingLicense.Web.Controllers
                 }
                 model.Individual = IndividualModel;
             }
+            else
+            {
+                model.Individual = new IndividualModel();
+            }
 
             return View(model);
         }
@@ -1775,6 +1779,8 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public ActionResult ManageIndividual(ManageIndividualModel model)
         {
+            int individualId = 0;
+
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -1789,8 +1795,18 @@ namespace TradingLicense.Web.Controllers
                     Individual = Mapper.Map<Individual>(model.Individual);
                     ctx.Individuals.AddOrUpdate(Individual);
 
-                    var oldLinkedCompanies = ctx.IndLinkComs.Where(i => i.IndividualID == model.Individual.IndividualID).ToList();
-                    ctx.IndLinkComs.RemoveRange(oldLinkedCompanies);
+                    if(model.Individual.IndividualID == 0)
+                    {
+                        ctx.SaveChanges();
+                        individualId = Individual.IndividualID;
+                    }
+                    else
+                    {
+                        individualId = model.Individual.IndividualID;
+                        var oldLinkedCompanies = ctx.IndLinkComs.Where(i => i.IndividualID == model.Individual.IndividualID).ToList();
+                        ctx.IndLinkComs.RemoveRange(oldLinkedCompanies);
+                    }
+
 
                     List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
 
@@ -1798,7 +1814,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         IndLinkCom LinkedCompany = new IndLinkCom()
                         {
-                            IndividualID = model.Individual.IndividualID,
+                            IndividualID = individualId,
                             CompanyID = int.Parse(id)
                         };
 
@@ -1834,12 +1850,27 @@ namespace TradingLicense.Web.Controllers
                 var Individual = new TradingLicense.Entities.Individual() { IndividualID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(Individual).State = System.Data.Entity.EntityState.Deleted;
+                    var individual = ctx.Individuals.Where(i => i.IndividualID == id).FirstOrDefault();
+                    int attachmentId = 0;
+                    if (individual != null)
+                    {
+                        attachmentId = individual.AttachmentID ?? 0;
+                    }
+
+                    ctx.Individuals.Remove(individual);
                     ctx.SaveChanges();
+
+                    if (attachmentId != 0)
+                    {
+                        var Attachment = new TradingLicense.Entities.Attachment() { AttachmentID = attachmentId };
+                        ctx.Entry(Attachment).State = System.Data.Entity.EntityState.Deleted;
+                        ctx.SaveChanges();
+                    }
+                    
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch(Exception ex)
             {
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
