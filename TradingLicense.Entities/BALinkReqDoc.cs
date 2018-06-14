@@ -17,7 +17,7 @@ namespace TradingLicense.Entities
 
         public virtual Attachment Attachment { get; set; }
 
-        public virtual BAReqDoc BAReqDoc { get; set; }
+        public virtual RequiredDoc RequiredDoc { get; set; }
 
     }
 }
