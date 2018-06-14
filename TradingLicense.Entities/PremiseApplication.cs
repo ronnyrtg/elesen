@@ -14,7 +14,30 @@ namespace TradingLicense.Entities
         public int BusinessTypeID { get; set; }
         public int AppStatusID { get; set; }
         public int CompanyID { get; set; }
-        public int PremiseAddressID { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra1 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra2 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra3 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra4 { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PcodeA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string AreaA { get; set; }
+        [StringLength(30)]
+        [Column(TypeName = "VARCHAR2")]
+        public string TownA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string DistrictA { get; set; }
         public int PremiseOwnership { get; set; }
         public float PremiseArea { get; set; }
         public DateTime StartRent { get; set; }
@@ -35,7 +58,6 @@ namespace TradingLicense.Entities
         public DateTime DateSubmitted { get; set; }
 
         public virtual PremiseType PremiseType { get; set; }
-        public virtual PremiseAddress PremiseAddress { get; set; }
         public virtual Individual Individual { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual BusinessType BusinessType { get; set; }

@@ -133,22 +133,78 @@
                         @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control" })
                     </div>
                 </div>
-            </div> 
+            </div>
+            <hr />
             <div class="row">
                 <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.Addra1, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra2, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra3, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra4, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Poskod<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PcodeA, new { @class = "form-control" })
+                    </div>
+                </div>
+            
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Kawasan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.AreaA, new { @class = "form-control" })
+                    </div>
+                </div>
+            
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Bandar<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.TownA, new { @class = "form-control" })
+                    </div>
+                </div>
+           
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Daerah<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.DistrictA, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Luas Premis<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
                         @Html.ValidationMessageFor(m => m.PremiseArea)
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseDesc), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
@@ -156,6 +212,47 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.StartRent, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.StartRent)
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Hingga<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.StopRent, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.StopRent)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nyatakan Jenis Premis (Jika tiada dalam senarai)</div>
+                        @Html.TextBoxFor(m => m.OtherPremiseType, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Tingkat</div>
+                        @Html.TextBoxFor(m => m.WhichFloor, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
@@ -177,64 +274,64 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-                        {
-                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                            {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
-
-                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' id="btnsubmit" />
+                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
+
+                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                {
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' id="btnsubmit" />
+                                }
                             }
-                        }
 
-                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                        {
-                            <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                        }*@
+                            @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                                {
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                }*@
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID >0)
-                        {
-                            <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
-                            <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
-                        }
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0)
+                            {
+                                <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
+                                <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
+                            }
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if(Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
-                        
+                            <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+
+                        </div>
                     </div>
                 </div>
+                }
             </div>
-        }
-    </div>
 </div>
 
 <div id="editIndividual" class="modal fade" role="dialog">
@@ -341,6 +438,14 @@
     }
 </style>
 
+<!-- Code to wire up your DatePicker -->
+<script type="text/javascript">
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker({ dateFormat: 'dd-mm-yy' });
+    })
+</script>
+
 @section scripts{
 <script>
 
@@ -374,7 +479,7 @@
             $("#businessCodeList").select2();
             $("#individualList").select2();
             $("#companyList").select2({
-                placeholder: "Select Company"
+                placeholder: "Pilih Syarikat"
             });
 
             AddRules();
@@ -411,8 +516,8 @@
                     //Data: allows us to pass a parameter to the controller
                     data: function (query) {
                         //console.log(query)
-                        return { 
-                            query: query.term, 
+                        return {
+                            query: query.term,
                             selectedMode: selectedMode,
                             selectedSector:  $("#SectorID").val()
                         }
@@ -426,12 +531,12 @@
                     }
                 }
             });
-            
+
             $("#businessCodeList").on('select2:select', function(e) {
                 var data = e.params.data;
                 selectedMode = data.mode;
             });
-            
+
             $("#businessCodeList").on('select2:unselect', function(e) {
                 if(!$("#businessCodeList").val()) {
                     selectedMode = 0;
@@ -455,7 +560,7 @@
                 if (!state.isNew) {
                     return state.text;
                 }
-                
+
                 state.text = state.fullName + ' (' + state.passportNo +')';
                 var $state = $(
                   '<span>' + state.text +'&nbsp;</span>'
@@ -495,7 +600,7 @@
                         fullName: fullName,
                         passportNo: passportNo,
                         isNew: true
-                    };                    
+                    };
                 },
                 ajax: {
                     type: "POST",

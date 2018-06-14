@@ -8,6 +8,7 @@ namespace TradingLicense.Data.Migrations
     {
         public Configuration()
         {
+            AutomaticMigrationDataLossAllowed = true;
             AutomaticMigrationsEnabled = true;
             ContextKey = "TradingLicense.Data.LicenseApplicationContext";
         }
@@ -407,12 +408,12 @@ namespace TradingLicense.Data.Migrations
             {
                 new Users {FullName="Abd Aziz Bin Hamzah",Username="aziz",Password="rGWQ/rZGq74=",Email="aziz.h@pl.gov.my", RoleTemplateID=6,DepartmentID=1},
                 new Users {FullName="Soffiyan Bin Hadis",Username="soffiyan",Password="rGWQ/rZGq74=",Email="soffiyan.hadis@pl.gov.my", RoleTemplateID=4,DepartmentID=1},
-                new Users {FullName="Hjh. Simai Binti Md Jamil",Username="simai",Password="rGWQ/rZGq74=",Email="simai@pl.gov.my", RoleTemplateID=4,DepartmentID=1},
+                new Users {FullName="Hjh. Simai Binti Md Jamil",Username="simai",Password="rGWQ/rZGq74=",Email="simai@pl.gov.my", RoleTemplateID=3,DepartmentID=1},
                 new Users {FullName="Suwardi Binti Muali",Username="suwardi",Password="rGWQ/rZGq74=",Email="suwardi.muali.pl@1govuc.gov.my", RoleTemplateID=2,DepartmentID=1},
-                new Users {FullName="Adey Suhaimi Bin Suhaili",Username="adey",Password="rGWQ/rZGq74=",Email="adey.suhaimi.pl@1govuc.gov.my", RoleTemplateID=4,DepartmentID=1},
-                new Users {FullName="Azean Irdawati Binti Wahid",Username="azean",Password="rGWQ/rZGq74=",Email="azean.wahid.pl@1govuc.gov.my", RoleTemplateID=4,DepartmentID=1},
-                new Users {FullName="Kazlina Binti Kassim",Username="kazlina",Password="rGWQ/rZGq74=",Email="kazlina@yahoo.com", RoleTemplateID=4,DepartmentID=1},
-                new Users {FullName="Johaniza Binti Jonait",Username="johaniza",Password="rGWQ/rZGq74=",Email="johaniza@yahoo.com", RoleTemplateID=4,DepartmentID=1},
+                new Users {FullName="Adey Suhaimi Bin Suhaili",Username="adey",Password="rGWQ/rZGq74=",Email="adey.suhaimi.pl@1govuc.gov.my", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Azean Irdawati Binti Wahid",Username="azean",Password="rGWQ/rZGq74=",Email="azean.wahid.pl@1govuc.gov.my", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Kazlina Binti Kassim",Username="kazlina",Password="rGWQ/rZGq74=",Email="kazlina@yahoo.com", RoleTemplateID=3,DepartmentID=1},
+                new Users {FullName="Johaniza Binti Jonait",Username="johaniza",Password="rGWQ/rZGq74=",Email="johaniza@yahoo.com", RoleTemplateID=3,DepartmentID=1},
                 new Users {FullName="Rafidah Binti Mohd Isa",Username="rafidah",Password="rGWQ/rZGq74=",Email="rafidah@yahoo.com", RoleTemplateID=2,DepartmentID=1},
                 new Users {FullName="Ahmad Jais Bin Halon",Username="ahmadjais",Password="rGWQ/rZGq74=",Email="ahmad.jais@yahoo.com", RoleTemplateID=2,DepartmentID=1},
                 new Users {FullName="YBHG. Datuk Azhar Bin Ahmad",Username="kpe",Password="rGWQ/rZGq74=",Email="azharahmad@pl.gov.my", RoleTemplateID=7,DepartmentID=1},
@@ -738,6 +739,8 @@ namespace TradingLicense.Data.Migrations
             };
             entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();
+
+           
         }
     }
 }

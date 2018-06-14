@@ -22,7 +22,7 @@
         var companies = ctx.Companies.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
 
-        if (Model.Individual.AttachmentID != 0)
+        if (Model.Individual != null && Model.Individual.AttachmentID != 0)
         {
             profilePic = ctx.Attachments.Where(a => a.AttachmentID == Model.Individual.AttachmentID).ToList()[0].FileName;
         }
