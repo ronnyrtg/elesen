@@ -739,6 +739,8 @@ namespace TradingLicense.Data.Migrations
             };
             entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();
+
+           
         }
     }
 }

@@ -78,6 +78,7 @@ namespace TradingLicense.Data
         public DbSet<RequiredDoc> RequiredDocs { get; set; }
         public DbSet<PaymentDue> PaymentDues { get; set; }
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
+        
 
         //User related
         public DbSet<Users> Users { get; set; }
