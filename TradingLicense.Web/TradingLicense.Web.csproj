@@ -201,6 +201,12 @@
     <Compile Include="Pages\Actions.cs" />
     <Compile Include="Pages\Controllers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\CrLetter.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CrLetter.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Reports\crpTable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -300,6 +306,7 @@
     <Content Include="images\delete.png" />
     <Content Include="images\edit.png" />
     <Content Include="images\left-arrow.png" />
+    <Content Include="images\logoPL.jpg" />
     <Content Include="images\view.png" />
     <Content Include="images\pop-close.svg" />
     <Content Include="images\sort-asc.png" />
@@ -573,6 +580,10 @@
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Reports\CrLetter.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CrLetter.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\crpTable.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>crpTable.cs</LastGenOutput>
