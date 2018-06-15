@@ -1810,17 +1810,19 @@ namespace TradingLicense.Web.Controllers
 
                     List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
 
-                    foreach (string id in model.CompanyIds.Split(',').ToList())
+                    if (model.CompanyIds != null)
                     {
-                        IndLinkCom LinkedCompany = new IndLinkCom()
+                        foreach (string id in model.CompanyIds.Split(',').ToList())
                         {
-                            IndividualID = individualId,
-                            CompanyID = int.Parse(id)
-                        };
+                            IndLinkCom LinkedCompany = new IndLinkCom()
+                            {
+                                IndividualID = individualId,
+                                CompanyID = int.Parse(id)
+                            };
 
-                        LinkedCompanies.Add(LinkedCompany);
+                            LinkedCompanies.Add(LinkedCompany);
+                        }
                     }
-
                     ctx.IndLinkComs.AddRange(LinkedCompanies);
 
                     ctx.SaveChanges();

@@ -57,17 +57,25 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Profile Picture : 
-                            <a href="@Url.Content(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + @profilePic)" download>
-                               @profilePic
-                            </a>
+                        <div class="control-label">
+                            Gambar :
                         </div>
+                        @if (profilePic != null && profilePic !="")
+                        {
+                            int value = Model.Individual.IndividualID;
+                            string text = value.ToString("D6");
+                            <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
+                        }
+                        else
+                        {
+                            <img class="img-thumbnail" width="150" src="~/images/member-default.jpg" />
+                        }
                         <div class="row">
                             <div class="col-sm-3">
                                 <input type="file" class="btn btn-default" id="FileUpload1" />
                             </div>
                             <div class="col-sm-9">
-                                <input type="button" class="btn btn-default" id="btnUpload" value="Upload" />
+                                <input type="button" class="btn btn-default" id="btnUpload" value="Tukar Gambar" />
                             </div>
                         </div>
                         @Html.HiddenFor(m => m.Individual.AttachmentID)
@@ -134,7 +142,15 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nama Syarikat</div>
+                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
+                        @Html.HiddenFor(model => model.CompanyIds)
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -144,15 +160,6 @@
                                 <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Companies</div>
-                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
-                        @Html.HiddenFor(model => model.CompanyIds)
                     </div>
                 </div>
             </div>
@@ -172,7 +179,7 @@
                 <script>
                     $(function () {
                         $("#companyList").select2({
-                            placeholder: "Select Company"
+                            placeholder: "Pilih Syarikat"
                         });
 
                         var companySelectedId = [];
