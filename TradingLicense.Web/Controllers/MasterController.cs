@@ -818,7 +818,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     if (item.Attachment != null)
                     {
-                        var physicalPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), item.Attachment.FileName);
+                        var physicalPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + (individualId ?? 0).ToString("D6")), item.Attachment.FileName);
                         item.Attachment.FileNameFullPath = physicalPath.Substring(hostingPath.Length).Replace('\\', '/').Insert(0, "../");
                     }
                 }
@@ -1047,26 +1047,26 @@ namespace TradingLicense.Web.Controllers
                     int individualId = int.Parse(Request.Params["individualid"]);
                     HttpFileCollectionBase files = Request.Files;
 
-                    for (int i = 0; i < files.Count; i++)
-                    {
-                        HttpPostedFileBase file = files[i];
-                        string fname;
+                    //for (int i = 0; i < files.Count; i++)
+                    //{
+                    //    HttpPostedFileBase file = files[i];
+                    //    string fname;
 
-                        if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                        {
-                            string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                            fname = testfiles[testfiles.Length - 1];
-                        }
-                        else
-                        {
-                            fname = file.FileName;
-                        }
+                    //    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    //    {
+                    //        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                    //        fname = testfiles[testfiles.Length - 1];
+                    //    }
+                    //    else
+                    //    {
+                    //        fname = file.FileName;
+                    //    }
 
-                        if (IsAttachmentDuplicate(fname))
-                        {
-                            return Json("File Name '"+ AntiXssEncoder.HtmlEncode(fname, true) + "' already exists in the database.");
-                        }
-                    }
+                    //    if (IsAttachmentDuplicate(fname))
+                    //    {
+                    //        return Json("File Name '"+ AntiXssEncoder.HtmlEncode(fname, true) + "' already exists in the database.");
+                    //    }
+                    //}
 
                     for (int i = 0; i < files.Count; i++)
                     {
@@ -1085,9 +1085,14 @@ namespace TradingLicense.Web.Controllers
 
                         var fileName = fname;
 
-                        fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                        var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                        individualUploadPath = Path.Combine(individualUploadPath, individualId.ToString("D6"));
+                        if (!Directory.Exists(individualUploadPath))
+                        {
+                            Directory.CreateDirectory(individualUploadPath);
+                        }
+                        fname = Path.Combine(individualUploadPath, fname);
                         file.SaveAs(fname);
-
 
                         attachmentModel.FileName = fileName;
 
