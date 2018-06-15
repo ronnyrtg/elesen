@@ -28,8 +28,15 @@
         }
     }
 
-
-
+    string individualLoc = string.Empty;
+    if(Model.Individual == null || Model.Individual.IndividualID == 0)
+    {
+        individualLoc = Model.TempIndividualLoc;
+    }
+    else
+    {
+        individualLoc = Model.Individual.IndividualID.ToString("D6");
+    }
 }
 
 <div id="divMessage"></div>
@@ -61,14 +68,14 @@
                             Gambar :
                         </div>
                         @if (profilePic != null && profilePic !="")
-                        {
+                            {
                             int value = Model.Individual.IndividualID;
                             string text = value.ToString("D6");
-                            <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
+                            <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
                         }
                         else
                         {
-                            <img class="img-thumbnail" width="150" src="~/images/member-default.jpg" />
+                            <img class="img-thumbnail" id="profilePic" width="150" src="~/images/member-default.jpg" />
                         }
                         <div class="row">
                             <div class="col-sm-3">
@@ -79,6 +86,7 @@
                             </div>
                         </div>
                         @Html.HiddenFor(m => m.Individual.AttachmentID)
+                        @Html.HiddenFor(m => m.TempIndividualLoc)
                     </div>
                 </div>
             </div>
@@ -209,6 +217,8 @@
                                     fileData.append(files[i].name, files[i]);
                                 }
 
+                                fileData.append('individualid', '@individualLoc');
+
                                 $.ajax({
                                     url: '@Url.Action("UploadFile", "Master")',
                                     type: "POST",
@@ -216,14 +226,13 @@
                                     processData: false, // Not to process data
                                     data: fileData,
                                     success: function (result) {
-                                        if (result.split('~').length > 1)
-                                        {
-                                            var r = result.split('~');
+                                        if (result.split('#').length > 1) {
+                                            var r = result.split('#');
                                             $("#Individual_AttachmentID").val(r[1]);
+                                            $("#profilePic").attr("src", r[2].replace('~','..'));
                                             alert(r[0]);
                                         }
-                                        else
-                                        {
+                                        else {
                                             alert(result);
                                         }
                                     },
