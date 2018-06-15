@@ -1,14 +1,4 @@
 ﻿@model TradingLicense.Model.IndividualModel
-@{
-    List<SelectListItem> nationalityList = new List<SelectListItem>();
-    nationalityList.Add(new SelectListItem { Text = "Warganegara", Value = "1" });
-    nationalityList.Add(new SelectListItem { Text = "Bukan Warganegara", Value = "2" });
-    nationalityList.Add(new SelectListItem { Text = "Penduduk Tetap", Value = "3" });
-
-    List<SelectListItem> genderList = new List<SelectListItem>();
-    genderList.Add(new SelectListItem { Text = "Lelaki", Value = "1" });
-    genderList.Add(new SelectListItem { Text = "Perempuan", Value = "2" });
-}
 
 <div id="divMessage"></div>
 <div class="card">
@@ -16,88 +6,78 @@
         <h4 id="headerTitle">Butir-butir Pemohon</h4>
     </div>
     <div class="body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr><td>Gambar:</td>
+                        <td>
+                            @if (Model.FileName != null)
+                            {
+                            <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@Model.FileName" />
+                            }
+                            else
+                            {
+                            <img class="img-thumbnail" width="150" src="~/images/member-default.jpg" />
+                            }
+                        </td>
+                    </tr>
+                    <tr><td>Nama Penuh:</td><td>@Model.FullName</td></tr>
+                    <tr><td>No. Kad Pengenalan/No. Pasport:</td><td>@Model.MykadNo</td></tr>
+                    <tr>
+                        <td>Warganegara:</td>
+                        <td>
+                            @switch (Model.NationalityID)
+                            {
+                                case 1:
+                                    <label>Warganegara</label>
+                                    break;
+                                case 2:
+                                    <label>Bukan Warganegara</label>
+                                    break;
+                                case 3:
+                                    <label>Penduduk Tetap</label>
+                                    break;
 
+                            }
+                        </td>
+                    </tr>
+                    <tr><td>Alamat:</td><td>@Model.AddressIC</td></tr>
+                    <tr><td>Email:</td><td>@Model.IndividualEmail</td></tr>
+                    <tr><td>Nombor Telefon:</td><td>@Model.PhoneNo</td></tr>
+                    <tr>
+                        <td>Jantina:</td>
+                        <td>
+                            @if (Model.Gender == 1)
+                            {
+                                <label>Lelaki</label>
+                            }
+                            else
+                            {
+                                <label>Perempuan</label>
+                            }
+                        </td>
+                    </tr>
+                    <tr><td>Status:</td>
+                        <td>
+                            @if (Model.Active)
+                            {
+                                <label>Aktif</label>
+                            }
+                            else
+                            {
+                                <label>Tidak Aktif</label>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> 
+        
+        
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.IndividualID)
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nama Pemohon</div>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">No. Kad Pengenalan/No. Pasport</div>
-                        @Html.TextBoxFor(m => m.MykadNo, new { @class = "form-control", @maxlength = "30", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Warganegara</div>
-                        @Html.DropDownListFor(m => m.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control", @readonly = "readonly" })
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Alamat</div>
-                        @Html.TextAreaFor(m => m.AddressIC, new { @class = "form-control", @maxlength = "200", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Email Individu</div>
-                        @Html.TextBoxFor(m => m.IndividualEmail, new { @class = "form-control", @maxlength = "200", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nombor Telefon</div>
-                        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control", @maxlength = "20", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Jantina</div>
-                        @Html.DropDownListFor(m => m.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control", @readonly = "readonly" })
-                    </div>
-                </div>
-            </div>
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    @Html.CheckBoxFor(model => model.Active, new { @disabled = "disabled" })
-                                    <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
         }
     </div>
 </div>

@@ -487,11 +487,11 @@ namespace TradingLicense.Web.Controllers
                                 {
                                     fname = file.FileName;
                                 }
-                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id)))
+                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id)))
                                 {
-                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id));
+                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id));
                                 }
-                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id), fname);
+                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id), fname);
                                 file.SaveAs(fname);
 
                             }

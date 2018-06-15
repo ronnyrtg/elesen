@@ -54,6 +54,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<SAReqDoc, SAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
                 cfg.CreateMap<HAReqDoc, HAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
                 cfg.CreateMap<LAReqDoc, LAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+                cfg.CreateMap<Individual, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.Attachment.FileName));
 
             });
         }

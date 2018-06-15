@@ -366,8 +366,8 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Reporting",CrudLevel=4,RoleTemplateID=8,ScreenId=7},
 
                 new AccessPage {PageDesc="Individual",CrudLevel=0,RoleTemplateID=1,ScreenId=8},
-                new AccessPage {PageDesc="Individual",CrudLevel=2,RoleTemplateID=2,ScreenId=8},
-                new AccessPage {PageDesc="Individual",CrudLevel=2,RoleTemplateID=3,ScreenId=8},
+                new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=2,ScreenId=8},
+                new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=3,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=4,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=3,RoleTemplateID=5,ScreenId=8},
                 new AccessPage {PageDesc="Individual",CrudLevel=4,RoleTemplateID=6,ScreenId=8},
