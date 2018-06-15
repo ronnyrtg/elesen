@@ -35,6 +35,7 @@ namespace TradingLicense.Model
         public string IndividualEmail { get; set; }
         [Display(Name = "Gambar")]
         public int AttachmentID { get; set; }
+        public string FileName { get; set; }
         [Display(Name = "Gender")]
         public int Gender { get; set; }
 

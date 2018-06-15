@@ -40,5 +40,6 @@ namespace TradingLicense.Entities
             Active = true;
         }
 
+        public virtual Attachment Attachment { get; set; }
     }
 }

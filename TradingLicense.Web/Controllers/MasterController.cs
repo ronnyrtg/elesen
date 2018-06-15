@@ -993,16 +993,17 @@ namespace TradingLicense.Web.Controllers
                         fname = file.FileName;
                     }
 
-                    if (IsAttachmentDuplicate(fname))
-                    {
-                        return Json("File Name is already exist in the database.");
-                    }
-
                     var fileName = fname;
+                    var individualIdLoc = Request.Params["individualid"];
 
-                    fname = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), fname);
+                    var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                    individualUploadPath = Path.Combine(individualUploadPath, individualIdLoc);
+                    if (!Directory.Exists(individualUploadPath))
+                    {
+                        Directory.CreateDirectory(individualUploadPath);
+                    }
+                    fname = Path.Combine(individualUploadPath, fname);
                     file.SaveAs(fname);
-
 
                     attachmentModel.FileName = fileName;
 
@@ -1014,7 +1015,8 @@ namespace TradingLicense.Web.Controllers
                         attachmentID = attachment.AttachmentID;
                     }
 
-                    return Json("File Uploaded Successfully!~" + attachmentID.ToString());
+                    return Json("File Uploaded Successfully!#" + attachmentID.ToString() + "#" 
+                        + TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + individualIdLoc + "/" + fileName);
                 }
                 catch (Exception ex)
                 {
@@ -1799,6 +1801,15 @@ namespace TradingLicense.Web.Controllers
                     {
                         ctx.SaveChanges();
                         individualId = Individual.IndividualID;
+
+                        //change Profile Pic upload location
+                        var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                        var individualTempUploadPath = Path.Combine(individualUploadPath, model.TempIndividualLoc);
+                        var individualActualUploadPath = Path.Combine(individualUploadPath, individualId.ToString("D6"));
+                        if (Directory.Exists(individualUploadPath))
+                        {
+                            Directory.Move(individualTempUploadPath, individualActualUploadPath);
+                        }
                     }
                     else
                     {
@@ -1810,17 +1821,19 @@ namespace TradingLicense.Web.Controllers
 
                     List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
 
-                    foreach (string id in model.CompanyIds.Split(',').ToList())
+                    if (model.CompanyIds != null)
                     {
-                        IndLinkCom LinkedCompany = new IndLinkCom()
+                        foreach (string id in model.CompanyIds.Split(',').ToList())
                         {
-                            IndividualID = individualId,
-                            CompanyID = int.Parse(id)
-                        };
+                            IndLinkCom LinkedCompany = new IndLinkCom()
+                            {
+                                IndividualID = individualId,
+                                CompanyID = int.Parse(id)
+                            };
 
-                        LinkedCompanies.Add(LinkedCompany);
+                            LinkedCompanies.Add(LinkedCompany);
+                        }
                     }
-
                     ctx.IndLinkComs.AddRange(LinkedCompanies);
 
                     ctx.SaveChanges();

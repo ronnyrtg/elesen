@@ -487,11 +487,11 @@ namespace TradingLicense.Web.Controllers
                                 {
                                     fname = file.FileName;
                                 }
-                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id)))
+                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id)))
                                 {
-                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id));
+                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id));
                                 }
-                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + scope_id), fname);
+                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id), fname);
                                 file.SaveAs(fname);
 
                             }
@@ -645,6 +645,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
+                    
+                    List<BAReqDoc> lstToDelete = ctx.BAReqDocs.ToList().Except(lstBarReqDoc).ToList();
+                    foreach (var v in lstToDelete)
+                    {
+                        ctx.BAReqDocs.Remove(v);
+                        ctx.SaveChanges();
+                    }
                     foreach (var item in lstBarReqDoc)
                     {
                         var DocCnt = ctx.BAReqDocs.Where(x => x.RequiredDocID == item.RequiredDocID).Count();
@@ -655,7 +662,7 @@ namespace TradingLicense.Web.Controllers
                             BAReqDoc.RequiredDocID = item.RequiredDocID;
                             ctx.BAReqDocs.AddOrUpdate(BAReqDoc);
                             ctx.SaveChanges();
-                        }
+                        }                       
                     }
                 }
 
