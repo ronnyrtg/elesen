@@ -8,7 +8,6 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int PremiseApplicationID { get; set; }
-        public int IndividualID { get; set; }
         public int Mode { get; set; }
         public int SectorID { get; set; }
         public int BusinessTypeID { get; set; }
@@ -31,13 +30,7 @@ namespace TradingLicense.Entities
         public string PcodeA { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
-        public string AreaA { get; set; }
-        [StringLength(30)]
-        [Column(TypeName = "VARCHAR2")]
-        public string TownA { get; set; }
-        [StringLength(50)]
-        [Column(TypeName = "VARCHAR2")]
-        public string DistrictA { get; set; }
+        public string StateA { get; set; }
         public int PremiseOwnership { get; set; }
         public float PremiseArea { get; set; }
         public DateTime StartRent { get; set; }
@@ -57,6 +50,12 @@ namespace TradingLicense.Entities
         //User that creates the application, either Public user or Desk Officer
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
+        
+        //Constructors
+        public PremiseApplication()
+        {
+            StateA = "Wilayah Persekutuan Labuan";   
+        }
 
         public virtual PremiseType PremiseType { get; set; }
         public virtual Individual Individual { get; set; }

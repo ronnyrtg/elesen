@@ -16,15 +16,12 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila pilih Syarikat")]
         public int CompanyID { get; set; }
         [Required(ErrorMessage = "Sila pilih nama pemohon")]
-        public int IndividualID { get; set; }
         public string Addra1 { get; set; }
         public string Addra2 { get; set; }
         public string Addra3 { get; set; }
         public string Addra4 { get; set; }
         public string PcodeA { get; set; }
-        public string AreaA { get; set; }
-        public string TownA { get; set; }
-        public string DistrictA { get; set; }
+        public string StateA { get; set; }
         [Required(ErrorMessage = "Sila pilih pemilikan premis")]
         public int PremiseOwnership { get; set; }
         public DateTime StartRent { get; set; }

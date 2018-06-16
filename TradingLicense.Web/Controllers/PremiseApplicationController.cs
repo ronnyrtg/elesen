@@ -93,7 +93,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseApplication> query = ((ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications).Where(pa => pa.IndividualID == individualId);
+                IQueryable<PremiseApplication> query = ((ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications);
 
                 #region Sorting
                 // Sorting
@@ -932,14 +932,6 @@ namespace TradingLicense.Web.Controllers
                             if (item.Addra4 != null)
                             {
                                 Add2 = Add2 + item.Addra4;
-                            }
-                            if (item.AreaA != null)
-                            {
-                                Add3 = Add3 + item.AreaA + ",";
-                            }
-                            if (item.TownA != null)
-                            {
-                                Add3 = Add3 + item.TownA + ",";
                             }
                             if (item.PcodeA != null)
                             {
