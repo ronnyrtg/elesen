@@ -818,8 +818,6 @@ namespace TradingLicense.Web.Controllers
                     {
                         foreach (var item in PremiseApp)
                         {
-
-
                             int Lineheight = 10;
                             PdfDocument pdf = new PdfDocument();
                             pdf.Info.Title = "PDF Letter";
@@ -958,6 +956,8 @@ namespace TradingLicense.Web.Controllers
                             int cnt = 1;
                             foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == AppId))
                             {
+                                if(Convert.ToInt32(item1.BusinessCodeID) > 0)
+                                { 
                                 foreach (var item2 in ctx.BusinessCodes.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
                                 {
                                     {
@@ -970,7 +970,7 @@ namespace TradingLicense.Web.Controllers
                                         }
 
                                     }
-
+                                    }
                                 }
                             }
                             Lineheight = Lineheight + 20;
@@ -980,6 +980,8 @@ namespace TradingLicense.Web.Controllers
                             cnt = 1;
                             foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == AppId))
                             {
+                                if(Convert.ToInt32(item3.IndividualID) > 0)
+                                { 
                                 foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
                                 {
                                     {
@@ -996,7 +998,7 @@ namespace TradingLicense.Web.Controllers
                                             Lineheight = Lineheight + 15;
                                         }
                                     }
-
+                                    }
                                 }
                             }
                             Lineheight = Lineheight + 20;
@@ -1104,6 +1106,8 @@ namespace TradingLicense.Web.Controllers
                             cnt = 1;
                             foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == AppId))
                             {
+                                if(Convert.ToInt32(item3.IndividualID)> 0 )
+                                { 
                                 foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
                                 {
                                     {
@@ -1118,7 +1122,7 @@ namespace TradingLicense.Web.Controllers
                                             Lineheight = Lineheight + 35;
                                         }
                                     }
-
+                                    }
                                 }
                             }
 
@@ -1128,6 +1132,7 @@ namespace TradingLicense.Web.Controllers
                             {
                                 foreach (var item2 in ctx.BCLinkDeps.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
                                 {
+                                    if (Convert.ToInt32(item2.DepartmentID) > 0)
                                     {
                                         foreach (var item3 in ctx.Departments.Where(x => x.DepartmentID == item2.DepartmentID))
                                         {
@@ -1141,7 +1146,6 @@ namespace TradingLicense.Web.Controllers
                                             }
                                         }
                                     }
-
                                 }
                             }
                             Lineheight = Lineheight + 10;
@@ -1185,9 +1189,9 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter! '" + ex.Message.ToString().Replace("'","") + ");</script>");
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
