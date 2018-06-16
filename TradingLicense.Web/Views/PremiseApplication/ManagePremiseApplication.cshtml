@@ -8,13 +8,19 @@
 
 
 @{
-    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
-    List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
-    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var businessType = ctx.BusinessTypes.ToList();
-        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+    List<TradingLicense.Model.BusinessTypeModel>
+    businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>
+        ();
+        List<TradingLicense.Model.SectorModel>
+            sectorsList = new List<TradingLicense.Model.SectorModel>
+                ();
+                List<TradingLicense.Model.CompanyModel>
+                    companiesList = new List<TradingLicense.Model.CompanyModel>
+                        ();
+                        using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+                        {
+                        var businessType = ctx.BusinessTypes.ToList();
+                        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
 
         var sectors = ctx.Sectors.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
@@ -174,21 +180,21 @@
                         @Html.TextBoxFor(m => m.PcodeA, new { @class = "form-control" })
                     </div>
                 </div>
-            
+
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Kawasan<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.AreaA, new { @class = "form-control" })
                     </div>
                 </div>
-            
+
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Bandar<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.TownA, new { @class = "form-control" })
                     </div>
                 </div>
-           
+
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Daerah<span class="cfont">*</span></div>
@@ -218,11 +224,11 @@
             <div class="row">
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
- 
+
                         <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.StartRent, new { @class = "date-picker"})
                         @Html.ValidationMessageFor(m => m.StartRent)
-                       
+
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-3">
@@ -257,7 +263,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
@@ -285,7 +291,7 @@
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
-                            <input type="submit" class="btn btn-primary btSubmit" value="Generate Letter"  name="btnSubmit" />
+                            <input type="button"  class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter"  name="btnSubmit" />
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
 
@@ -434,10 +440,31 @@
                 </div>
             </div>
         }
-       
+
     </div>
 </div>
+                                                            
+      <div id="myModal" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-lg">
 
+              <!-- Modal content-->
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Letter Details</h4>
+                  </div>
+                  <div class="modal-body">
+                      <p><iframe id="ifrm" src="" height="500" width="850"  frameborder="0"></iframe></p>
+
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+              </div>
+
+          </div>
+      </div>
+                                                            
 <style type="text/css">
     label.error {
         color: red;
@@ -461,11 +488,11 @@
 
     var requiredDocList = [];
     var addtionalDocList = [];
-    var selectedMode = @ViewBag.SelectedMode;
+    var selectedMode = '@ViewBag.SelectedMode';
 
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
-         errorMessage(actionError);
+        errorMessage(actionError);
     }
 
     $(function () {
@@ -477,217 +504,222 @@
             successMessage(success);
         }
 
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
         visibleGridUploadColume = true;
-            if (userRollTemplate > 1) {
-                visibleGridColume = true;
-            }
+        if (userRollTemplate > 1) {
+            visibleGridColume = true;
+        }
 
-            $("#businessCodeList").select2();
-            $("#individualList").select2();
-            $("#companyList").select2({
-                placeholder: "Pilih Syarikat"
-            });
+        $("#businessCodeList").select2();
+        $("#individualList").select2();
+        $("#companyList").select2({
+            placeholder: "Pilih Syarikat"
+        });
 
-            AddRules();
+        AddRules();
 
-            function formatBusinessCodes(data) {
-                var r = data.text.split('~');
-                var $result = $(
-                    '<div class="row">' +
-                        '<div class="col-md-2">' + r[1] + '</div>' +
-                        '<div class="col-md-10">' + r[0] + '</div>' +
-                    '</div>'
-                );
-                return $result;
-            }
+        function formatBusinessCodes(data) {
+            var r = data.text.split('~');
+            var $result = $(
+                '<div class="row">' +
+                    '<div class="col-md-2">' + r[1] + '</div>' +
+                    '<div class="col-md-10">' + r[0] + '</div>' +
+                '</div>'
+            );
+            return $result;
+        }
 
-            function formatSelectionBusinessCodes(data) {
-                var r = data.text.split('~');
-                var $result = $(
-                    '<span>' +
-                        r[1] + ' | '  + r[0] +
-                    '</span>'
-                );
-                return $result;
-            }
+        function formatSelectionBusinessCodes(data) {
+            var r = data.text.split('~');
+            var $result = $(
+                '<span>' +
+                    r[1] + ' | '  + r[0] +
+                '</span>'
+            );
+            return $result;
+        }
 
-            $("#businessCodeList").select2({
-                placeholder: "Search for a Business Code",
-                minimumInputLength: 0,
-                templateResult: formatBusinessCodes,
-                templateSelection: formatSelectionBusinessCodes,
-                ajax: {
-                    type: "POST",
-                    url: encodeURI('@Url.Action("FillBusinessCode", "PremiseApplication")'),
-                    //Data: allows us to pass a parameter to the controller
-                    data: function (query) {
-                        //console.log(query)
-                        return {
-                            query: query.term,
-                            selectedMode: selectedMode,
-                            selectedSector:  $("#SectorID").val()
-                        }
-                    },
-                    //processes the results from the JSON method and gives us the select list
-                    processResults: function (data) {
-                        //console.log(data)
-                        return {
-                            results: data
-                        };
-                    }
-                }
-            });
-
-            $("#businessCodeList").on('select2:select', function(e) {
-                var data = e.params.data;
-                selectedMode = data.mode;
-            });
-
-            $("#businessCodeList").on('select2:unselect', function(e) {
-                if(!$("#businessCodeList").val()) {
-                    selectedMode = 0;
-                }
-            });
-
-            function showIndividualModal(data) {
-                $('#modalUpdateIndividual').off('click');
-                $('#modalUpdateIndividual').on('click', function() {
-                    data.fullName = $('#newIndividualFullName').val();
-                    data.passportNo = $('#newIndividualPassport').val();
-                    $("#individualList").trigger('change');
-                    $('#editIndividual').modal('hide');
-                });
-                $('#newIndividualFullName').val(data.fullName);
-                $('#newIndividualPassport').val(data.passportNo);
-                $('#editIndividual').modal('show');
-            }
-
-            function individualFormating(state) {
-                if (!state.isNew) {
-                    return state.text;
-                }
-
-                state.text = state.fullName + ' (' + state.passportNo +')';
-                var $state = $(
-                  '<span>' + state.text +'&nbsp;</span>'
-                );
-                if(state.isNew) {
-                    var editLink = $(' <a href="javascript:void(0);">Edit</a>');
-                    editLink.on('click', function() {
-                        showIndividualModal(state);
-                    });
-                    $state.append(editLink);
-                }
-                return $state;
-            }
-
-             $("#individualList").select2({
-                placeholder: "Select Full Name or Mykad/Passport No",
-                minimumInputLength: 2,
-                tags: true,
-                tokenSeparators: [';'],
-                templateSelection: individualFormating,
-                createTag: function (params) {
-                    var term = params.term;
-                    var indexOfPassport = term.indexOf('(');
-                    var fullName= '';
-                    var passportNo = '';
-                    if(indexOfPassport > 0) {
-                        var endIndex = term.indexOf(')', indexOfPassport);
-                        passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
-                        fullName = term.substring(0, indexOfPassport);
-                    } else {
-                        fullName = term;
-                    }
-
+        $("#businessCodeList").select2({
+            placeholder: "Search for a Business Code",
+            minimumInputLength: 0,
+            templateResult: formatBusinessCodes,
+            templateSelection: formatSelectionBusinessCodes,
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillBusinessCode", "PremiseApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
                     return {
-                        id: term,
-                        text: fullName + ' (' + passportNo +')',
-                        fullName: fullName,
-                        passportNo: passportNo,
-                        isNew: true
-                    };
-                },
-                ajax: {
-                    type: "POST",
-                    url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
-                    //Data: allows us to pass a parameter to the controller
-                    data: function (query) {
-                        //console.log(query)
-                        return { query: query.term }
-                    },
-                    //processes the results from the JSON method and gives us the select list
-                    processResults: function (data) {
-                        //console.log(data)
-                        return {
-                            results: data
-                        };
+                        query: query.term,
+                        selectedMode: selectedMode,
+                        selectedSector:  $("#SectorID").val()
                     }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
                 }
-             });
-
-            var businessSelecteId = [];
-            if ('@Model.BusinessCodeids' != null && '@Model.BusinessCodeids' != '') {
-                var BussinessCodeIds = '@Model.BusinessCodeids';
-
-                var arr = BussinessCodeIds.split(',');
-                $.each(arr, function (index, value) {
-                    businessSelecteId.push(value);
-                });
-                $('#businessCodeList').val(businessSelecteId);
-                $('#businessCodeList').trigger('change');
-            } else {
-                businessSelecteId = [];
             }
+        });
 
-            var individualSelecteId = [];
-            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
-                var individualIds = '@Model.Individualids';
+        $("#businessCodeList").on('select2:select', function(e) {
+            var data = e.params.data;
+            selectedMode = data.mode;
+        });
 
-                var arr = individualIds.split(',');
-                $.each(arr, function (index, value) {
-                    individualSelecteId.push(value);
-                });
-                $('#individualList').val(individualSelecteId);
-                $('#individualList').trigger('change');
-            } else {
-                individualSelecteId = [];
+        $("#businessCodeList").on('select2:unselect', function(e) {
+            if(!$("#businessCodeList").val()) {
+                selectedMode = 0;
             }
+        });
 
-           if(@Model.BusinessTypeID >0)
-           {
-               $("#BusinessTypeID").val(@Model.BusinessTypeID);
-               bindTable();
-           }
-
-            if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
-
-                var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
-
-                var arr = UploadRequiredDocumentlist.split(',');
-                $.each(arr, function (index, value) {
-                    requiredDocList.push(value);
-                });
-            }
-
-            if ('@Model.UploadAdditionalDocids' != null && '@Model.UploadAdditionalDocids' != '') {
-
-                var UploadAdditionalDocumentlist = '@Model.UploadAdditionalDocids';
-
-                var arr = UploadAdditionalDocumentlist.split(',');
-                $.each(arr, function (index, value) {
-                    addtionalDocList.push(value);
-                });
-            }
-
-            $("#preAppid").val(@Model.PremiseApplicationID);
-
-            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
-                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
-                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-                    event.preventDefault();
-                }
+        function showIndividualModal(data) {
+            $('#modalUpdateIndividual').off('click');
+            $('#modalUpdateIndividual').on('click', function() {
+                data.fullName = $('#newIndividualFullName').val();
+                data.passportNo = $('#newIndividualPassport').val();
+                $("#individualList").trigger('change');
+                $('#editIndividual').modal('hide');
             });
+            $('#newIndividualFullName').val(data.fullName);
+            $('#newIndividualPassport').val(data.passportNo);
+            $('#editIndividual').modal('show');
+        }
+
+        function individualFormating(state) {
+            if (!state.isNew) {
+                return state.text;
+            }
+
+            state.text = state.fullName + ' (' + state.passportNo +')';
+            var $state = $(
+              '<span>' + state.text +'&nbsp;</span>'
+            );
+            if(state.isNew) {
+                var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                editLink.on('click', function() {
+                    showIndividualModal(state);
+                });
+                $state.append(editLink);
+            }
+            return $state;
+        }
+
+        $("#individualList").select2({
+            placeholder: "Select Full Name or Mykad/Passport No",
+            minimumInputLength: 2,
+            tags: true,
+            tokenSeparators: [';'],
+            templateSelection: individualFormating,
+            createTag: function (params) {
+                var term = params.term;
+                var indexOfPassport = term.indexOf('(');
+                var fullName= '';
+                var passportNo = '';
+                if(indexOfPassport > 0) {
+                    var endIndex = term.indexOf(')', indexOfPassport);
+                    passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                    fullName = term.substring(0, indexOfPassport);
+                } else {
+                    fullName = term;
+                }
+
+                return {
+                    id: term,
+                    text: fullName + ' (' + passportNo +')',
+                    fullName: fullName,
+                    passportNo: passportNo,
+                    isNew: true
+                };
+            },
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return { query: query.term }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
+
+        var businessSelecteId = [];
+        if ('@Model.BusinessCodeids' != null && '@Model.BusinessCodeids' != '') {
+            var BussinessCodeIds = '@Model.BusinessCodeids';
+
+            var arr = BussinessCodeIds.split(',');
+            $.each(arr, function (index, value) {
+                businessSelecteId.push(value);
+            });
+            $('#businessCodeList').val(businessSelecteId);
+            $('#businessCodeList').trigger('change');
+        } else {
+            businessSelecteId = [];
+        }
+
+        var individualSelecteId = [];
+        if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
+            var individualIds = '@Model.Individualids';
+
+            var arr = individualIds.split(',');
+            $.each(arr, function (index, value) {
+                individualSelecteId.push(value);
+            });
+            $('#individualList').val(individualSelecteId);
+            $('#individualList').trigger('change');
+        } else {
+            individualSelecteId = [];
+        }
+
+        if(@Model.BusinessTypeID >0)
+        {
+            $("#BusinessTypeID").val(@Model.BusinessTypeID);
+            bindTable();
+        }
+
+        if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+            var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+            var arr = UploadRequiredDocumentlist.split(',');
+            $.each(arr, function (index, value) {
+                requiredDocList.push(value);
+            });
+        }
+
+        if ('@Model.UploadAdditionalDocids' != null && '@Model.UploadAdditionalDocids' != '') {
+
+            var UploadAdditionalDocumentlist = '@Model.UploadAdditionalDocids';
+
+            var arr = UploadAdditionalDocumentlist.split(',');
+            $.each(arr, function (index, value) {
+                addtionalDocList.push(value);
+            });
+        }
+
+        $("#preAppid").val(@Model.PremiseApplicationID);
+
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
     });
 
     function frmSubmit(isdraft) {
@@ -700,50 +732,50 @@
 
         RequiredDocument();
 
-            if (!$("#frmPremiseApplication").valid()) {
-                return false;
-            }else if ($('#BusinessCodeids').val() == "") {
-                alert("Please select Business Code");
-                return false;
-            }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
-                alert("Please select Mykad/Passport No");
-                return false;
-            } else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) {
-                alert("Please Upload all Required Document");
-                return false;
-            }
-            else if (userRollTemplate == 1 && isdraft && $('.lableadddocument').length != addtionalDocList.length) {
-                alert("Please Upload all Additional Document");
-                return false;
-            }
-            else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
-                alert("Please select all checkbox for Required Document");
-                return false;
-            }else if (userRollTemplate > 1 && $('.chkAdddoc:checked').length != $('.chkAdddoc').length){
-                alert("Please select all checkbox for Additional Document");
-                return false;
-            }else {
-                var individuals = $("#individualList").select2('data');
-                if (individuals) {
-                    var newIndividuals = [];
-                    for(var i =0; i< individuals.length; i++) {
-                        var ind = individuals[i];
-                        if(ind.isNew) {
-                            newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
-                        }
-                    }
-                    if(newIndividuals.length >0) {
-                        $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+        if (!$("#frmPremiseApplication").valid()) {
+            return false;
+        }else if ($('#BusinessCodeids').val() == "") {
+            alert("Please select Business Code");
+            return false;
+        }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
+            alert("Please select Mykad/Passport No");
+            return false;
+        } else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+            alert("Please Upload all Required Document");
+            return false;
+        }
+        else if (userRollTemplate == 1 && isdraft && $('.lableadddocument').length != addtionalDocList.length) {
+            alert("Please Upload all Additional Document");
+            return false;
+        }
+        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
+            alert("Please select all checkbox for Required Document");
+            return false;
+        }else if (userRollTemplate > 1 && $('.chkAdddoc:checked').length != $('.chkAdddoc').length){
+            alert("Please select all checkbox for Additional Document");
+            return false;
+        }else {
+            var individuals = $("#individualList").select2('data');
+            if (individuals) {
+                var newIndividuals = [];
+                for(var i =0; i< individuals.length; i++) {
+                    var ind = individuals[i];
+                    if(ind.isNew) {
+                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
                     }
                 }
-                $("#frmPremiseApplication").submit();
+                if(newIndividuals.length >0) {
+                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                }
             }
+            $("#frmPremiseApplication").submit();
+        }
     }
 
     function changeBussinesscode() {
-            $('#BusinessCodeids').val($('#businessCodeList').val());
-            bindAdditionalTable();
-            checkButtonState();
+        $('#BusinessCodeids').val($('#businessCodeList').val());
+        bindAdditionalTable();
+        checkButtonState();
     }
 
     function changeIndindividual() {
@@ -766,7 +798,7 @@
 
     function businessTypeChange() {
         if ($("#BusinessTypeID").val() > 0) {
-             bindTable();
+            bindTable();
         }
         checkButtonState();
     }
@@ -793,84 +825,84 @@
 
     function bindTable() {
 
-            $('#RequiredDocument').show();
-            if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
-                $('#tblBusinessType').dataTable().fnDestroy();
-            }
+        $('#RequiredDocument').show();
+        if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+            $('#tblBusinessType').dataTable().fnDestroy();
+        }
 
-            table = $("#tblBusinessType").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("RequiredDocument", "PremiseApplication")',
-                    type: "POST",
-                    data: bindSearch()
+        table = $("#tblBusinessType").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": false,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("RequiredDocument", "PremiseApplication")',
+                type: "POST",
+                data: bindSearch()
+            },
+            "columns": [
+                {
+                    "title": "Disertakan?",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate > 1) {
+                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                        }
+                        return appendstring
+                    },
+                    width: "7%",
+                    "orderable": false,
+                    "visible": visibleGridColume,
                 },
-                "columns": [
-                    {
-                        "title": "Disertakan?",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridColume,
+                { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
+                {
+                    "title": "Muat Naik",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate == 1) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        }
+                        else if (userRollTemplate > 2) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        }
+                        return appendstring
                     },
-                    { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
-                    {
-                        "title": "Muat Naik",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridUploadColume,
-                    },
-                    {
-                        "title": "Nama Fail",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
+                    width: "7%",
+                    "orderable": false,
+                    "visible": visibleGridUploadColume,
+                },
+                {
+                    "title": "Nama Fail",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
 
-                            if (visibleGridUploadColume) {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
-                                }
+                        if (visibleGridUploadColume) {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
 
                             } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
                             }
-                            return appendstring
-                        },
-                        "orderable": false,
-                    }
-                ]
+
+                        } else {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                            } else {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                            }
+                        }
+                        return appendstring
+                    },
+                    "orderable": false,
+                }
+            ]
         });
     }
 
@@ -895,79 +927,79 @@
         }
 
         table = $("#tblAdditional").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("AdditionalDocument", "PremiseApplication")',
-                    type: "POST",
-                    data: bindSearchAdditional()
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": false,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("AdditionalDocument", "PremiseApplication")',
+                type: "POST",
+                data: bindSearchAdditional()
+            },
+            "columns": [
+                {
+                    "title": "Action",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate > 1) {
+                            appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["AdditionalDocID"] + '"> <input id="chkAdddoc_' + row["AdditionalDocID"] + '" value="' + row["AdditionalDocID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                        }
+                        return appendstring
+                    },
+                    "orderable": false,
+                    width: "7%",
+                    "visible": visibleGridColume,
                 },
-                "columns": [
-                    {
-                        "title": "Action",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate > 1) {
-                               appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["AdditionalDocID"] + '"> <input id="chkAdddoc_' + row["AdditionalDocID"] + '" value="' + row["AdditionalDocID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
-                            }
-                            return appendstring
-                        },
-                        "orderable": false,
-                         width: "7%",
-                        "visible": visibleGridColume,
+                { "title": "Additional Document", "data": "DocDesc", "orderable": false },
+                {
+                    "title": "Action",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate == 1) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        } else if (userRollTemplate > 2) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        }
+                        return appendstring
                     },
-                    { "title": "Additional Document", "data": "DocDesc", "orderable": false },
-                    {
-                        "title": "Action",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            } else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        "orderable": false,
-                        width: "7%",
-                        "visible": visibleGridUploadColume,
-                    },
-                    {
-                        "title": "File Name",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
+                    "orderable": false,
+                    width: "7%",
+                    "visible": visibleGridUploadColume,
+                },
+                {
+                    "title": "File Name",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
 
-                            if (visibleGridUploadColume) {
+                        if (visibleGridUploadColume) {
 
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> </label> </a>';
-                                }
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
 
                             } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> </label> </a>';
                             }
 
-                            return appendstring
-                        },
-                        "orderable": false,
-                    }
-                ]
+                        } else {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                            } else {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                            }
+                        }
+
+                        return appendstring
+                    },
+                    "orderable": false,
+                }
+            ]
         });
     }
 
@@ -1009,182 +1041,182 @@
             }
         });
         $("#AdditionalDocIds").val(AdditionalArray);
-     }
-
-    function RequiredDocumentModel(Requiredid) {
-            $("#reqDocid").val(Requiredid);
-            $("#addDocid").val("0");
-            $('#isReqDoc').val("1");
-            $('#uploadDocumentModal').modal('show');
-        }
-
-    function AdditionalModel(Additionalid) {
-            $("#reqDocid").val("0");
-            $("#addDocid").val(Additionalid);
-            $('#isReqDoc').val("0");
-            $('#uploadDocumentModal').modal('show');
-        }
-
-        var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
-        var _validFileExtensions = [];
-        _validFileExtensions = strValidateFileFormate.split(",");
-
-        function UploadDocument(){
-
-            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
-
-                var data = new FormData();
-                var files = $("#DocumentFile").get(0).files;
-
-                if (files.length > 0) {
-                    data.append("DocumentFile", files[0]);
-                }
-
-                data.append("PremiseApplicationID", @Model.PremiseApplicationID);
-                data.append("reqDocid", $("#reqDocid").val());
-                data.append("addDocid", $("#addDocid").val());
-                data.append("isReqDoc", $("#isReqDoc").val());
-
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("UploadDocument", "PremiseApplication")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#DocumentFile").val("");
-                            if (result.status == 1) {
-                                successMessage(result.message);
-
-                                if ($("#isReqDoc").val() > 0) {
-                                    bindTable();
-                                } else {
-                                    bindAdditionalTable();
-                                }
-                            }
-                            else {
-                                errorMessage(result.message);
-                            }
-                        }
-                        $("#uploadDocumentModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
-                    }
-                });
-
-        } else {
-                alert("Please Select Valid File");
-            }
     }
 
-     function UploadAttechment(){
+    function RequiredDocumentModel(Requiredid) {
+        $("#reqDocid").val(Requiredid);
+        $("#addDocid").val("0");
+        $('#isReqDoc').val("1");
+        $('#uploadDocumentModal').modal('show');
+    }
 
-            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+    function AdditionalModel(Additionalid) {
+        $("#reqDocid").val("0");
+        $("#addDocid").val(Additionalid);
+        $('#isReqDoc').val("0");
+        $('#uploadDocumentModal').modal('show');
+    }
 
-                var data = new FormData();
-                var files = $("#DocumentFile").get(0).files;
+    var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
+    var _validFileExtensions = [];
+    _validFileExtensions = strValidateFileFormate.split(",");
 
-                if (files.length > 0) {
-                    data.append("DocumentFile", files[0]);
-                }
+    function UploadDocument(){
 
-                data.append("reqDocid", $("#reqDocid").val());
-                data.append("addDocid", $("#addDocid").val());
-                data.append("isReqDoc", $("#isReqDoc").val());
+        if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
 
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("UploadAttechment", "PremiseApplication")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#DocumentFile").val("");
-                            if (result.status == 1) {
-                                successMessage("Document Upload Successfully");
+            var data = new FormData();
+            var files = $("#DocumentFile").get(0).files;
 
-                                console.log(result.result);
-                                if ($("#isReqDoc").val() > 0) {
-                                    var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
-                                    $('.lablereqdocument').each(function () {
-                                        if ($(this).attr('id') == lblreqAttachment) {
-                                            $("#" + lblreqAttachment).html(result.result.AttachmentName);
-                                            RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
-                                        }
-                                    });
-                                } else {
-                                    var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
-                                    $('.lableadddocument').each(function () {
-                                        if ($(this).attr('id') == lbladdAttachment) {
-                                            $("#" + lbladdAttachment).html(result.result.AttachmentName);
-                                            AdditionalDocumentDublicateCheck(result.result.AdditionalDocID, result.result.AttachmentID)
-                                        }
-                                    });
-                                }
-                            }
-                            else {
-                                errorMessage(result.message);
+            if (files.length > 0) {
+                data.append("DocumentFile", files[0]);
+            }
+
+            data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+            data.append("reqDocid", $("#reqDocid").val());
+            data.append("addDocid", $("#addDocid").val());
+            data.append("isReqDoc", $("#isReqDoc").val());
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("UploadDocument", "PremiseApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#DocumentFile").val("");
+                        if (result.status == 1) {
+                            successMessage(result.message);
+
+                            if ($("#isReqDoc").val() > 0) {
+                                bindTable();
+                            } else {
+                                bindAdditionalTable();
                             }
                         }
-                        $("#uploadDocumentModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
+                        else {
+                            errorMessage(result.message);
+                        }
                     }
-                });
+                    $("#uploadDocumentModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
 
-            } else {
-                alert("Please Select Valid File");
+        } else {
+            alert("Please Select Valid File");
+        }
+    }
+
+    function UploadAttechment(){
+
+        if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+
+            var data = new FormData();
+            var files = $("#DocumentFile").get(0).files;
+
+            if (files.length > 0) {
+                data.append("DocumentFile", files[0]);
             }
+
+            data.append("reqDocid", $("#reqDocid").val());
+            data.append("addDocid", $("#addDocid").val());
+            data.append("isReqDoc", $("#isReqDoc").val());
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("UploadAttechment", "PremiseApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#DocumentFile").val("");
+                        if (result.status == 1) {
+                            successMessage("Document Upload Successfully");
+
+                            console.log(result.result);
+                            if ($("#isReqDoc").val() > 0) {
+                                var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
+                                $('.lablereqdocument').each(function () {
+                                    if ($(this).attr('id') == lblreqAttachment) {
+                                        $("#" + lblreqAttachment).html(result.result.AttachmentName);
+                                        RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
+                                    }
+                                });
+                            } else {
+                                var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
+                                $('.lableadddocument').each(function () {
+                                    if ($(this).attr('id') == lbladdAttachment) {
+                                        $("#" + lbladdAttachment).html(result.result.AttachmentName);
+                                        AdditionalDocumentDublicateCheck(result.result.AdditionalDocID, result.result.AttachmentID)
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            errorMessage(result.message);
+                        }
+                    }
+                    $("#uploadDocumentModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
+
+        } else {
+            alert("Please Select Valid File");
+        }
     }
 
     function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
         var itemfound = 0;
         var itemFoundbool = false;
 
-            for (var i = 0; i < requiredDocList.length; i++) {
-                var doc = requiredDocList[i].split(',');
-                var document = doc[0].split(':');
-                if (document[0] == RequiredDocID ) {
-                    itemfound = i;
-                    itemFoundbool = true;
-                    i = requiredDocList.length+1;
-                }
+        for (var i = 0; i < requiredDocList.length; i++) {
+            var doc = requiredDocList[i].split(',');
+            var document = doc[0].split(':');
+            if (document[0] == RequiredDocID ) {
+                itemfound = i;
+                itemFoundbool = true;
+                i = requiredDocList.length+1;
             }
-
-            if (itemFoundbool) {
-                requiredDocList.splice(itemfound, 1);
-            }
-
-            var requiredDocument = RequiredDocID + ":" + AttachmentID;
-            requiredDocList.push(requiredDocument);
         }
+
+        if (itemFoundbool) {
+            requiredDocList.splice(itemfound, 1);
+        }
+
+        var requiredDocument = RequiredDocID + ":" + AttachmentID;
+        requiredDocList.push(requiredDocument);
+    }
 
     function AdditionalDocumentDublicateCheck(AdditionalDocID, AttachmentID) {
         var itemfound = 0;
         var itemFoundbool = false;
 
-            for (var i = 0; i < addtionalDocList.length; i++) {
-                var doc = addtionalDocList[i].split(',');
-                var document = doc[0].split(':');
-                if (document[0] == AdditionalDocID) {
-                    itemfound = i;
-                    itemFoundbool = true;
-                    i = addtionalDocList.length + 1;
-                }
+        for (var i = 0; i < addtionalDocList.length; i++) {
+            var doc = addtionalDocList[i].split(',');
+            var document = doc[0].split(':');
+            if (document[0] == AdditionalDocID) {
+                itemfound = i;
+                itemFoundbool = true;
+                i = addtionalDocList.length + 1;
             }
+        }
 
-            if (itemFoundbool) {
-                addtionalDocList.splice(itemfound, 1);
-            }
+        if (itemFoundbool) {
+            addtionalDocList.splice(itemfound, 1);
+        }
 
-            var additionaDocument = AdditionalDocID + ":" + AttachmentID;
-            addtionalDocList.push(additionaDocument);
+        var additionaDocument = AdditionalDocID + ":" + AttachmentID;
+        addtionalDocList.push(additionaDocument);
     }
 
     function AddRules()
@@ -1199,25 +1231,25 @@
         });
     }
 
-        function Approvedreject(name) {
-            if (name == "approved") {
-                $("#lblapprovedreject").html("Approve");
-                $("#txtComment").rules("remove", "required");
-            }
-            else {
-                AddRules();
-                $("#lblapprovedreject").html("Reject");
-                $("#txtComment").rules("add", "required");
-            }
-            $("#lblheaderTitle").html("Add Comment");
-            $('#approvedrejectModal').modal('show');
+    function Approvedreject(name) {
+        if (name == "approved") {
+            $("#lblapprovedreject").html("Approve");
+            $("#txtComment").rules("remove", "required");
         }
+        else {
+            AddRules();
+            $("#lblapprovedreject").html("Reject");
+            $("#txtComment").rules("add", "required");
+        }
+        $("#lblheaderTitle").html("Add Comment");
+        $('#approvedrejectModal').modal('show');
+    }
 
-        function SaveComment() {
+    function SaveComment() {
 
-            if (!$("#frmsaveComment").valid()) {
-                return false;
-            } else {
+        if (!$("#frmsaveComment").valid()) {
+            return false;
+        } else {
 
             var data = new FormData();
             data.append("PremiseApplicationID", @Model.PremiseApplicationID);
@@ -1229,34 +1261,42 @@
                 data.append("approveRejectType", "Reject");
             }
 
-                 var ajaxRequest = $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("SaveComment", "PremiseApplication")',
-                        contentType: false,
-                        processData: false,
-                        data: data,
-                        async: false,
-                        success: function (result) {
-                            if (result != null) {
-                                $("#txtComment").val("");
-                                if (result.status == 1) {
-                                    successMessage(result.message);
-                                    back();
-                                }
-                                else {
-                                    errorMessage(result.message);
-                                }
-                            }
-                            $("#approvedrejectModal").modal('hide');
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            errorMessage(xhr.responseText);
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveComment", "PremiseApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#txtComment").val("");
+                        if (result.status == 1) {
+                            successMessage(result.message);
+                            back();
                         }
-                 });
+                        else {
+                            errorMessage(result.message);
+                        }
+                    }
+                    $("#approvedrejectModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
 
-            }
         }
+    }
+
+    $(document).ready(function () {
+        $('#btnLetter').click(function () {
+            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=1");
+            $('#myModal').modal('show');
+        });
+    });
+
 </script>
-                                                            
-                                                            
+
+
 }
