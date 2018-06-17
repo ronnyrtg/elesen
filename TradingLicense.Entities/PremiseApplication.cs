@@ -60,12 +60,6 @@ namespace TradingLicense.Entities
         public string LicenseStatus { get; set; }
         public DateTime ExpireDate { get; set; }
 
-        //Constructors
-        public PremiseApplication()
-        {
-            StateA = "Wilayah Persekutuan Labuan";   
-        }
-
         public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual BusinessType BusinessType { get; set; }

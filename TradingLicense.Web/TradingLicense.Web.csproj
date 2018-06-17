@@ -198,6 +198,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Pages\Actions.cs" />
     <Compile Include="Pages\Controllers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Reports\reportview.aspx.designer.cs">
       <DependentUpon>reportview.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DocumentService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-datepicker.css" />
