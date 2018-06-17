@@ -740,7 +740,51 @@ namespace TradingLicense.Data.Migrations
             entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();
 
-           
+            var btlinkreqdocs = new List<BTLinkReqDoc>
+            {
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=3},
+            };
+            btlinkreqdocs.ForEach(s => context.PALinkReqDocs.Add(s));
+            context.SaveChanges();
+
+            var bclinkads = new List<BCLinkAD>
+            {
+                new BCLinkAD {BusinessCodeID=1,AdditionalDocID=1},
+                new BCLinkAD {BusinessCodeID=1,AdditionalDocID=2},
+                new BCLinkAD {BusinessCodeID=2,AdditionalDocID=3},
+                new BCLinkAD {BusinessCodeID=2,AdditionalDocID=4},
+            };
+            bclinkads.ForEach(s => context.BCLinkAD.Add(s));
+            context.SaveChanges();
+
+            var bclinkdeps = new List<BCLinkDep>
+            {
+                new BCLinkDep {BusinessCodeID=132,DepartmentID=5},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=3},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=4},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=5},
+                new BCLinkDep {BusinessCodeID=2,DepartmentID=3},
+                new BCLinkDep {BusinessCodeID=2,DepartmentID=4},
+            };
+            bclinkdeps.ForEach(s => context.BCLinkDeps.Add(s));
+            context.SaveChanges();
         }
     }
 }

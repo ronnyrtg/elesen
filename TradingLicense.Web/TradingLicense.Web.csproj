@@ -325,6 +325,7 @@
       <DependentUpon>dsReport.xsd</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\elesen VPS.pubxml" />
+    <None Include="Properties\PublishProfiles\Mesrahosting.pubxml" />
     <None Include="Reports\dsReport.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
