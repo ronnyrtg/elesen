@@ -24,8 +24,6 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please enter period multiplier, default is 1")]
         public int PeriodQuantity { get; set; }
         [Required(ErrorMessage = "Sila pilih jenis kelulusan")]
-        [Display(Name = "Mode")]
-        public int Mode { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }

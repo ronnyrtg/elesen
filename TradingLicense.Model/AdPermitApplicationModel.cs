@@ -3,44 +3,43 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
-    public class LiquorApplicationModel
+    public class AdPermitApplicationModel
     {
-        public int LiquorApplicationID { get; set; }
-        public int Mode { get; set; }
-        [Required(ErrorMessage = "Sila pilih jenis perniagaan")]
+        public int AdPermitApplicationID { get; set; }
         public int BusinessTypeID { get; set; }
-        public int LiquorCodeID { get; set; }
-        [Required(ErrorMessage = "Please Select Mykad/Passport No")]
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
+        public int LenderApplicationID { get; set; }
+        public int Brochure { get; set; }
+        public int Newspaper { get; set; }
+        public int SignBoard { get; set; }
+        public int Radio { get; set; }
+        public int Internet { get; set; }
+        public int Television { get; set; }
+        public int VCD { get; set; }
+        public int Cinema { get; set; }
+        public int Others { get; set; }
+        public string SpecifyOthers { get; set; }
         public int AppStatusID { get; set; }
-        public string PreviousLicense { get; set; }
-        public DateTime? PrevLicDate { get; set; }
-        public DateTime? PrevLicExp { get; set; }
 
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
 
         public string UpdatedBy { get; set; }
-        public DateTime LastUpdated { get; set; }
         public DateTime DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
         public DateTime DatePaid { get; set; }
         public DateTime ExpireDate { get; set; }
 
-
         public string FullName { get; set; }
         public string MykadNo { get; set; }
-        public string BusinessTypeDesc { get; set; }
         public string CompanyName { get; set; }
+        public string BusinessTypeDesc { get; set; }
+        public string RegistrationNo { get; set; }
         public string CompanyPhone { get; set; }
         public string CompanyAddress { get; set; }
-        public string RegistrationNo { get; set; }
-        public DateTime SSMRegDate { get; set; }
-        public DateTime SSMExpDate { get; set; }
-        public string LCodeNumber { get; set; }
-        public string LiquorCodeDesc { get; set; }
-        public string DefaultHours { get; set; }
+        public string ReferenceNo { get; set; }
+        public DateTime LExpireDate { get; set; }
         public string RequiredDocIds { get; set; }
         public int UserRollTemplate { get; set; }
         public string StatusDesc { get; set; }

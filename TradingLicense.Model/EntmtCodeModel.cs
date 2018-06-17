@@ -16,7 +16,6 @@ namespace TradingLicense.Model
         public string ObjectName { get; set; }
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
-        public int Mode { get; set; }
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
 

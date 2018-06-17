@@ -8,10 +8,18 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int StallApplicationID { get; set; }
+        public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int StallCodeID { get; set; }
+        [StringLength(100)]
+        [Column(TypeName = "VARCHAR2")]
         public string OperationHours { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string StallLocation { get; set; }
+        public int HelperA { get; set; }
+        public int HelperB { get; set; }
+        public int HelperC { get; set; }
         public int AppStatusID { get; set; }
 
         //The user who creates this application
@@ -22,6 +30,10 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
+        public DateTime DateApproved { get; set; }
+        public float? ProcessingFee { get; set; }
+        public DateTime DatePaid { get; set; }
+        public DateTime ExpireDate { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

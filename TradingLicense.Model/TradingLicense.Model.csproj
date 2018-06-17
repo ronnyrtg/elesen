@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AdditionalDocModel.cs" />
+    <Compile Include="AdPermitApplicationModel.cs" />
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BannerApplicationModel.cs" />
     <Compile Include="BannerObjectModel.cs" />

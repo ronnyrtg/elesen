@@ -23,9 +23,6 @@ namespace TradingLicense.Model
         [Display(Name = "Valid Period Multiplier")]
         [Required(ErrorMessage = "Please enter period multiplier, default is 1")]
         public int PeriodQuantity { get; set; }
-        [Display(Name = "Mode")]
-        [Required(ErrorMessage = "Please enter mode, default is 1")]
-        public int Mode { get; set; }
 
         [Display(Name = "Is Active")]
         public bool Active { get; set; }

@@ -9,9 +9,8 @@ namespace TradingLicense.Entities
         [Key]
         public int PremiseApplicationID { get; set; }
         public int Mode { get; set; }
-        public int SectorID { get; set; }
         public int BusinessTypeID { get; set; }
-        public int AppStatusID { get; set; }
+        public int SectorID { get; set; }
         public int CompanyID { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
@@ -46,11 +45,21 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public float? ProcessingFee { get; set; }
+        public int AppStatusID { get; set; }
 
         //User that creates the application, either Public user or Desk Officer
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
-        
+        public DateTime DateApproved { get; set; }
+        public DateTime DatePaid { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ReferenceNo { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string LicenseStatus { get; set; }
+        public DateTime ExpireDate { get; set; }
+
         //Constructors
         public PremiseApplication()
         {
@@ -58,7 +67,6 @@ namespace TradingLicense.Entities
         }
 
         public virtual PremiseType PremiseType { get; set; }
-        public virtual Individual Individual { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual BusinessType BusinessType { get; set; }
         public virtual Users Users { get; set; }

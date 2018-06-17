@@ -32,11 +32,16 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
         public float? ProcessingFee { get; set; }
+        public int AppStatusID { get; set; }
 
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string UpdatedBy { get; set; }
-        public int AppStatusID { get; set; }
+        public DateTime DateApproved { get; set; }
+        public DateTime DatePaid { get; set; }
+        public string ReferenceNo { get; set; }
+        public string LicenseStatus { get; set; }
+        public DateTime ExpireDate { get; set; }
 
         public string BusinessCodeids { get; set; }
         public string Individualids { get; set; }
@@ -44,25 +49,16 @@ namespace TradingLicense.Model
         public string AdditionalDocIds { get; set; }
 
         public int UserRollTemplate { get; set; }
-
         public string FullName { get; set; }
-
         public string CompanyName { get; set; }
-
         public string StatusDesc { get; set; }
-
         public string PremiseDesc { get; set; }
-
         public bool IsDraft { get; set; }
-
         public string UploadRequiredDocids { get; set; }
-
         public string UploadAdditionalDocids { get; set; }
-
         public string newIndividualsList { get; set; }
 
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
-
         public List<SelectedIndividualModel> selectedIndividualList = new List<SelectedIndividualModel>();
     }
 
