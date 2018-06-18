@@ -1067,10 +1067,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BusinessCode> primaryQuery = ctx.BusinessCodes;
-                if (selectedMode > 0)
-                {
-                    primaryQuery = primaryQuery.Where(bc => bc.Mode == selectedMode);
-                }
+                
                 if (selectedSector > 0)
                 {
                     primaryQuery = primaryQuery.Where(bc => bc.SectorID == selectedSector);
@@ -1079,7 +1076,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
                 }
-                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc + "~" + x.CodeNumber, mode = x.Mode }).ToList();
+                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc + "~" + x.CodeNumber }).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
