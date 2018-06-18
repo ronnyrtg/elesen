@@ -27,10 +27,10 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public DateTime LastUpdated { get; set; }
-        public DateTime DateApproved { get; set; }
+        public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
-        public DateTime DatePaid { get; set; }
-        public DateTime ExpireDate { get; set; }
+        public DateTime? DatePaid { get; set; }
+        public DateTime? ExpireDate { get; set; }
 
         public virtual Company Company { get; set; }
         public virtual AppStatus AppStatus { get; set; }

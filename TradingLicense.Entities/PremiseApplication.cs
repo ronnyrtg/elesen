@@ -50,15 +50,15 @@ namespace TradingLicense.Entities
         //User that creates the application, either Public user or Desk Officer
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
-        public DateTime DateApproved { get; set; }
-        public DateTime DatePaid { get; set; }
+        public DateTime? DateApproved { get; set; }
+        public DateTime? DatePaid { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string ReferenceNo { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string LicenseStatus { get; set; }
-        public DateTime ExpireDate { get; set; }
+        public DateTime? ExpireDate { get; set; }
 
         public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }

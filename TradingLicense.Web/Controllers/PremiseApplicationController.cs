@@ -201,11 +201,13 @@ namespace TradingLicense.Web.Controllers
                     catch
                     {
                         // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+                        
                     }
                 }
                 catch
                 {
                     // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+                    
                 }
                 return null;
             }
@@ -230,40 +232,66 @@ namespace TradingLicense.Web.Controllers
                     premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
                     var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
-                    if (paLinkBc.Count >= 0)
-                    {
-                        premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
 
-                        //TODO: replaced with thisfor avoid calling database in foreach loop
-                        // TODO: Select2ListItem is just the same as build-in KeyValuePair class
-                        List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
-                        int selectedMode = 0;
-                        var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
-                        var codes = ctx.BusinessCodes
-                            .Where(b => ids.Contains(b.BusinessCodeID))
-                            .GroupBy(b => b.BusinessCodeID)
-                            .Select(bgr => bgr.FirstOrDefault())
-                            .Select(buinesscode => new
-                            {
-                                buinesscode.BusinessCodeID,
-                                buinesscode.CodeNumber,
-                                buinesscode.CodeDesc,
-                            })
-                            .AsEnumerable()
-                            .Select(buinesscode => new
-                            {
-                                id = buinesscode.BusinessCodeID,
-                                text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}",
-                            })
-                            .ToList();
+                    premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
 
-                        businessCodesList.AddRange(codes
-                            .Select(b => new Select2ListItem
-                            {
-                                id = b.id,
-                                text = b.text,
-                            }));
-                    }
+                    //TODO: replaced with this for avoid calling database in foreach loop
+                    // TODO: Select2ListItem is just the same as build-in KeyValuePair class
+                    List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
+                    var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
+                    var codes = ctx.BusinessCodes
+                        .Where(b => ids.Contains(b.BusinessCodeID))
+                        .GroupBy(b => b.BusinessCodeID)
+                        .Select(bgr => bgr.FirstOrDefault())
+                        .Select(buinesscode => new
+                        {
+                            buinesscode.BusinessCodeID,
+                            buinesscode.CodeNumber,
+                            buinesscode.CodeDesc,
+                        })
+                        .AsEnumerable()
+                        .Select(buinesscode => new
+                        {
+                            id = buinesscode.BusinessCodeID,
+                            text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}",
+                        })
+                        .ToList();
+
+                    businessCodesList.AddRange(codes
+                        .Select(b => new Select2ListItem
+                        {
+                            id = b.id,
+                            text = b.text,
+                        }));
+
+                    var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                    var iids = paLinkInd.Select(b => b.IndividualID).ToList();
+                    var inds = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .GroupBy(b => b.IndividualID)
+                        .Select(bgr => bgr.FirstOrDefault())
+                        .Select(individu => new
+                        {
+                            individu.IndividualID,
+                            individu.FullName,
+                            individu.MykadNo,
+                        })
+                        .AsEnumerable()
+                        .Select(individu => new
+                        {
+                            id = individu.IndividualID,
+                            text = $"{individu.FullName}~{individu.MykadNo}",
+                        })
+                        .ToList();
+
+                    selectedIndividualList.AddRange(inds
+                        .Select(b => new Select2ListItem
+                        {
+                            id = b.id,
+                            text = b.text,
+                        }));
 
                     var paLinkReqDocumentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == id).ToList();
                     if (paLinkReqDocumentList.Count > 0)
@@ -296,27 +324,26 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ViewPremiseApplication(int id)
         {
-            ViewPremiseApplicationModel premiseApplicationModel = new ViewPremiseApplicationModel();
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             if (id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int premiseApplicationId = Convert.ToInt32(id);
                     var premiseApplication = ctx.PremiseApplications.FirstOrDefault(a => a.PremiseApplicationID == premiseApplicationId);
-                    premiseApplicationModel = Mapper.Map<ViewPremiseApplicationModel>(premiseApplication);
-                    premiseApplicationModel.Individuals = new List<string>();
+                    premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
-                    premiseApplicationModel.BusinessCodes = ctx.PALinkBC
-                        .Where(a => a.PremiseApplicationID == premiseApplicationId)
-                        .Select(x => x.BusinessCode.CodeNumber + " | " + x.BusinessCode.CodeDesc).ToList();
+                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
 
-                    premiseApplicationModel.RequiredDocs = ctx.PALinkReqDoc
-                        .Where(p => p.PremiseApplicationID == premiseApplicationId)
-                        .Select(par => par.RequiredDoc.RequiredDocDesc).ToList();
+                    var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
 
-                    premiseApplicationModel.AdditionalDocs = ctx.PALinkAddDocs
-                        .Where(p => p.PremiseApplicationID == premiseApplicationId)
-                        .Select(pad => pad.AdditionalDoc.DocDesc).ToList();
+                    var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.RequiredDocIds = string.Join(",", paLinkReq.Select(x => x.RequiredDocID.ToString()).ToArray());
+
+                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.AdditionalDocIds = string.Join(",", paLinkAdd.Select(x => x.AdditionalDocID.ToString()).ToArray());
                 }
             }
 
@@ -505,9 +532,10 @@ namespace TradingLicense.Web.Controllers
                                 }
                                 ctx.SaveChanges();
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                //TODO: Do anything here or log 
+                                //TODO: Do anything here or log
+                                return Content("<script language='javascript' type='text/javascript'>alert('Problem In line 537! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
                             }
                         }
                         premiseApplicationModel.PremiseApplicationID = premiseApplicationId;

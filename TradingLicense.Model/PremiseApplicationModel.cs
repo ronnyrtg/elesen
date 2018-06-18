@@ -49,6 +49,8 @@ namespace TradingLicense.Model
         public string AdditionalDocIds { get; set; }
 
         public int UserRollTemplate { get; set; }
+        public string BusinessTypeDesc { get; set; }
+        public string SectorDesc { get; set; }
         public string FullName { get; set; }
         public string CompanyName { get; set; }
         public string StatusDesc { get; set; }
@@ -59,7 +61,7 @@ namespace TradingLicense.Model
         public string newIndividualsList { get; set; }
 
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
-        public List<SelectedIndividualModel> selectedIndividualList = new List<SelectedIndividualModel>();
+        public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
     }
 
     public class NewIndividualModel
