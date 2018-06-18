@@ -1199,7 +1199,7 @@ namespace TradingLicense.Web.Controllers
             }
             catch (Exception ex)
             {
-                return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter! '" + ex.Message.ToString().Replace("'","") + ");</script>");
+                
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
