@@ -1,4 +1,4 @@
-﻿@model TradingLicense.Model.ViewPremiseApplicationModel
+﻿@model TradingLicense.Model.PremiseApplicationModel
 @using AutoMapper;
 @{
     ViewBag.Title = "View Premise License Application";
@@ -14,34 +14,16 @@
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
-                    <div class="control-label">Jenis Perniagaan</div>
-                    <div class="well">@Model.BusinessType</div>
+                    <div class="control-label">Jenis Kelulusan</div>
+                    <div class="well">@Model.Mode</div>
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
-                    <div class="control-label">Nama Pemohon</div>
-                    <div class="well">@Model.NamaPemohon</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">No. Kad Pengenalan / No. Syarikat</div>
-                    <div class="well">@Model.ICPaspot</div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Nama Perniagaan/Syarikat</div>
-                    <div class="well">@Model.NamaSyarikat</div>
+                    <div class="control-label">Jenis Perniagaan</div>
+                    <div class="well">@Model.BusinessTypeID</div>
                 </div>
             </div>
         </div>
@@ -49,127 +31,140 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Kumpulan Kod Perniagaan</div>
-                    <div class="well">@Model.Sector</div>
-                </div>
-            </div>
-
-            <div class="col-md-offset-3 col-lg-3 col-md-3">
-                <div class="form-group">
-                    @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                    {
-                        <div class="control-label" style="color:green;">Submitted to Clerk</div>
-                    }
+                    <div class="well">@Model.SectorID</div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <div class="control-label">Business Code.</div>
+                    <div class="control-label">Kod Perniagaan</div>
                     <div class="well">
-                        @for (int i = 0; i < Model.BusinessCodes.Count; i++)
-                        {
-                            <label>@Model.BusinessCodes[i]</label>
+                       
+                            <label>@Model.BusinessCodeids</label>
                             <br />
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="control-label">Nama Penuh (MyKad/Paspot)</div>
+                    <div class="well">
+                        <label>@Model.Individualids</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="control-label">Nama Syarikat</div>
+                    <div class="well">@Model.CompanyName</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <div class="control-label">Alamat Premis Yang Dipohon</div>
+                    <div class="well">
+                        @Model.Addra1
+                        @if (Model.Addra2 != null)
+                        {
+                            <label>, @Model.Addra2</label>
+                        }
+                        @if (Model.Addra3 != null)
+                        {
+                            <label>, @Model.Addra3</label>
+                        }
+                        @if (Model.Addra4 != null)
+                        {
+                            <label>, @Model.Addra4</label>
+                        }
+                        @Model.PcodeA, @Model.StateA
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Luas Premis</div>
+                    <div class="well">@Model.PremiseArea</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Pemilikan Premis</div>
+                    <div class="well">@Model.PremiseOwnership</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Tempoh Sewaan Premis</div>
+                    <div class="well">Dari @Model.StartRent hingga @Model.StopRent</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Premise Type</div>
+                    <div class="well">
+                        @Model.PremiseDesc
+                        @if (Model.OtherPremiseType != null)
+                        {
+                            <br /><label>@Model.OtherPremiseType</label>
                         }
                     </div>
                 </div>
             </div>
         </div>
-        @if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-        {
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Full Name (Mykad/Passport No.).
-                        </div>
-                        <div class="well">
-                            @for (int i = 0; i < Model.Individuals.Count; i++)
-                            {
-                                <label>@Model.Individuals[i]</label>
-                                <br />
-                            }
-                        </div>
-                    </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Tingkat</div>
+                    <div class="well">@Model.WhichFloor</div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">Company.</div>
-                        <div class="well">@Model.Company</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Area</div>
-                        <div class="well">@Model.PremiseArea</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Status</div>
-                        <div class="well">@Model.PremiseStatus</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Premise Type</div>
-                        <div class="well">@Model.PremiseType</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Pemilikan Premis</div>
-                        <div class="well">@Model.PremiseOwnership</div>
-                    </div>
-                </div>
-            </div>
-        }
+        </div>
         <div class="row">
             <div class="col-lg-12 col-md-12" id="RequiredDocument">
                 <div class="form-group">
                     <div class="control-label">
-                        Document List.
+                        Senarai Dokumen Wajib
                     </div>
                     <div class="well">
-                        @if (Model.RequiredDocs.Count == 0)
-                        {
-                            <label>No Required Documents</label>
-                        }
-                        @for (int i = 0; i < Model.RequiredDocs.Count; i++)
-                        {
-                            <label>@Model.RequiredDocs[i]</label>
-                                <br />
-                        }
+                        @Model.RequiredDocIds
                     </div>
                 </div>
             </div>
             <div class="col-lg-12 col-md-12" id="AdditionalDocument">
                 <div class="form-group">
                     <div class="control-label">
-                        Additional Document List.
+                        Senarai Dokumen Tambahan
                     </div>
                     <div class="well">
-                        @if (Model.AdditionalDocs.Count == 0)
-                        {
-                            <label>No Additional Documents</label>
-                        }
-                        @for (int i = 0; i < Model.AdditionalDocs.Count; i++)
-                        {
-                            <label>@Model.AdditionalDocs[i]</label>
-                                <br />
-                        }
+                        @Model.AdditionalDocIds
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <input type="button" class="btn btn-default" value="OK" onclick="back()" />
+            <div class="col-md-3 col-sm-12">
+                <div class="form-group">
+                    <input type="button" class="btn btn-default" value="OK" onclick="back()" />
+                </div>
+            </div>
         </div>
     </div>
 </div>

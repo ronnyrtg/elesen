@@ -34,10 +34,6 @@ namespace TradingLicense.Model
         [Display(Name = "Period Quantity")]
         public int PeriodQuantity { get; set; }
 
-        [Required(ErrorMessage = "Please Select Mode")]
-        [Display(Name = "Mode")]
-        public int Mode { get; set; }
-
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
 

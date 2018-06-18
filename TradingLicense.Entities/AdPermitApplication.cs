@@ -4,22 +4,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class StallApplication
+    public class AdPermitApplication
     {
         [Key]
-        public int StallApplicationID { get; set; }
-        public int Mode { get; set; }
-        public int IndividualID { get; set; }
-        public int StallCodeID { get; set; }
-        [StringLength(100)]
-        [Column(TypeName = "VARCHAR2")]
-        public string OperationHours { get; set; }
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
-        public string StallLocation { get; set; }
-        public int HelperA { get; set; }
-        public int HelperB { get; set; }
-        public int HelperC { get; set; }
+        public int AdPermitApplicationID { get; set; }
+        public int LenderApplicationID { get; set; }
+        public int Brochure { get; set; }
+        public int Newspaper { get; set; }
+        public int SignBoard { get; set; }
+        public int Radio { get; set; }
+        public int Internet { get; set; }
+        public int Television { get; set; }
+        public int VCD { get; set; }
+        public int Cinema { get; set; }
+        public int Others { get; set; }
+        public string SpecifyOthers { get; set; }
         public int AppStatusID { get; set; }
 
         //The user who creates this application
@@ -33,11 +32,11 @@ namespace TradingLicense.Entities
         public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
         public DateTime? DatePaid { get; set; }
+        public string ReferenceNo { get; set; }
         public DateTime? ExpireDate { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
-        public virtual Individual Individual { get; set; }
-        public virtual StallCode StallCode { get; set; }
         public virtual Users Users { get; set; }
+
     }
 }

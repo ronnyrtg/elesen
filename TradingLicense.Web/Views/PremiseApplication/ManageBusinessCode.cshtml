@@ -16,11 +16,7 @@
         additionalDocsList = Mapper.Map<List<TradingLicense.Model.AdditionalDocModel>>(additionaDocs);
     }
 
-    List<SelectListItem> modeList = new List<SelectListItem>();
-    modeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
-    modeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
-    modeList.Add(new SelectListItem { Text = "Mesyuarat JP", Value = "3" });
-    modeList.Add(new SelectListItem { Text = "KPE", Value = "4" });
+    
 
     List<SelectListItem> periodList = new List<SelectListItem>();
     periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
@@ -107,15 +103,6 @@
                 <div class="col-sm-2">
                     <div class="form-group">
                         @Html.DropDownListFor(model => model.Period, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                            <div class="control-label">Kelulusan<span class="cfont">*</span></div>
-                            @Html.DropDownListFor(model => model.Mode, new SelectList(modeList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>

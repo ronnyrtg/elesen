@@ -29,8 +29,6 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila masukkan Fi mengikut tempoh")]
         public float PeriodFee { get; set; }
         [Required(ErrorMessage = "Sila pilih jenis kelulusan")]
-        [Display(Name = "Mode")]
-        public int Mode { get; set; }
 
         [Display(Name = "Aktif?")]
         public bool Active { get; set; }

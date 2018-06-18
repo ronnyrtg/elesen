@@ -13,11 +13,13 @@
                         <td>
                             @if (Model.FileName != null)
                             {
-                            <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@Model.FileName" />
+                                int value = Model.IndividualID;
+                                string text = value.ToString("D6");
+                                <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@text/@Model.FileName" />
                             }
                             else
                             {
-                            <img class="img-thumbnail" width="150" src="~/images/member-default.jpg" />
+                                <img class="img-thumbnail" width="150" src="~/images/member-default.jpg" />
                             }
                         </td>
                     </tr>

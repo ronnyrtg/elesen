@@ -14,10 +14,10 @@ using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
 using static TradingLicense.Infrastructure.Enums;
-using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using System.Diagnostics;
+using TradingLicense.Web.Helpers;
+using TradingLicense.Web.Services;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -29,7 +29,6 @@ namespace TradingLicense.Web.Controllers
         /// GET: PremiseApplication
         /// </summary>
         /// <returns></returns>
-
         public ActionResult PremiseApplication()
         {
             return View();
@@ -38,143 +37,128 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Get PremiseApplication Data
         /// </summary>
-        /// <param name="requestModel"></param>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="premiseApplicationId">The premise application identifier.</param>
+        /// <param name="individualMkNo">The individual mk no.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult PremiseApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string PremiseApplicationID, string IndividualMkNo)
+        public JsonResult PremiseApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string premiseApplicationId, string individualMkNo)
         {
-            List<TradingLicense.Model.PremiseApplicationModel> PremiseApplication = new List<Model.PremiseApplicationModel>();
+            List<PremiseApplicationModel> premiseApplication;
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseApplication> query = (ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications;
+                IQueryable<PremiseApplication> query = ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public
+                    ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID)
+                    : ctx.PremiseApplications;
 
-                if (!string.IsNullOrWhiteSpace(PremiseApplicationID))
+                if (!string.IsNullOrWhiteSpace(premiseApplicationId))
                 {
-                    query = query.Where(q => q.PremiseApplicationID.ToString().Contains(PremiseApplicationID));
+                    query = query.Where(q => q.PremiseApplicationID.ToString().Contains(premiseApplicationId));
                 }
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                var orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<PremiseApplicationModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "PremiseApplicationID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
 
                 #endregion Sorting
 
                 // Paging
                 result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
-                PremiseApplication = result;
+                premiseApplication = result;
             }
-            return Json(new DataTablesResponse(requestModel.Draw, PremiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, premiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
         /// Get PremiseApplication Data
         /// </summary>
-        /// <param name="requestModel"></param>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="individualId">The individual identifier.</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult PremiseApplicationsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
         {
-            List<TradingLicense.Model.PremiseApplicationModel> PremiseApplication = new List<Model.PremiseApplicationModel>();
+            List<PremiseApplicationModel> premiseApplication;
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseApplication> query = ((ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public) ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID) : ctx.PremiseApplications).Where(pa => pa.IndividualID == individualId);
+                IQueryable<PremiseApplication> query = ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public
+                    ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID)
+                    : ctx.PremiseApplications;
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                var orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<PremiseApplicationModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "PremiseApplicationID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
 
                 #endregion Sorting
 
                 // Paging
                 result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
-                PremiseApplication = result;
+                premiseApplication = result;
             }
-            return Json(new DataTablesResponse(requestModel.Draw, PremiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, premiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
-        /// get Required Document Data
+        /// Get Required Document Data
         /// </summary>
-        /// <param name="requestModel"></param>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="businessTypeId">The business type identifier.</param>
+        /// <param name="premiseApplicationId">The premise application identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessTypeID, string premiseApplicationID)
+        public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessTypeId, string premiseApplicationId)
         {
-            List<TradingLicense.Model.BTLinkReqDocModel> RequiredDocument = new List<Model.BTLinkReqDocModel>();
+            List<BTLinkReqDocModel> requiredDocument;
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<BTLinkReqDoc> query = ctx.PALinkReqDocs.Where(p => p.BusinessTypeID.ToString().Contains(businessTypeID));
+                IQueryable<BTLinkReqDoc> query = ctx.PALinkReqDocs.Where(p => p.BusinessTypeID.ToString().Contains(businessTypeId));
 
                 #region Sorting
-                // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                string orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<BTLinkReqDocModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BTLinkReqDocID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
 
                 #endregion Sorting
 
-                RequiredDocument = result;
+                requiredDocument = result;
 
                 #region IsChecked
 
-                if (!string.IsNullOrWhiteSpace(premiseApplicationID))
+                if (!string.IsNullOrWhiteSpace(premiseApplicationId))
                 {
                     int premiseAppId;
-                    int.TryParse(premiseApplicationID, out premiseAppId);
+                    int.TryParse(premiseApplicationId, out premiseAppId);
 
                     var palinkReq = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseAppId).ToList();
-                    foreach (var item in RequiredDocument)
+                    if (palinkReq.Count > 0)
                     {
-                        if (palinkReq != null && palinkReq.Count > 0)
+                        //TODO: try Join 
+                        foreach (var item in requiredDocument)
                         {
-                            var resultpalinkReq = palinkReq.Where(p => p.RequiredDocID == item.RequiredDocID && p.PremiseApplicationID == premiseAppId).FirstOrDefault();
+                            var resultpalinkReq = palinkReq.FirstOrDefault(p => p.RequiredDocID == item.RequiredDocID && p.PremiseApplicationID == premiseAppId);
                             if (resultpalinkReq != null)
                             {
                                 item.IsChecked = "checked";
-                                var attechmentdetails = ctx.Attachments.Where(a => a.AttachmentID == resultpalinkReq.AttachmentID).FirstOrDefault();
+                                var attechmentdetails = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == resultpalinkReq.AttachmentID);
                                 if (attechmentdetails != null)
                                 {
                                     item.AttachmentFileName = attechmentdetails.FileName;
@@ -187,21 +171,21 @@ namespace TradingLicense.Web.Controllers
                 }
                 #endregion
             }
-            return Json(new DataTablesResponse(requestModel.Draw, RequiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
         /// Download
         /// </summary>
-        /// <param name="attechmentID"></param>
-        /// /// <param name="premiseID"></param>
+        /// <param name="attechmentId"></param>
+        /// /// <param name="premiseId"></param>
         /// <returns></returns>
-        public FileResult Download(int? attechmentID, int? premiseID)
+        public FileResult Download(int? attechmentId, int? premiseId)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var attechment = ctx.Attachments.Where(a => a.AttachmentID == attechmentID).FirstOrDefault();
-                var folder = Server.MapPath(Infrastructure.ProjectConfiguration.AttachmentDocument);
+                var attechment = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == attechmentId);
+                var folder = Server.MapPath(ProjectConfiguration.AttachmentDocument);
                 try
                 {
                     try
@@ -211,17 +195,20 @@ namespace TradingLicense.Web.Controllers
                             var path = Path.Combine(folder, attechment.FileName);
                             return File(path, System.Net.Mime.MediaTypeNames.Application.Octet, attechment.FileName);
                         }
-                        else
-                        {
-                            return null;
-                        }
+
+                        return null;
                     }
                     catch
                     {
-
+                        // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+                        
                     }
                 }
-                catch { }
+                catch
+                {
+                    // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+                    
+                }
                 return null;
             }
         }
@@ -229,55 +216,91 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Get PremiseApplication Data by ID
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult ManagePremiseApplication(int? Id)
+        public ActionResult ManagePremiseApplication(int? id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
-            premiseApplicationModel.StartRent = new DateTime(2012, 2, 2);
-            premiseApplicationModel.StopRent = new DateTime(2012, 2, 2);
-            ViewBag.SelectedMode = 0;
-            if (Id != null && Id > 0)
+            //TODO: I guess 2012 year is outdated
+            premiseApplicationModel.StartRent = DateTime.Today;
+            premiseApplicationModel.StopRent = DateTime.Today;
+            if (id != null && id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int PremiseApplicationID = Convert.ToInt32(Id);
-                    var premiseApplication = ctx.PremiseApplications.Where(a => a.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
+                    var premiseApplication = ctx.PremiseApplications.FirstOrDefault(a => a.PremiseApplicationID == id);
                     premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
-                    var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkBC != null && paLinkBC.Count > 0)
-                    {
-                        premiseApplicationModel.BusinessCodeids = (string.Join(",", paLinkBC.Select(x => x.BusinessCodeID.ToString()).ToArray()));
+                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
 
-                        List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
-                        int selectedMode = 0;
-                        foreach (var item in paLinkBC)
+                    premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
+
+                    //TODO: replaced with this for avoid calling database in foreach loop
+                    // TODO: Select2ListItem is just the same as build-in KeyValuePair class
+                    List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
+                    var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
+                    var codes = ctx.BusinessCodes
+                        .Where(b => ids.Contains(b.BusinessCodeID))
+                        .GroupBy(b => b.BusinessCodeID)
+                        .Select(bgr => bgr.FirstOrDefault())
+                        .Select(buinesscode => new
                         {
-                            var buinesscode = ctx.BusinessCodes.Where(b => b.BusinessCodeID == item.BusinessCodeID).FirstOrDefault();
-                            if (buinesscode != null && buinesscode.BusinessCodeID > 0)
-                            {
-                                selectedMode = buinesscode.Mode;
-                                Select2ListItem selectedBusinessCodeModel = new Select2ListItem();
-                                selectedBusinessCodeModel.id = buinesscode.BusinessCodeID;
-                                selectedBusinessCodeModel.text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}";
-                                businessCodesList.Add(selectedBusinessCodeModel);
-                            }
-                        }
-                        premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
-                        ViewBag.SelectedMode = selectedMode;
-                    }
+                            buinesscode.BusinessCodeID,
+                            buinesscode.CodeNumber,
+                            buinesscode.CodeDesc,
+                        })
+                        .AsEnumerable()
+                        .Select(buinesscode => new
+                        {
+                            id = buinesscode.BusinessCodeID,
+                            text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}",
+                        })
+                        .ToList();
 
+                    businessCodesList.AddRange(codes
+                        .Select(b => new Select2ListItem
+                        {
+                            id = b.id,
+                            text = b.text,
+                        }));
 
+                    var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                    var iids = paLinkInd.Select(b => b.IndividualID).ToList();
+                    var inds = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .GroupBy(b => b.IndividualID)
+                        .Select(bgr => bgr.FirstOrDefault())
+                        .Select(individu => new
+                        {
+                            individu.IndividualID,
+                            individu.FullName,
+                            individu.MykadNo,
+                        })
+                        .AsEnumerable()
+                        .Select(individu => new
+                        {
+                            id = individu.IndividualID,
+                            text = $"{individu.FullName}~{individu.MykadNo}",
+                        })
+                        .ToList();
 
-                    var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
+                    selectedIndividualList.AddRange(inds
+                        .Select(b => new Select2ListItem
+                        {
+                            id = b.id,
+                            text = b.text,
+                        }));
+
+                    var paLinkReqDocumentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == id).ToList();
+                    if (paLinkReqDocumentList.Count > 0)
                     {
-                        premiseApplicationModel.UploadRequiredDocids = (string.Join(",", PALinkReqDocUmentList.Select(x => x.RequiredDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
+                        premiseApplicationModel.UploadRequiredDocids = (string.Join(",", paLinkReqDocumentList.Select(x => x.RequiredDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
                     }
 
-                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkAddDocumentlist != null && paLinkAddDocumentlist.Count > 0)
+                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == id).ToList();
+                    if (paLinkAddDocumentlist.Count > 0)
                     {
                         premiseApplicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.AdditionalDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
                     }
@@ -289,6 +312,7 @@ namespace TradingLicense.Web.Controllers
                 premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
                 premiseApplicationModel.UsersID = ProjectSession.User.UsersID;
             }
+
             premiseApplicationModel.IsDraft = false;
             return View(premiseApplicationModel);
         }
@@ -296,41 +320,30 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Get PremiseApplication Data by ID
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult ViewPremiseApplication(int Id)
+        public ActionResult ViewPremiseApplication(int id)
         {
-            ViewPremiseApplicationModel premiseApplicationModel = new ViewPremiseApplicationModel();
-            if (Id > 0)
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+            if (id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int PremiseApplicationID = Convert.ToInt32(Id);
-                    var premiseApplication = ctx.PremiseApplications.Where(a => a.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
-                    premiseApplicationModel = Mapper.Map<ViewPremiseApplicationModel>(premiseApplication);
-                    premiseApplicationModel.Individuals = new List<string>();
+                    int premiseApplicationId = Convert.ToInt32(id);
+                    var premiseApplication = ctx.PremiseApplications.FirstOrDefault(a => a.PremiseApplicationID == premiseApplicationId);
+                    premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
-                    var paLinkBC = ctx.PALinkBC.Where(a => a.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkBC != null && paLinkBC.Count > 0)
-                    {
-                        premiseApplicationModel.BusinessCodes = paLinkBC.Select(x => $"{x.BusinessCode.CodeNumber} | {x.BusinessCode.CodeDesc}").ToList();
-                    }
-                    else { premiseApplicationModel.BusinessCodes = new List<string>(); }
+                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
 
-                    var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
-                    {
-                        premiseApplicationModel.RequiredDocs = PALinkReqDocUmentList.Select(par => par.RequiredDoc.RequiredDocDesc).ToList();
-                    }
-                    else { premiseApplicationModel.RequiredDocs = new List<string>(); }
+                    var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
 
-                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == PremiseApplicationID).ToList();
-                    if (paLinkAddDocumentlist != null && paLinkAddDocumentlist.Count > 0)
-                    {
-                        premiseApplicationModel.AdditionalDocs = paLinkAddDocumentlist.Select(pad => pad.AdditionalDoc.DocDesc).ToList();
-                    }
-                    else { premiseApplicationModel.AdditionalDocs = new List<string>(); }
+                    var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.RequiredDocIds = string.Join(",", paLinkReq.Select(x => x.RequiredDocID.ToString()).ToArray());
 
+                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id).ToList();
+                    premiseApplicationModel.AdditionalDocIds = string.Join(",", paLinkAdd.Select(x => x.AdditionalDocID.ToString()).ToArray());
                 }
             }
 
@@ -344,7 +357,8 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Save PremiseApplication Information
         /// </summary>
-        /// <param name="premiseApplicationModel"></param>
+        /// <param name="premiseApplicationModel">The premise application model.</param>
+        /// <param name="btnSubmit">The BTN submit.</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -352,473 +366,277 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-            if (ProjectSession.User != null && ProjectSession.UserID > 0 && ProjectSession.User.RoleTemplateID.HasValue)
-            {
-                if (ProjectSession.User.RoleTemplateID.Value == (int)RollTemplate.DeskOfficer)
+                
+                if (ModelState.IsValid)
                 {
-                    ModelState.Remove("PremiseArea");
-                    ModelState.Remove("PremiseStatus");
-                    ModelState.Remove("PremiseTypeID");
-                    ModelState.Remove("PremiseModification");
-                    ModelState.Remove("PremiseOwnership");
-                }
-            }
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    PremiseApplication premiseApplication;
-                    premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
-
-                    int UserroleTemplate = 0;
-                    if (ProjectSession.User != null && ProjectSession.UserID > 0)
+                    using (var ctx = new LicenseApplicationContext())
                     {
-                        premiseApplication.UpdatedBy = ProjectSession.User.Username;
+                        var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
 
-                        #region Set PAStatus Value 
-
-                        if (ProjectSession.User.RoleTemplateID != null)
+                        int userroleTemplate = 0;
+                        if (ProjectSession.User != null && ProjectSession.UserID > 0)
                         {
-                            UserroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                            userroleTemplate = GetUserRoleTemplate(premiseApplicationModel, premiseApplication, ctx);
                         }
 
-                        if (!premiseApplicationModel.IsDraft)
+                        premiseApplication.DateSubmitted = DateTime.Now;
+
+                        ctx.PremiseApplications.AddOrUpdate(premiseApplication);
+                        ctx.SaveChanges();
+
+                        int premiseApplicationId = premiseApplication.PremiseApplicationID;
+
+                        int roleTemplate = 0;
+                        if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
                         {
-                            if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
-                            {
-                                premiseApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
-                            }
-                        }
-                        else
-                        {
-                            if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
-                            {
-                                premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
-                            }
+                            roleTemplate = ProjectSession.User.RoleTemplateID.Value;
                         }
 
-                        if (UserroleTemplate == (int)RollTemplate.Clerk)
+                        if (userroleTemplate == (int)RollTemplate.Public)
                         {
-                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
+                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadRequiredDocids))
                             {
-                                var IslinkDept = false;
-                                string[] ids = premiseApplicationModel.BusinessCodeids.Split(',');
-                                foreach (var id in ids)
-                                {
-                                    int BusinessCodeID = Convert.ToInt32(id);
-                                    var businesslinkDepartment = ctx.BCLinkDeps.Where(p => p.BusinessCodeID == BusinessCodeID).FirstOrDefault();
-                                    if (businesslinkDepartment != null && businesslinkDepartment.BussCodLinkDepID > 0)
-                                    {
-                                        IslinkDept = true;
-                                        break;
-                                    }
-                                }
-
-                                if (IslinkDept)
-                                {
-                                    premiseApplication.AppStatusID = (int)PAStausenum.unitroute;
-                                }
-                                else
-                                {
-                                    premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
-                                }
+                                DocumentService.UpdateDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
                             }
                             else
                             {
-                                premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
+                                if (roleTemplate == (int)RollTemplate.Public)
+                                {
+                                    var paLinkReqDocUmentList = ctx.PALinkReqDoc
+                                        .Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                                    if (paLinkReqDocUmentList.Count > 0)
+                                    {
+                                        ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
+                                        ctx.SaveChanges();
+                                    }
+                                }
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadAdditionalDocids))
+                            {
+                                DocumentService.UploadAdditionalDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                            }
+                            else
+                            {
+                                if (roleTemplate == (int)RollTemplate.Public)
+                                {
+                                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                                    if (paLinkAddDocumentlist.Count > 0)
+                                    {
+                                        ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
+                                        ctx.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+                        else if (userroleTemplate == (int)RollTemplate.DeskOfficer)
+                        {
+                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.RequiredDocIds))
+                            {
+                                DocumentService.UpdateRequiredDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                            }
+                            else
+                            {
+                                if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                                {
+                                    var paLinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                                    if (paLinkReqDocUmentList.Count > 0)
+                                    {
+                                        ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
+                                        ctx.SaveChanges();
+                                    }
+                                }
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.AdditionalDocIds))
+                            {
+                                DocumentService.SaveAdditionalDocInfo(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                            }
+                            else
+                            {
+                                if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                                {
+                                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                                    if (paLinkAddDocumentlist.Count > 0)
+                                    {
+                                        ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
+                                        ctx.SaveChanges();
+                                    }
+                                }
                             }
                         }
 
-                        #endregion
-                    }
-
-                    premiseApplication.DateSubmitted = DateTime.Now;
-
-                    ctx.PremiseApplications.AddOrUpdate(premiseApplication);
-                    ctx.SaveChanges();
-
-                    int premiseApplicationID = premiseApplication.PremiseApplicationID;
-
-                    int roleTemplate = 0;
-                    if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
-                    {
-                        roleTemplate = ProjectSession.User.RoleTemplateID.Value;
-                    }
-
-                    if (UserroleTemplate == (int)RollTemplate.Public)
-                    {
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadRequiredDocids))
+                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
                         {
-                            string[] ids = premiseApplicationModel.UploadRequiredDocids.Split(',');
-                            List<RequiredDocList> RequiredDoclist = new List<RequiredDocList>();
-
-                            foreach (string id in ids)
-                            {
-                                string[] rId = id.Split(':');
-
-                                RequiredDocList requiredDocList = new RequiredDocList();
-                                requiredDocList.RequiredDocID = Convert.ToInt32(rId[0]);
-                                requiredDocList.AttachmentID = Convert.ToInt32(rId[1]);
-                                RequiredDoclist.Add(requiredDocList);
-                            }
+                            var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
 
                             List<int> existingRecord = new List<int>();
-                            var dbEntryRequiredDoc = ctx.PALinkReqDoc.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                            if (dbEntryRequiredDoc != null && dbEntryRequiredDoc.Count > 0)
+                            var dbEntryPaLinkBAct = ctx.PALinkBC.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+                            if (dbEntryPaLinkBAct.Count > 0)
                             {
-                                foreach (var item in dbEntryRequiredDoc)
+                                foreach (var item in dbEntryPaLinkBAct)
                                 {
-                                    if (RequiredDoclist.Where(q => q.RequiredDocID == item.RequiredDocID && q.AttachmentID == item.AttachmentID).Count() == 0)
+                                    if (businessCodelist.All(q => q != item.BusinessCodeID))
                                     {
-                                        if (roleTemplate == (int)RollTemplate.Public)
-                                        {
-                                            ctx.PALinkReqDoc.Remove(item);
-                                        }
+                                        ctx.PALinkBC.Remove(item);
                                     }
                                     else
                                     {
-                                        existingRecord.Add(item.RequiredDocID);
+                                        existingRecord.Add(item.BusinessCodeID);
                                     }
                                 }
                                 ctx.SaveChanges();
                             }
 
-                            foreach (var requiredDoc in RequiredDoclist)
+                            foreach (var businessCode in businessCodelist)
                             {
-                                if (existingRecord.Where(q => q == requiredDoc.RequiredDocID).Count() == 0)
+                                if (existingRecord.All(q => q != businessCode))
                                 {
-                                    PALinkReqDoc pALinkReqDoc = new PALinkReqDoc();
-                                    pALinkReqDoc.PremiseApplicationID = premiseApplicationID;
-                                    pALinkReqDoc.RequiredDocID = requiredDoc.RequiredDocID;
-                                    pALinkReqDoc.AttachmentID = requiredDoc.AttachmentID;
-                                    ctx.PALinkReqDoc.AddOrUpdate(pALinkReqDoc);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (roleTemplate == (int)RollTemplate.Public)
-                            {
-                                var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationID).ToList();
-                                if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
-                                {
-                                    ctx.PALinkReqDoc.RemoveRange(PALinkReqDocUmentList);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
+                                    PALinkBC paLinkBc = new PALinkBC();
+                                    paLinkBc.PremiseApplicationID = premiseApplicationId;
+                                    paLinkBc.BusinessCodeID = businessCode;
+                                    ctx.PALinkBC.Add(paLinkBc);
 
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadAdditionalDocids))
-                        {
-                            string[] ids = premiseApplicationModel.UploadAdditionalDocids.Split(',');
-                            List<AdditionalDocList> AdditionalDoclistlist = new List<AdditionalDocList>();
-
-                            foreach (string id in ids)
-                            {
-                                string[] aId = id.Split(':');
-                                AdditionalDocList additionalDocList = new AdditionalDocList();
-                                additionalDocList.AdditionalDocID = Convert.ToInt32(aId[0]);
-                                additionalDocList.AttachmentID = Convert.ToInt32(aId[1]);
-                                AdditionalDoclistlist.Add(additionalDocList);
-                            }
-
-                            List<int> existingRecord = new List<int>();
-                            var dbEntryPALinkAddDoc = ctx.PALinkAddDocs.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                            if (dbEntryPALinkAddDoc != null && dbEntryPALinkAddDoc.Count > 0)
-                            {
-                                foreach (var item in dbEntryPALinkAddDoc)
-                                {
-                                    if (AdditionalDoclistlist.Where(q => q.AdditionalDocID == item.AdditionalDocID && q.AttachmentID == item.AttachmentID).Count() == 0)
-                                    {
-                                        if (roleTemplate == (int)RollTemplate.Public)
-                                        {
-                                            ctx.PALinkAddDocs.Remove(item);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        existingRecord.Add(item.AdditionalDocID);
-                                    }
-                                }
-                                ctx.SaveChanges();
-                            }
-
-                            foreach (var AdditionalDoc in AdditionalDoclistlist)
-                            {
-                                if (existingRecord.Where(q => q == AdditionalDoc.AdditionalDocID).Count() == 0)
-                                {
-                                    PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                                    paLinkAddDoc.PremiseApplicationID = premiseApplicationID;
-                                    paLinkAddDoc.AdditionalDocID = AdditionalDoc.AdditionalDocID;
-                                    paLinkAddDoc.AttachmentID = AdditionalDoc.AttachmentID;
-                                    ctx.PALinkAddDocs.Add(paLinkAddDoc);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (roleTemplate == (int)RollTemplate.Public)
-                            {
-                                var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationID).ToList();
-                                if (paLinkAddDocumentlist != null && paLinkAddDocumentlist.Count > 0)
-                                {
-                                    ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                    }
-                    else if (UserroleTemplate == (int)RollTemplate.DeskOfficer)
-                    {
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.RequiredDocIds))
-                        {
-                            string[] ids = premiseApplicationModel.RequiredDocIds.Split(',');
-                            List<int> RequiredDoclist = new List<int>();
-
-                            foreach (string id in ids)
-                            {
-                                int RequiredDocID = Convert.ToInt32(id);
-                                RequiredDoclist.Add(RequiredDocID);
-                            }
-
-                            List<int> existingRecord = new List<int>();
-                            var dbEntryRequiredDoc = ctx.PALinkReqDoc.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                            if (dbEntryRequiredDoc != null && dbEntryRequiredDoc.Count > 0)
-                            {
-                                foreach (var item in dbEntryRequiredDoc)
-                                {
-                                    if (RequiredDoclist.Where(q => q == item.RequiredDocID).Count() == 0)
-                                    {
-                                        if (roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                                        {
-                                            ctx.PALinkReqDoc.Remove(item);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        existingRecord.Add(item.RequiredDocID);
-                                    }
-                                }
-                                ctx.SaveChanges();
-                            }
-
-                            foreach (var requiredDoc in RequiredDoclist)
-                            {
-                                if (existingRecord.Where(q => q == requiredDoc).Count() == 0)
-                                {
-                                    PALinkReqDoc pALinkReqDoc = new PALinkReqDoc();
-                                    pALinkReqDoc.PremiseApplicationID = premiseApplicationID;
-                                    pALinkReqDoc.RequiredDocID = requiredDoc;
-                                    ctx.PALinkReqDoc.AddOrUpdate(pALinkReqDoc);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                            {
-                                var PALinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationID).ToList();
-                                if (PALinkReqDocUmentList != null && PALinkReqDocUmentList.Count > 0)
-                                {
-                                    ctx.PALinkReqDoc.RemoveRange(PALinkReqDocUmentList);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.AdditionalDocIds))
-                        {
-                            string[] ids = premiseApplicationModel.AdditionalDocIds.Split(',');
-                            List<int> AdditionalDoclistlist = new List<int>();
-
-                            foreach (string id in ids)
-                            {
-                                int IndividualID = Convert.ToInt32(id);
-                                AdditionalDoclistlist.Add(IndividualID);
-                            }
-
-                            List<int> existingRecord = new List<int>();
-                            var dbEntryPALinkAddDoc = ctx.PALinkAddDocs.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                            if (dbEntryPALinkAddDoc != null && dbEntryPALinkAddDoc.Count > 0)
-                            {
-                                foreach (var item in dbEntryPALinkAddDoc)
-                                {
-                                    if (AdditionalDoclistlist.Where(q => q == item.AdditionalDocID).Count() == 0)
-                                    {
-                                        if (roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                                        {
-                                            ctx.PALinkAddDocs.Remove(item);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        existingRecord.Add(item.AdditionalDocID);
-                                    }
-                                }
-                                ctx.SaveChanges();
-                            }
-
-                            foreach (var AdditionalDoc in AdditionalDoclistlist)
-                            {
-                                if (existingRecord.Where(q => q == AdditionalDoc).Count() == 0)
-                                {
-                                    PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                                    paLinkAddDoc.PremiseApplicationID = premiseApplicationID;
-                                    paLinkAddDoc.AdditionalDocID = AdditionalDoc;
-                                    ctx.PALinkAddDocs.Add(paLinkAddDoc);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                            {
-                                var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationID).ToList();
-                                if (paLinkAddDocumentlist != null && paLinkAddDocumentlist.Count > 0)
-                                {
-                                    ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
-                                    ctx.SaveChanges();
-                                }
-                            }
-                        }
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
-                    {
-                        string[] ids = premiseApplicationModel.BusinessCodeids.Split(',');
-                        List<int> BusinessCodelist = new List<int>();
-
-                        foreach (string id in ids)
-                        {
-                            int BusinessCodeID = Convert.ToInt32(id);
-                            BusinessCodelist.Add(BusinessCodeID);
-                        }
-
-                        List<int> existingRecord = new List<int>();
-                        var dbEntryPALinkBAct = ctx.PALinkBC.Where(q => q.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryPALinkBAct != null && dbEntryPALinkBAct.Count > 0)
-                        {
-                            foreach (var item in dbEntryPALinkBAct)
-                            {
-                                if (BusinessCodelist.Where(q => q == item.BusinessCodeID).Count() == 0)
-                                {
-                                    ctx.PALinkBC.Remove(item);
-                                }
-                                else
-                                {
-                                    existingRecord.Add(item.BusinessCodeID);
                                 }
                             }
                             ctx.SaveChanges();
                         }
-
-                        foreach (var businessCode in BusinessCodelist)
+                        else
                         {
-                            if (existingRecord.Where(q => q == businessCode).Count() == 0)
+                            var dbEntryPaLinkBActs = ctx.PALinkBC.Where(va => va.PremiseApplicationID == premiseApplicationId).ToList();
+                            if (dbEntryPaLinkBActs.Count > 0)
                             {
-                                PALinkBC PALinkBC = new PALinkBC();
-                                PALinkBC.PremiseApplicationID = premiseApplicationID;
-                                PALinkBC.BusinessCodeID = businessCode;
-                                ctx.PALinkBC.Add(PALinkBC);
+                                ctx.PALinkBC.RemoveRange(dbEntryPaLinkBActs);
                                 ctx.SaveChanges();
                             }
                         }
-                    }
-                    else
-                    {
-                        var dbEntryPALinkBActs = ctx.PALinkBC.Where(va => va.PremiseApplicationID == premiseApplicationID).ToList();
-                        if (dbEntryPALinkBActs != null && dbEntryPALinkBActs.Count > 0)
-                        {
-                            ctx.PALinkBC.RemoveRange(dbEntryPALinkBActs);
-                            ctx.SaveChanges();
-                        }
-                    }
 
-                    if (!string.IsNullOrWhiteSpace(premiseApplicationModel.Individualids))
-                    {
-                        string[] ids = premiseApplicationModel.Individualids.Split(',');
-                        List<int> Individualidslist = new List<int>();
-
-                        foreach (string id in ids)
+                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.Individualids))
                         {
-                            int IndividualID = Convert.ToInt32(id);
-                            Individualidslist.Add(IndividualID);
+                            //todo: I guess it's a draft for new logic
+                            var individualidslist = premiseApplicationModel.Individualids.ToIntList();
                         }
 
-                        List<int> existingRecord = new List<int>();
-
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
-                    {
-                        try
+                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
                         {
-                            List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(premiseApplicationModel.newIndividualsList);
-                            foreach (var indModel in individuals)
+                            try
                             {
-                                Individual ind = new Individual();
-                                ind.FullName = indModel.fullName;
-                                ind.MykadNo = indModel.passportNo;
-                                ctx.Individuals.Add(ind);
+                                List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(premiseApplicationModel.newIndividualsList);
+                                foreach (var indModel in individuals)
+                                {
+                                    Individual ind = new Individual();
+                                    ind.FullName = indModel.fullName;
+                                    ind.MykadNo = indModel.passportNo;
+                                    ctx.Individuals.Add(ind);
+
+                                }
                                 ctx.SaveChanges();
                             }
+                            catch (Exception ex)
+                            {
+                                //TODO: Do anything here or log
+                                return Content("<script language='javascript' type='text/javascript'>alert('Problem In line 537! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
+                            }
                         }
-                        catch
-                        {
-
-                        }
+                        premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                     }
-                    premiseApplicationModel.PremiseApplicationID = premiseApplicationID;
-                }
 
-                if (premiseApplicationModel.IsDraft)
-                {
-                    TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
+                    if (premiseApplicationModel.IsDraft)
+                    {
+                        TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
 
-                    return RedirectToAction("ManagePremiseApplication", new { Id = premiseApplicationModel.PremiseApplicationID });
-                }
-                else
-                {
+                        return RedirectToAction("ManagePremiseApplication", new { Id = premiseApplicationModel.PremiseApplicationID });
+                    }
+
                     TempData["SuccessMessage"] = "Premise License Application saved successfully.";
 
                     return RedirectToAction("PremiseApplication");
                 }
-            }
-            else
-            {
-                ViewBag.SelectedMode = 0;
+
+                
                 return View(premiseApplicationModel);
-            }
             }
             catch (Exception)
             {
-                ViewBag.SelectedMode = 0;
+                
                 return View(premiseApplicationModel);
             }
         }
 
-        public ActionResult GenerateLetter(Int32? AppId)
+        private static int GetUserRoleTemplate(PremiseApplicationModel premiseApplicationModel,
+            PremiseApplication premiseApplication, LicenseApplicationContext ctx)
+        {
+            int userroleTemplate = 0;
+            premiseApplication.UpdatedBy = ProjectSession.User.Username;
+
+            if (ProjectSession.User.RoleTemplateID != null)
+            {
+                userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+            }
+
+            if (!premiseApplicationModel.IsDraft)
+            {
+                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
+                {
+                    premiseApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
+                }
+            }
+            else
+            {
+                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
+                {
+                    premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
+                }
+            }
+
+            if (userroleTemplate == (int)RollTemplate.Clerk)
+            {
+                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
+                {
+                    var islinkDept = false;
+                    string[] ids = premiseApplicationModel.BusinessCodeids.Split(',');
+                    foreach (var id in ids)
+                    {
+                        int businessCodeId = Convert.ToInt32(id);
+                        var businesslinkDepartment = ctx.BCLinkDeps.FirstOrDefault(p => p.BusinessCodeID == businessCodeId);
+                        if (businesslinkDepartment != null && businesslinkDepartment.BussCodLinkDepID > 0)
+                        {
+                            islinkDept = true;
+                            break;
+                        }
+                    }
+
+                    premiseApplication.AppStatusID = islinkDept
+                        ? (int)PAStausenum.unitroute
+                        : (int)PAStausenum.supervisorcheck;
+                }
+                else
+                {
+                    premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
+                }
+            }
+
+            return userroleTemplate;
+        }
+
+        public ActionResult GenerateLetter(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var PremiseApp = ctx.PremiseApplications
-                                        .Include("Company").Where(x => x.PremiseApplicationID == AppId).ToList();
-                    if (PremiseApp.Count == 0)
+                    var premiseApp = ctx.PremiseApplications
+                                        .Include("Company").Where(x => x.PremiseApplicationID == appId).ToList();
+                    if (premiseApp.Count == 0)
                     {
                         return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Premise ApplicationID!');</script>");
                     }
                     else
                     {
-                        foreach (var item in PremiseApp)
+                        foreach (var item in premiseApp)
                         {
-                            int Lineheight = 10;
+                            int lineheight = 10;
                             PdfDocument pdf = new PdfDocument();
                             pdf.Info.Title = "PDF Letter";
                             PdfPage pdfPage = pdf.AddPage();
@@ -831,312 +649,304 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawImage(xImage1, 180, 30, 75, 75);
 
 
-                            graph.DrawString("PERBADANAN LABUAN", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("(LABUAN CORPORATION)", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("PETI SURAT 81245", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("87022 WILLAYAH PERSEKUTUAN LABUAN", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Tel No 				:", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("087 408600, 408601", font, XBrushes.Black, new XRect(360, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Faks No          :", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("087 428997, 419400, 426803", font, XBrushes.Black, new XRect(360, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            Lineheight = Lineheight + 12;
+                            graph.DrawString("PERBADANAN LABUAN", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("(LABUAN CORPORATION)", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("PETI SURAT 81245", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("87022 WILLAYAH PERSEKUTUAN LABUAN", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tel No 				:", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("087 408600, 408601", font, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Faks No          :", font, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("087 428997, 419400, 426803", font, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            lineheight = lineheight + 12;
                             XPen lineRed = new XPen(XColors.Black, 2);
-                            System.Drawing.Point pt1 = new System.Drawing.Point(0, Lineheight);
-                            System.Drawing.Point pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width), Lineheight);
+                            System.Drawing.Point pt1 = new System.Drawing.Point(0, lineheight);
+                            System.Drawing.Point pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width), lineheight);
                             graph.DrawLine(lineRed, pt1, pt2);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("PL/JP/" + DateTime.Now.Year.ToString() + "/T/00000" + AppId, nfont, XBrushes.Black, new XRect(435, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Tarikh           :", nfont, XBrushes.Black, new XRect(360, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(DateTime.Now.ToString("dd/MM/yyyy"), nfont, XBrushes.Black, new XRect(435, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Pengurus", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            string CompName = "";
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("PL/JP/" + DateTime.Now.Year.ToString() + "/T/00000" + appId, nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tarikh           :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(DateTime.Now.ToString("dd/MM/yyyy"), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Pengurus", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            string compName = "";
                             if (item.Company.CompanyName == null)
                             {
-                                CompName = "";
+                                compName = "";
                             }
                             else
                             {
-                                CompName = item.Company.CompanyName;
+                                compName = item.Company.CompanyName;
                             }
-                            graph.DrawString(CompName, nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
+                            graph.DrawString(compName, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
 
-                            string CompAdd = "";
+                            string compAdd = "";
                             if (item.Company.CompanyAddress == null)
                             {
-                                CompAdd = "";
+                                compAdd = "";
                             }
                             else
                             {
-                                CompAdd = item.Company.CompanyAddress;
+                                compAdd = item.Company.CompanyAddress;
                             }
 
-                            graph.DrawString(CompAdd.ToString(), nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
+                            graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
 
-                            string CompPhone = "";
+                            string compPhone = "";
                             if (item.Company.CompanyPhone == null)
                             {
-                                CompPhone = "";
+                                compPhone = "";
                             }
                             else
                             {
-                                CompPhone = item.Company.CompanyPhone;
+                                compPhone = item.Company.CompanyPhone;
                             }
 
-                            graph.DrawString(CompPhone, nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("Tuan/Puan,", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("PERMOHONAN LESEN PERNIAGAAN BARU,", lbfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("NO. RUJUKAN", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(DateTime.Now.Year.ToString() + "/T/00000" + AppId, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("NAMA PERNIAGAAN", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(CompName, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tuan/Puan,", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("PERMOHONAN LESEN PERNIAGAAN BARU,", lbfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("NO. RUJUKAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(DateTime.Now.Year.ToString() + "/T/00000" + appId, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("NAMA PERNIAGAAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(compName, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("ALAMAT PREMIS", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            string Add1 = "";
-                            string Add2 = "";
-                            string Add3 = "";
+                            lineheight = lineheight + 20;
+                            graph.DrawString("ALAMAT PREMIS", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            string add1 = "";
+                            string add2 = "";
+                            string add3 = "";
                             if (item.Addra1 != null)
                             {
-                                Add1 = Add1 + item.Addra1 + ",";
+                                add1 = add1 + item.Addra1 + ",";
                             }
                             if (item.Addra2 != null)
                             {
-                                Add1 = Add1 + item.Addra2;
+                                add1 = add1 + item.Addra2;
                             }
 
                             if (item.Addra3 != null)
                             {
-                                Add2 = Add2 + item.Addra3 + ",";
+                                add2 = add2 + item.Addra3 + ",";
                             }
                             if (item.Addra4 != null)
                             {
-                                Add2 = Add2 + item.Addra4;
-                            }
-                            if (item.AreaA != null)
-                            {
-                                Add3 = Add3 + item.AreaA + ",";
-                            }
-                            if (item.TownA != null)
-                            {
-                                Add3 = Add3 + item.TownA + ",";
+                                add2 = add2 + item.Addra4;
                             }
                             if (item.PcodeA != null)
                             {
-                                Add3 = Add3 + item.PcodeA;
+                                add3 = add3 + item.PcodeA;
 
                             }
-                            if (Add1 != "")
+                            if (add1 != "")
                             {
-                                graph.DrawString(Add1, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(add1, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
-                            if (Add2 != "")
+                            if (add2 != "")
                             {
-                                Lineheight = Lineheight + 15;
-                                graph.DrawString(Add2, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                lineheight = lineheight + 15;
+                                graph.DrawString(add2, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
-                            if (Add3 != "")
+                            if (add3 != "")
                             {
-                                Lineheight = Lineheight + 15;
-                                graph.DrawString(Add3, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                lineheight = lineheight + 15;
+                                graph.DrawString(add3, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("ACTIVITI", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("ACTIVITI", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             int cnt = 1;
-                            foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == AppId))
+                            foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == appId))
                             {
-                                if(Convert.ToInt32(item1.BusinessCodeID) > 0)
-                                { 
-                                foreach (var item2 in ctx.BusinessCodes.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
+                                if (Convert.ToInt32(item1.BusinessCodeID) > 0)
                                 {
+                                    foreach (var item2 in ctx.BusinessCodes.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
                                     {
-                                        if (item2.CodeDesc != null)
                                         {
-                                            string itm = cnt.ToString() + ")    " + item2.CodeDesc;
-                                            graph.DrawString(itm, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                            cnt = cnt + 1;
-                                            Lineheight = Lineheight + 15;
-                                        }
+                                            if (item2.CodeDesc != null)
+                                            {
+                                                string itm = cnt.ToString() + ")    " + item2.CodeDesc;
+                                                graph.DrawString(itm, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                                cnt = cnt + 1;
+                                                lineheight = lineheight + 15;
+                                            }
 
-                                    }
+                                        }
                                     }
                                 }
                             }
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("NAMA PEMILIK & NO. KP", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("NAMA PEMILIK & NO. KP", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
                             cnt = 1;
-                            foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == AppId))
+                            foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == appId))
                             {
-                                if(Convert.ToInt32(item3.IndividualID) > 0)
-                                { 
-                                foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
+                                if (Convert.ToInt32(item3.IndividualID) > 0)
                                 {
+                                    foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
                                     {
-                                        if (item4.FullName != null)
                                         {
-                                            string FName = item4.FullName;
-                                            if (item4.MykadNo != null)
+                                            if (item4.FullName != null)
                                             {
-                                                FName = FName + "(" + item4.MykadNo + ")";
+                                                string fName = item4.FullName;
+                                                if (item4.MykadNo != null)
+                                                {
+                                                    fName = fName + "(" + item4.MykadNo + ")";
+                                                }
+                                                string itm = cnt.ToString() + ")    " + fName;
+                                                graph.DrawString(itm, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                                cnt = cnt + 1;
+                                                lineheight = lineheight + 15;
                                             }
-                                            string itm = cnt.ToString() + ")    " + FName;
-                                            graph.DrawString(itm, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                            cnt = cnt + 1;
-                                            Lineheight = Lineheight + 15;
                                         }
-                                    }
                                     }
                                 }
                             }
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("KEPUTUSAN", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            string ModeValue = "";
+                            lineheight = lineheight + 20;
+                            graph.DrawString("KEPUTUSAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            string modeValue = "";
                             if (item.Mode == 1)
                             {
-                                ModeValue = "Ekspres";
+                                modeValue = "Ekspres";
                             }
                             else if (item.Mode == 2)
                             {
-                                ModeValue = "Biasa";
+                                modeValue = "Biasa";
                             }
                             else if (item.Mode == 3)
                             {
-                                ModeValue = "Mesyuarat";
+                                modeValue = "Mesyuarat";
                             }
                             else
                             {
-                                ModeValue = "Pengarah";
+                                modeValue = "Pengarah";
                             }
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(ModeValue, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("CATATAN", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(modeValue, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("CATATAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             cnt = 1;
-                            foreach (var item4 in ctx.PAComments.Where(x => x.PremiseApplicationID == AppId))
+                            foreach (var item4 in ctx.PAComments.Where(x => x.PremiseApplicationID == appId))
                             {
                                 {
                                     if (item4.Comment != null)
                                     {
                                         string itm = cnt.ToString() + ")    " + item4.Comment;
-                                        graph.DrawString(itm, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        graph.DrawString(itm, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         cnt = cnt + 1;
-                                        Lineheight = Lineheight + 15;
+                                        lineheight = lineheight + 15;
                                     }
                                 }
 
                             }
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("BAYARAN", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("BAYARAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             if (item.ProcessingFee != null)
                             {
                                 var mval = string.Format("{0:0.00}", item.ProcessingFee);
-                                graph.DrawString("RM" + mval, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString("RM" + mval, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
                             else
                             {
-                                graph.DrawString("RM0.00", font, XBrushes.Black, new XRect(300, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString("RM0.00", font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
 
 
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("PERINGATAN:", font, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("i.   Sila buat bayaran Lesen Perniagaan select-lewatnya pada atau sebelum 28 FEBRUARI 2018", font, XBrushes.Black, new XRect(40, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("ii.  Surat kelulusan ini sah sehingga  " + DateTime.Now.AddMonths(6).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect(40, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("iii. Sekiranya pihak tuan membuat kerja-kerja pengubahsuaian bangunan sila kemukakan", font, XBrushes.Black, new XRect(40, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("     kelulusan Permohonan Plan Mengubahsuai Bangunan di Jabatan Perancangan dan Kawalan", font, XBrushes.Black, new XRect(40, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph.DrawString("     Bangunan Perbadanan Labuan terlebih dahulu.", font, XBrushes.Black, new XRect(40, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph.DrawString("Surat ini adalah cetakan komputer dan tandatangan tidak diperlukan", fontitalik, XBrushes.Black, new XRect(30, Lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("PERINGATAN:", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("i.   Sila buat bayaran Lesen Perniagaan select-lewatnya pada atau sebelum 28 FEBRUARI 2018", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("ii.  Surat kelulusan ini sah sehingga  " + DateTime.Now.AddMonths(6).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("iii. Sekiranya pihak tuan membuat kerja-kerja pengubahsuaian bangunan sila kemukakan", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("     kelulusan Permohonan Plan Mengubahsuai Bangunan di Jabatan Perancangan dan Kawalan", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("     Bangunan Perbadanan Labuan terlebih dahulu.", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("Surat ini adalah cetakan komputer dan tandatangan tidak diperlukan", fontitalik, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
                             PdfPage pdfPage2 = pdf.AddPage();
                             XGraphics graph2 = XGraphics.FromPdfPage(pdfPage2);
 
                             graph2.DrawImage(xImage1, 180, 30, 75, 75);
 
-                            Lineheight = 10;
-                            graph2.DrawString("PERBADANAN LABUAN", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("(LABUAN CORPORATION)", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("PETI SURAT 81245", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("87022 WILLAYAH PERSEKUTUAN LABUAN", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("Tel No 				:", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString("087 408600, 408601", font, XBrushes.Black, new XRect(360, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("Faks No          :", font, XBrushes.Black, new XRect(260, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString("087 428997, 419400, 426803", font, XBrushes.Black, new XRect(360, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            Lineheight = Lineheight + 12;
+                            lineheight = 10;
+                            graph2.DrawString("PERBADANAN LABUAN", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("(LABUAN CORPORATION)", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("PETI SURAT 81245", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("87022 WILLAYAH PERSEKUTUAN LABUAN", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("Tel No 				:", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString("087 408600, 408601", font, XBrushes.Black, new XRect(360, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("Faks No          :", font, XBrushes.Black, new XRect(260, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString("087 428997, 419400, 426803", font, XBrushes.Black, new XRect(360, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            lineheight = lineheight + 12;
                             XPen line1 = new XPen(XColors.Black, 2);
-                            System.Drawing.Point pt10 = new System.Drawing.Point(0, Lineheight);
-                            System.Drawing.Point pt11 = new System.Drawing.Point(Convert.ToInt32(pdfPage2.Width), Lineheight);
+                            System.Drawing.Point pt10 = new System.Drawing.Point(0, lineheight);
+                            System.Drawing.Point pt11 = new System.Drawing.Point(Convert.ToInt32(pdfPage2.Width), lineheight);
                             graph2.DrawLine(lineRed, pt10, pt11);
-                            Lineheight = Lineheight + 15;
+                            lineheight = lineheight + 15;
 
-                            graph2.DrawString("Pengakuan Setuju Terima:", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 25;
-                            graph2.DrawString("1)  Saya bersetuju dengan keputusan permohonan ini dan segala maklumat yang  deberi adalah benar.", nfont, XBrushes.Black, new XRect(40, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("2)  Saya bersetuju sekiranya maklumat deberi adalah palsu atau saya gagal mematuhi syarat-", nfont, XBrushes.Black, new XRect(40, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 15;
-                            graph2.DrawString("    syarat pengeluaran lesen, Perbadanan Labuan berhak untuk membatalkan keputusan lesen ini.", nfont, XBrushes.Black, new XRect(40, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 50;
+                            graph2.DrawString("Pengakuan Setuju Terima:", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 25;
+                            graph2.DrawString("1)  Saya bersetuju dengan keputusan permohonan ini dan segala maklumat yang  deberi adalah benar.", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("2)  Saya bersetuju sekiranya maklumat deberi adalah palsu atau saya gagal mematuhi syarat-", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph2.DrawString("    syarat pengeluaran lesen, Perbadanan Labuan berhak untuk membatalkan keputusan lesen ini.", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 50;
                             cnt = 1;
-                            foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == AppId))
+                            foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == appId))
                             {
-                                if(Convert.ToInt32(item3.IndividualID)> 0 )
-                                { 
-                                foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
+                                if (Convert.ToInt32(item3.IndividualID) > 0)
                                 {
+                                    foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
                                     {
-                                        if (item4.FullName != null)
                                         {
-                                            XPen pen1 = new XPen(XColors.Black, 1);
-                                            System.Drawing.Point pt6 = new System.Drawing.Point(20, Lineheight);
-                                            System.Drawing.Point pt7 = new System.Drawing.Point(150, Lineheight);
-                                            graph2.DrawLine(lineRed, pt6, pt7);
-                                            Lineheight = Lineheight + 5;
-                                            graph2.DrawString(item4.FullName, font, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                                            Lineheight = Lineheight + 35;
+                                            if (item4.FullName != null)
+                                            {
+                                                XPen pen1 = new XPen(XColors.Black, 1);
+                                                System.Drawing.Point pt6 = new System.Drawing.Point(20, lineheight);
+                                                System.Drawing.Point pt7 = new System.Drawing.Point(150, lineheight);
+                                                graph2.DrawLine(lineRed, pt6, pt7);
+                                                lineheight = lineheight + 5;
+                                                graph2.DrawString(item4.FullName, font, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                                                lineheight = lineheight + 35;
+                                            }
                                         }
-                                    }
                                     }
                                 }
                             }
 
-                            graph2.DrawString("s.k  Penolong Pengarah", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == AppId))
+                            graph2.DrawString("s.k  Penolong Pengarah", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == appId))
                             {
                                 foreach (var item2 in ctx.BCLinkDeps.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
                                 {
@@ -1148,46 +958,46 @@ namespace TradingLicense.Web.Controllers
                                             if (item3.DepartmentDesc != null)
                                             {
 
-                                                graph2.DrawString(" - " + item3.DepartmentDesc, font, XBrushes.Black, new XRect(40, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                                                graph2.DrawString(" - " + item3.DepartmentDesc, font, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                                                 cnt = cnt + 1;
-                                                Lineheight = Lineheight + 15;
+                                                lineheight = lineheight + 15;
                                             }
                                         }
                                     }
                                 }
                             }
-                            Lineheight = Lineheight + 10;
+                            lineheight = lineheight + 10;
                             XPen lineRed1 = new XPen(XColors.Black, 1);
-                            System.Drawing.Point pt4 = new System.Drawing.Point(0, Lineheight);
-                            System.Drawing.Point pt5 = new System.Drawing.Point(Convert.ToInt32(pdfPage2.Width), Lineheight);
+                            System.Drawing.Point pt4 = new System.Drawing.Point(0, lineheight);
+                            System.Drawing.Point pt5 = new System.Drawing.Point(Convert.ToInt32(pdfPage2.Width), lineheight);
                             graph2.DrawLine(lineRed1, pt4, pt5);
-                            Lineheight = Lineheight + 5;
-                            graph2.DrawString("UNTUK KEGUNAAN PEJABAT", lbfont, XBrushes.Black, new XRect(200, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 30;
-                            graph2.DrawString("NO. RUJUKAN", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString(DateTime.Now.Year.ToString() + "/P/00000" + AppId, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph2.DrawString("NAMA PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString(":", font, XBrushes.Black, new XRect(250, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            graph2.DrawString(CompName, font, XBrushes.Black, new XRect(300, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 40;
+                            lineheight = lineheight + 5;
+                            graph2.DrawString("UNTUK KEGUNAAN PEJABAT", lbfont, XBrushes.Black, new XRect(200, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 30;
+                            graph2.DrawString("NO. RUJUKAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString(DateTime.Now.Year.ToString() + "/P/00000" + appId, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph2.DrawString("NAMA PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString(compName, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 40;
                             XPen pen = new XPen(XColors.Black, 1);
-                            graph2.DrawRectangle(pen, 30, Lineheight, 10, 10);
-                            graph2.DrawString("Telah disemak dan disahkan betul", nfont, XBrushes.Black, new XRect(100, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph2.DrawRectangle(pen, 30, Lineheight, 10, 10);
-                            graph2.DrawString("Pembetulan semula", nfont, XBrushes.Black, new XRect(100, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 40;
-                            System.Drawing.Point pt8 = new System.Drawing.Point(30, Lineheight);
-                            System.Drawing.Point pt9 = new System.Drawing.Point(200, Lineheight);
+                            graph2.DrawRectangle(pen, 30, lineheight, 10, 10);
+                            graph2.DrawString("Telah disemak dan disahkan betul", nfont, XBrushes.Black, new XRect(100, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph2.DrawRectangle(pen, 30, lineheight, 10, 10);
+                            graph2.DrawString("Pembetulan semula", nfont, XBrushes.Black, new XRect(100, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 40;
+                            System.Drawing.Point pt8 = new System.Drawing.Point(30, lineheight);
+                            System.Drawing.Point pt9 = new System.Drawing.Point(200, lineheight);
                             graph2.DrawLine(lineRed1, pt8, pt9);
-                            Lineheight = Lineheight + 5;
-                            graph2.DrawString("(PENYELIA)", font, XBrushes.Black, new XRect(80, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 30;
-                            graph2.DrawString("Tarikh      :", nfont, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            Lineheight = Lineheight + 20;
-                            graph2.DrawString("Surat ini adalah cetakan komputer dan tandatangan tidak diperlukan", fontitalik, XBrushes.Black, new XRect(30, Lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 5;
+                            graph2.DrawString("(PENYELIA)", font, XBrushes.Black, new XRect(80, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 30;
+                            graph2.DrawString("Tarikh      :", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph2.DrawString("Surat ini adalah cetakan komputer dan tandatangan tidak diperlukan", fontitalik, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             string pdfFilename = "Letter.pdf";
                             pdf.Save(pdfFilename);
                             FileStream fs = new FileStream(pdfFilename, FileMode.Open, FileAccess.Read);
@@ -1199,26 +1009,27 @@ namespace TradingLicense.Web.Controllers
             }
             catch (Exception ex)
             {
-                
+                return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
 
 
-        private FileStreamResult GeneratePDF(Int32? AppId)  
+        private FileStreamResult GeneratePdf(Int32? appId)
         {
             try
             {
-               
+
                 return null;
             }
-            
+
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "Problem In Generating Letter.";
                 return null;
             }
         }
+
         /// <summary>
         /// Delete PremiseApplication Information
         /// </summary>
@@ -1229,10 +1040,10 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var PremiseApplication = new TradingLicense.Entities.PremiseApplication() { PremiseApplicationID = id };
+                var premiseApplication = new PremiseApplication() { PremiseApplicationID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(PremiseApplication).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.Entry(premiseApplication).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
@@ -1246,7 +1057,9 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Get Business Code
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">The query.</param>
+        /// <param name="selectedMode">The selected mode.</param>
+        /// <param name="selectedSector">The selected sector.</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult FillBusinessCode(string query, int selectedMode, int selectedSector)
@@ -1289,131 +1102,104 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// get Mykad Data
         /// </summary>
-        /// <param name="Individualids"></param>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="individualids">The individualids.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Mykad([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string Individualids)
+        public JsonResult Mykad([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string individualids)
         {
-            List<TradingLicense.Model.IndividualModel> Individual = new List<Model.IndividualModel>();
+            List<IndividualModel> individual;
             int totalRecord = 0;
+
+            //todo: what if individualids == null ?
             using (var ctx = new LicenseApplicationContext())
             {
+                List<int> individuallist = individualids.ToIntList();
 
-                string[] ids = null;
-                if (!string.IsNullOrWhiteSpace(Individualids))
-                {
-                    ids = Individualids.Split(',');
-                }
-
-                List<int> Individuallist = new List<int>();
-
-                foreach (string id in ids)
-                {
-                    int BusinessCodeID = Convert.ToInt32(id);
-                    Individuallist.Add(BusinessCodeID);
-                }
-
-                IQueryable<Individual> query = ctx.Individuals.Where(r => Individuallist.Contains(r.IndividualID));
+                IQueryable<Individual> query = ctx.Individuals.Where(r => individuallist.Contains(r.IndividualID));
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                var orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<IndividualModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "IndividualID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
 
                 #endregion Sorting
 
-                Individual = result;
+                individual = result;
 
             }
-            return Json(new DataTablesResponse(requestModel.Draw, Individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
         /// get Additional Document Data
         /// </summary>
         /// <param name="requestModel"></param>
-        /// <param name="BusinessCodeids"></param>
+        /// <param name="businessCodeids"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult AdditionalDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BusinessCodeids, string premiseApplicationID)
+        public JsonResult AdditionalDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeids, string premiseApplicationId)
         {
-            List<TradingLicense.Model.BCLinkADModel> RequiredDocument = new List<Model.BCLinkADModel>();
+            List<BCLinkADModel> requiredDocument = new List<BCLinkADModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 string[] ids = null;
 
-                if (!string.IsNullOrWhiteSpace(BusinessCodeids))
+                if (!string.IsNullOrWhiteSpace(businessCodeids))
                 {
-                    ids = BusinessCodeids.Split(',');
+                    ids = businessCodeids.Split(',');
                 }
 
-                List<int> BusinessCodelist = new List<int>();
+                List<int> businessCodelist = new List<int>();
 
                 if (ids != null)
                 {
                     foreach (string id in ids)
                     {
-                        int BusinessCodeID = Convert.ToInt32(id);
-                        BusinessCodelist.Add(BusinessCodeID);
+                        int businessCodeId = Convert.ToInt32(id);
+                        businessCodelist.Add(businessCodeId);
                     }
                 }
 
-                IQueryable<BCLinkAD> query = ctx.BCLinkAD.Where(p => BusinessCodelist.Contains(p.BusinessCodeID));
+                IQueryable<BCLinkAD> query = ctx.BCLinkAD.Where(p => businessCodelist.Contains(p.BusinessCodeID));
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                var orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<BCLinkADModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BCLinkADID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
 
                 #endregion Sorting
 
-                RequiredDocument = result;
-
+                requiredDocument = result;
 
                 #region IsChecked
 
-                if (!string.IsNullOrWhiteSpace(premiseApplicationID))
+                if (!string.IsNullOrWhiteSpace(premiseApplicationId))
                 {
                     int premiseAppId;
-                    int.TryParse(premiseApplicationID, out premiseAppId);
+                    int.TryParse(premiseApplicationId, out premiseAppId);
 
                     var palinkAdd = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseAppId).ToList();
-                    foreach (var item in RequiredDocument)
+                    foreach (var item in requiredDocument)
                     {
-                        if (palinkAdd != null && palinkAdd.Count > 0)
+                        if (palinkAdd.Count > 0)
                         {
-                            var resultpalinkReq = palinkAdd.Where(p => p.AdditionalDocID == item.AdditionalDocID && p.PremiseApplicationID == premiseAppId).FirstOrDefault();
+                            var resultpalinkReq = palinkAdd.FirstOrDefault(p => p.AdditionalDocID == item.AdditionalDocID && p.PremiseApplicationID == premiseAppId);
                             if (resultpalinkReq != null)
                             {
                                 item.IsChecked = "checked";
-                                var attechmentdetails = ctx.Attachments.Where(a => a.AttachmentID == resultpalinkReq.AttachmentID).FirstOrDefault();
+                                var attechmentdetails = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == resultpalinkReq.AttachmentID);
                                 if (attechmentdetails != null)
                                 {
                                     item.AttachmentFileName = attechmentdetails.FileName;
@@ -1426,10 +1212,8 @@ namespace TradingLicense.Web.Controllers
                 }
 
                 #endregion
-
-
             }
-            return Json(new DataTablesResponse(requestModel.Draw, RequiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1438,39 +1222,39 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult UploadDocument(HttpPostedFileBase DocumentFile)
+        public ActionResult UploadDocument(HttpPostedFileBase documentFile)
         {
             try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    if (DocumentFile != null)
+                    if (documentFile != null)
                     {
-                        var file = DocumentFile;
-                        if (file != null && file.ContentLength > 0)
+                        var file = documentFile;
+                        if (file.ContentLength > 0)
                         {
                             var premisevalue = Request["PremiseApplicationID"];
                             var reqDocvalue = Request["reqDocid"];
                             var addDocvalue = Request["addDocid"];
                             var isReqvalue = Request["isReqDoc"];
 
-                            int premiseApplicationID;
-                            if (int.TryParse(premisevalue, out premiseApplicationID) && premiseApplicationID > 0)
+                            int premiseApplicationId;
+                            if (int.TryParse(premisevalue, out premiseApplicationId) && premiseApplicationId > 0)
                             {
-                                int requiredDocID;
-                                int.TryParse(reqDocvalue, out requiredDocID);
+                                int requiredDocId;
+                                int.TryParse(reqDocvalue, out requiredDocId);
 
-                                int additionalDocID;
-                                int.TryParse(addDocvalue, out additionalDocID);
+                                int additionalDocId;
+                                int.TryParse(addDocvalue, out additionalDocId);
 
-                                if (requiredDocID > 0 || additionalDocID > 0)
+                                if (requiredDocId > 0 || additionalDocId > 0)
                                 {
                                     int isReq;
                                     int.TryParse(isReqvalue, out isReq);
 
                                     var fileName = Path.GetFileName(file.FileName);
 
-                                    var folder = Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.PremiseAttachmentDocument + "\\" + premiseApplicationID.ToString());
+                                    var folder = Server.MapPath(ProjectConfiguration.PremiseAttachmentDocument + "\\" + premiseApplicationId.ToString());
                                     var path = Path.Combine(folder, fileName);
                                     if (!Directory.Exists(folder))
                                     {
@@ -1487,8 +1271,8 @@ namespace TradingLicense.Web.Controllers
                                     {
                                         if (isReq > 0)
                                         {
-                                            PALinkReqDoc paLinkReqDoc = new PALinkReqDoc();
-                                            paLinkReqDoc = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationID && p.RequiredDocID == requiredDocID).FirstOrDefault();
+                                            PALinkReqDoc paLinkReqDoc;
+                                            paLinkReqDoc = ctx.PALinkReqDoc.FirstOrDefault(p => p.PremiseApplicationID == premiseApplicationId && p.RequiredDocID == requiredDocId);
                                             if (paLinkReqDoc != null)
                                             {
                                                 paLinkReqDoc.AttachmentID = attachment.AttachmentID;
@@ -1498,8 +1282,8 @@ namespace TradingLicense.Web.Controllers
                                             else
                                             {
                                                 PALinkReqDoc paLinkReqDocument = new PALinkReqDoc();
-                                                paLinkReqDocument.PremiseApplicationID = premiseApplicationID;
-                                                paLinkReqDocument.RequiredDocID = requiredDocID;
+                                                paLinkReqDocument.PremiseApplicationID = premiseApplicationId;
+                                                paLinkReqDocument.RequiredDocID = requiredDocId;
                                                 paLinkReqDocument.AttachmentID = attachment.AttachmentID;
                                                 ctx.PALinkReqDoc.AddOrUpdate(paLinkReqDocument);
                                                 ctx.SaveChanges();
@@ -1507,8 +1291,8 @@ namespace TradingLicense.Web.Controllers
                                         }
                                         else
                                         {
-                                            PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                                            paLinkAddDoc = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationID && p.AdditionalDocID == additionalDocID).FirstOrDefault();
+                                            PALinkAddDoc paLinkAddDoc;
+                                            paLinkAddDoc = ctx.PALinkAddDocs.FirstOrDefault(p => p.PremiseApplicationID == premiseApplicationId && p.AdditionalDocID == additionalDocId);
                                             if (paLinkAddDoc != null)
                                             {
                                                 paLinkAddDoc.AttachmentID = attachment.AttachmentID;
@@ -1518,8 +1302,8 @@ namespace TradingLicense.Web.Controllers
                                             else
                                             {
                                                 PALinkAddDoc paLinkAddDocument = new PALinkAddDoc();
-                                                paLinkAddDocument.PremiseApplicationID = premiseApplicationID;
-                                                paLinkAddDocument.AdditionalDocID = additionalDocID;
+                                                paLinkAddDocument.PremiseApplicationID = premiseApplicationId;
+                                                paLinkAddDocument.AdditionalDocID = additionalDocId;
                                                 paLinkAddDocument.AttachmentID = attachment.AttachmentID;
                                                 ctx.PALinkAddDocs.AddOrUpdate(paLinkAddDocument);
                                                 ctx.SaveChanges();
@@ -1528,25 +1312,17 @@ namespace TradingLicense.Web.Controllers
 
                                         return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
                                     }
-                                    else
-                                    {
-                                        return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
-                                    }
+
+                                    return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
                                 }
-                                else
-                                {
-                                    return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
-                                }
-                            }
-                            else
-                            {
+
                                 return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
                             }
+
+                            return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
                         }
-                        else
-                        {
-                            return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
-                        }
+
+                        return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                     }
                     return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                 }
@@ -1563,35 +1339,37 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult UploadAttechment(HttpPostedFileBase DocumentFile)
+        public ActionResult UploadAttechment(HttpPostedFileBase documentFile)
         {
+            //todo: this method is hard to understasnd, a lot of commented code
+            //todo and too similar with method UploadDocument
             try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    if (DocumentFile != null)
+                    if (documentFile != null)
                     {
-                        var file = DocumentFile;
-                        if (file != null && file.ContentLength > 0)
+                        var file = documentFile;
+                        if (file.ContentLength > 0)
                         {
                             var reqDocvalue = Request["reqDocid"];
                             var addDocvalue = Request["addDocid"];
                             var isReqvalue = Request["isReqDoc"];
 
-                            int requiredDocID;
-                            int.TryParse(reqDocvalue, out requiredDocID);
+                            int requiredDocId;
+                            int.TryParse(reqDocvalue, out requiredDocId);
 
-                            int additionalDocID;
-                            int.TryParse(addDocvalue, out additionalDocID);
+                            int additionalDocId;
+                            int.TryParse(addDocvalue, out additionalDocId);
 
-                            if (requiredDocID > 0 || additionalDocID > 0)
+                            if (requiredDocId > 0 || additionalDocId > 0)
                             {
                                 int isReq;
                                 int.TryParse(isReqvalue, out isReq);
 
                                 var fileName = Path.GetFileName(file.FileName);
 
-                                var folder = Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument);
+                                var folder = Server.MapPath(ProjectConfiguration.AttachmentDocument);
                                 var path = Path.Combine(folder, fileName);
                                 if (!Directory.Exists(folder))
                                 {
@@ -1626,7 +1404,7 @@ namespace TradingLicense.Web.Controllers
                                         //    ctx.SaveChanges();
                                         //}
 
-                                        return Json(new { status = "1", result = new { status = "1", RequiredDocID = requiredDocID, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
+                                        return Json(new { status = "1", result = new { status = "1", RequiredDocID = requiredDocId, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
                                     }
                                     else
                                     {
@@ -1648,7 +1426,7 @@ namespace TradingLicense.Web.Controllers
                                         //    ctx.SaveChanges();
                                         //}
 
-                                        return Json(new { status = "1", result = new { status = "1", AdditionalDocID = additionalDocID, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
+                                        return Json(new { status = "1", result = new { status = "1", AdditionalDocID = additionalDocId, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
                                     }
 
                                     //return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
@@ -1689,42 +1467,42 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var premiseID = Request["PremiseApplicationID"];
+                    var premiseId = Request["PremiseApplicationID"];
                     var comment = Request["comment"];
-                    var approveRejectType = Request["approveRejectType"];  /// 1) Approve  2) Reject 
+                    var approveRejectType = Request["approveRejectType"];  // 1) Approve  2) Reject 
 
-                    int PremiseApplicationID;
-                    int.TryParse(premiseID, out PremiseApplicationID);
+                    int premiseApplicationId;
+                    int.TryParse(premiseId, out premiseApplicationId);
 
-                    int UsersID = 0;
-                    int UserroleTemplate = 0;
+                    int usersId = 0;
+                    int userroleTemplate = 0;
                     if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
                     {
-                        UsersID = ProjectSession.User.UsersID;
-                        UserroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                        usersId = ProjectSession.User.UsersID;
+                        userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
                     }
 
-                    if (PremiseApplicationID > 0 && UsersID > 0 && UserroleTemplate > 0)
+                    if (premiseApplicationId > 0 && usersId > 0 && userroleTemplate > 0)
                     {
                         PAComment paComment = new PAComment();
                         paComment.Comment = comment;
-                        paComment.PremiseApplicationID = PremiseApplicationID;
-                        paComment.UsersID = UsersID;
+                        paComment.PremiseApplicationID = premiseApplicationId;
+                        paComment.UsersID = usersId;
                         paComment.CommentDate = DateTime.Now;
                         ctx.PAComments.AddOrUpdate(paComment);
                         ctx.SaveChanges();
 
                         if (paComment.PACommentID > 0)
                         {
-                            var premiseApplication = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == PremiseApplicationID).FirstOrDefault();
-                            var paLinkBC = ctx.PALinkBC.Where(t => t.PremiseApplicationID == PremiseApplicationID).ToList();
+                            var premiseApplication = ctx.PremiseApplications.FirstOrDefault(p => p.PremiseApplicationID == premiseApplicationId);
+                            var paLinkBc = ctx.PALinkBC.Where(t => t.PremiseApplicationID == premiseApplicationId).ToList();
 
-                            if (UserroleTemplate == (int)RollTemplate.Clerk)
+                            if (userroleTemplate == (int)RollTemplate.Clerk)
                             {
                                 if (approveRejectType == "Approve")
                                 {
-                                    var paLinkBusinessCode = ctx.PALinkBC.Where(t => t.PremiseApplicationID == PremiseApplicationID && t.BusinessCode != null).ToList();
-                                    if (paLinkBusinessCode != null && paLinkBusinessCode.Count > 0)
+                                    var paLinkBusinessCode = ctx.PALinkBC.Where(t => t.PremiseApplicationID == premiseApplicationId && t.BusinessCode != null).ToList();
+                                    if (paLinkBusinessCode.Count > 0)
                                     {
                                         if (premiseApplication != null && premiseApplication.PremiseApplicationID > 0)
                                         {
@@ -1750,18 +1528,18 @@ namespace TradingLicense.Web.Controllers
                                     ctx.SaveChanges();
                                 }
                             }
-
-                            if (UserroleTemplate == (int)RollTemplate.RouteUnit)
+                            //todo: what is it for ?
+                            if (userroleTemplate == (int)RollTemplate.RouteUnit)
                             {
 
                             }
 
-                            if (UserroleTemplate == (int)RollTemplate.Supervisor)
+                            if (userroleTemplate == (int)RollTemplate.Supervisor)
                             {
 
                             }
 
-                            if (UserroleTemplate == (int)RollTemplate.Director)
+                            if (userroleTemplate == (int)RollTemplate.Director)
                             {
 
                             }
@@ -1787,6 +1565,9 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
+
+        //TODO: Move all business code  logic to BusinessCodeController or at least a BusinessCodeService
+
         #region BusinessCode
 
         /// <summary>
@@ -1801,12 +1582,15 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Save BusinessCode Data
         /// </summary>
-        /// <param name="requestModel"></param>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="codeNumber">The code number.</param>
+        /// <param name="codeDesc">The code desc.</param>
+        /// <param name="sectorId">The sector identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorID)
+        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
         {
-            List<TradingLicense.Model.BusinessCodeModel> BusinessCode = new List<Model.BusinessCodeModel>();
+            List<BusinessCodeModel> businessCode;
             int totalRecord = 0;
             // int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -1839,9 +1623,9 @@ namespace TradingLicense.Web.Controllers
                     query = query.Where(p => p.CodeDesc.ToLower().Contains(codeDesc.ToLower()));
                 }
 
-                if (!string.IsNullOrWhiteSpace(sectorID))
+                if (!string.IsNullOrWhiteSpace(sectorId))
                 {
-                    query = query.Where(p => p.SectorID.ToString().Contains(sectorID));
+                    query = query.Where(p => p.SectorID.ToString().Contains(sectorId));
                 }
 
                 // Filter End
@@ -1851,59 +1635,48 @@ namespace TradingLicense.Web.Controllers
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
+                var orderByString = sortedColumns.GetOrderByString();
 
                 var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BusinessCodeID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
+                totalRecord = result.Count;
                 #endregion Sorting
 
                 // Paging
                 result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
 
-                BusinessCode = result;
+                businessCode = result;
             }
-            return Json(new DataTablesResponse(requestModel.Draw, BusinessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, businessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
         /// Get BusinessCode Data by ID
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult ManageBusinessCode(int? Id)
+        public ActionResult ManageBusinessCode(int? id)
         {
-            BusinessCodeModel businessCodeModel = new BusinessCodeModel();
-            businessCodeModel.Active = true;
-            if (Id != null && Id > 0)
+            BusinessCodeModel businessCodeModel = new BusinessCodeModel
+            {
+                Active = true
+            };
+            if (id != null && id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int businessCodeID = Convert.ToInt32(Id);
-                    var businessCode = ctx.BusinessCodes.Where(a => a.BusinessCodeID == businessCodeID).FirstOrDefault();
+                    int businessCodeId = Convert.ToInt32(id);
+                    var businessCode = ctx.BusinessCodes.FirstOrDefault(a => a.BusinessCodeID == businessCodeId);
                     businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
 
-                    var additionalDocs = ctx.BCLinkAD.Where(blAD => blAD.BusinessCodeID == businessCodeID);
-                    if (additionalDocs.Count() > 0)
-                    {
-                        businessCodeModel.AdditionalDocs = additionalDocs.Select(blAD => blAD.AdditionalDocID).ToList();
-                    }
-                    else
-                    {
-                        businessCodeModel.AdditionalDocs = new List<int>();
-                    }
+                    var additionalDocs = ctx.BCLinkAD.Where(blAd => blAd.BusinessCodeID == businessCodeId);
+                    businessCodeModel.AdditionalDocs = additionalDocs.Any()
+                        ? additionalDocs.Select(blAd => blAd.AdditionalDocID).ToList()
+                        : new List<int>();
 
-                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeID);
-                    if (departments.Count() > 0)
+                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeId);
+                    if (departments.Any())
                     {
                         foreach (var dep in departments)
                         {
@@ -1952,16 +1725,16 @@ namespace TradingLicense.Web.Controllers
                         foreach (var dep in deptIds)
                         {
                             var depId = Convert.ToInt32(dep);
-                            if (selectedDeps == null || !selectedDeps.Any(sd => sd.DepartmentID == depId))
+                            if (selectedDeps.All(sd => sd.DepartmentID != depId))
                             {
                                 selectedDepartments.Add(new BCLinkDep { BusinessCodeID = businessCode.BusinessCodeID, DepartmentID = depId });
                             }
                         }
-                        if (selectedDeps != null && selectedDeps.Count > 0)
+                        if (selectedDeps.Count > 0)
                         {
                             foreach (var bcDep in selectedDeps)
                             {
-                                if (!deptIds.Any(rd => rd == bcDep.DepartmentID.ToString()))
+                                if (deptIds.All(rd => rd != bcDep.DepartmentID.ToString()))
                                 {
                                     ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
                                 }
@@ -1980,16 +1753,16 @@ namespace TradingLicense.Web.Controllers
                         var addDocIds = businessCodeModel.AdditionalDocs;
                         foreach (var addDocId in addDocIds)
                         {
-                            if (selectedADocs == null || !selectedADocs.Any(sd => sd.AdditionalDocID == addDocId))
+                            if (selectedADocs.All(sd => sd.AdditionalDocID != addDocId))
                             {
                                 selectedAdditionalDocs.Add(new BCLinkAD { BusinessCodeID = businessCode.BusinessCodeID, AdditionalDocID = addDocId });
                             }
                         }
-                        if (selectedADocs != null && selectedADocs.Count > 0)
+                        if (selectedADocs.Count > 0)
                         {
                             foreach (var bcDep in selectedADocs)
                             {
-                                if (!addDocIds.Any(rd => rd == bcDep.AdditionalDocID))
+                                if (addDocIds.All(rd => rd != bcDep.AdditionalDocID))
                                 {
                                     ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
                                 }
@@ -2025,10 +1798,10 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var BusinessCode = new TradingLicense.Entities.BusinessCode() { BusinessCodeID = id };
+                var businessCode = new BusinessCode() { BusinessCodeID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ctx.Entry(BusinessCode).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.Entry(businessCode).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);

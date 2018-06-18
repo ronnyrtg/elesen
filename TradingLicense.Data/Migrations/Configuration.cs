@@ -563,25 +563,25 @@ namespace TradingLicense.Data.Migrations
 
             var hawkerCodes = new List<HawkerCode>
             {
-                new HawkerCode {HCodeNumber="J001",HawkerCodeDesc="Penjaja Bergerak",Fee=48.0f,Period=1,PeriodQuantity=1,Mode=4},
-                new HawkerCode {HCodeNumber="J002",HawkerCodeDesc="Penjaja Statik: Makanan",Fee=10.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new HawkerCode {HCodeNumber="J003",HawkerCodeDesc="Penjaja Statik: Selain daripada makanan",Fee=15.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Bulanan",Fee=15.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Harian",Fee=0.5f,Period=4,PeriodQuantity=1,Mode=4},
-                new HawkerCode {HCodeNumber="J005",HawkerCodeDesc="Pasar Malam",Fee=1.0f,Period=4,PeriodQuantity=1,Mode=4},
+                new HawkerCode {HCodeNumber="J001",HawkerCodeDesc="Penjaja Bergerak",Fee=48.0f,Period=1,PeriodQuantity=1},
+                new HawkerCode {HCodeNumber="J002",HawkerCodeDesc="Penjaja Statik: Makanan",Fee=10.0f,Period=2,PeriodQuantity=1},
+                new HawkerCode {HCodeNumber="J003",HawkerCodeDesc="Penjaja Statik: Selain daripada makanan",Fee=15.0f,Period=2,PeriodQuantity=1},
+                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Bulanan",Fee=15.0f,Period=2,PeriodQuantity=1},
+                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Harian",Fee=0.5f,Period=4,PeriodQuantity=1},
+                new HawkerCode {HCodeNumber="J005",HawkerCodeDesc="Pasar Malam",Fee=1.0f,Period=4,PeriodQuantity=1},
             };
             hawkerCodes.ForEach(s => context.HawkerCodes.Add(s));
             context.SaveChanges();
 
             var stallCodes = new List<StallCode>
             {
-                new StallCode {SCodeNumber="K001",StallCodeDesc="Ikan",Fee=30.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K002",StallCodeDesc="Ayam",Fee=30.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K003",StallCodeDesc="Daging",Fee=30.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K004",StallCodeDesc="Sayur-sayuran/buah-buahan/telur",Fee=20.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K005",StallCodeDesc="Barang-barang lain",Fee=20.0f,Period=2,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K006",StallCodeDesc="Pasar Persendirian - Luas lantai 70 meter persegi atau lebih",Fee=225.0f,Period=1,PeriodQuantity=1,Mode=4},
-                new StallCode {SCodeNumber="K007",StallCodeDesc="Pasar Persendirian - Luas lantai kurang daripada 70 meter persegi",Fee=175.0f,Period=1,PeriodQuantity=1,Mode=4},
+                new StallCode {SCodeNumber="K001",StallCodeDesc="Ikan",Fee=30.0f,Period=2,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K002",StallCodeDesc="Ayam",Fee=30.0f,Period=2,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K003",StallCodeDesc="Daging",Fee=30.0f,Period=2,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K004",StallCodeDesc="Sayur-sayuran/buah-buahan/telur",Fee=20.0f,Period=2,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K005",StallCodeDesc="Barang-barang lain",Fee=20.0f,Period=2,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K006",StallCodeDesc="Pasar Persendirian - Luas lantai 70 meter persegi atau lebih",Fee=225.0f,Period=1,PeriodQuantity=1},
+                new StallCode {SCodeNumber="K007",StallCodeDesc="Pasar Persendirian - Luas lantai kurang daripada 70 meter persegi",Fee=175.0f,Period=1,PeriodQuantity=1},
             };
             stallCodes.ForEach(s => context.StallCodes.Add(s));
             context.SaveChanges();
@@ -648,16 +648,16 @@ namespace TradingLicense.Data.Migrations
 
             var liquorCodes = new List<LiquorCode>
             {
-                new LiquorCode {LCodeNumber="N001",LiquorCodeDesc="Runcit",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N002",LiquorCodeDesc="Borong",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=45.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N003",LiquorCodeDesc="Rumah Awam (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=110.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N004",LiquorCodeDesc="Rumah Awam (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=80.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N005",LiquorCodeDesc="Rumah Awam (Kelas 3)",DefaultHours="10.00pg. hingga 9.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N006",LiquorCodeDesc="Rumah Bir (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N007",LiquorCodeDesc="Rumah Bir (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N008",LiquorCodeDesc="Lesen Sementara",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=4,PeriodQuantity=1,PeriodFee=30.0f,Mode=3},
-                new LiquorCode {LCodeNumber="N009",LiquorCodeDesc="Lesen Kedai Todi (Estet/Swasta)",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=4.5f,Mode=3},
-                new LiquorCode {LCodeNumber="N010",LiquorCodeDesc="Lesen Sadapan Todi",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=15.0f,Mode=3},
+                new LiquorCode {LCodeNumber="N001",LiquorCodeDesc="Runcit",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f},
+                new LiquorCode {LCodeNumber="N002",LiquorCodeDesc="Borong",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=45.0f},
+                new LiquorCode {LCodeNumber="N003",LiquorCodeDesc="Rumah Awam (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=110.0f},
+                new LiquorCode {LCodeNumber="N004",LiquorCodeDesc="Rumah Awam (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=80.0f},
+                new LiquorCode {LCodeNumber="N005",LiquorCodeDesc="Rumah Awam (Kelas 3)",DefaultHours="10.00pg. hingga 9.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f},
+                new LiquorCode {LCodeNumber="N006",LiquorCodeDesc="Rumah Bir (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f},
+                new LiquorCode {LCodeNumber="N007",LiquorCodeDesc="Rumah Bir (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f},
+                new LiquorCode {LCodeNumber="N008",LiquorCodeDesc="Lesen Sementara",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=4,PeriodQuantity=1,PeriodFee=30.0f},
+                new LiquorCode {LCodeNumber="N009",LiquorCodeDesc="Lesen Kedai Todi (Estet/Swasta)",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=4.5f},
+                new LiquorCode {LCodeNumber="N010",LiquorCodeDesc="Lesen Sadapan Todi",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=15.0f},
             };
             liquorCodes.ForEach(s => context.LiquorCodes.Add(s));
             context.SaveChanges();
@@ -740,7 +740,51 @@ namespace TradingLicense.Data.Migrations
             entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();
 
-           
+            var btlinkreqdocs = new List<BTLinkReqDoc>
+            {
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=1,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=2,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=3,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=4,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=5,RequiredDocID=3},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=1},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=2},
+                new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=3},
+            };
+            btlinkreqdocs.ForEach(s => context.PALinkReqDocs.Add(s));
+            context.SaveChanges();
+
+            var bclinkads = new List<BCLinkAD>
+            {
+                new BCLinkAD {BusinessCodeID=1,AdditionalDocID=1},
+                new BCLinkAD {BusinessCodeID=1,AdditionalDocID=2},
+                new BCLinkAD {BusinessCodeID=2,AdditionalDocID=3},
+                new BCLinkAD {BusinessCodeID=2,AdditionalDocID=4},
+            };
+            bclinkads.ForEach(s => context.BCLinkAD.Add(s));
+            context.SaveChanges();
+
+            var bclinkdeps = new List<BCLinkDep>
+            {
+                new BCLinkDep {BusinessCodeID=132,DepartmentID=5},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=3},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=4},
+                new BCLinkDep {BusinessCodeID=1,DepartmentID=5},
+                new BCLinkDep {BusinessCodeID=2,DepartmentID=3},
+                new BCLinkDep {BusinessCodeID=2,DepartmentID=4},
+            };
+            bclinkdeps.ForEach(s => context.BCLinkDeps.Add(s));
+            context.SaveChanges();
         }
     }
 }

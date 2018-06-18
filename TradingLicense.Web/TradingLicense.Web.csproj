@@ -198,6 +198,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Pages\Actions.cs" />
     <Compile Include="Pages\Controllers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Reports\reportview.aspx.designer.cs">
       <DependentUpon>reportview.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DocumentService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-datepicker.css" />
@@ -286,7 +288,6 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\toastr.css" />
-    <Content Include="Documents\Attachment\Individual\maxresdefault.jpg" />
     <Content Include="EmailTemplates\ForgotPasswordEmailTemplate.html" />
     <Content Include="EmailTemplates\MasterEmailTemplate.html" />
     <Content Include="favicon.ico" />
@@ -325,7 +326,8 @@
     <Content Include="Reports\dsReport.xsc">
       <DependentUpon>dsReport.xsd</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\develop.datatechnet.com.pubxml" />
+    <None Include="Properties\PublishProfiles\elesen VPS.pubxml" />
+    <None Include="Properties\PublishProfiles\Mesrahosting.pubxml" />
     <None Include="Reports\dsReport.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
@@ -537,6 +539,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
     <Folder Include="Documents\Attachment\BannerApplication\" />
+    <Folder Include="Documents\Attachment\Individual\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Payment\" />
   </ItemGroup>

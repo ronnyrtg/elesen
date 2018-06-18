@@ -8,16 +8,20 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int HawkerApplicationID { get; set; }
-        //Filled by Desk Officer
+        public int Mode { get; set; }
+        public int IndividualID { get; set; }
         public int HawkerCodeID { get; set; }
-        public string NamaPemohon { get; set; }
-        public string ICPaspot { get; set; }
-        public string Lokasi { get; set; }
-
-        //Filled by Clerk
-        public int IndividualID { get; set; }        
+        public DateTime ValidStart { get; set; }
+        public DateTime ValidStop { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string OperationHours { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string HawkerLocation { get; set; }
+        public int HelperA { get; set; }
+        public int HelperB { get; set; }
+        public int HelperC { get; set; }
         public int AppStatusID { get; set; }
 
         //The user who creates this application
@@ -29,6 +33,10 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public DateTime LastUpdated { get; set; }
+        public DateTime? DateApproved { get; set; }
+        public float? ProcessingFee { get; set; }
+        public DateTime? DatePaid { get; set; }
+        public DateTime? ExpireDate { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

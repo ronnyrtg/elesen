@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
@@ -11,13 +12,14 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string RegistrationNo { get; set; }
-        [StringLength(20)]
-        [Column(TypeName = "VARCHAR2")]
-        public string CompanyPhone { get; set; }
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyName { get; set; }
-
+        [StringLength(20)]
+        [Column(TypeName = "VARCHAR2")]
+        public string CompanyPhone { get; set; }
+        public DateTime SSMRegDate { get; set; }
+        public DateTime SSMExpDate { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyAddress { get; set; }

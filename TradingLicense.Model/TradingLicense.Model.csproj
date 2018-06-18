@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AdditionalDocModel.cs" />
+    <Compile Include="AdPermitApplicationModel.cs" />
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BannerApplicationModel.cs" />
     <Compile Include="BannerObjectModel.cs" />
@@ -102,7 +103,6 @@
     <Compile Include="StallApplicationModel.cs" />
     <Compile Include="StallCodeModel.cs" />
     <Compile Include="UsersModel.cs" />
-    <Compile Include="ViewPremiseApplicationModel.cs" />
     <Compile Include="ZoneModel.cs" />
   </ItemGroup>
   <ItemGroup>

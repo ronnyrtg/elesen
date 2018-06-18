@@ -8,28 +8,55 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int EntmtApplicationID { get; set; }
+        public int Mode { get; set; }
         public int BusinessTypeID { get; set; }
         public int CompanyID { get; set; }
-        public int IndividualID { get; set; }
-        
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra1 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra2 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra3 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra4 { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PcodeA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string StateA { get; set; }
+        public int PremiseTypeID { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string WhichFloor { get; set; }
+        public int PremiseLocation { get; set; }
+        public float PremiseArea { get; set; }
+        public int PremiseOwnership { get; set; }
+        public int EntmtGroupID { get; set; }
+        public int EntmtCodeID { get; set; }
+        public int EntmtObjectID { get; set; }
         public int AppStatusID { get; set; }
+        
 
         //The user who creates this application
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
-
-        //The staff processing this application
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
+        public DateTime? DateApproved { get; set; }
+        public float? ProcessingFee { get; set; }
+        public DateTime? DatePaid { get; set; }
+        public DateTime? ExpireDate { get; set; }
 
+        public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual BusinessType BusinessType { get; set; }
         public virtual Company Company { get; set; }
-        public virtual Individual Individual { get; set; }
         public virtual Users Users { get; set; }
-        public virtual EntmtGroup EntmtGroups { get; set; }
-        public virtual EntmtCode EntmtCodes { get; set; }
-        public virtual EntmtObject EntmtObjects { get; set; }
     }
 }
