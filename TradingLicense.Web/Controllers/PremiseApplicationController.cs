@@ -749,6 +749,11 @@ namespace TradingLicense.Web.Controllers
                             {
                                 add2 = add2 + item.Addra4;
                             }
+                            if (item.StateA != null)
+                            {
+                                add3 = add3 + item.StateA;
+
+                            }
                             if (item.PcodeA != null)
                             {
                                 add3 = add3 + item.PcodeA;
@@ -1009,7 +1014,7 @@ namespace TradingLicense.Web.Controllers
             }
             catch (Exception ex)
             {
-                return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
+                
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
