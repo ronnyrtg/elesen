@@ -17,12 +17,10 @@ namespace TradingLicense.Entities
         public string ObjectName { get; set; }
         public int? Period { get; set; }
         public int? PeriodQuantity { get; set; }
-        public int Mode { get; set; }
         public bool Active { get; set; }
         public EntmtCode()
         {
             Active = true;
-            Mode = 3;
         }
         public virtual EntmtGroup EntmtGroup { get; set; }
     }

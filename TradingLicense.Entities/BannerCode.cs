@@ -19,12 +19,10 @@ namespace TradingLicense.Entities
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
         public float PeriodFee { get; set; }
-        public int Mode { get; set; }
         public bool Active { get; set; }
         public BannerCode()
         {
             Active = true;
-            Mode = 2;
         }
 
         public virtual BannerApplication BannerApplication { get; set; }
