@@ -626,6 +626,8 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
+                    var qry = ctx.PremiseApplications
+                                        .Include("Company").Where(x => x.PremiseApplicationID == appId);
                     var premiseApp = ctx.PremiseApplications
                                         .Include("Company").Where(x => x.PremiseApplicationID == appId).ToList();
                     if (premiseApp.Count == 0)
@@ -1003,10 +1005,9 @@ namespace TradingLicense.Web.Controllers
                             graph2.DrawString("Tarikh      :", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 20;
                             graph2.DrawString("Surat ini adalah cetakan komputer dan tandatangan tidak diperlukan", fontitalik, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            string pdfFilename = "Letter.pdf";
-                            pdf.Save(pdfFilename);
-                            FileStream fs = new FileStream(pdfFilename, FileMode.Open, FileAccess.Read);
-                            return File(fs, "application/pdf");
+                            MemoryStream  strm= new MemoryStream();
+                            pdf.Save(strm,false);
+                            return File(strm, "application/pdf");
 
                         }
                     }
