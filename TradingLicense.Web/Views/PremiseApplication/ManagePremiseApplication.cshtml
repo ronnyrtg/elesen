@@ -9,18 +9,18 @@
 
 @{
     List<TradingLicense.Model.BusinessTypeModel>
-    businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>
-        ();
-        List<TradingLicense.Model.SectorModel>
-            sectorsList = new List<TradingLicense.Model.SectorModel>
-                ();
-                List<TradingLicense.Model.CompanyModel>
-                    companiesList = new List<TradingLicense.Model.CompanyModel>
-                        ();
-                        using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-                        {
-                        var businessType = ctx.BusinessTypes.ToList();
-                        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+    businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+
+    List<TradingLicense.Model.SectorModel>
+    sectorsList = new List<TradingLicense.Model.SectorModel>();
+
+    List<TradingLicense.Model.CompanyModel>
+    companiesList = new List<TradingLicense.Model.CompanyModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessType = ctx.BusinessTypes.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
 
         var sectors = ctx.Sectors.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);

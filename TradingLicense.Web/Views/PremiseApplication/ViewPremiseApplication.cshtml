@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "View Premise License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    
 }
 
 <div id="divMessage"></div>
@@ -15,7 +17,23 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Jenis Kelulusan</div>
-                    <div class="well">@Model.Mode</div>
+                    <div class="well">
+                        @switch (Model.Mode)
+                            {
+                                case 1:
+                                <label>Ekspres</label>
+                                    break;
+                                case 2:
+                                <label>Kelulusan Pengarah</label>
+                                    break;
+                                case 3:
+                                <label>Kelulusan KPE</label>
+                                    break;
+                                case 4:
+                                <label>Kelulusan Mesyuarat</label>
+                                break;
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,7 +41,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Jenis Perniagaan</div>
-                    <div class="well">@Model.BusinessTypeID</div>
+                    <div class="well">@Model.BusinessTypeDesc</div>
                 </div>
             </div>
         </div>
@@ -31,7 +49,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Kumpulan Kod Perniagaan</div>
-                    <div class="well">@Model.SectorID</div>
+                    <div class="well">@Model.SectorDesc</div>
                 </div>
             </div>
         </div>
@@ -172,8 +190,8 @@
 @section scripts{
     <script>
         function back() {
-            var link = '@Url.Action("PremiseApplication", "PremiseApplication")';
-            window.location.href = link;
-        }
+                                var link = '@Url.Action("PremiseApplication", "PremiseApplication")';
+                                window.location.href = link;
+                            }
     </script>
 }
