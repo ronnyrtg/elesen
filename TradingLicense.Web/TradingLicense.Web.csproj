@@ -221,6 +221,7 @@
       <DependentUpon>reportview.aspx</DependentUpon>
     </Compile>
     <Compile Include="Services\DocumentService.cs" />
+    <Compile Include="Services\PaymentsService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-datepicker.css" />

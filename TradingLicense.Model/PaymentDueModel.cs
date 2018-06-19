@@ -7,7 +7,7 @@ namespace TradingLicense.Model
     public class PaymentDueModel
     {
         public int PaymentDueID { get; set; }
-        public int IndividualID { get; set; }
+        public string IndividualIDs { get; set; }
         [Display(Name = "Tujuan Pembayaran")]
         [Required(ErrorMessage = "Sila masukkan tujuan pembayaran")]
         public string PaymentFor { get; set; }

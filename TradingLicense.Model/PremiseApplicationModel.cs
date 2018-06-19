@@ -65,10 +65,14 @@ namespace TradingLicense.Model
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 
+        public static string GetReferenceNo(int premiseApplicationId, DateTime submittedDateTime)
+        {
+            return $"{submittedDateTime.Year}/PA/{premiseApplicationId.ToString().PadLeft(6, '0')}";
+        }
+
         public override string ToString()
         {
-            var name = $"{this.DateSubmitted.Year}/PA/{this.PremiseApplicationID.ToString().PadLeft(6, '0')}";
-            return name;
+            return this.ReferenceNo;
         }
     }
 
