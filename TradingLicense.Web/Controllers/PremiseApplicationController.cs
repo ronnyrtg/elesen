@@ -829,21 +829,22 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("KEPUTUSAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             string modeValue = "";
-                            if (item.Mode == 1)
+                            if (item.AppStatusID == 12)
                             {
-                                modeValue = "Ekspres";
+                                modeValue = "LULUS BERSYARAT";
                             }
-                            else if (item.Mode == 2)
+                            else if (item.AppStatusID == 10)
                             {
-                                modeValue = "Biasa";
+                                modeValue = "LULUS";
                             }
-                            else if (item.Mode == 3)
+                            else if (item.AppStatusID == 11)
                             {
-                                modeValue = "Mesyuarat";
+                                modeValue = "GAGAL";
+                                
                             }
                             else
                             {
-                                modeValue = "Pengarah";
+                                modeValue = "LULUS BERSYARAT";
                             }
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(modeValue, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -881,7 +882,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("PERINGATAN:", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
-                            graph.DrawString("i.   Sila buat bayaran Lesen Perniagaan select-lewatnya pada atau sebelum 28 FEBRUARI 2018", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("i.   Pihak tuan / puan adalah tidak dibenarkan menjalankan perniagaan selagi lesen perniagaan belum dikeluarkan.", font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("ii.  Surat kelulusan ini sah sehingga  " + DateTime.Now.AddMonths(6).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
