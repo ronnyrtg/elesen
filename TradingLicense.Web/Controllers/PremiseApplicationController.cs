@@ -175,6 +175,43 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get Comments for the premise applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="premiseApplicationID">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PremiseComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? premiseApplicationID)
+        {
+            List<PACommentModel> premiseComments = new List<PACommentModel>();
+            int totalRecord = 0;
+            if (premiseApplicationID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<PAComment> query = ctx.PAComments.Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = sortedColumns.GetOrderByString();
+
+                    var result = Mapper.Map<List<PACommentModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "CommentDate desc" : orderByString).ToList();
+
+                    totalRecord = result.Count;
+
+                    #endregion Sorting
+
+                    // Paging
+                    result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    premiseComments = result;
+                }
+            }            
+            return Json(new DataTablesResponse(requestModel.Draw, premiseComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// Download
         /// </summary>
         /// <param name="attechmentId"></param>
@@ -239,59 +276,23 @@ namespace TradingLicense.Web.Controllers
                     // TODO: Select2ListItem is just the same as build-in KeyValuePair class
                     List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
                     var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
-                    var codes = ctx.BusinessCodes
+                    businessCodesList = ctx.BusinessCodes
                         .Where(b => ids.Contains(b.BusinessCodeID))
-                        .GroupBy(b => b.BusinessCodeID)
-                        .Select(bgr => bgr.FirstOrDefault())
-                        .Select(buinesscode => new
-                        {
-                            buinesscode.BusinessCodeID,
-                            buinesscode.CodeNumber,
-                            buinesscode.CodeDesc,
-                        })
-                        .AsEnumerable()
-                        .Select(buinesscode => new
-                        {
-                            id = buinesscode.BusinessCodeID,
-                            text = $"{buinesscode.CodeNumber}~{buinesscode.CodeDesc}",
-                        })
+                        .Select(fnSelectBusinessCode)
                         .ToList();
 
-                    businessCodesList.AddRange(codes
-                        .Select(b => new Select2ListItem
-                        {
-                            id = b.id,
-                            text = b.text,
-                        }));
+                    premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
 
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
                     premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
                     var iids = paLinkInd.Select(b => b.IndividualID).ToList();
-                    var inds = ctx.Individuals
+                    selectedIndividualList = ctx.Individuals
                         .Where(b => iids.Contains(b.IndividualID))
-                        .GroupBy(b => b.IndividualID)
-                        .Select(bgr => bgr.FirstOrDefault())
-                        .Select(individu => new
-                        {
-                            individu.IndividualID,
-                            individu.FullName,
-                            individu.MykadNo,
-                        })
-                        .AsEnumerable()
-                        .Select(individu => new
-                        {
-                            id = individu.IndividualID,
-                            text = $"{individu.FullName}~{individu.MykadNo}",
-                        })
+                        .Select(fnSelectIndividualFormat)
                         .ToList();
 
-                    selectedIndividualList.AddRange(inds
-                        .Select(b => new Select2ListItem
-                        {
-                            id = b.id,
-                            text = b.text,
-                        }));
+                    premiseApplicationModel.selectedIndividualList = selectedIndividualList;
 
                     var paLinkReqDocumentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == id).ToList();
                     if (paLinkReqDocumentList.Count > 0)
@@ -515,6 +516,36 @@ namespace TradingLicense.Web.Controllers
                         {
                             //todo: I guess it's a draft for new logic
                             var individualidslist = premiseApplicationModel.Individualids.ToIntList();
+                            List<int> existingRecord = new List<int>();
+                            var dbEntryPaLinkInd = ctx.PALinkInd.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+                            if (dbEntryPaLinkInd.Count > 0)
+                            {
+                                foreach (var item in dbEntryPaLinkInd)
+                                {
+                                    if (individualidslist.All(q => q != item.IndividualID))
+                                    {
+                                        ctx.PALinkInd.Remove(item);
+                                    }
+                                    else
+                                    {
+                                        existingRecord.Add(item.IndividualID);
+                                    }
+                                }
+                                ctx.SaveChanges();
+                            }
+
+                            foreach (var individual in individualidslist)
+                            {
+                                if (existingRecord.All(q => q != individual))
+                                {
+                                    PALinkInd paLinkInd = new PALinkInd();
+                                    paLinkInd.PremiseApplicationID = premiseApplicationId;
+                                    paLinkInd.IndividualID = individual;
+                                    ctx.PALinkInd.Add(paLinkInd);
+
+                                }
+                            }
+                            ctx.SaveChanges();
                         }
 
                         if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
@@ -538,6 +569,18 @@ namespace TradingLicense.Web.Controllers
                                 return Content("<script language='javascript' type='text/javascript'>alert('Problem In line 537! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
                             }
                         }
+
+                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newComment))
+                        {
+                            PAComment comment = new PAComment();
+                            comment.Comment = premiseApplicationModel.newComment;
+                            comment.CommentDate = DateTime.Now;
+                            comment.PremiseApplicationID = premiseApplicationId;
+                            comment.UsersID = ProjectSession.UserID;
+                            ctx.PAComments.Add(comment);
+                            ctx.SaveChanges();
+                        }
+
                         premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                     }
 
@@ -545,7 +588,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
 
-                        return RedirectToAction("ManagePremiseApplication", new { Id = premiseApplicationModel.PremiseApplicationID });
+                        return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationModel.PremiseApplicationID);
                     }
 
                     TempData["SuccessMessage"] = "Premise License Application saved successfully.";
@@ -1060,6 +1103,9 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
+        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
         /// <summary>
         /// Get Business Code
         /// </summary>
@@ -1082,7 +1128,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
                 }
-                var businessCode = primaryQuery.Select(x => new { id = x.BusinessCodeID, text = x.CodeDesc + "~" + x.CodeNumber }).ToList();
+                var businessCode = primaryQuery.Select(fnSelectBusinessCode).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
@@ -1097,7 +1143,9 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var individual = ctx.Individuals.Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower())).Select(x => new SelectedIndividualModel { id = x.IndividualID, text = x.FullName + " (" + x.MykadNo + ")", fullName = x.FullName, passportNo = x.MykadNo }).ToList();
+                var individual = ctx.Individuals
+                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectIndividualFormat).ToList();
                 return Json(individual, JsonRequestBehavior.AllowGet);
             }
         }
