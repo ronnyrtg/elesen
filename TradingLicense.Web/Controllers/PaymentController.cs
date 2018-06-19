@@ -32,14 +32,13 @@ namespace TradingLicense.Web.Controllers
         /// <param name="individualId"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult PaymentDueByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId, string individualName)
+        public JsonResult PaymentDueByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
         {
             List<TradingLicense.Model.PaymentDueModel> PaymentDue = new List<Model.PaymentDueModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                
-                IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains(individualName));
+                IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains($"~{individualId}~"));
 
                 
                 #region Sorting

@@ -24,7 +24,5 @@ namespace TradingLicense.Entities
         {
             BillStatus = 0;
         }
-        
-        public virtual Individual Individual { get; set; } 
     }
 }

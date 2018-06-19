@@ -14,14 +14,11 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/datetime")
+    @Scripts.Render("~/bundles/select2")
     @RenderSection("scripts", required: false)
-    
-    <script src="~/Scripts/bootstrap-datepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datepicker.css" />                                                          
-    <link href="~/Content/select2/select2.min.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="navbar-static-top" align="center"><img src="~/Content/images/header.png" /></div><br />
+    <div class="navbar-static-top" align="center"><img src="~/Content/images/header.png" class="img-responsive" /></div><br />
     @if (ProjectSession.User != null && ProjectSession.UserID > 0)
     {
         @Html.Partial("_Menu")
@@ -35,7 +32,6 @@
     {
         <p class="copyright">&copy; @DateTime.Now.Year - Datatechnet</p>
     }
-    <script src="~/Content/select2/select2.min.js"></script>
     
 </body>
 </html>
