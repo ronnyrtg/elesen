@@ -204,7 +204,7 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // ErrorLogHelper.Log(ex);
                 return Json(new object[] { Convert.ToInt32(MessageType.danger), MessageType.danger.ToString(), Messages.ContactToAdmin }, JsonRequestBehavior.AllowGet);

@@ -1888,7 +1888,7 @@ namespace TradingLicense.Web.Controllers
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
             }
-            catch(Exception ex)
+            catch
             {
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
