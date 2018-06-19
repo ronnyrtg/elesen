@@ -189,7 +189,7 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    IQueryable<PAComment> query = ctx.PAComments.Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+                    IQueryable<PAComment> query = ctx.PAComments.Include("Users").Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
 
                     #region Sorting
                     // Sorting
