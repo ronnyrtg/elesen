@@ -60,8 +60,16 @@ namespace TradingLicense.Model
         public string UploadAdditionalDocids { get; set; }
         public string newIndividualsList { get; set; }
 
+        public string newComment { get; set; }
+
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+
+        public override string ToString()
+        {
+            var name = $"{this.DateSubmitted.Year}/PA/{this.PremiseApplicationID.ToString().PadLeft(6, '0')}";
+            return name;
+        }
     }
 
     public class NewIndividualModel

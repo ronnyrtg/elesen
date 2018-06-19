@@ -271,66 +271,94 @@
                     </div>
                 </div>
             </div>
-
+            if (Model.UserRollTemplate > 1)
+            {
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-lg-12 col-md-12">
                         <div class="form-group">
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-                            {
-                            <input type="button"  class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter"  name="btnSubmit" />
-                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
-
-                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {
-                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' id="btnsubmit" />
-                                }
-                            }
-
-                            @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                                {
-                                    <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                                }*@
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0)
-                            {
-                                <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
-                                <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
-
+                            <div class="control-label">
+                                Add your Comment
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="form-group">
+                            <div class="control">
+                                @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows="5" })
+                            </div>
                         </div>
                     </div>
                 </div>
-                }
-            </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">
+                                Previous Comments
+                            </div>
+                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
+                        </div>
+                    </div>
+                </div>
+            }
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                                {
+                                    <input type="button" class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter" name="btnSubmit" />
+                                    if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                    {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
+
+                                    if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                    {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' id="btnsubmit" />
+                                    }
+                                }
+
+                                @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                                    {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                    }*@
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0)
+                                {
+                                    <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
+                                    <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
+                                }
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
+                                {
+
+                                }
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
+                                {
+
+                                }
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
+                                {
+
+                                }
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
+                                {
+
+                                }
+
+                                @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
+                                {
+
+                                }
+
+                                <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
 </div>
 
 <div id="editIndividual" class="modal fade" role="dialog">
@@ -475,7 +503,6 @@
 
     var requiredDocList = [];
     var addtionalDocList = [];
-    var selectedMode = '@ViewBag.SelectedMode';
 
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
@@ -543,7 +570,7 @@
                     //console.log(query)
                     return {
                         query: query.term,
-                        selectedMode: selectedMode,
+                        selectedMode: $("#Mode").val(),
                         selectedSector:  $("#SectorID").val()
                     }
                 },
@@ -554,17 +581,6 @@
                         results: data
                     };
                 }
-            }
-        });
-
-        $("#businessCodeList").on('select2:select', function(e) {
-            var data = e.params.data;
-            selectedMode = data.mode;
-        });
-
-        $("#businessCodeList").on('select2:unselect', function(e) {
-            if(!$("#businessCodeList").val()) {
-                selectedMode = 0;
             }
         });
 
@@ -707,6 +723,10 @@
                 event.preventDefault();
             }
         });
+
+        if(@Model.PremiseApplicationID > 0 && @Model.UserRollTemplate > 1) {
+            loadComments();
+        }
     });
 
     function frmSubmit(isdraft) {
@@ -775,7 +795,6 @@
             }
         }
         $('#Individualids').val(newIndividuals.join(','));
-        alert($('#Individualids').val());
     }
 
     function back() {
@@ -1274,6 +1293,49 @@
             });
 
         }
+    }
+
+    function loadComments() {
+        $('#Comments').show();
+        if ($.fn.DataTable.isDataTable("#tblComments")) {
+            $('#tblComments').dataTable().fnDestroy();
+        }
+
+        var data = { "PremiseApplicationID": @Model.PremiseApplicationID };
+
+        table = $("#tblComments").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": true,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("PremiseComments", "PremiseApplication")',
+                type: "POST",
+                data: data
+            },
+            "columns": [                
+                {
+                    "targets": 0,
+                    "searchable": false,
+                    "orderable": false,
+                    "title": "No.",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                { 
+                    "title": "Comment", 
+                    "orderable": false,
+                    "data": "Comment" 
+                },
+                { "title": "Posted On", "data": "CommentDate", render: renderDate },
+            ]
+        });
     }
 
     $(document).ready(function () {
