@@ -8,7 +8,7 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int PaymentDueID { get; set; }
-        public int IndividualID { get; set; }
+        public string IndividualIDs { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string PaymentFor { get; set; }
@@ -24,7 +24,5 @@ namespace TradingLicense.Entities
         {
             BillStatus = 0;
         }
-        
-        public virtual Individual Individual { get; set; } 
     }
 }
