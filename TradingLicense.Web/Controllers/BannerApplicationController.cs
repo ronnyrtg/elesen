@@ -247,10 +247,10 @@ namespace TradingLicense.Web.Controllers
                     return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
-
+                //Do something here
             }
 
 
@@ -308,7 +308,7 @@ namespace TradingLicense.Web.Controllers
                     return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
 
@@ -500,7 +500,7 @@ namespace TradingLicense.Web.Controllers
                         TempData["SuccessMessage"] = "Banner Application saved successfully.";
                         return Json(Convert.ToString(1));
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         transaction.Rollback();
                     }
@@ -553,7 +553,7 @@ namespace TradingLicense.Web.Controllers
                     return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
 
                 }
-                catch (Exception ex)
+                catch
                 {
                     transaction.Rollback();
                     return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);

@@ -33,8 +33,9 @@ namespace TradingLicense.Web.Classes
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
+
             }
 
             return result;
@@ -96,8 +97,9 @@ namespace TradingLicense.Web.Classes
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
+
             }
 
             return result;

@@ -1355,7 +1355,7 @@ namespace TradingLicense.Web.Controllers
                     return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
@@ -1475,7 +1475,7 @@ namespace TradingLicense.Web.Controllers
                     return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
@@ -1583,7 +1583,7 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
