@@ -38,7 +38,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualID == individualId);
+                IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains($"~{individualId}~"));
 
                 
                 #region Sorting
