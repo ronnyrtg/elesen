@@ -538,6 +538,7 @@
     <Content Include="Views\Master\_PaymentDetail.cshtml" />
     <Content Include="Views\Master\_Attachments.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CheckBoxListItem.cshtml" />
+    <Content Include="Views\Master\_ViewAttachments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

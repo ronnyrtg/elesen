@@ -12,6 +12,7 @@ namespace TradingLicense.Model
         public int HawkerCodeID { get; set; }
         public DateTime ValidStart { get; set; }
         public DateTime ValidStop { get; set; }
+        public string GoodsType { get; set; }
         [Required(ErrorMessage = "Sila masukkan masa perniagaan")]
         [StringLength(255)]
         public string OperationHours { get; set; }

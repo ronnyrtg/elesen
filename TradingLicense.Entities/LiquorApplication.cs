@@ -13,6 +13,24 @@ namespace TradingLicense.Entities
         public int LiquorCodeID { get; set; }
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra1 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra2 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra3 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra4 { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PcodeA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string StateA { get; set; }
         public int AppStatusID { get; set; }
         public string PreviousLicense { get; set; }
         public DateTime? PrevLicDate { get; set; }

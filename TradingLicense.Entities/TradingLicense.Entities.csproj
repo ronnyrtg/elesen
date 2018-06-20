@@ -83,6 +83,7 @@
     <Compile Include="LALinkReqDoc.cs" />
     <Compile Include="LAReqDoc.cs" />
     <Compile Include="LenderApplication.cs" />
+    <Compile Include="PADepSupp.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="LiquorApplication.cs" />
