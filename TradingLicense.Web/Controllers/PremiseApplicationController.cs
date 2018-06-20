@@ -394,6 +394,12 @@ namespace TradingLicense.Web.Controllers
                         ctx.SaveChanges();
 
                         int premiseApplicationId = premiseApplication.PremiseApplicationID;
+                        if(premiseApplicationModel.PremiseApplicationID == 0)
+                        {
+                            premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
+                            premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
+                            ctx.SaveChanges();
+                        }
 
                         int roleTemplate = 0;
                         if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
