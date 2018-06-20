@@ -42,5 +42,7 @@ namespace TradingLicense.Model
         public int UserRollTemplate { get; set; }
         public bool IsDraft { get; set; }
         public string UploadRequiredDocids { get; set; }
+
+        public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
     }
 }
