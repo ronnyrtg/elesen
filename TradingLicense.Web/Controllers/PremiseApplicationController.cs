@@ -325,9 +325,10 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult ViewPremiseApplication(int id)
+        public ActionResult ViewPremiseApplication(int? id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+            
             if (id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -361,6 +362,250 @@ namespace TradingLicense.Web.Controllers
                 premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
             }
             return View(premiseApplicationModel);
+        }
+
+        public ActionResult GeneratLicense(Int32? appId)
+        {
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var premiseApp = ctx.PremiseApplications
+                                        .Include("Company").Where(x => x.PremiseApplicationID == appId).ToList();
+                    if (premiseApp.Count == 0)
+                    {
+                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Premise ApplicationID!');</script>");
+                    }
+                    else
+                    {
+                        foreach (var item in premiseApp)
+                        {
+                            int lineheight = 50;
+                            PdfDocument pdf = new PdfDocument();
+                            pdf.Info.Title = "PDF License";
+                            PdfPage pdfPage = pdf.AddPage();
+                            XFont fontitalik = new XFont("Verdana", 8, XFontStyle.Italic);
+                            XGraphics graph = XGraphics.FromPdfPage(pdfPage);
+                            XFont font = new XFont("Verdana", 9, XFontStyle.Bold);
+                            XFont lbfont = new XFont("Verdana", 11, XFontStyle.Bold);
+                            XFont nfont = new XFont("Verdana", 9, XFontStyle.Regular);
+                            XFont sfont = new XFont("Verdana", 8, XFontStyle.Regular);
+
+                            XImage xImage = XImage.FromFile(Server.MapPath("~\\images\\wm1.png"));
+                            graph.DrawImage(xImage, 0, 0, pdfPage.Width, pdfPage.Height);
+
+                            XImage xImage1 = XImage.FromFile(Server.MapPath("~\\images\\logoPL.jpg"));
+                            graph.DrawImage(xImage1, 10, 70, 100, 75);
+
+                            graph.DrawString("TARIKH CETAKAN :", font, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(string.Format("{0:dd MMMM yyyy}", DateTime.Now) , nfont, XBrushes.Black, new XRect(500, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+
+                            graph.DrawString("PERBADANAN LABUAN", lbfont, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Wisma Perbadanan Labuan", font, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Peti Surat 81245", font, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("87022 Willayah Persekutuan Labuan", font, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tel No 		:", font, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("087-408692/600", font, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Faks No    :", font, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("087-408348", font, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("(Lesen ini dekelaurkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                           
+                            lineheight = lineheight + 30;
+                            string compName = "";
+                            if (item.Company.CompanyName == null)
+                            {
+                                compName = "";
+                            }
+                            else
+                            {
+                                compName = item.Company.CompanyName;
+                            }
+                            graph.DrawString(compName, lbfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("SSM No", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.Company.RegistrationNo != null)
+                            {
+                                graph.DrawString(item.Company.RegistrationNo, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            
+                            lineheight = lineheight + 15;
+                            graph.DrawString("No Rujukan", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.ReferenceNo != null)
+                            {
+                                graph.DrawString(item.ReferenceNo, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            string compAdd = "";
+                            if (item.Company.CompanyAddress == null)
+                            {
+                                compAdd = "";
+                            }
+                            else
+                            {
+                                compAdd = item.Company.CompanyAddress;
+                            }
+
+                            graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+
+                            graph.DrawString("Taraf Lesen", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.LicenseStatus != null)
+                            {
+                                graph.DrawString(item.LicenseStatus, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+
+                            string compPhone = "";
+                            if (item.Company.CompanyPhone == null)
+                            {
+                                compPhone = "";
+                            }
+                            else
+                            {
+                                compPhone = item.Company.CompanyPhone;
+                            }
+
+                            graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tempoh Sah", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.DatePaid != null && item.DatePaid.ToString() != "")
+                            {
+                                DateTime dt = new DateTime(item.DatePaid.Value.Year, item.DatePaid.Value.Month, item.DatePaid.Value.Day);
+                                var mDate = string.Format("{0:dd MMMM yyyy}", dt);
+                                graph.DrawString(mDate, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+
+                                graph.DrawString("Hingga", font, XBrushes.Black, new XRect(453, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                DateTime? hDate;
+                                hDate = item.DatePaid;
+                                if (Convert.ToInt32(item.Mode) ==1)
+                                {
+                                    hDate = hDate.Value.AddMonths(6); 
+                                }
+                                else
+                                {
+                                    hDate = hDate.Value.AddMonths(12);
+                                }
+                                graph.DrawString(string.Format("{0:dd MMMM yyyy}", hDate), nfont, XBrushes.Black, new XRect(490, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            lineheight = lineheight + 30;
+                            graph.DrawRectangle(XBrushes.LightSalmon, 10, lineheight, pdfPage.Width - 30 , 20);
+                            graph.DrawString("MAKLUMAT LESEN", font, XBrushes.Black, new XRect(15, lineheight +5, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 30;
+
+                            graph.DrawString("KOD AKTIVITI", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("KETERANGAN", font, XBrushes.Black, new XRect(((pdfPage.Width)/2)-70 , lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("AMAUN", font, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            XPen lineRed1 = new XPen(XColors.Black , 0.5);
+                            System.Drawing.Point pt4 = new System.Drawing.Point(10, lineheight);
+                            System.Drawing.Point pt5 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width)-20, lineheight);
+                            graph.DrawLine(lineRed1, pt4, pt5);
+                            lineheight = lineheight + 3;
+                            float TotAmount = 0;
+                            int TotHeight = 0;
+                            foreach (var item1 in ctx.PALinkBC.Where(x => x.PremiseApplicationID == appId))
+                            {
+                                if(Convert.ToInt32(item1.BusinessCodeID) > 0)
+                                {
+                                    foreach (var item2 in ctx.BusinessCodes.Where(x => x.BusinessCodeID == item1.BusinessCodeID))
+                                    {
+                                        if (item2.CodeNumber != null)
+                                        {
+                                          graph.DrawString(item2.CodeNumber, nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                            
+                                        }
+                                        if (item2.CodeDesc != null)
+                                        {
+                                            graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        }
+                                        float Amount = 0;
+                                        if(item2.BaseFee == 0)
+                                        {
+                                            Amount = (item2.DefaultRate) * (item.PremiseArea);
+                                        }
+                                        else
+                                        {
+                                            Amount = item2.BaseFee;
+                                        }
+                                        graph.DrawString("RM " + string.Format("{0:0.00}",Amount) , nfont, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        TotAmount = TotAmount + Amount;
+                                        lineheight = lineheight + 16;
+                                        TotHeight = TotHeight + lineheight;
+                                        XPen lineRed2 = new XPen(XColors.Black, 0.5);
+                                        System.Drawing.Point pt6 = new System.Drawing.Point(10, lineheight);
+                                        System.Drawing.Point pt7 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 20, lineheight);
+                                        graph.DrawLine(lineRed1, pt6, pt7);
+                                    }
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("JUMLAH", font, XBrushes.Black, new XRect(450, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("RM " + string.Format("{0:0.00}", TotAmount) , nfont, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 30;
+                            Int32 cnt = 0;
+                            foreach (var item3 in ctx.PALinkInd.Where(x => x.PremiseApplicationID == appId))
+                            {
+                                if (Convert.ToInt32(item3.IndividualID) > 0)
+                                {
+                                    foreach (var item4 in ctx.Individuals.Where(x => x.IndividualID == item3.IndividualID))
+                                    {
+                                        {
+                                            if (item4.FullName != null)
+                                            {
+                                                string fName = item4.FullName;
+                                                string itm = cnt.ToString() + " .    "  + fName;
+                                                graph.DrawString(itm, nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                                cnt = cnt + 1;
+                                                lineheight = lineheight + 15;
+                                            }
+                                            if(item4.MykadNo != null)
+                                            {
+                                                graph.DrawString(item4.MykadNo, nfont, XBrushes.Black, new XRect(400, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            lineheight = lineheight + 80;
+                            string str = "LESEN TAHUN  ";
+                            if(item.DateApproved != null)
+                            {
+                                str = str + item.DateApproved.Value.Year;
+                            }
+                            graph.DrawString(str, font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("LESEN INI HENDAKLAH DIPAMERKAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+
+                            XPen lineRed3 = new XPen(XColors.Black, 0.5);
+                            System.Drawing.Point pt8 = new System.Drawing.Point(400, lineheight -20);
+                            System.Drawing.Point pt9 = new System.Drawing.Point(570, lineheight-20);
+                            graph.DrawLine(lineRed1, pt8, pt9);
+                            graph.DrawString("KETUA PEGAWAI EKSEKUTIF", font, XBrushes.Black, new XRect(420, lineheight-15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("PERBADANAN LABUAN ", font, XBrushes.Black, new XRect(430, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("Pihak Berkuasa Pelesenan", nfont, XBrushes.Black, new XRect(434, lineheight+15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            MemoryStream strm = new MemoryStream();
+                            pdf.Save(strm, false);
+                            return File(strm, "application/pdf");
+
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
 
         /// <summary>

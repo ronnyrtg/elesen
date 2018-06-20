@@ -66,89 +66,97 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var userModel = ctx.Users.Where(u => u.Username == model.Username).FirstOrDefault();
-
-                    if (userModel != null && userModel.UsersID > 0)
+                    try
                     {
-                        if (userModel.Locked != 1)
+                        var userModel = ctx.Users.Where(u => u.Username == model.Username).FirstOrDefault();
+
+                        if (userModel != null && userModel.UsersID > 0)
                         {
-                            string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
-                            string ipAddress = Dns.GetHostByName(hostName).AddressList[0].ToString();
-                            LoginLog loginLog = new LoginLog();
-                            loginLog.LogDate = DateTime.Now;
-                            loginLog.UsersID = userModel.UsersID;
-                            loginLog.IpAddress = ipAddress;
-                            loginLog.LogDesc = userModel.Username;
-
-                            var result = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
-                            if (userModel.Password == Infrastructure.EncryptionDecryption.GetEncrypt(model.Password))
+                            if (userModel.Locked != 1)
                             {
-                                if (model.RememberMe)
+                                string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
+                                string ipAddress = Dns.GetHostByName(hostName).AddressList[0].ToString();
+                                LoginLog loginLog = new LoginLog();
+                                loginLog.LogDate = DateTime.Now;
+                                loginLog.UsersID = userModel.UsersID;
+                                loginLog.IpAddress = ipAddress;
+                                loginLog.LogDesc = userModel.Username;
+
+                                var result = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
+                                if (userModel.Password == Infrastructure.EncryptionDecryption.GetEncrypt(model.Password))
                                 {
-                                    Response.Cookies["TradingLicenseUserName"].Value = model.Username;
-                                    Response.Cookies["TradingLicensePassword"].Value = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
-                                    Response.Cookies["TradingLicenseIsRemember"].Value = Convert.ToString(model.RememberMe);
-                                    Response.Cookies["TradingLicenseIsRemember"].Expires = DateTime.Now.AddMonths(1);
-                                    Response.Cookies["TradingLicenseUserName"].Expires = DateTime.Now.AddMonths(1);
-                                    Response.Cookies["TradingLicensePassword"].Expires = DateTime.Now.AddMonths(1);
+                                    if (model.RememberMe)
+                                    {
+                                        Response.Cookies["TradingLicenseUserName"].Value = model.Username;
+                                        Response.Cookies["TradingLicensePassword"].Value = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
+                                        Response.Cookies["TradingLicenseIsRemember"].Value = Convert.ToString(model.RememberMe);
+                                        Response.Cookies["TradingLicenseIsRemember"].Expires = DateTime.Now.AddMonths(1);
+                                        Response.Cookies["TradingLicenseUserName"].Expires = DateTime.Now.AddMonths(1);
+                                        Response.Cookies["TradingLicensePassword"].Expires = DateTime.Now.AddMonths(1);
+                                    }
+                                    else
+                                    {
+                                        Response.Cookies["TradingLicenseUserName"].Expires = DateTime.Now.AddMonths(-1);
+                                        Response.Cookies["TradingLicensePassword"].Expires = DateTime.Now.AddMonths(-1);
+                                        Response.Cookies["TradingLicenseIsRemember"].Expires = DateTime.Now.AddMonths(-1);
+                                    }
+
+                                    loginLog.LoginStatus = true;
+                                    ctx.LoginLogs.AddOrUpdate(loginLog);
+                                    ctx.SaveChanges();
+
+                                    UsersModel user = new UsersModel();
+                                    user = Mapper.Map<UsersModel>(userModel);
+                                    ProjectSession.UserID = userModel.UsersID;
+                                    ProjectSession.User = user;
+
+                                    FormsAuthentication.SetAuthCookie(model.Username, false);
+
+                                    if (!string.IsNullOrEmpty(model.ReturnUrl))
+                                    {
+                                        return Redirect(model.ReturnUrl);
+                                    }
+                                    else
+                                    {
+                                        return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
+                                    }
                                 }
                                 else
                                 {
-                                    Response.Cookies["TradingLicenseUserName"].Expires = DateTime.Now.AddMonths(-1);
-                                    Response.Cookies["TradingLicensePassword"].Expires = DateTime.Now.AddMonths(-1);
-                                    Response.Cookies["TradingLicenseIsRemember"].Expires = DateTime.Now.AddMonths(-1);
-                                }
+                                    loginLog.LoginStatus = false;
+                                    ctx.LoginLogs.AddOrUpdate(loginLog);
+                                    ctx.SaveChanges();
 
-                                loginLog.LoginStatus = true;
-                                ctx.LoginLogs.AddOrUpdate(loginLog);
-                                ctx.SaveChanges();
-                                
-                                UsersModel user = new UsersModel();
-                                user = Mapper.Map<UsersModel>(userModel);
-                                ProjectSession.UserID = userModel.UsersID;
-                                ProjectSession.User = user;
+                                    DateTime fromDate = DateTime.Now.AddMinutes(-30);
+                                    DateTime toDate = DateTime.Now;
 
-                                FormsAuthentication.SetAuthCookie(model.Username, false);
+                                    var loginLoglist = ctx.LoginLogs.Where(l => l.UsersID == userModel.UsersID && l.LogDate >= fromDate && l.LogDate < toDate && l.LoginStatus == false).ToList();
+                                    if (loginLoglist != null && loginLoglist.Count() == 5 || loginLoglist.Count() > 5)
+                                    {
+                                        userModel.Locked = 1;
+                                        ctx.Users.AddOrUpdate(userModel);
+                                        ctx.SaveChanges();
+                                    }
 
-                                if (!string.IsNullOrEmpty(model.ReturnUrl))
-                                {
-                                    return Redirect(model.ReturnUrl);
-                                }
-                                else
-                                {
-                                    return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
+                                    ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.InValidCredential);
+                                    return View(model);
                                 }
                             }
                             else
                             {
-                                loginLog.LoginStatus = false;
-                                ctx.LoginLogs.AddOrUpdate(loginLog);
-                                ctx.SaveChanges();
-
-                                DateTime fromDate = DateTime.Now.AddMinutes(-30);
-                                DateTime toDate = DateTime.Now;
-
-                                var loginLoglist = ctx.LoginLogs.Where(l => l.UsersID == userModel.UsersID && l.LogDate >= fromDate && l.LogDate < toDate && l.LoginStatus == false).ToList();
-                                if (loginLoglist != null && loginLoglist.Count() == 5 || loginLoglist.Count() > 5)
-                                {
-                                    userModel.Locked = 1;
-                                    ctx.Users.AddOrUpdate(userModel);
-                                    ctx.SaveChanges();
-                                }
-
-                                ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.InValidCredential);
+                                ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.AccountLock);
                                 return View(model);
                             }
                         }
                         else
                         {
-                            ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.AccountLock);
+                            ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.InValidCredential);
                             return View(model);
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.InValidCredential);
+                        ModelState.AddModelError(string.Empty, ex.Message.ToString());
                         return View(model);
                     }
                 }

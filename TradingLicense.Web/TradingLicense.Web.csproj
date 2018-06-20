@@ -232,7 +232,6 @@
     <Content Include="Content\bootstrap-datepicker3.min.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.min.css" />
-    <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -248,7 +247,7 @@
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\Datatables\responsive.dataTables.min.css" />
     <Content Include="Content\select2\select2.min.css" />
-    <Content Include="Scripts\Bootstrap\bootstrap-datetimepicker.min.js" />
+    <Content Include="images\wm1.png" />
     <Content Include="Scripts\select2\select2.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -539,6 +538,7 @@
     <Content Include="Views\Master\_PaymentDetail.cshtml" />
     <Content Include="Views\Master\_Attachments.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CheckBoxListItem.cshtml" />
+    <Content Include="Views\Master\_ViewAttachments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

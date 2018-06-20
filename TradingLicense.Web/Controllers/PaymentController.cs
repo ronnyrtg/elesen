@@ -31,41 +31,32 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <param name="individualId"></param>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult PaymentDueByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        [HttpGet]
+        public JsonResult PaymentDueByIndividual(int? individualId)
         {
             List<TradingLicense.Model.PaymentDueModel> PaymentDue = new List<Model.PaymentDueModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains($"~{individualId}~"));
-
-                
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
+                try
                 {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                    //IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains($"~{individualId}~"));
+                    IQueryable<PaymentDue> query = ctx.PaymentDues.ToList().AsQueryable().Where(pd => pd.IndividualIDs.Contains(individualId.ToString()));
+                    #region Sorting
+                    // Sorting
+                    var orderByString = String.Empty;
+                    var result = Mapper.Map<List<PaymentDueModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "PaymentDueID asc" : orderByString).ToList();
+                    totalRecord = result.Count();
+                    #endregion Sorting
+                    PaymentDue = result;
                 }
-
-                var result = Mapper.Map<List<PaymentDueModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "PaymentDueID asc" : orderByString).ToList();
-
-                totalRecord = result.Count();
-
-                #endregion Sorting
-
-                // Paging
-                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
-                PaymentDue = result;
+                catch(Exception ex)
+                {
+                    PaymentDue = null;
+                }
             }
-            return Json(new DataTablesResponse(requestModel.Draw, PaymentDue, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(PaymentDue, JsonRequestBehavior.AllowGet);
         }
 
         #endregion
@@ -88,41 +79,27 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <param name="individualId"></param>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult PaymentReceivedByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        [HttpGet]
+        public JsonResult PaymentReceivedByIndividual(int? individualId)
         {
             List<TradingLicense.Model.PaymentReceivedModel> PaymentReceived = new List<Model.PaymentReceivedModel>();
-            int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<PaymentReceived> query = ctx.PaymentReceiveds.Where(pr => pr.IndividualID == individualId);
 
-
                 #region Sorting
                 // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
                 var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
 
                 var result = Mapper.Map<List<PaymentReceivedModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "PaymentReceivedID asc" : orderByString).ToList();
 
-                totalRecord = result.Count();
-
                 #endregion Sorting
 
                 // Paging
-                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
                 PaymentReceived = result;
             }
-            return Json(new DataTablesResponse(requestModel.Draw, PaymentReceived, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(PaymentReceived, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

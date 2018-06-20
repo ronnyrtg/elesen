@@ -51,7 +51,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                
+
                 IQueryable<Department> query = ctx.Departments.Where(d => d.Internal == unitType);
                 totalRecord = query.Count();
 
@@ -556,42 +556,25 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <param name="individualId"></param>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult CompaniesByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        [HttpGet]
+        public JsonResult CompaniesByIndividual(int? individualId)
         {
             List<TradingLicense.Model.CompanyModel> Company = new List<Model.CompanyModel>();
-            int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<Company> query = ctx.IndLinkComs.Where(i => i.IndividualID == individualId).Select(l => l.Company);
-                totalRecord = query.Count();
 
                 #region Sorting
                 // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
                 var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
                 query = query.OrderBy(orderByString == string.Empty ? "CompanyID asc" : orderByString);
 
                 #endregion Sorting
-
-                // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
-
                 Company = Mapper.Map<List<CompanyModel>>(query.ToList());
-
             }
-            return Json(new DataTablesResponse(requestModel.Draw, Company, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(Company, JsonRequestBehavior.AllowGet);
         }
-        
+
 
         /// <summary>
         /// Get Company Data by ID
@@ -791,12 +774,10 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <param name="individualId"></param>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult AttachmentsByIndividual([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? individualId)
+        [HttpGet]
+        public JsonResult AttachmentsByIndividual(int? individualId)
         {
-            List<IndLinkAttModel> Attachment = new List<IndLinkAttModel>(); 
-            int totalRecord = 0;
-            int filteredRecord = 0;
+            List<IndLinkAttModel> Attachment = new List<IndLinkAttModel>();
             using (var ctx = new LicenseApplicationContext())
             {
                 // totalRecord = ctx.Attachments.Count();
@@ -807,10 +788,8 @@ namespace TradingLicense.Web.Controllers
                                                on ila.AttachmentID equals a.AttachmentID
                                                where ila.IndividualID == individualId
                                                select ila;
-                totalRecord = query.Count();
-                
                 // Paging
-                query = query.OrderBy("AttachmentID asc").Skip(requestModel.Start).Take(requestModel.Length);
+                query = query.OrderBy("AttachmentID asc");
 
                 Attachment = Mapper.Map<List<IndLinkAttModel>>(query.ToList());
 
@@ -825,7 +804,7 @@ namespace TradingLicense.Web.Controllers
                 }
 
             }
-            return Json(new DataTablesResponse(requestModel.Draw, Attachment, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(Attachment, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1016,7 +995,7 @@ namespace TradingLicense.Web.Controllers
                         attachmentID = attachment.AttachmentID;
                     }
 
-                    return Json("File Uploaded Successfully!#" + attachmentID.ToString() + "#" 
+                    return Json("File Uploaded Successfully!#" + attachmentID.ToString() + "#"
                         + TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + individualIdLoc + "/" + fileName);
                 }
                 catch (Exception ex)
@@ -1765,7 +1744,7 @@ namespace TradingLicense.Web.Controllers
                     int individualID = Convert.ToInt32(Id);
                     var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
-                    
+
                     model.CompanyIds = (string.Join(",", ctx.IndLinkComs.Where(x => x.IndividualID == Id).Select(x => x.CompanyID.ToString()).ToArray()));
                 }
                 model.Individual = IndividualModel;
@@ -1803,7 +1782,7 @@ namespace TradingLicense.Web.Controllers
                     Individual = Mapper.Map<Individual>(model.Individual);
                     ctx.Individuals.AddOrUpdate(Individual);
 
-                    if(model.Individual.IndividualID == 0)
+                    if (model.Individual.IndividualID == 0)
                     {
                         ctx.SaveChanges();
                         individualId = Individual.IndividualID;
@@ -1885,7 +1864,7 @@ namespace TradingLicense.Web.Controllers
                         ctx.Entry(Attachment).State = System.Data.Entity.EntityState.Deleted;
                         ctx.SaveChanges();
                     }
-                    
+
                 }
                 return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
             }
@@ -2463,7 +2442,7 @@ namespace TradingLicense.Web.Controllers
                     businessTypeModel.RequiredDocs = ctx.PALinkReqDocs.Where(a => a.BusinessTypeID == businessTypeID).Select(a => a.RequiredDocID).ToList();
                 }
                 var requiredDocs = ctx.RequiredDocs;
-                ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());                
+                ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
             }
 
             return View(businessTypeModel);
@@ -3450,7 +3429,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable <LoginLog> query = ctx.LoginLogs;
+                IQueryable<LoginLog> query = ctx.LoginLogs;
                 totalRecord = query.Count();
 
                 #region Filtering
