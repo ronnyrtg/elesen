@@ -32,7 +32,7 @@ namespace TradingLicense.Web
 
             bundles.Add(new ScriptBundle("~/bundles/datetime").Include(
                         "~/Scripts/moment*",
-                        "~/Scripts/bootstrap-datetimepicker*"));
+                        "~/Scripts/jquery-ui-1.12.1.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/select2").Include(
                         "~/Scripts/select2/select2.min.js"));
@@ -44,8 +44,8 @@ namespace TradingLicense.Web
                        "~/Content/Datatables/responsive.dataTables.min.css",
                       //  "~/Content/site.css",
                       "~/Content/toastr.css",
-                      "~/Content/bootstrap-datepicker.css",
                       "~/Content/select2/select2.min.css",
+                      "~/Content/themes/base/jquery-ui.min.css",
                       "~/Content/Custom.css"));
 
 
