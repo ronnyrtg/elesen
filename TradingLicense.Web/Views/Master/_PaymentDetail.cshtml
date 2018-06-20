@@ -1,11 +1,23 @@
-﻿
-<div id="divMessage"></div>
+﻿<div id="divMessage"></div>
 <div class="card">
     <div class="header">
         <h4>Payments Due</h4>
     </div>
     <div class="grid" id="divPaymentDueTable">
-        <table cellspacing="0" class="table table-striped" id="tblPaymentDue"></table>
+        <table cellspacing="0" class="layout display responsive-table" id="tblPaymentDue">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Payment For</th>
+                    <th>Amount Due</th>
+                    <th>Date Billed</th>
+                    <th>Due Date</th>
+                    <th>Billed By</th>
+                    <th>Bill Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 <div class="card">
@@ -13,6 +25,17 @@
         <h4>Payments Received</h4>
     </div>
     <div class="grid" id="divPaymentReceivedTable">
-        <table cellspacing="0" class="table table-striped" id="tblPaymentReceived"></table>
+        <table cellspacing="0" class="layout display responsive-table" id="tblPaymentReceived">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Payment For</th>
+                    <th>Amount Paid</th>
+                    <th>Date Paid</th>
+                    <th>Received By</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>

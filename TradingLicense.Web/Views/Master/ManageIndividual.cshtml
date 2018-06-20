@@ -223,6 +223,8 @@
                             companySelectedId = [];
                         }
 
+                        bindAttachmentsTable();
+
                         $('#btnUpload').click(function () {
 
                             if (window.FormData !== undefined) {
@@ -275,6 +277,35 @@
                     }
                     function changeCompany() {
                         $('#CompanyIds').val($('#companyList').val());
+                    }
+
+                    function bindAttachmentsTable() {
+                        $.ajax({
+                            url: '@Url.Action("AttachmentsByIndividual", "Master")',
+                            type: "GET",
+                            data: bindAttachmentParams('@ViewBag.IndividualId'),
+                            success: function (result) {
+                                $('#tblAttachment tbody').html('');
+                                $.each(result, function (index, attachment) {
+                                    var filePath = attachment.Attachment.FileNameFullPath;
+                                    var row = '<tr>';
+                                    row += '<td>' + (parseInt(index) + 1) + '</td>';
+                                    row += '<td>' + '<a href="' + filePath + '" download>' + filePath.split('/')[filePath.split('/').length - 1] + '</a>' + '</td>';
+                                    row += '<td>' + attachment.AttachmentDesc + '</td>';
+                                    row += '</tr>';
+                                    $('#tblAttachment tbody').append(row);
+                                });
+                            },
+                            error: function (err) {
+                                alert(err.statusText);
+                            }
+                        });
+                    }
+
+                    function bindAttachmentParams(individualId) {
+                        var param = {};
+                        param["individualId"] = individualId;
+                        return param;
                     }
                 </script>
             }
