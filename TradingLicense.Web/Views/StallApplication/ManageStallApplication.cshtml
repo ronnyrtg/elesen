@@ -48,8 +48,62 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label"> Jenis Barang Dijaja <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.GoodsType, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
 
-            <hr /><div class="h4">Senarai Pembantu</div><br />
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Lokasi Perniagaan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.StallLocation, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.StallLocation)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+
+                        <div class="control-label">Tempoh Sah Lesen Dari <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ValidStart, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.ValidStart)
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label">Hingga<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.ValidStop, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.ValidStop)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label"> Masa Berniaga <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.OperationHours, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Nama Pembantu (Mykad/Paspot)
+                        </div>
+                        //@Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-12">

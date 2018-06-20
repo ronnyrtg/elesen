@@ -19,6 +19,7 @@ namespace TradingLicense.Model
         public int HelperA { get; set; }
         public int HelperB { get; set; }
         public int HelperC { get; set; }
+        public string GoodsType { get; set; }
         public int AppStatusID { get; set; }
 
         public int UsersID { get; set; }
