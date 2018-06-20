@@ -19,7 +19,7 @@ body {
     padding-left: 15px;
     padding-right: 15px;
     min-height: 100%;
-    padding-bottom:68px;
+    padding-bottom: 68px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -56,26 +56,26 @@ input.error, textarea.error, select.error {
 }
 
 
-.dataTable, .dataTable1 {
+table.display, .dataTable, .dataTable1 {
     font-family: 'Open Sans', sans-serif;
     margin-bottom: 0px;
 }
 
-    .dataTable thead tr, .dataTable1 thead tr {
+    table.display thead tr, .dataTable thead tr, .dataTable1 thead tr {
         background: #f9f9f9 !important;
     }
 
-    .dataTable th a, .dataTable1 th a {
+    table.display th a, .dataTable th a, .dataTable1 th a {
         color: #646464;
         font-weight: bold !important;
         text-decoration: none;
     }
 
-        .dataTable th a:hover, .dataTable1 th a:hover {
+        table.display th a:hover, .dataTable th a:hover, .dataTable1 th a:hover {
             color: #333;
         }
 
-    .dataTable td, .dataTable1 td {
+    table.display td, .dataTable td, .dataTable1 td {
         padding: 13px 15px !important;
         color: #777a7d;
         vertical-align: middle !important;
@@ -85,12 +85,12 @@ input.error, textarea.error, select.error {
         max-width: 150px !important;*/
     }
 
-    .dataTable td, .dataTable th, .dataTable1 td, .dataTable1 th {
+    table.display td, .dataTable td, .dataTable th, .dataTable1 td, .dataTable1 th {
         border: none !important;
         font-weight: normal !important;
     }
 
-    .dataTable th, .dataTable1 th {
+    table.display th, .dataTable th, .dataTable1 th {
         font-size: 14px;
         background: #FFF;
         color: #646464;
@@ -372,6 +372,7 @@ span.desc, .sorting_desc span.sort {
 .loader-wrapper.visible {
     z-index: 10000;
 }
+
 .wrapper {
     width: 100%;
     padding: 30px;
@@ -383,69 +384,69 @@ span.desc, .sorting_desc span.sort {
     position: relative;
 }
 
-.card .header {
-    border-bottom: 1px solid #e1e1e1;
-    padding: 15px;
-}
-
-    .card .header h4 {
-        font-weight: bold;
-        font-size: 20px;
-        line-height: 24px;
-        padding: 0;
-        margin:0;
+    .card .header {
+        border-bottom: 1px solid #e1e1e1;
+        padding: 15px;
     }
 
-.card .body {
-    padding: 15px;
-}
-
-.card .page-action-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0;
-    margin: 0;
-}
-
-    .card .page-action-button li {
-        display: inline-block;
-    }
-
-        .card .page-action-button li a {
-            line-height: 0;
-            display: block;
-            padding: 13px 14px;
-            border-left: 1px solid #e1e1e1;
+        .card .header h4 {
+            font-weight: bold;
+            font-size: 20px;
+            line-height: 24px;
+            padding: 0;
+            margin: 0;
         }
 
-            .card .page-action-button li a:hover {
-                background: #f6f6f6;
+    .card .body {
+        padding: 15px;
+    }
+
+    .card .page-action-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+        .card .page-action-button li {
+            display: inline-block;
+        }
+
+            .card .page-action-button li a {
+                line-height: 0;
+                display: block;
+                padding: 13px 14px;
+                border-left: 1px solid #e1e1e1;
             }
 
-.card .back-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
+                .card .page-action-button li a:hover {
+                    background: #f6f6f6;
+                }
 
-    .card .back-button a {
-        font-size: 18px;
-        line-height: 54px;
-        color: #646464;
-        padding: 0 15px;
-        text-decoration:none;
+    .card .back-button {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
-        .card .back-button a:hover, .card .back-button a:focus, .card .back-button a:active, .card .back-button a.active {
-            opacity: 0.7;
+        .card .back-button a {
+            font-size: 18px;
+            line-height: 54px;
+            color: #646464;
+            padding: 0 15px;
+            text-decoration: none;
         }
 
-        .card .back-button a img {
-            margin-right: 5px;
-            position: relative;
-            top: 3px;
-        }
+            .card .back-button a:hover, .card .back-button a:focus, .card .back-button a:active, .card .back-button a.active {
+                opacity: 0.7;
+            }
+
+            .card .back-button a img {
+                margin-right: 5px;
+                position: relative;
+                top: 3px;
+            }
 
     .card ul {
         list-style: none;
@@ -512,6 +513,7 @@ span.desc, .sorting_desc span.sort {
     .checkbox.inline {
         display: inline-block;
     }
+
 .wrapper {
     min-height: 100%;
     padding-bottom: 68px;
@@ -569,13 +571,106 @@ span.desc, .sorting_desc span.sort {
     width: 100%;
 }
 
-/*google reCAPTCHA*/ 
+/*google reCAPTCHA*/
 
 msg-error {
     color: #c65848;
 }
+
 .g-recaptcha.error {
-  border: solid 2px #c64848;
-  padding: .1em;
-  width: 19.4em;
+    border: solid 2px #c64848;
+    padding: .1em;
+    width: 19.4em;
+}
+
+table th,
+table td {
+    text-align: left;
+}
+
+table.layout {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.display {
+    margin: .5em 0;
+}
+
+    table.display th,
+    table.display td {
+        font-family: 'Open Sans', sans-serif;
+        margin-bottom: 0px;
+        padding: .2em .4em;
+    }
+
+    table.display th {
+        background: #D5E0CC;
+    }
+
+    table.display td {
+        background: #fff;
+        border-bottom: 1px solid #B3BFAA !important;
+    }
+
+table.responsive-table {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 30em) {
+    table.responsive-table {
+        box-shadow: none;
+    }
+
+        table.responsive-table thead {
+            display: none;
+        }
+
+    table.display th,
+    table.display td {
+        padding: .5em;
+    }
+
+    table.responsive-table td:nth-child(1):before {
+        content: 'Number';
+    }
+
+    table.responsive-table td:nth-child(2):before {
+        content: 'Name';
+    }
+
+    table.responsive-table td:nth-child(1),
+    table.responsive-table td:nth-child(2) {
+        padding-left: 25%;
+    }
+
+        table.responsive-table td:nth-child(1):before,
+        table.responsive-table td:nth-child(2):before {
+            position: absolute;
+            left: .5em;
+            font-weight: bold;
+        }
+
+    table.responsive-table tr,
+    table.responsive-table td {
+        display: block;
+    }
+
+    table.responsive-table tr {
+        position: relative;
+        margin-bottom: 1em;
+        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    table.responsive-table td {
+        border-top: none;
+    }
+
+        table.responsive-table td.actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: none;
+            background: none;
+        }
 }
