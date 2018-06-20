@@ -15,6 +15,9 @@ namespace TradingLicense.Entities
         public DateTime ValidStop { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
+        public string GoodsType { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string OperationHours { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
