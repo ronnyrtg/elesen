@@ -35,6 +35,7 @@ namespace TradingLicense.Model
         public int AppStatusID { get; set; }
 
         public int UsersID { get; set; }
+        public int RoleTemplateID { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime DateApproved { get; set; }
@@ -50,6 +51,7 @@ namespace TradingLicense.Model
 
         public int UserRollTemplate { get; set; }
         public string BusinessTypeDesc { get; set; }
+        public string BusinessCodeDesc { get; set; }
         public string SectorDesc { get; set; }
         public string FullName { get; set; }
         public string CompanyName { get; set; }

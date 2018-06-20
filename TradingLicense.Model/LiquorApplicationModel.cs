@@ -13,6 +13,12 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please Select Mykad/Passport No")]
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
+        public string Addra1 { get; set; }
+        public string Addra2 { get; set; }
+        public string Addra3 { get; set; }
+        public string Addra4 { get; set; }
+        public string PcodeA { get; set; }
+        public string StateA { get; set; }
         public int AppStatusID { get; set; }
         public string PreviousLicense { get; set; }
         public DateTime? PrevLicDate { get; set; }

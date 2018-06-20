@@ -97,9 +97,16 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
-                                { "title": "No. Rujukan", "data": "PremiseApplicationID" },
-                                { "title": "Pemohon", "data": "FullName" },
-                                { "title": "Syarikat", "data": "PremiseApplicationID" },
+                                { 
+                                    "title": "No. Rujukan", 
+                                    "data": "PremiseApplicationID",
+                                    "render": function (data, type, row) {
+                                        var date = new Date();
+                                        return date.getFullYear() + '/PA/NEW/'+ data;
+                                    }
+                                },
+                                { "title": "Pemohon", "data": "Individualids" },
+                                { "title": "Syarikat", "data": "CompanyName" },
                                 { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
                                 { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
                                 { "title": "Status", "data": "StatusDesc" },

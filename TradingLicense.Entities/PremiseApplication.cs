@@ -49,6 +49,7 @@ namespace TradingLicense.Entities
 
         //User that creates the application, either Public user or Desk Officer
         public int UsersID { get; set; }
+        public int RoleTemplateID { get; set; }
         public DateTime DateSubmitted { get; set; }
         public DateTime? DateApproved { get; set; }
         public DateTime? DatePaid { get; set; }
