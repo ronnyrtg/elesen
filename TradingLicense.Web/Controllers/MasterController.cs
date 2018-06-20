@@ -601,6 +601,8 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageCompany(int? Id)
         {
             CompanyModel companyModel = new CompanyModel();
+            companyModel.SSMRegDate = DateTime.Today;
+            companyModel.SSMExpDate = DateTime.Today;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -610,7 +612,6 @@ namespace TradingLicense.Web.Controllers
                     companyModel = Mapper.Map<CompanyModel>(company);
                 }
             }
-
             return View(companyModel);
         }
 

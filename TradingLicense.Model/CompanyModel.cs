@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
@@ -24,6 +25,9 @@ namespace TradingLicense.Model
         [Display(Name = "Company Address")]
         [StringLength(255)]
         public string CompanyAddress { get; set; }
+
+        public DateTime? SSMRegDate { get; set; }
+        public DateTime? SSMExpDate { get; set; }
 
         public bool Active { get; set; }
     }

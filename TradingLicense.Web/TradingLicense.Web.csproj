@@ -232,6 +232,7 @@
     <Content Include="Content\bootstrap-datepicker3.min.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.min.css" />
+    <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -247,6 +248,7 @@
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\Datatables\responsive.dataTables.min.css" />
     <Content Include="Content\select2\select2.min.css" />
+    <Content Include="Scripts\Bootstrap\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\select2\select2.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
