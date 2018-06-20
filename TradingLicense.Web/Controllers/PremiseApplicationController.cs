@@ -395,7 +395,7 @@ namespace TradingLicense.Web.Controllers
                             XImage xImage = XImage.FromFile(Server.MapPath("~\\images\\wm1.png"));
                             graph.DrawImage(xImage, 0, 0, pdfPage.Width, pdfPage.Height);
 
-                            XImage xImage1 = XImage.FromFile(Server.MapPath("~\\images\\logoPL.jpg"));
+                            XImage xImage1 = XImage.FromFile(Server.MapPath("~\\images\\logoPL.png"));
                             graph.DrawImage(xImage1, 10, 70, 100, 75);
 
                             graph.DrawString("TARIKH CETAKAN :", font, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
