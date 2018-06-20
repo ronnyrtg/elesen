@@ -51,7 +51,7 @@ namespace TradingLicense.Web.Controllers
                     #endregion Sorting
                     PaymentDue = result;
                 }
-                catch(Exception ex)
+                catch
                 {
                     PaymentDue = null;
                 }
