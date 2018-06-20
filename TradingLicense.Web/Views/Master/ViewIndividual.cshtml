@@ -31,7 +31,7 @@
                 @{ Html.RenderPartial("_PaymentDetail", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
             </div>
             <div id="tabs-4" class="tab-pane fade">
-                @{ Html.RenderPartial("_Attachments", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
+                @{ Html.RenderPartial("_ViewAttachments", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
             </div>
         </div>
         
@@ -63,7 +63,7 @@
             bindPaymentReceivedTable();
             bindAttachmentsTable();
 
-            $('#btnUpload').click(function () {
+            @*$('#btnUpload').click(function () {
 
                 if (window.FormData !== undefined) {
 
@@ -96,7 +96,7 @@
                 } else {
                     alert("FormData is not supported.");
                 }
-            });
+            });*@
         });
 
         function bindCompanyTable() {
