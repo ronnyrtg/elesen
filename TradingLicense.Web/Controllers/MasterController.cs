@@ -1686,7 +1686,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ViewIndividual(int? Id)
         {
             ViewBag.IndividualId = Id;
-
+            ViewBag.ViewName = "ViewIndividual";
             return View();
         }
 
@@ -1698,6 +1698,7 @@ namespace TradingLicense.Web.Controllers
         public PartialViewResult MasterDetails(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
+            ViewBag.IndividualId = Id;
             IndividualModel.Active = true;
             if (Id != null && Id > 0)
             {
@@ -1733,7 +1734,8 @@ namespace TradingLicense.Web.Controllers
         {
             IndividualModel IndividualModel = new IndividualModel();
             IndividualModel.Active = true;
-
+            ViewBag.IndividualId = Id;
+            ViewBag.ViewName = "ManageIndividual";
             ManageIndividualModel model = new ManageIndividualModel();
 
             if (Id != null && Id > 0)
