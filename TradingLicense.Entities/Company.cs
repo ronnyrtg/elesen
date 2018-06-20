@@ -18,8 +18,8 @@ namespace TradingLicense.Entities
         [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyPhone { get; set; }
-        public DateTime SSMRegDate { get; set; }
-        public DateTime SSMExpDate { get; set; }
+        public DateTime? SSMRegDate { get; set; }
+        public DateTime? SSMExpDate { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyAddress { get; set; }
