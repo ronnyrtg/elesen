@@ -6,6 +6,8 @@
 @{
     List<TradingLicense.Entities.SAReqDoc> stallDocList = new List<TradingLicense.Entities.SAReqDoc>();
 
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+
     List<TradingLicense.Model.StallCodeModel> stallCodeList = new List<TradingLicense.Model.StallCodeModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
@@ -13,13 +15,19 @@
         stallCodeList = Mapper.Map<List<TradingLicense.Model.StallCodeModel>>(stallCode);
     }
 
+    List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+
+        var individualOwnerList = ctx.Individuals.ToList();
+        individualOwner = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individualOwnerList);
+    }
+
     List<SelectListItem> periodList = new List<SelectListItem>();
     periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
     periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
     periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
-
-    List<SelectListItem> ApplicantList = new List<SelectListItem>();
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -36,9 +44,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)
+                        @Html.DropDownListFor(m => m.IndividualID, new SelectList(individualOwner, "IndividualID", "FullName"), "Masukkan Nama atau MyKad", new { @id = "individualOwner", @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -103,39 +109,9 @@
                         <div class="control-label">
                             Nama Pembantu (Mykad/Paspot)
                         </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <div class="h4">Dokumen Wajib <br /><br /></div>
-                        <div class="text-left">
-                            <table class="table table-striped dataTable table-hover" id="Docs">
-                                @if (ViewBag.stallDocList != null) {
-                                    foreach (var item in ViewBag.stallDocList)
-                                    {
-                                    <tr>
-                                        <td>
-                                            <label>
-                                                <input type="file" value='@item.RequiredDocID' />
-
-                                            </label>
-
-                                        </td>
-                                        <td>
-                                            <label>
-                                                @item.RequiredDoc.RequiredDocDesc
-                                            </label>
-
-                                        </td>
-                                    </tr>
-                                    }
-                                }
-                            </table>
-                        </div>
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndividual()" })
+                        @Html.HiddenFor(model => model.Individualids)
+                        @Html.HiddenFor(model => model.newIndividualsList)                    
                     </div>
                 </div>
             </div>
@@ -153,72 +129,114 @@
 </div>
 @section scripts{
     <script>
-    var actionError = '@(TempData["ErrorMessage"])';
-    if (actionError != null && actionError != "") {
-        errorMessage(actionError);
-    }
+    //Code to wire up your DatePicker
+        $(function () {
+            // This will make every element with the class "date-picker" into a DatePicker element
+            $('.date-picker').datepicker({ dateFormat: 'dd/MM/yyyy' });
+            $("#individualList").select2();
 
-    function back() {
-         var link = '@Url.Action("StallApplication", "StallApplication")';
-        window.location.href = link;
-    }
+            var actionError = '@(TempData["ErrorMessage"])';
+            if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
 
-    function changeIndindividual() {
-            var individuals = $("#individualList").select2('data');
-            var newIndividuals = [];
-            for (var i = 0; i < individuals.length; i++) {
-                var ind = individuals[i];
-                if (!ind.isNew) {
-                    newIndividuals.push(ind.id);
+            function back() {
+                var link = '@Url.Action("StallApplication", "StallApplication")';
+                window.location.href = link;
+            }
+
+
+
+            function individualFormating(state) {
+                if (!state.isNew) {
+                    return state.text;
                 }
-            }
-            $('#Individualids').val(newIndividuals.join(','));
-            alert($('#Individualids').val());
-    }
 
-    $("#individualList").select2({
-        placeholder: "Select Full Name or Mykad/Passport No",
-        minimumInputLength: 2,
-        tags: true,
-        tokenSeparators: [';'],
-        templateSelection: individualFormating,
-        createTag: function (params) {
-            var term = params.term;
-            var indexOfPassport = term.indexOf('(');
-            var fullName = '';
-            var passportNo = '';
-            if (indexOfPassport > 0) {
-                var endIndex = term.indexOf(')', indexOfPassport);
-                passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
-                fullName = term.substring(0, indexOfPassport);
+                state.text = state.fullName + ' (' + state.passportNo + ')';
+                var $state = $(
+                  '<span>' + state.text + '&nbsp;</span>'
+                );
+                if (state.isNew) {
+                    var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                    editLink.on('click', function () {
+                        showIndividualModal(state);
+                    });
+                    $state.append(editLink);
+                }
+                return $state;
+            }
+
+            var individualSelecteId = [];
+            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
+                var individualIds = '@Model.Individualids';
+
+                var arr = individualIds.split(',');
+                $.each(arr, function (index, value) {
+                    individualSelecteId.push(value);
+                });
+                $('#individualList').val(individualSelecteId);
+                $('#individualList').trigger('change');
             } else {
-                fullName = term;
+                individualSelecteId = [];
             }
 
-            return {
-                id: term,
-                text: fullName + ' (' + passportNo + ')',
-                fullName: fullName,
-                passportNo: passportNo,
-                isNew: true
-            };
-        },
-        ajax: {
-            type: "POST",
-            url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
-            //Data: allows us to pass a parameter to the controller
-            data: function (query) {
-                //console.log(query)
-                return { query: query.term }
-            },
-            //processes the results from the JSON method and gives us the select list
-            processResults: function (data) {
-                //console.log(data)
-                return {
-                    results: data
-                };
+            $("#individualList").select2({
+                placeholder: "Select Full Name or Mykad/Passport No",
+                minimumInputLength: 2,
+                tags: true,
+                tokenSeparators: [';'],
+                templateSelection: individualFormating,
+                createTag: function (params) {
+                    var term = params.term;
+                    var indexOfPassport = term.indexOf('(');
+                    var fullName = '';
+                    var passportNo = '';
+                    if (indexOfPassport > 0) {
+                        var endIndex = term.indexOf(')', indexOfPassport);
+                        passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                        fullName = term.substring(0, indexOfPassport);
+                    } else {
+                        fullName = term;
+                    }
+
+                    return {
+                        id: term,
+                        text: fullName + ' (' + passportNo + ')',
+                        fullName: fullName,
+                        passportNo: passportNo,
+                        isNew: true
+                    };
+                },
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillIndividual", "StallApplication")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return { query: query.term }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
+            function changeIndividual() {
+                var individuals = $("#individualList").select2('data');
+                var newIndividuals = [];
+                for (var i = 0; i < individuals.length; i++) {
+                    var ind = individuals[i];
+                    if (!ind.isNew) {
+                        newIndividuals.push(ind.id);
+                    }
+                }
+                $('#Individualids').val(newIndividuals.join(','));
+                alert($('#Individualids').val());
             }
-        }
-    });
+        });
     </script>
 }
