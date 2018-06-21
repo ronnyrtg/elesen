@@ -42,7 +42,7 @@ namespace TradingLicense.Model
         public bool IsDraft { get; set; }
         public string UploadRequiredDocids { get; set; }
 
-        public int Individualids { get; set; }
+        public string Individualids { get; set; }
         public string newIndividualsList { get; set; }
 
         public List<SelectedStallCodeModel> selectedstallCodeList = new List<SelectedStallCodeModel>();
