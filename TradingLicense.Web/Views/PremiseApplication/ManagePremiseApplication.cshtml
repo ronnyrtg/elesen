@@ -92,7 +92,7 @@
                         }
                         else
                         {
-                            Html.HiddenFor(m => m.Mode);
+                            @Html.HiddenFor(m => m.Mode);
                             if (Model.Mode > 0 && Model.Mode < 5)
                             {
                                 string modeDesc = ModeList.Where(mo => mo.Value == Model.Mode.ToString()).Select(mo => mo.Text).First();
@@ -331,10 +331,12 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
+                            {
+                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                            }
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
-                            <input type="button"  class="btn btn-primary btSubmit" value="Cetak Surat Perakuan"  id="btnLetter"  name="btnSubmit" />
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
 
@@ -351,8 +353,8 @@
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0)
                             {
-                            <button type="button" class="btn btn-primary" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Submit to Director</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
                             }
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
@@ -365,16 +367,16 @@
 
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == 7 || Model.AppStatusID == 6))
                             {
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Reject</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
                             }
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
                             {
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Reject</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
                             }
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
@@ -476,7 +478,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                        <div class="col-lg-12 col-md-12" id="RouteUnitTable" style="display:none;">
                             <div class="form-group">
                                 <div class="control-label">
                                     Departments
@@ -1084,6 +1086,8 @@
             }
         });
         $("#RequiredDocIds").val(RequiredArray);
+        
+        checkButtonState();
     }
 
     function checkButtonState() {
@@ -1113,6 +1117,8 @@
             }
         });
         $("#AdditionalDocIds").val(AdditionalArray);
+        
+        checkButtonState();
     }
 
     function RequiredDocumentModel(Requiredid) {
@@ -1407,16 +1413,17 @@
         function showRouteUnitConfirmModal() {
             if(validatePremiseApplication()) {
                 $('#routeUnitModal').modal('show');
+                $('#RouteUnitTable').show();
                 if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
                     $('#tblRouteDepartments').dataTable().fnDestroy();
                 }
 
-                var data = { "businessCodeids": $().val() };
+                var data = { "businessCodeids": $('#BusinessCodeids').val() };
 
                 table = $("#tblRouteDepartments").dataTable({
                     "lengthChange": true,
                     "searching": false,
-                    "pageLength": 50,
+                    "pageLength": 10,
                     "processing": true,
                     "serverSide": true,
                     "bPaginate": true,
@@ -1437,7 +1444,7 @@
                             "render": function (data, type, full, meta) {
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
-                        },,
+                        },
                         { "title": "Department Code", "orderable": true, "data": "DepartmentCode" },
                         { "title": "Department Name", "orderable": true, "data": "DepartmentDesc" },
                         {
@@ -1497,20 +1504,20 @@
     $(document).ready(function () {
         hideLetterDropDown();
         $('#btnLetter').click(function () {
-            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=1");
+            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=@Model.PremiseApplicationID");
             $('#myModal').modal('show');
         });
     });
 
     function hideLetterDropDown()
     {
-        if($('#btnLetter') != null)
+        if($('#btnLetter') != null && $('#btnLetter').length)
         {
-            document.getElementById('btnLetter').style.display=''
+            $('#btnLetter').show();
             $('#btnLetter').css('visibility', 'visible');
-            if($('#Mode').val() != 1 || $('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12)
+            if(!($('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12))
             {
-                document.getElementById('btnLetter').style.display='none';
+                $('#btnLetter').hide();
             }
         }
     }

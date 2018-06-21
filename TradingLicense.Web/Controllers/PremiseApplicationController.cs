@@ -728,6 +728,7 @@ namespace TradingLicense.Web.Controllers
             {
                 premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                 premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
+                ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                 ctx.SaveChanges();
             }
 
@@ -994,14 +995,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="businessCodeIds"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult FillRouteDepartments(string businessCodeIds)
+        public ActionResult FillRouteDepartments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeIds)
         {
             using(var ctx = new LicenseApplicationContext())
             {
                 var businessCodelist = businessCodeIds.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                var departmentList = ctx.Departments.Select(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
-                return Json(departmentList, JsonRequestBehavior.AllowGet);
+                var departmentList = ctx.Departments.Where(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
+                int totalRecord = departmentList.Count;
+                return Json(new DataTablesResponse(requestModel.Draw, Mapper.Map<List<DepartmentModel>>(departmentList), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -1009,6 +1011,7 @@ namespace TradingLicense.Web.Controllers
         {
             premiseApplication = premiseApplication ?? ctx.PremiseApplications.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID).First();
             premiseApplication.AppStatusID = appStatusId;
+            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
             ctx.SaveChanges();
         }
 
