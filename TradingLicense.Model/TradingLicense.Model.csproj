@@ -70,6 +70,7 @@
     <Compile Include="EntmtApplicationModel.cs" />
     <Compile Include="EntmtCodeModel.cs" />
     <Compile Include="EntmtGroupModel.cs" />
+    <Compile Include="HACommentModel.cs" />
     <Compile Include="HAReqDocModel.cs" />
     <Compile Include="HawkerApplicationModel.cs" />
     <Compile Include="HawkerCodeModel.cs" />

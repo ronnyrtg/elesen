@@ -72,6 +72,7 @@
     <Compile Include="EntmtCode.cs" />
     <Compile Include="EntmtGroup.cs" />
     <Compile Include="EntmtObject.cs" />
+    <Compile Include="HAComment.cs" />
     <Compile Include="HALinkReqDoc.cs" />
     <Compile Include="HAReqDoc.cs" />
     <Compile Include="HawkerApplication.cs" />

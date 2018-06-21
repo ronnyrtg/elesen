@@ -63,6 +63,8 @@ namespace TradingLicense.Model
         public string newIndividualsList { get; set; }
 
         public string newComment { get; set; }
+        public string Supported { get; set; }
+        public string SubmitType { get; set; }
 
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();

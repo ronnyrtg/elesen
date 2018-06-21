@@ -76,11 +76,9 @@
             <div class="row">
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
-
                         <div class="control-label">Tempoh Sah Lesen Dari <span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.ValidStart, new { @class = "date-picker" })
                         @Html.ValidationMessageFor(m => m.ValidStart)
-
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-3">
@@ -149,7 +147,35 @@
                     </div>
                 </div>
             </div>
-
+            if (Model.UserRollTemplate > 1)
+            {
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="form-group">
+                            <div class="control-label">
+                                Masukkan Catatan baru
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="form-group">
+                            <div class="control">
+                                @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">
+                                Senarai Catatan
+                            </div>
+                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
+                        </div>
+                    </div>
+                </div>
+            }
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -163,12 +189,14 @@
 </div>
 
 @section scripts{                                                                                                  
+<script type="text/javascript">
+        $(function () {
+            // This will make every element with the class "date-picker" into a DatePicker element
+            $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
+        })
+</script>
 <script>
-    //Code to wire up your DatePicker
-    $(function () {
-        // This will make every element with the class "date-picker" into a DatePicker element
-        $('.date-picker').datepicker({ format: 'dd/MM/yyyy' });
-    })
+
 
     var userRollTemplate = 0;
     var visibleGridColume = false;
@@ -203,7 +231,7 @@
 
         $("#individualOwner").select2();
         $("#individualList").select2();
-        
+
         AddRules();
 
         function individualFormating(state) {
@@ -295,7 +323,7 @@
             });
         }
 
-        
+
 
         $("#preAppid").val(@Model.HawkerApplicationID);
 
@@ -306,6 +334,10 @@
             }
         });
     });
+
+    if(@Model.HawkerApplicationID > 0 && @Model.UserRollTemplate > 1) {
+        loadComments();
+    }
 
     function frmSubmit(isdraft) {
 
@@ -344,7 +376,7 @@
         }
     }
 
-    
+
 
     function changeIndindividual() {
         var individuals = $("#individualList").select2('data');
@@ -356,7 +388,7 @@
             }
         }
         $('#Individualids').val(newIndividuals.join(','));
-        alert($('#Individualids').val());
+        //alert($('#Individualids').val());
     }
 
     function back() {
@@ -454,9 +486,9 @@
         });
     }
 
-    
 
-    
+
+
 
     function RequiredDocument() {
 
@@ -483,7 +515,7 @@
         }
     }
 
-    
+
 
     function RequiredDocumentModel(Requiredid) {
         $("#reqDocid").val(Requiredid);
@@ -492,7 +524,7 @@
         $('#uploadDocumentModal').modal('show');
     }
 
-    
+
 
     var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
     var _validFileExtensions = [];
@@ -584,7 +616,7 @@
                                         RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
                                     }
                                 });
-                            } 
+                            }
                         }
                         else {
                             errorMessage(result.message);
@@ -713,6 +745,49 @@
                 document.getElementById('btnLetter').style.display='none';
             }
         }
+    }
+
+    function loadComments() {
+        $('#Comments').show();
+        if ($.fn.DataTable.isDataTable("#tblComments")) {
+            $('#tblComments').dataTable().fnDestroy();
+        }
+
+        var data = { "HawkerApplicationID": @Model.HawkerApplicationID };
+
+        table = $("#tblComments").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": true,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("HawkerComments", "HawkerApplication")',
+                type: "POST",
+                data: data
+            },
+            "columns": [
+                {
+                    "targets": 0,
+                    "searchable": false,
+                    "orderable": false,
+                    "title": "No.",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    "title": "Comment",
+                    "orderable": false,
+                    "data": "Comment"
+                },
+                { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
+            ]
+        });
     }
 
 </script>
