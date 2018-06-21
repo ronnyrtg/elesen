@@ -41,28 +41,6 @@
 
 <div id="divMessage"></div>
 <div class="card">
-    <div id="tabs">
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#tabs-1">Master Detail</a></li>
-            <li><a data-toggle="tab" href="#tabs-2">Trading Detail</a></li>
-            <li><a data-toggle="tab" href="#tabs-3">Payment Detail</a></li>
-            <li><a data-toggle="tab" href="#tabs-4">Attachments</a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="tabs-1" class="tab-pane fade in active">
-                @{ Html.RenderAction("MasterDetails", "Master", new { Id = ViewBag.IndividualId });}
-            </div>
-            <div id="tabs-2" class="tab-pane fade">
-                @{ Html.RenderPartial("_TradingDetail", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
-            </div>
-            <div id="tabs-3" class="tab-pane fade">
-                @{ Html.RenderPartial("_PaymentDetail", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
-            </div>
-            <div id="tabs-4" class="tab-pane fade">
-                @{ Html.RenderPartial("_Attachments", new ViewDataDictionary { { "Id", ViewBag.IndividualId } });}
-            </div>
-        </div>
-    </div>
     <div class="body">
 
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))

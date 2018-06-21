@@ -42,6 +42,8 @@ namespace TradingLicense.Data
         public DbSet<HawkerApplication> HawkerApplications { get; set; }
         public DbSet<HawkerCode> HawkerCodes { get; set; }
         public DbSet<HAReqDoc> HAReqDocs { get; set; }
+        public DbSet<HALinkReqDoc> HALinkReqDoc { get; set; }
+        public DbSet<HAComment> HAComments { get; set; }
 
         //Stall Application
         public DbSet<StallApplication> StallApplications { get; set; }

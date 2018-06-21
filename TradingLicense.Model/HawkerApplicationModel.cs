@@ -47,6 +47,8 @@ namespace TradingLicense.Model
         public string UploadRequiredDocids { get; set; }
         public string newIndividualsList { get; set; }
 
+        public string newComment { get; set; }
+
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 
         public static string GetReferenceNo(int hawkerApplicationId, DateTime submittedDateTime)
