@@ -785,6 +785,33 @@ namespace TradingLicense.Data.Migrations
             };
             bclinkdeps.ForEach(s => context.BCLinkDeps.Add(s));
             context.SaveChanges();
+
+            var hareqdocs = new List<HAReqDoc>
+            {
+                new HAReqDoc {RequiredDocID=1},
+                new HAReqDoc {RequiredDocID=2},
+                new HAReqDoc {RequiredDocID=3},
+            };
+            hareqdocs.ForEach(s => context.HAReqDocs.Add(s));
+            context.SaveChanges();
+
+            var bareqdocs = new List<BAReqDoc>
+            {
+                new BAReqDoc {RequiredDocID=1},
+                new BAReqDoc {RequiredDocID=2},
+                new BAReqDoc {RequiredDocID=3},
+            };
+            bareqdocs.ForEach(s => context.BAReqDocs.Add(s));
+            context.SaveChanges();
+
+            var sareqdocs = new List<SAReqDoc>
+            {
+                new SAReqDoc {RequiredDocID=1},
+                new SAReqDoc {RequiredDocID=2},
+                new SAReqDoc {RequiredDocID=3},
+            };
+            sareqdocs.ForEach(s => context.SAReqDocs.Add(s));
+            context.SaveChanges();
         }
     }
 }
