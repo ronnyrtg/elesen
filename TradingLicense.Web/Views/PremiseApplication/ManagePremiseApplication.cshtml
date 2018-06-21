@@ -276,7 +276,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="form-group">
                             <div class="control-label">
-                                Add your Comment
+                                Masukkan Catatan baru
                             </div>
                         </div>
                     </div>
@@ -292,7 +292,7 @@
                     <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">
-                                Previous Comments
+                                Senarai Catatan
                             </div>
                             <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
                         </div>
@@ -306,7 +306,7 @@
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
-                            <input type="button"  class="btn btn-primary btSubmit" value="Generate Letter"  id="btnLetter"  name="btnSubmit" />
+                            <input type="button"  class="btn btn-primary btSubmit" value="Cetak Surat Perakuan"  id="btnLetter"  name="btnSubmit" />
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
 
@@ -352,7 +352,7 @@
 
                             }
 
-                            <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                            <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
 
                         </div>
                     </div>
@@ -1334,7 +1334,7 @@
                     "orderable": false,
                     "data": "Comment"
                 },
-                { "title": "Posted On", "data": "CommentDate", render: renderDate },
+                { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
             ]
         });
     }
