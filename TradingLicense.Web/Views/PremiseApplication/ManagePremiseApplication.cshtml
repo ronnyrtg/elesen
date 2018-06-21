@@ -1478,16 +1478,19 @@
         function RoutePremiseApplication() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
             $("#frmPremiseApplication").submit();
+            return false;
         }
 
         function Approved() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
             $("#frmPremiseApplication").submit();
+            return false;
         }
 
         function Rejected() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected');
             $("#frmPremiseApplication").submit();
+            return false;
         }
 
 
