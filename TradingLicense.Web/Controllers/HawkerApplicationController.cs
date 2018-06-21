@@ -10,6 +10,7 @@ using System.Linq.Dynamic;
 using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
+using TradingLicense.Web.Helpers;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -239,6 +240,8 @@ namespace TradingLicense.Web.Controllers
             return Json(new DataTablesResponse(requestModel.Draw, HawkerApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
+        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
         /// <summary>
         /// Get HawkerApplication Data by ID
         /// </summary>
@@ -246,24 +249,94 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageHawkerApplication(int? Id)
         {
-            List<TradingLicense.Model.HAReqDocModel> HAReqDoc = new List<Model.HAReqDocModel>();
-            HawkerApplicationModel HawkerApplicationModel = new HawkerApplicationModel();
+            HawkerApplicationModel hawkerApplicationModel = new HawkerApplicationModel();
+            hawkerApplicationModel.ValidStart = DateTime.Today;
+            hawkerApplicationModel.ValidStop = DateTime.Today;
+            if (Id != null && Id > 0)
+            {
+                List<HAReqDocModel> HAReqDoc = new List<HAReqDocModel>();
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var haLinkInd = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == Id).ToList();
+                    hawkerApplicationModel.Individualids = string.Join(",", haLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                    var iids = haLinkInd.Select(b => b.IndividualID).ToList();
+                    selectedIndividualList = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .Select(fnSelectIndividualFormat)
+                        .ToList();
+
+                    hawkerApplicationModel.selectedIndividualList = selectedIndividualList;
+
+
+                    IQueryable<HAReqDoc> query = ctx.HAReqDocs;
+                    HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
+                    ViewBag.hawkerDocList = ctx.HAReqDocs.ToList();
+                    if (Id != null && Id > 0)
+                    {
+
+                        int HawkerApplicationID = Convert.ToInt32(Id);
+                        var HawkerApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == HawkerApplicationID).FirstOrDefault();
+                        hawkerApplicationModel = Mapper.Map<HawkerApplicationModel>(HawkerApplication);
+                    }
+
+                }
+            }
+            return View(hawkerApplicationModel);
+        }
+
+        /// <summary>
+        /// Get Individuale Code
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillIndividual(string query)
+        {
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<HAReqDoc> query = ctx.HAReqDocs;
-                HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
-                ViewBag.hawkerDocList = ctx.HAReqDocs.ToList();
-                if (Id != null && Id > 0)
-                {
+                var individual = ctx.Individuals
+                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectIndividualFormat).ToList();
+                return Json(individual, JsonRequestBehavior.AllowGet);
+            }
+        }
 
-                    int HawkerApplicationID = Convert.ToInt32(Id);
-                    var HawkerApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == HawkerApplicationID).FirstOrDefault();
-                    HawkerApplicationModel = Mapper.Map<HawkerApplicationModel>(HawkerApplication);
-                }
+        /// <summary>
+        /// get Mykad Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="individualids">The individualids.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Mykad([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string individualids)
+        {
+            List<IndividualModel> individual;
+            int totalRecord = 0;
+
+            //todo: what if individualids == null ?
+            using (var ctx = new LicenseApplicationContext())
+            {
+                List<int> individuallist = individualids.ToIntList();
+
+                IQueryable<Individual> query = ctx.Individuals.Where(r => individuallist.Contains(r.IndividualID));
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<IndividualModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "IndividualID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                individual = result;
 
             }
-
-            return View(HawkerApplicationModel);
+            return Json(new DataTablesResponse(requestModel.Draw, individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

@@ -473,7 +473,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
-                            graph.DrawString("(Lesen ini dekelaurkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("(Lesen ini dikeluarkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                            
                             lineheight = lineheight + 30;
                             string compName = "";
