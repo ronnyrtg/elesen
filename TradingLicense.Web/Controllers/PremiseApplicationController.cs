@@ -511,8 +511,12 @@ namespace TradingLicense.Web.Controllers
                             {
                                 compAdd = item.Company.CompanyAddress;
                             }
+                            XTextFormatter tf = new XTextFormatter(graph);
+                            XRect rect = new XRect(30, lineheight, 250,30);
+                            graph.DrawRectangle(XBrushes.Transparent, rect);
+                            tf.DrawString(compAdd.ToString(), nfont, XBrushes.Black, rect, XStringFormats.TopLeft);
 
-                            graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
 
                             graph.DrawString("Taraf Lesen", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -532,7 +536,7 @@ namespace TradingLicense.Web.Controllers
                                 compPhone = item.Company.CompanyPhone;
                             }
 
-                            graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight+15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("Tempoh Sah", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -584,7 +588,11 @@ namespace TradingLicense.Web.Controllers
                                         }
                                         if (item2.CodeDesc != null)
                                         {
-                                            graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                            XTextFormatter tf1 = new XTextFormatter(graph);
+                                            XRect rect1 = new XRect(((pdfPage.Width) / 2) - 100, lineheight, 300, 30);
+                                            graph.DrawRectangle(XBrushes.Transparent, rect1);
+                                            tf1.DrawString(item2.CodeDesc, nfont, XBrushes.Black, rect1, XStringFormats.TopLeft);
+                                            //graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         }
                                         float Amount = 0;
                                         if(item2.BaseFee == 0)
@@ -597,7 +605,7 @@ namespace TradingLicense.Web.Controllers
                                         }
                                         graph.DrawString("RM " + string.Format("{0:0.00}",Amount) , nfont, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         TotAmount = TotAmount + Amount;
-                                        lineheight = lineheight + 16;
+                                        lineheight = lineheight + 20;
                                         TotHeight = TotHeight + lineheight;
                                         XPen lineRed2 = new XPen(XColors.Black, 0.5);
                                         System.Drawing.Point pt6 = new System.Drawing.Point(10, lineheight);
