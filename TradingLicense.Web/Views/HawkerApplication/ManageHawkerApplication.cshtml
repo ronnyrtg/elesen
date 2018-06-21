@@ -35,8 +35,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.FullName)
+                        @Html.DropDownListFor(m => m.ApplicantName, new SelectList(ApplicantList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ApplicantName)
                     </div>
                 </div>
             </div>
@@ -157,15 +157,13 @@
         }
     </div>
 </div>
-<!-- Code to wire up your DatePicker -->
+
+@section scripts{
 <script type="text/javascript">
     $(function () {
         // This will make every element with the class "date-picker" into a DatePicker element
         $('.date-picker').datepicker({ format: 'dd/MM/yyyy' });
     })
-</script>
-@section scripts{
-<script type="text/javascript">
 
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {

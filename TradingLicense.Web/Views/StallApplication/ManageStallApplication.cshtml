@@ -18,6 +18,8 @@
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
     periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
     periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+
+    List<SelectListItem> ApplicantList = new List<SelectListItem>();
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -34,8 +36,9 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.FullName)
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        @Html.HiddenFor(model => model.Individualids)
+                        @Html.HiddenFor(model => model.newIndividualsList)
                     </div>
                 </div>
             </div>
@@ -100,7 +103,7 @@
                         <div class="control-label">
                             Nama Pembantu (Mykad/Paspot)
                         </div>
-                        //@Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
                     </div>
                 </div>
             </div>
@@ -154,10 +157,68 @@
     if (actionError != null && actionError != "") {
         errorMessage(actionError);
     }
+
     function back() {
          var link = '@Url.Action("StallApplication", "StallApplication")';
         window.location.href = link;
     }
 
+    function changeIndindividual() {
+            var individuals = $("#individualList").select2('data');
+            var newIndividuals = [];
+            for (var i = 0; i < individuals.length; i++) {
+                var ind = individuals[i];
+                if (!ind.isNew) {
+                    newIndividuals.push(ind.id);
+                }
+            }
+            $('#Individualids').val(newIndividuals.join(','));
+            alert($('#Individualids').val());
+    }
+
+    $("#individualList").select2({
+        placeholder: "Select Full Name or Mykad/Passport No",
+        minimumInputLength: 2,
+        tags: true,
+        tokenSeparators: [';'],
+        templateSelection: individualFormating,
+        createTag: function (params) {
+            var term = params.term;
+            var indexOfPassport = term.indexOf('(');
+            var fullName = '';
+            var passportNo = '';
+            if (indexOfPassport > 0) {
+                var endIndex = term.indexOf(')', indexOfPassport);
+                passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                fullName = term.substring(0, indexOfPassport);
+            } else {
+                fullName = term;
+            }
+
+            return {
+                id: term,
+                text: fullName + ' (' + passportNo + ')',
+                fullName: fullName,
+                passportNo: passportNo,
+                isNew: true
+            };
+        },
+        ajax: {
+            type: "POST",
+            url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
+            //Data: allows us to pass a parameter to the controller
+            data: function (query) {
+                //console.log(query)
+                return { query: query.term }
+            },
+            //processes the results from the JSON method and gives us the select list
+            processResults: function (data) {
+                //console.log(data)
+                return {
+                    results: data
+                };
+            }
+        }
+    });
     </script>
 }
