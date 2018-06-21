@@ -248,6 +248,8 @@ namespace TradingLicense.Web.Controllers
         {
             List<TradingLicense.Model.SAReqDocModel> SAReqDoc = new List<Model.SAReqDocModel>();
             StallApplicationModel stallApplicationModel = new StallApplicationModel();
+            stallApplicationModel.ValidStart = DateTime.Today;
+            stallApplicationModel.ValidStop = DateTime.Today;
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<SAReqDoc> query = ctx.SAReqDocs;
@@ -261,6 +263,36 @@ namespace TradingLicense.Web.Controllers
                     stallApplicationModel = Mapper.Map<StallApplicationModel>(stallApplication);
                 }
 
+            }
+            if (Id != null && Id > 0)
+            {
+                List<HAReqDocModel> HAReqDoc = new List<HAReqDocModel>();
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var haLinkInd = ctx.StallApplications.Where(a => a.StallApplicationID == Id).ToList();
+                    stallApplicationModel.Individualids = string.Join(",", haLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                    var iids = haLinkInd.Select(b => b.IndividualID).ToList();
+                    selectedIndividualList = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .Select(fnSelectIndividualFormat)
+                        .ToList();
+
+                    stallApplicationModel.selectedIndividualList = selectedIndividualList;
+
+
+                    IQueryable<SAReqDoc> query = ctx.SAReqDocs;
+                    SAReqDoc = Mapper.Map<List<SAReqDocModel>>(query.ToList());
+                    ViewBag.stallDocList = ctx.SAReqDocs.ToList();
+                    if (Id != null && Id > 0)
+                    {
+
+                        int StallApplicationID = Convert.ToInt32(Id);
+                        var StallApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == StallApplicationID).FirstOrDefault();
+                        stallApplicationModel = Mapper.Map<StallApplicationModel>(StallApplication);
+                    }
+
+                }
             }
 
             return View(stallApplicationModel);
@@ -325,6 +357,25 @@ namespace TradingLicense.Web.Controllers
 
 
         #endregion
+
+        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
+        /// <summary>
+        /// Get Individuale Code
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillIndividual(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var individual = ctx.Individuals
+                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectIndividualFormat).ToList();
+                return Json(individual, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         #region SAReqDoc
 
