@@ -37,6 +37,7 @@ namespace TradingLicense.Data
         public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
         public DbSet<PALinkReqDoc> PALinkReqDoc { get; set; }
         public DbSet<PAComment> PAComments { get; set; }
+        public DbSet<PADepSupp> PADepSupps { get; set; }
 
         //Hawker Application
         public DbSet<HawkerApplication> HawkerApplications { get; set; }
