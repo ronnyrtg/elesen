@@ -24,6 +24,11 @@ namespace TradingLicense.Web.Controllers
 {
     public class PremiseApplicationController : BaseController
     {
+
+        public const string OnSubmit = "Submitted";
+        public const string OnRouteSubmit = "SubmittedToRoute";
+        public const string OnRejected = "Rejected";
+
         #region PremiseApplication
 
         /// <summary>
@@ -51,9 +56,60 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseApplication> query = ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public
-                    ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID)
-                    : ctx.PremiseApplications;
+                int? rollTemplateID = ProjectSession.User?.RoleTemplateID;
+                IQueryable<PremiseApplication> query = ctx.PremiseApplications;
+
+                if (rollTemplateID.HasValue)
+                {
+                    switch (rollTemplateID)
+                    {
+                        case (int)RollTemplate.Public:
+                            {
+                                query = query.Where(q => q.UsersID == ProjectSession.UserID);
+                            }
+                            break;
+                        case (int)RollTemplate.DeskOfficer:
+                            {
+                                var allowedStatus = new List<int> { 1, 6, 10, 11, 12, 13, 14 };
+                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
+                            }
+                            break;
+                        case (int)RollTemplate.Clerk:
+                            {
+                                var allowedStatus = new List<int> { 2, 3, 4, 6, 9, 10, 11, 12, 13, 14 };
+                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
+                            }
+                            break;
+                        case (int)RollTemplate.Supervisor:
+                            {
+                                var allowedStatus = new List<int> { 10, 11, 12, 13, 14 };
+                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
+                            }
+                            break;
+                        case (int)RollTemplate.RouteUnit:
+                            if (string.IsNullOrEmpty(premiseApplicationId))
+                            {
+                                var departmentID = ProjectSession.User?.DepartmentID;
+                                if (departmentID.HasValue)
+                                {
+                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value).Select(d => d.PremiseApplicationID).ToList();
+                                    query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
+                                }
+                            }
+                            break;
+                        case (int)RollTemplate.Director:
+                            {
+                                var allowedStatus = new List<int> { 6, 7, 10, 11, 12, 13, 14 };
+                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
+                            }
+                            break;
+                        case (int)RollTemplate.CEO:
+                            {
+                                query = query.Where(q => q.AppStatusID == 8);
+                            }
+                            break;
+                    }
+                }
 
                 if (!string.IsNullOrWhiteSpace(premiseApplicationId))
                 {
@@ -418,7 +474,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(260, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
-                            graph.DrawString("(Lesen ini dekelaurkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("(Lesen ini dikeluarkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                            
                             lineheight = lineheight + 30;
                             string compName = "";
@@ -610,7 +666,7 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch
             {
 
             }
@@ -632,236 +688,23 @@ namespace TradingLicense.Web.Controllers
                 
                 if (ModelState.IsValid)
                 {
+                    bool saveSuccess = false;
                     using (var ctx = new LicenseApplicationContext())
                     {
-                        var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
-
-                        int userroleTemplate = 0;
-                        if (ProjectSession.User != null && ProjectSession.UserID > 0)
-                        {
-                            userroleTemplate = GetUserRoleTemplate(premiseApplicationModel, premiseApplication, ctx);
-                        }
-
-                        premiseApplication.DateSubmitted = DateTime.Now;
-
-                        ctx.PremiseApplications.AddOrUpdate(premiseApplication);
-                        ctx.SaveChanges();
-
-                        int premiseApplicationId = premiseApplication.PremiseApplicationID;
-                        if(premiseApplicationModel.PremiseApplicationID == 0)
-                        {
-                            premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
-                            premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
-                            ctx.SaveChanges();
-                        }
-
-                        int roleTemplate = 0;
-                        if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
-                        {
-                            roleTemplate = ProjectSession.User.RoleTemplateID.Value;
-                        }
-
-                        if (userroleTemplate == (int)RollTemplate.Public)
-                        {
-                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadRequiredDocids))
-                            {
-                                DocumentService.UpdateDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
-                            }
-                            else
-                            {
-                                if (roleTemplate == (int)RollTemplate.Public)
-                                {
-                                    var paLinkReqDocUmentList = ctx.PALinkReqDoc
-                                        .Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
-                                    if (paLinkReqDocUmentList.Count > 0)
-                                    {
-                                        ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
-                                        ctx.SaveChanges();
-                                    }
-                                }
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadAdditionalDocids))
-                            {
-                                DocumentService.UploadAdditionalDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
-                            }
-                            else
-                            {
-                                if (roleTemplate == (int)RollTemplate.Public)
-                                {
-                                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
-                                    if (paLinkAddDocumentlist.Count > 0)
-                                    {
-                                        ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
-                                        ctx.SaveChanges();
-                                    }
-                                }
-                            }
-                        }
-                        else if (userroleTemplate == (int)RollTemplate.DeskOfficer)
-                        {
-                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.RequiredDocIds))
-                            {
-                                DocumentService.UpdateRequiredDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
-                            }
-                            else
-                            {
-                                if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                                {
-                                    var paLinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
-                                    if (paLinkReqDocUmentList.Count > 0)
-                                    {
-                                        ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
-                                        ctx.SaveChanges();
-                                    }
-                                }
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.AdditionalDocIds))
-                            {
-                                DocumentService.SaveAdditionalDocInfo(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
-                            }
-                            else
-                            {
-                                if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
-                                {
-                                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
-                                    if (paLinkAddDocumentlist.Count > 0)
-                                    {
-                                        ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
-                                        ctx.SaveChanges();
-                                    }
-                                }
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
-                        {
-                            var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
-
-                            List<int> existingRecord = new List<int>();
-                            var dbEntryPaLinkBAct = ctx.PALinkBC.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
-                            if (dbEntryPaLinkBAct.Count > 0)
-                            {
-                                foreach (var item in dbEntryPaLinkBAct)
-                                {
-                                    if (businessCodelist.All(q => q != item.BusinessCodeID))
-                                    {
-                                        ctx.PALinkBC.Remove(item);
-                                    }
-                                    else
-                                    {
-                                        existingRecord.Add(item.BusinessCodeID);
-                                    }
-                                }
-                                ctx.SaveChanges();
-                            }
-
-                            foreach (var businessCode in businessCodelist)
-                            {
-                                if (existingRecord.All(q => q != businessCode))
-                                {
-                                    PALinkBC paLinkBc = new PALinkBC();
-                                    paLinkBc.PremiseApplicationID = premiseApplicationId;
-                                    paLinkBc.BusinessCodeID = businessCode;
-                                    ctx.PALinkBC.Add(paLinkBc);
-
-                                }
-                            }
-                            ctx.SaveChanges();
-                        }
-                        else
-                        {
-                            var dbEntryPaLinkBActs = ctx.PALinkBC.Where(va => va.PremiseApplicationID == premiseApplicationId).ToList();
-                            if (dbEntryPaLinkBActs.Count > 0)
-                            {
-                                ctx.PALinkBC.RemoveRange(dbEntryPaLinkBActs);
-                                ctx.SaveChanges();
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.Individualids))
-                        {
-                            //todo: I guess it's a draft for new logic
-                            var individualidslist = premiseApplicationModel.Individualids.ToIntList();
-                            List<int> existingRecord = new List<int>();
-                            var dbEntryPaLinkInd = ctx.PALinkInd.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
-                            if (dbEntryPaLinkInd.Count > 0)
-                            {
-                                foreach (var item in dbEntryPaLinkInd)
-                                {
-                                    if (individualidslist.All(q => q != item.IndividualID))
-                                    {
-                                        ctx.PALinkInd.Remove(item);
-                                    }
-                                    else
-                                    {
-                                        existingRecord.Add(item.IndividualID);
-                                    }
-                                }
-                                ctx.SaveChanges();
-                            }
-
-                            foreach (var individual in individualidslist)
-                            {
-                                if (existingRecord.All(q => q != individual))
-                                {
-                                    PALinkInd paLinkInd = new PALinkInd();
-                                    paLinkInd.PremiseApplicationID = premiseApplicationId;
-                                    paLinkInd.IndividualID = individual;
-                                    ctx.PALinkInd.Add(paLinkInd);
-
-                                }
-                            }
-                            ctx.SaveChanges();
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
-                        {
-                            try
-                            {
-                                List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(premiseApplicationModel.newIndividualsList);
-                                foreach (var indModel in individuals)
-                                {
-                                    Individual ind = new Individual();
-                                    ind.FullName = indModel.fullName;
-                                    ind.MykadNo = indModel.passportNo;
-                                    ctx.Individuals.Add(ind);
-
-                                }
-                                ctx.SaveChanges();
-                            }
-                            catch (Exception ex)
-                            {
-                                //TODO: Do anything here or log
-                                return Content("<script language='javascript' type='text/javascript'>alert('Problem In line 537! '" + ex.Message.ToString().Replace("'", "") + ");</script>");
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newComment))
-                        {
-                            PAComment comment = new PAComment();
-                            comment.Comment = premiseApplicationModel.newComment;
-                            comment.CommentDate = DateTime.Now;
-                            comment.PremiseApplicationID = premiseApplicationId;
-                            comment.UsersID = ProjectSession.UserID;
-                            ctx.PAComments.Add(comment);
-                            ctx.SaveChanges();
-                        }
-
-                        premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
+                        saveSuccess = SavePremiseApplication(premiseApplicationModel, ctx);
                     }
-
-                    if (premiseApplicationModel.IsDraft)
+                    if (saveSuccess && premiseApplicationModel.IsDraft)
                     {
                         TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
 
                         return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationModel.PremiseApplicationID);
                     }
-
-                    TempData["SuccessMessage"] = "Premise License Application saved successfully.";
-
-                    return RedirectToAction("PremiseApplication");
+                    if (saveSuccess)
+                    {
+                        TempData["SuccessMessage"] = "Premise License Application saved successfully.";
+                        return RedirectToAction("PremiseApplication");
+                    }
+                    return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationModel.PremiseApplicationID);
                 }
 
                 
@@ -872,6 +715,335 @@ namespace TradingLicense.Web.Controllers
                 
                 return View(premiseApplicationModel);
             }
+        }
+
+        private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
+        {
+            var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
+
+            int userroleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.UserID > 0)
+            {
+                userroleTemplate = GetUserRoleTemplate(premiseApplicationModel, premiseApplication, ctx);
+            }
+
+            premiseApplication.DateSubmitted = DateTime.Now;
+
+            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
+            ctx.SaveChanges();
+
+            int premiseApplicationId = premiseApplication.PremiseApplicationID;
+            if (premiseApplicationModel.PremiseApplicationID == 0)
+            {
+                premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
+                premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
+                ctx.SaveChanges();
+            }
+
+            int roleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            {
+                roleTemplate = ProjectSession.User.RoleTemplateID.Value;
+            }
+
+            if (userroleTemplate == (int)RollTemplate.Public)
+            {
+                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadRequiredDocids))
+                {
+                    DocumentService.UpdateDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (roleTemplate == (int)RollTemplate.Public)
+                    {
+                        var paLinkReqDocUmentList = ctx.PALinkReqDoc
+                            .Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
+                        {
+                            ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.UploadAdditionalDocids))
+                {
+                    DocumentService.UploadAdditionalDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (roleTemplate == (int)RollTemplate.Public)
+                    {
+                        var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                        if (paLinkAddDocumentlist.Count > 0)
+                        {
+                            ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+            else if (userroleTemplate == (int)RollTemplate.DeskOfficer)
+            {
+                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.RequiredDocIds))
+                {
+                    DocumentService.UpdateRequiredDocs(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                    {
+                        var paLinkReqDocUmentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
+                        {
+                            ctx.PALinkReqDoc.RemoveRange(paLinkReqDocUmentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.AdditionalDocIds))
+                {
+                    DocumentService.SaveAdditionalDocInfo(premiseApplicationModel, ctx, premiseApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (!premiseApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                    {
+                        var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationId).ToList();
+                        if (paLinkAddDocumentlist.Count > 0)
+                        {
+                            ctx.PALinkAddDocs.RemoveRange(paLinkAddDocumentlist);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
+            {
+                var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
+
+                List<int> existingRecord = new List<int>();
+                var dbEntryPaLinkBAct = ctx.PALinkBC.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+                if (dbEntryPaLinkBAct.Count > 0)
+                {
+                    foreach (var item in dbEntryPaLinkBAct)
+                    {
+                        if (businessCodelist.All(q => q != item.BusinessCodeID))
+                        {
+                            ctx.PALinkBC.Remove(item);
+                        }
+                        else
+                        {
+                            existingRecord.Add(item.BusinessCodeID);
+                        }
+                    }
+                    ctx.SaveChanges();
+                }
+
+                foreach (var businessCode in businessCodelist)
+                {
+                    if (existingRecord.All(q => q != businessCode))
+                    {
+                        PALinkBC paLinkBc = new PALinkBC();
+                        paLinkBc.PremiseApplicationID = premiseApplicationId;
+                        paLinkBc.BusinessCodeID = businessCode;
+                        ctx.PALinkBC.Add(paLinkBc);
+
+                    }
+                }
+                ctx.SaveChanges();
+            }
+            else
+            {
+                var dbEntryPaLinkBActs = ctx.PALinkBC.Where(va => va.PremiseApplicationID == premiseApplicationId).ToList();
+                if (dbEntryPaLinkBActs.Count > 0)
+                {
+                    ctx.PALinkBC.RemoveRange(dbEntryPaLinkBActs);
+                    ctx.SaveChanges();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.Individualids))
+            {
+                //todo: I guess it's a draft for new logic
+                var individualidslist = premiseApplicationModel.Individualids.ToIntList();
+                List<int> existingRecord = new List<int>();
+                var dbEntryPaLinkInd = ctx.PALinkInd.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+                if (dbEntryPaLinkInd.Count > 0)
+                {
+                    foreach (var item in dbEntryPaLinkInd)
+                    {
+                        if (individualidslist.All(q => q != item.IndividualID))
+                        {
+                            ctx.PALinkInd.Remove(item);
+                        }
+                        else
+                        {
+                            existingRecord.Add(item.IndividualID);
+                        }
+                    }
+                    ctx.SaveChanges();
+                }
+
+                foreach (var individual in individualidslist)
+                {
+                    if (existingRecord.All(q => q != individual))
+                    {
+                        PALinkInd paLinkInd = new PALinkInd();
+                        paLinkInd.PremiseApplicationID = premiseApplicationId;
+                        paLinkInd.IndividualID = individual;
+                        ctx.PALinkInd.Add(paLinkInd);
+
+                    }
+                }
+                ctx.SaveChanges();
+            }
+
+            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newIndividualsList))
+            {
+                List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(premiseApplicationModel.newIndividualsList);
+                foreach (var indModel in individuals)
+                {
+                    Individual ind = new Individual();
+                    ind.FullName = indModel.fullName;
+                    ind.MykadNo = indModel.passportNo;
+                    ctx.Individuals.Add(ind);
+
+                }
+                ctx.SaveChanges();
+            }
+
+            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newComment))
+            {
+                PAComment comment = new PAComment();
+                comment.Comment = premiseApplicationModel.newComment;
+                comment.CommentDate = DateTime.Now;
+                comment.PremiseApplicationID = premiseApplicationId;
+                comment.UsersID = ProjectSession.UserID;
+                ctx.PAComments.Add(comment);
+                ctx.SaveChanges();
+            }
+            premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
+            return SetStatusOnSubmit(premiseApplicationModel, ctx, premiseApplication, roleTemplate);
+        }
+
+        private bool SetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
+        {
+            if (premiseApplication.Mode == 1 && !premiseApplicationModel.IsDraft)
+            {
+                UpdateStatusId(premiseApplicationModel, ctx, 12, premiseApplication); // Letter of notification (with conditions)
+            }
+            else if (premiseApplication.Mode > 1 && !premiseApplicationModel.IsDraft)
+            {
+                int finalStatus = 0;
+                switch (roleTemplate)
+                {
+                    case (int)RollTemplate.DeskOfficer:
+                        finalStatus = 2; // submitted clerk;
+                        break;
+                    case (int)RollTemplate.Clerk:
+                        if (premiseApplicationModel.SubmitType == OnRouteSubmit)
+                        {
+                            if (!RouteApplication(premiseApplicationModel, ctx))
+                            {
+                                return false;
+                            }
+                            finalStatus = 5; // Route Unit
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnSubmit)
+                        {
+                            finalStatus = 7; // submitted clerk;
+                        }
+                        break;
+                    case (int)RollTemplate.Director:
+                        if (premiseApplicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (premiseApplicationModel.Mode)
+                            {
+                                case 2:
+                                    finalStatus = 10; // Letter of notificaiton (approved)
+                                    break;
+                                case 3:
+                                    finalStatus = 8; // CEO
+                                    break;
+                                case 4:
+                                    finalStatus = 6; // Meeting
+                                    break;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                        }
+                        break;
+                    case (int)RollTemplate.CEO:
+                        if (premiseApplicationModel.SubmitType == OnSubmit)
+                        {
+                            finalStatus = 10;
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                        }
+                        break;
+                }
+                if (finalStatus != 0)
+                {
+                    UpdateStatusId(premiseApplicationModel, ctx, finalStatus, premiseApplication);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Gets List of department details to which this premise application will be routed.
+        /// </summary>
+        /// <param name="businessCodeIds"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult FillRouteDepartments(string businessCodeIds)
+        {
+            using(var ctx = new LicenseApplicationContext())
+            {
+                var businessCodelist = businessCodeIds.ToIntList();
+                var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
+                var departmentList = ctx.Departments.Select(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
+                return Json(departmentList, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        private void UpdateStatusId(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int appStatusId, PremiseApplication premiseApplication = null)
+        {
+            premiseApplication = premiseApplication ?? ctx.PremiseApplications.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID).First();
+            premiseApplication.AppStatusID = appStatusId;
+            ctx.SaveChanges();
+        }
+
+        private bool RouteApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
+        {
+            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
+            {
+                var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
+                var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
+                
+                foreach (var depId in departmentIds)
+                {
+                    var paDepSupp = new PADepSupp();
+                    paDepSupp.DepartmentID = depId;
+                    paDepSupp.PremiseApplicationID = premiseApplicationModel.PremiseApplicationID;
+                    ctx.PADepSupps.Add(paDepSupp);
+                }
+
+                ctx.SaveChanges();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "No Business codes attached to this application unable to route";
+                return false;
+            }
+            return true;
         }
 
         private static int GetUserRoleTemplate(PremiseApplicationModel premiseApplicationModel,

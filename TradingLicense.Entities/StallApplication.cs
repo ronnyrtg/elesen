@@ -11,12 +11,15 @@ namespace TradingLicense.Entities
         public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int StallCodeID { get; set; }
+        public DateTime ValidStart { get; set; }
+        public DateTime ValidStop { get; set; }
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
         public string OperationHours { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string StallLocation { get; set; }
+        public string GoodsType { get; set; }
         public int HelperA { get; set; }
         public int HelperB { get; set; }
         public int HelperC { get; set; }

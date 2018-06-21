@@ -37,11 +37,14 @@ namespace TradingLicense.Data
         public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
         public DbSet<PALinkReqDoc> PALinkReqDoc { get; set; }
         public DbSet<PAComment> PAComments { get; set; }
+        public DbSet<PADepSupp> PADepSupps { get; set; }
 
         //Hawker Application
         public DbSet<HawkerApplication> HawkerApplications { get; set; }
         public DbSet<HawkerCode> HawkerCodes { get; set; }
         public DbSet<HAReqDoc> HAReqDocs { get; set; }
+        public DbSet<HALinkReqDoc> HALinkReqDoc { get; set; }
+        public DbSet<HAComment> HAComments { get; set; }
 
         //Stall Application
         public DbSet<StallApplication> StallApplications { get; set; }

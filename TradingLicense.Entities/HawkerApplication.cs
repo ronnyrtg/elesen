@@ -40,6 +40,10 @@ namespace TradingLicense.Entities
         public float? ProcessingFee { get; set; }
         public DateTime? DatePaid { get; set; }
         public DateTime? ExpireDate { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ReferenceNo { get; set; }
+        public string LicenseStatus { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

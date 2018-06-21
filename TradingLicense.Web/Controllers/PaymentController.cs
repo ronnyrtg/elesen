@@ -51,7 +51,7 @@ namespace TradingLicense.Web.Controllers
                     #endregion Sorting
                     PaymentDue = result;
                 }
-                catch(Exception ex)
+                catch
                 {
                     PaymentDue = null;
                 }
@@ -85,7 +85,7 @@ namespace TradingLicense.Web.Controllers
             List<TradingLicense.Model.PaymentReceivedModel> PaymentReceived = new List<Model.PaymentReceivedModel>();
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PaymentReceived> query = ctx.PaymentReceiveds.Where(pr => pr.IndividualID == individualId);
+                IQueryable<PaymentReceived> query = ctx.PaymentReceiveds.Where(pr => pr.IndividualID == individualId).OrderByDescending(o => o.DatePaid).Take(20);
 
                 #region Sorting
                 // Sorting
