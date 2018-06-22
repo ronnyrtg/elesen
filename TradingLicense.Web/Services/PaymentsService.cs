@@ -8,15 +8,15 @@ namespace TradingLicense.Web.Services
 {
     public class PaymentsService
     {
-        public static PaymentDueModel AddPaymentDue(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, string userName)
+        public static PaymentDueModel AddPaymentDue(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, string userName, float? totalDue = null)
         {
-            float totalDue = CalculatePaymentDue(premiseApplicationModel, ctx);
+            totalDue = totalDue ?? CalculatePaymentDue(premiseApplicationModel, ctx);
 
             PaymentDueModel paymentDueModel = new PaymentDueModel();
             paymentDueModel.IndividualIDs = string.Join(",", ctx.PALinkInd
                                                 .Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID)
                                                 .Select(pa => $"~{pa.IndividualID}~"));
-            paymentDueModel.AmountDue = totalDue;
+            paymentDueModel.AmountDue = totalDue.Value;
             paymentDueModel.PaymentFor = premiseApplicationModel.ReferenceNo;
             paymentDueModel.DateBilled = DateTime.Now;
 
