@@ -45,6 +45,10 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
+              
+
+
+
                 IQueryable<BannerCode> query = ctx.BannerCodes;
                 totalRecord = query.Count();
 
@@ -240,9 +244,12 @@ namespace TradingLicense.Web.Controllers
                     var Dtls = db.BannerApplications
                                         .Include("AppStatus")
                                         .Include("Company")
+                                        .Include("Users")
                                         .Include("Individual").OrderBy(m => m.BannerApplicationID).ToList();
-
-
+                    foreach (var item in Dtls)
+                    {
+                        item.Users.RoleTemplateID = ProjectSession.User.RoleTemplateID;
+                    }
                     //Mapper.Map<List<BannerApplicationModel>>(query.ToList());
                     return Json(new DataTablesResponse(requestModel.Draw, Dtls.ToList(), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
                 }
@@ -365,11 +372,13 @@ namespace TradingLicense.Web.Controllers
                     Int32? CompId = bannerApplication.CompanyID;
                     bannerApplicationModel.CompanyID = Convert.ToInt32(CompId);
                     bannerApplicationModel.IndividualID = bannerApplication.IndividualID;
+                    bannerApplicationModel.AppStatusID = bannerApplication.AppStatusID;  
                     //bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
                 }
             }
             ViewBag.BALinkReqDoc = Attchments;
             ViewBag.BannerObjects = BannerObjectModel;
+            ViewBag.UserRole = ProjectSession.User.RoleTemplateID;
             return View(bannerApplicationModel);
         }
 
@@ -412,6 +421,10 @@ namespace TradingLicense.Web.Controllers
                                 if (ProjectSession.User.RoleTemplateID == 3)
                                 {
                                     AppStatusId = 7;
+                                }
+                                else if (ProjectSession.User.RoleTemplateID == 2)
+                                {
+                                    AppStatusId = 2;
                                 }
                                 else
                                 {

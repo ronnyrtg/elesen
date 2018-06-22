@@ -110,11 +110,17 @@
                         { "title": "Status", "data": "AppStatus.StatusDesc" },
                         {
                     "title": "Action",
-                    "data": null,
+                    "data": "Users.RoleTemplateID",
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBannerApplication", "BannerApplication")?Id=' + row["BannerApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BannerApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        if ((data == 2 && row["AppStatusID"] == 2))
+                        {
+                            appendstring += '<a  href="@Url.Action("ManageBannerApplication", "BannerApplication")?Id=' + row["BannerApplicationID"] + '" title="View"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                        } else
+                        {
+                            appendstring += '<a  href="@Url.Action("ManageBannerApplication", "BannerApplication")?Id=' + row["BannerApplicationID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                            appendstring += '<a href="javascript:void(0);" data-id="' + row["BannerApplicationID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>'
+                        }
                         return appendstring
                     },
                     "width": "80px",
