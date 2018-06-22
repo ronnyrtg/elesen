@@ -4,23 +4,39 @@
     ViewBag.Title = "ManageStallApplication";
 }
 @{
+
     List<TradingLicense.Entities.SAReqDoc> stallDocList = new List<TradingLicense.Entities.SAReqDoc>();
 
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
 
     List<TradingLicense.Model.StallCodeModel> stallCodeList = new List<TradingLicense.Model.StallCodeModel>();
+
+    List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
+
+    //List<StallReqObj> stallDoc = new List<StallReqObj>();
+    IQueryable stallDoc;
+
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var stallCode = ctx.StallCodes.ToList();
         stallCodeList = Mapper.Map<List<TradingLicense.Model.StallCodeModel>>(stallCode);
-    }
-
-    List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
 
         var individualOwnerList = ctx.Individuals.ToList();
         individualOwner = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individualOwnerList);
+
+        var stallDocQuery = from sa in ctx.SAReqDocs
+                            join rd in ctx.RequiredDocs
+                            on sa.RequiredDocID equals rd.RequiredDocID
+                            select new { sa, rd };
+
+        foreach (var item in stallDocQuery.ToList()) {
+            stallDocList.Add(new TradingLicense.Entities.SAReqDoc()
+            {
+                SAReqDocID = item.sa.SAReqDocID,
+                RequiredDocID = item.sa.RequiredDocID,
+                RequiredDoc = item.rd
+            });
+        }
     }
 
     List<SelectListItem> periodList = new List<SelectListItem>();
@@ -114,6 +130,23 @@
                         @Html.HiddenFor(model => model.newIndividualsList)                    
                     </div>
                 </div>
+            </div>
+            <h4> Required Documents </h4>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0">
+                    <thead>
+                        <th> Disertakan? </th>
+                        <th> Jenis Document </th>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in stallDocList) {
+                        <tr>
+                            <td> <input name="chk_@item.SAReqDocID" value="0" onclick="CheckRequiredDocument()" type="checkbox" /></td>
+                            <td> @item.RequiredDoc.RequiredDocDesc </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table> 
             </div>
 
             <div class="row">
