@@ -77,7 +77,10 @@
             @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
             @Html.HiddenFor(m => m.AppStatusID)
-            @Html.HiddenFor(m => m.SubmitType)
+            if (Model.AppStatusID != 8 && Model.AppStatusID == 6)
+            {
+                    @Html.HiddenFor(m => m.SubmitType)
+            }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
             @Html.HiddenFor(m => m.UploadAdditionalDocids)
@@ -93,7 +96,7 @@
                         }
                         else
                         {
-                            Html.HiddenFor(m => m.Mode);
+                            @Html.HiddenFor(m => m.Mode);
                             if (Model.Mode > 0 && Model.Mode < 5)
                             {
                                 string modeDesc = ModeList.Where(mo => mo.Value == Model.Mode.ToString()).Select(mo => mo.Text).First();
@@ -317,6 +320,35 @@
                         </div>
                     </div>
                 }
+                if (Model.AppStatusID == 8) // Awaiting CEO
+                {
+                    List<SelectListItem> supportList = new List<SelectListItem>();
+                    supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+                    supportList.Add(new SelectListItem { Text = "Rejected", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="control-label">Do you Support</div>
+                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                if (Model.AppStatusID == 6) // Meeting
+                {
+                    List<SelectListItem> supportList = new List<SelectListItem>();
+                    supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+                    supportList.Add(new SelectListItem { Text = "Rejected", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="control-label">Do you Support</div>
+                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div class="row">
                     <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
                         <div class="form-group">
@@ -332,10 +364,23 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
+                            {
+                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
 
+                            }
+                            @if (Model.AppStatusID == 10 || Model.AppStatusID == 12)
+                            {
+                                <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Show Payments Due" id="btnGetPaymentDue" />
+                            }
+                            @if (Model.AppStatusID == 14)
+                            {
+                                // Add a button for showing License print
+                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                            }
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
-                            <input type="button"  class="btn btn-primary btSubmit" value="Cetak Surat Perakuan"  id="btnLetter"  name="btnSubmit" />
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
 
@@ -350,10 +395,10 @@
                                     <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                                 }*@
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0 && (Model.AppStatusID >= 2 && Model.AppStatusID <= 4))
                             {
-                            <button type="button" class="btn btn-primary" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Submit to Director</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
                             }
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
@@ -366,16 +411,15 @@
 
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == 7 || Model.AppStatusID == 6))
                             {
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Reject</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == 8))
                             {
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Reject</button>
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
 
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
@@ -477,7 +521,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                        <div class="col-lg-12 col-md-12" id="RouteUnitTable" style="display:none;">
                             <div class="form-group">
                                 <div class="control-label">
                                     Departments
@@ -541,6 +585,35 @@
 
           </div>
       </div>
+
+<div id="showPaymentsDue" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+    @using (Html.BeginForm("SavePaymentDue", "PremiseApplication", FormMethod.Post, new { name = "frmsavePaymentDue", id = "frmsavePaymentDue" }))
+    {
+        @Html.HiddenFor(m => m.PremiseApplicationID)
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Payments Due</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 col-sm-12">
+                        <div class="form-group">
+                            <input type="number" id="totalDue" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Submit"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    }
+    </div>
+</div>
                                                             
 <style type="text/css">
     label.error {
@@ -793,12 +866,12 @@
 
     function frmSubmit(isdraft) {
         $("#IsDraft").val(isdraft);
-            if (validatePremiseApplication(isdraft)) {
-                $("#frmPremiseApplication").submit();
-            }
+        if (validatePremiseApplication(isdraft)) {
+            $("#frmPremiseApplication").submit();
         }
+    }
 
-        function validatePremiseApplication(isdraft) {
+    function validatePremiseApplication(isdraft) {
         $("#UploadRequiredDocids").val(requiredDocList);
         $("#UploadAdditionalDocids").val(addtionalDocList);
 
@@ -814,11 +887,11 @@
         }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
             alert("Please select Mykad/Passport No");
             return false;
-            } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+        } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
             alert("Please Upload all Required Document");
             return false;
         }
-            else if (userRollTemplate == 1 && !isdraft && $('.lableadddocument').length != addtionalDocList.length) {
+        else if (userRollTemplate == 1 && !isdraft && $('.lableadddocument').length != addtionalDocList.length) {
             alert("Please Upload all Additional Document");
             return false;
         }
@@ -843,7 +916,7 @@
                 }
             }
         }
-            return true;
+        return true;
     }
 
     function changeBussinesscode() {
@@ -1085,6 +1158,8 @@
             }
         });
         $("#RequiredDocIds").val(RequiredArray);
+        
+        checkButtonState();
     }
 
     function checkButtonState() {
@@ -1114,6 +1189,8 @@
             }
         });
         $("#AdditionalDocIds").val(AdditionalArray);
+        
+        checkButtonState();
     }
 
     function RequiredDocumentModel(Requiredid) {
@@ -1403,78 +1480,105 @@
                 { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
             ]
         });
-        }
-
-        function showRouteUnitConfirmModal() {
-            if(validatePremiseApplication()) {
-                $('#routeUnitModal').modal('show');
-                if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
-                    $('#tblRouteDepartments').dataTable().fnDestroy();
-                }
-
-                var data = { "businessCodeids": $().val() };
-
-                table = $("#tblRouteDepartments").dataTable({
-                    "lengthChange": true,
-                    "searching": false,
-                    "pageLength": 50,
-                    "processing": true,
-                    "serverSide": true,
-                    "bPaginate": true,
-                    "bInfo": false,
-                    "orderMulti": false,
-                    "ajax": {
-                        url: '@Url.Action("FillRouteDepartments", "PremiseApplication")',
-                        type: "POST",
-                        data: data
-                    },
-                    "columns": [
-                        {
-                            "targets": 0,
-                            "searchable": false,
-                            "orderable": false,
-                            "title": "No.",
-                            "data": null,
-                            "render": function (data, type, full, meta) {
-                                return meta.settings._iDisplayStart + meta.row + 1;
-                            }
-                        },,
-                        { "title": "Department Code", "orderable": true, "data": "DepartmentCode" },
-                        { "title": "Department Name", "orderable": true, "data": "DepartmentDesc" },
-                        {
-                            "title": "Dalam/Luar",
-                            "data": "Internal",
-                            "render": function (data, type, row) {
-                                if (data==1) {
-                                    return '<label class="label label-success">Dalam</label>';
-                                }
-                                else {
-                                    return '<label class="label label-danger">Luar</label>';
-                                }
-                            },
-                            "width": "10%",
-                            "orderable": true,
-                        },
-                        {
-                            "title": "Aktif",
-                            "data": "Active",
-                            "render": function (data, type, row) {
-                                if (data) {
-                                    return '<label class="label label-success">Aktif</label>';
-                                }
-                                else {
-                                    return '<label class="label label-danger">Tidak Aktif</label>';
-                                }
-                            },
-                            "width": "10%",
-                            "orderable": true,
-                        }
-                    ]
-                });
     }
 
-            return false;
+    function showRouteUnitConfirmModal() {
+        if(validatePremiseApplication()) {
+            $('#routeUnitModal').modal('show');
+            $('#RouteUnitTable').show();
+            if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
+                $('#tblRouteDepartments').dataTable().fnDestroy();
+            }
+
+            var data = { "businessCodeids": $('#BusinessCodeids').val() };
+
+            table = $("#tblRouteDepartments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": true,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("FillRouteDepartments", "PremiseApplication")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Department Code", "orderable": true, "data": "DepartmentCode" },
+                    { "title": "Department Name", "orderable": true, "data": "DepartmentDesc" },
+                    {
+                        "title": "Dalam/Luar",
+                        "data": "Internal",
+                        "render": function (data, type, row) {
+                            if (data==1) {
+                                return '<label class="label label-success">Dalam</label>';
+                            }
+                            else {
+                                return '<label class="label label-danger">Luar</label>';
+                            }
+                        },
+                        "width": "10%",
+                        "orderable": true,
+                    },
+                    {
+                        "title": "Aktif",
+                        "data": "Active",
+                        "render": function (data, type, row) {
+                            if (data) {
+                                return '<label class="label label-success">Aktif</label>';
+                            }
+                            else {
+                                return '<label class="label label-danger">Tidak Aktif</label>';
+                            }
+                        },
+                        "width": "10%",
+                        "orderable": true,
+                    }
+                ]
+            });
         }
+
+        return false;
+    }
+
+    function showPaymentsDuePopup() {
+
+        var data = new FormData();
+        data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+
+        var ajaxRequest = $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPaymentDue", "PremiseApplication")',
+            contentType: false,
+            processData: false,
+            data: data,
+            async: false,
+            success: function (result) {
+                $("#totalDue").val(0);
+                if (result != null) {
+                    $("#totalDue").val(result.totalDue);
+                }
+                $("#showPaymentsDue").modal('show');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                errorMessage(xhr.responseText);
+            }
+        });
+        
+    }
 
         function RoutePremiseApplication() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
@@ -1498,20 +1602,20 @@
     $(document).ready(function () {
         hideLetterDropDown();
         $('#btnLetter').click(function () {
-            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=1");
+            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=@Model.PremiseApplicationID");
             $('#myModal').modal('show');
         });
     });
 
     function hideLetterDropDown()
     {
-        if($('#btnLetter') != null)
+        if($('#btnLetter') != null && $('#btnLetter').length)
         {
-            document.getElementById('btnLetter').style.display=''
+            $('#btnLetter').show();
             $('#btnLetter').css('visibility', 'visible');
-            if($('#Mode').val() != 1 || $('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12)
+            if(!($('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12))
             {
-                document.getElementById('btnLetter').style.display='none';
+                $('#btnLetter').hide();
             }
         }
     }

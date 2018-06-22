@@ -421,6 +421,43 @@ namespace TradingLicense.Web.Controllers
             return View(premiseApplicationModel);
         }
 
+        [HttpPost]
+        public ActionResult SaveRouteUnitComment(int premiseApplicationID, string comment, int supported)
+        {
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+
+            if (premiseApplicationID > 0)
+            {
+                var departmentID = ProjectSession.User?.DepartmentID;
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
+                    if (paDepSupp != null && !string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    {
+                        paDepSupp.IsSupported = supported == 1;
+                        paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
+                        paDepSupp.SubmittedDate = DateTime.Now;
+                        ctx.PADepSupps.AddOrUpdate(paDepSupp);
+                        ctx.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = paDepSupp == null ?
+                            "Unable to Find Route unit request" :
+                            $"Other user: {paDepSupp.SubmittedBy} from your department already submitted response";
+                    }
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Unable to find Premise application";
+            }
+
+            return RedirectToAction("PremiseApplication", "PremiseApplication");
+        }
+
         public ActionResult GeneratLicense(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -511,8 +548,12 @@ namespace TradingLicense.Web.Controllers
                             {
                                 compAdd = item.Company.CompanyAddress;
                             }
+                            XTextFormatter tf = new XTextFormatter(graph);
+                            XRect rect = new XRect(30, lineheight, 250,30);
+                            graph.DrawRectangle(XBrushes.Transparent, rect);
+                            tf.DrawString(compAdd.ToString(), nfont, XBrushes.Black, rect, XStringFormats.TopLeft);
 
-                            graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
 
                             graph.DrawString("Taraf Lesen", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -532,7 +573,7 @@ namespace TradingLicense.Web.Controllers
                                 compPhone = item.Company.CompanyPhone;
                             }
 
-                            graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight+15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("Tempoh Sah", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -584,7 +625,11 @@ namespace TradingLicense.Web.Controllers
                                         }
                                         if (item2.CodeDesc != null)
                                         {
-                                            graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                            XTextFormatter tf1 = new XTextFormatter(graph);
+                                            XRect rect1 = new XRect(((pdfPage.Width) / 2) - 100, lineheight, 300, 30);
+                                            graph.DrawRectangle(XBrushes.Transparent, rect1);
+                                            tf1.DrawString(item2.CodeDesc, nfont, XBrushes.Black, rect1, XStringFormats.TopLeft);
+                                            //graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         }
                                         float Amount = 0;
                                         if(item2.BaseFee == 0)
@@ -597,7 +642,7 @@ namespace TradingLicense.Web.Controllers
                                         }
                                         graph.DrawString("RM " + string.Format("{0:0.00}",Amount) , nfont, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         TotAmount = TotAmount + Amount;
-                                        lineheight = lineheight + 16;
+                                        lineheight = lineheight + 20;
                                         TotHeight = TotHeight + lineheight;
                                         XPen lineRed2 = new XPen(XColors.Black, 0.5);
                                         System.Drawing.Point pt6 = new System.Drawing.Point(10, lineheight);
@@ -717,6 +762,46 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult SavePaymentDue(int premiseApplicationID, float totalDue)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if(pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.UserName, totalDue);
+                    UpdateStatusId(paModel, ctx, 13, pa); // Payment due
+                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to find matching premise application ID";
+                }
+            }
+
+            return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
+        }
+
+        [HttpPost]
+        public ActionResult GetPaymentDue(int premiseApplicationID)
+        {
+            bool success = false;
+            var totalDue = 0.0f;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if (pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                    success = true;
+                }
+            }
+            return Json(new { success = success, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
+        }
+
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
@@ -737,6 +822,7 @@ namespace TradingLicense.Web.Controllers
             {
                 premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                 premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
+                ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                 ctx.SaveChanges();
             }
 
@@ -1003,14 +1089,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="businessCodeIds"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult FillRouteDepartments(string businessCodeIds)
+        public ActionResult FillRouteDepartments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeIds)
         {
             using(var ctx = new LicenseApplicationContext())
             {
                 var businessCodelist = businessCodeIds.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                var departmentList = ctx.Departments.Select(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
-                return Json(departmentList, JsonRequestBehavior.AllowGet);
+                var departmentList = ctx.Departments.Where(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
+                int totalRecord = departmentList.Count;
+                return Json(new DataTablesResponse(requestModel.Draw, Mapper.Map<List<DepartmentModel>>(departmentList), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -1018,6 +1105,7 @@ namespace TradingLicense.Web.Controllers
         {
             premiseApplication = premiseApplication ?? ctx.PremiseApplications.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID).First();
             premiseApplication.AppStatusID = appStatusId;
+            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
             ctx.SaveChanges();
         }
 
