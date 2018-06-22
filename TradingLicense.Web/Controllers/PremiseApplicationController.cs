@@ -421,6 +421,43 @@ namespace TradingLicense.Web.Controllers
             return View(premiseApplicationModel);
         }
 
+        [HttpPost]
+        public ActionResult SaveRouteUnitComment(int premiseApplicationID, string comment, int supported)
+        {
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+
+            if (premiseApplicationID > 0)
+            {
+                var departmentID = ProjectSession.User?.DepartmentID;
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
+                    if (paDepSupp != null && !string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    {
+                        paDepSupp.IsSupported = supported == 1;
+                        paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
+                        paDepSupp.SubmittedDate = DateTime.Now;
+                        ctx.PADepSupps.AddOrUpdate(paDepSupp);
+                        ctx.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = paDepSupp == null ?
+                            "Unable to Find Route unit request" :
+                            $"Other user: {paDepSupp.SubmittedBy} from your department already submitted response";
+                    }
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Unable to find Premise application";
+            }
+
+            return RedirectToAction("PremiseApplication", "PremiseApplication");
+        }
+
         public ActionResult GeneratLicense(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -725,6 +762,46 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult SavePaymentDue(int premiseApplicationID, float totalDue)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if(pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.UserName, totalDue);
+                    UpdateStatusId(paModel, ctx, 13, pa); // Payment due
+                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to find matching premise application ID";
+                }
+            }
+
+            return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
+        }
+
+        [HttpPost]
+        public ActionResult GetPaymentDue(int premiseApplicationID)
+        {
+            bool success = false;
+            var totalDue = 0.0f;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if (pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                    success = true;
+                }
+            }
+            return Json(new { success = success, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
+        }
+
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
@@ -745,6 +822,7 @@ namespace TradingLicense.Web.Controllers
             {
                 premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                 premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
+                ctx.PremiseApplications.AddOrUpdate(premiseApplication);
                 ctx.SaveChanges();
             }
 
@@ -1011,14 +1089,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="businessCodeIds"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult FillRouteDepartments(string businessCodeIds)
+        public ActionResult FillRouteDepartments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeIds)
         {
             using(var ctx = new LicenseApplicationContext())
             {
                 var businessCodelist = businessCodeIds.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                var departmentList = ctx.Departments.Select(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
-                return Json(departmentList, JsonRequestBehavior.AllowGet);
+                var departmentList = ctx.Departments.Where(dep => departmentIds.Contains(dep.DepartmentID)).ToList();
+                int totalRecord = departmentList.Count;
+                return Json(new DataTablesResponse(requestModel.Draw, Mapper.Map<List<DepartmentModel>>(departmentList), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -1026,6 +1105,7 @@ namespace TradingLicense.Web.Controllers
         {
             premiseApplication = premiseApplication ?? ctx.PremiseApplications.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID).First();
             premiseApplication.AppStatusID = appStatusId;
+            ctx.PremiseApplications.AddOrUpdate(premiseApplication);
             ctx.SaveChanges();
         }
 
