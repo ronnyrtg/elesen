@@ -372,7 +372,7 @@ namespace TradingLicense.Web.Controllers
                 premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
                 premiseApplicationModel.UsersID = ProjectSession.User.UsersID;
             }
-
+            
             premiseApplicationModel.IsDraft = false;
             return View(premiseApplicationModel);
         }

@@ -24,9 +24,7 @@ namespace TradingLicense.Model
         public string StateA { get; set; }
         [Required(ErrorMessage = "Sila pilih pemilikan premis")]
         public int PremiseOwnership { get; set; }
-        [DataType(DataType.Date)]
         public DateTime StartRent { get; set; }
-        [DataType(DataType.Date)]
         public DateTime StopRent { get; set; }
         public string WhichFloor { get; set; }       
         public int PremiseTypeID { get; set; }
