@@ -271,8 +271,8 @@ namespace TradingLicense.Data.Migrations
 
             var indlinkcoms = new List<IndLinkCom>
             {
-                //new IndLinkCom {IndividualID=1,CompanyID=2 },
-                //new IndLinkCom {IndividualID=2,CompanyID=2 },
+                new IndLinkCom {IndividualID=1,CompanyID=2 },
+                new IndLinkCom {IndividualID=2,CompanyID=2 },
                 new IndLinkCom {IndividualID=3,CompanyID=1 },
             };
             indlinkcoms.ForEach(s => context.IndLinkComs.Add(s));
@@ -296,17 +296,17 @@ namespace TradingLicense.Data.Migrations
             var AppStatus = new List<AppStatus>
             {
                 new AppStatus {StatusDesc="Draft created" ,PercentProgress =1},
-                new AppStatus {StatusDesc="Submitted to clerk" ,PercentProgress =5},
-                new AppStatus {StatusDesc="Pending client document submission" ,PercentProgress =10},
+                new AppStatus {StatusDesc="Document Incomplete" ,PercentProgress =5},
+                new AppStatus {StatusDesc="Submitted to clerk" ,PercentProgress =10},
                 new AppStatus {StatusDesc="Processing by Clerk" ,PercentProgress =20},
                 new AppStatus {StatusDesc="Route Unit" ,PercentProgress =30},
-                new AppStatus {StatusDesc="Meeting" ,PercentProgress =40},
-                new AppStatus {StatusDesc="Awaiting Director Response" ,PercentProgress =50},
+                new AppStatus {StatusDesc="Awaiting Director Response" ,PercentProgress =40},
+                new AppStatus {StatusDesc="Meeting" ,PercentProgress =50},
                 new AppStatus {StatusDesc="Awaiting CEO Approval" ,PercentProgress =60},
-                new AppStatus {StatusDesc="Processing Letter by Clerk" ,PercentProgress =70},
-                new AppStatus {StatusDesc="Letter of notification (Approved)" ,PercentProgress =80},
-                new AppStatus {StatusDesc="Letter of notification (Rejected)" ,PercentProgress =80},
-                new AppStatus {StatusDesc="Letter of notification (Approved with Terms & Conditions)" ,PercentProgress =80},
+                new AppStatus {StatusDesc="Letter of Notification (Approved)" ,PercentProgress =70},
+                new AppStatus {StatusDesc="Letter of Notification (Rejected)" ,PercentProgress =100},
+                new AppStatus {StatusDesc="Letter of Notification (Approved with Terms & Conditions)" ,PercentProgress =70},
+                new AppStatus {StatusDesc="Public Accept & Sign" ,PercentProgress =80},
                 new AppStatus {StatusDesc="Pending payment" ,PercentProgress =90},
                 new AppStatus {StatusDesc="License Generated" ,PercentProgress =100},
             };
