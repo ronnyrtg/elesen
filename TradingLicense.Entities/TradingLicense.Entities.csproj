@@ -86,6 +86,7 @@
     <Compile Include="LenderApplication.cs" />
     <Compile Include="PADepSupp.cs" />
     <Compile Include="PALinkInd.cs" />
+    <Compile Include="Race.cs" />
     <Compile Include="SALinkReqDoc.cs" />
     <Compile Include="LiquorApplication.cs" />
     <Compile Include="LiquorCode.cs" />

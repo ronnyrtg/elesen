@@ -33,8 +33,6 @@
 
     List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
 
-    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
-
     List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
@@ -235,6 +233,8 @@
                         @Html.ValidationMessageFor(m => m.StartRent)
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Hingga<span class="cfont">*</span></div>
@@ -661,11 +661,9 @@
             visibleGridColume = true;
         }
 
-        $("#businessCodeList").select2();
-        $("#individualList").select2();
-        $("#companyList").select2({
-            placeholder: "Pilih Syarikat"
-        });
+        $("#businessCodeList").select2({ width: '100%' });
+        $("#individualList").select2({ width: '100%' });
+        $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
         AddRules();
 

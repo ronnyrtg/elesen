@@ -3460,5 +3460,175 @@ namespace TradingLicense.Web.Controllers
             return Json(new DataTablesResponse(requestModel.Draw, Login, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
         #endregion
+
+        #region Race
+
+        /// <summary>
+        /// GET: Race
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Race()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save Race Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Race([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string raceDesc)
+        {
+            List<TradingLicense.Model.RaceModel> raceType = new List<Model.RaceModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<Race> query = ctx.Races;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(raceDesc))
+                {
+                    query = query.Where(p =>
+                                        p.RaceDesc.Contains(raceDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "RaceID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                raceType = Mapper.Map<List<RaceModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, raceType, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Race Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageRace(int? Id)
+        {
+            RaceModel raceTypeModel = new RaceModel();
+            raceTypeModel.Active = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int raceTypeID = Convert.ToInt32(Id);
+                    var raceType = ctx.Races.Where(a => a.RaceID == raceTypeID).FirstOrDefault();
+                    raceTypeModel = Mapper.Map<RaceModel>(raceType);
+                }
+            }
+
+            return View(raceTypeModel);
+        }
+
+        /// <summary>
+        /// Save Race Type Infomration
+        /// </summary>
+        /// <param name="raceTypeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageRace(RaceModel raceTypeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    Race raceType;
+                    if (IsRaceDuplicate(raceTypeModel.RaceDesc, raceTypeModel.RaceID))
+                    {
+                        TempData["ErrorMessage"] = "Race Type is already exist in the database.";
+                        return View(raceTypeModel);
+                    }
+
+                    raceType = Mapper.Map<Race>(raceTypeModel);
+                    ctx.Races.AddOrUpdate(raceType);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Race Type saved successfully.";
+
+                return RedirectToAction("Race");
+            }
+            else
+            {
+                return View(raceTypeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Race Type Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteRace(int id)
+        {
+            try
+            {
+                var raceType = new TradingLicense.Entities.Race() { RaceID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(raceType).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsRaceDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.Races.FirstOrDefault(
+                   c => c.RaceID != id && c.RaceDesc.ToLower() == name.ToLower())
+               : ctx.Races.FirstOrDefault(
+                   c => c.RaceDesc.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
     }
 }

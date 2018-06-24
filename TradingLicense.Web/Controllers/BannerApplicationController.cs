@@ -329,11 +329,12 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageBannerApplication(int? Id)
         {
-            List<TradingLicense.Model.BAReqDocModel> BAReqDoc = new List<Model.BAReqDocModel>();
             BannerApplicationModel bannerApplicationModel = new BannerApplicationModel();
             List<BannerObject> BannerObjectModel = new List<BannerObject>();
+            List<BAReqDocModel> BAReqDoc = new List<BAReqDocModel>();
             List<BALinkReqDoc> BALinkReqDoc = new List<BALinkReqDoc>();
             List<Attchments> Attchments = new List<Attchments>();
+
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BAReqDoc> query = ctx.BAReqDocs;
@@ -341,6 +342,7 @@ namespace TradingLicense.Web.Controllers
                 ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
 
                 var qry = ctx.Individuals.Where(e => e.IndividualID == 1);
+
                 if (Id != null && Id > 0)
                 {
                     BannerObjectModel = db.BannerObjects.Include("BannerCode")
@@ -740,6 +742,7 @@ namespace TradingLicense.Web.Controllers
             }
         }
         #endregion
+
         public class Attchments
         {
             public int RequiredDocID { get; set; }

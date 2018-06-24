@@ -5,10 +5,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
+    //Generate list of Hawker Codes
     List<TradingLicense.Model.HawkerCodeModel> hawkerCodeList = new List<TradingLicense.Model.HawkerCodeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var hawkerCode = ctx.HawkerCodes.ToList();
+        hawkerCodeList = Mapper.Map<List<TradingLicense.Model.HawkerCodeModel>>(hawkerCode);
+    }
 
+    //Generate list of all Individuals for Helper list, can select more than one
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
 
+    //Generate list of all Individual for Owner field, can select one only
     List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
@@ -17,18 +25,14 @@
         individualOwner = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individualOwnerList);
     }
 
-    List<TradingLicense.Entities.HAReqDoc> stallDocList = new List<TradingLicense.Entities.HAReqDoc>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var hawkerCode = ctx.HawkerCodes.ToList();
-        hawkerCodeList = Mapper.Map<List<TradingLicense.Model.HawkerCodeModel>>(hawkerCode);
-    }
-
+    //Generate list of all Required Documents
+    List<TradingLicense.Entities.HAReqDoc> hawkerDocList = new List<TradingLicense.Entities.HAReqDoc>();
+    
 }
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Kemaskini Permohonan Lesen Pasar</h4>
+        <h4 id="headerTitle">Kemaskini Permohonan Lesen Penjaja</h4>
     </div>
     <div class="body">
 
@@ -37,7 +41,7 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.HawkerApplicationID)
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.IndividualID, new SelectList(individualOwner, "IndividualID", "FullName"), "Masukkan Nama atau MyKad", new { @id = "individualOwner", @class = "form-control" })
@@ -73,22 +77,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-3">
-                    <div class="form-group">
-                        <div class="control-label">Tempoh Sah Lesen Dari <span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ValidStart, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.ValidStart)
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-3">
-                    <div class="form-group">
-                        <div class="control-label">Hingga<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ValidStop, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.ValidStop)
-                    </div>
-                </div>
-            </div>
+            
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -97,9 +86,9 @@
                     </div>
                 </div>
             </div>
-            <hr />            
+                        
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pembantu (Mykad/Paspot)</div>
                         @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
@@ -108,45 +97,71 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <hr /><div class="h4">Dokumen Wajib <br /><br /></div>
-                        <div class="text-left">
-                            <table class="table table-striped dataTable table-hover" id="Docs">
-                                @if (ViewBag.hawkerDocList != null)
+                        <div class="h4">Dokumen Wajib <br /><br /></div>
+                        <div class="alert alert-danger" id="chkReqDoc" role="alert" style="display:none;">
+                            Pastikan semua ruangan kosong telah diisi!
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="Docs">
+                                <thead>
+                                <th> Disertakan? </th>
+                                <th> Jenis Dokumen </th>
+                                </thead>
+                                @foreach (var item in ViewBag.hawkerDocList)
                                 {
-                                    foreach (var item in ViewBag.hawkerDocList)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <label>
-                                                    @if (Model.UserRollTemplate != (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                @if (@ViewBag.UserRole != 2)
+                                                {
+                                                    <input class="fileupload" type="file" multiple id='@item.RequiredDocID' />
+                                                    <input type="hidden" value='@item.RequiredDocID' class="hdndocId" />
+                                                }
+                                                else
+                                                {
+                                                    if (@Model.HawkerApplicationID > 0 && (@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
                                                     {
-                                                        <input type="checkbox" value='@item.RequiredDocID' />
+                                                        <input class="chkClass" checked type="checkbox" id='@item.RequiredDocID' />
                                                     }
                                                     else
+                                                    { <input class="chkClass" type="checkbox" id='@item.RequiredDocID' /> }
+                                                }
+                                            </label>
+                                            <ul class="attachment">
+                                                @if (@ViewBag.UserRole != 2)
+                                                {
+                                                    foreach (var item1 in ViewBag.HALinkReqDoc)
                                                     {
-                                                        <input type="file" value='@item.RequiredDocID' />
+                                                        <li>
+                                                            @if (@item1.RequiredDocID == @item.RequiredDocID)
+                                                            {
+                                                                <a class="title" href="#"><label class="fname">@item1.filename</label> </a>
+                                                                <a href="javascript:void(0);" data-id="@item1.Id" class="deleteItem"><i class="glyphicon glyphicon-remove-circle"></i></a>
+                                                            }
+                                                        </li>
                                                     }
+                                                }
+                                            </ul>
 
-                                                </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                @item.RequiredDoc.RequiredDocDesc
+                                            </label>
 
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    @item.RequiredDoc.RequiredDocDesc
-                                                </label>
-
-                                            </td>
-                                        </tr>
-                                    }
+                                        </td>
+                                    </tr>
                                 }
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
+
             if (Model.UserRollTemplate > 1)
             {
                 <div class="row">
@@ -179,8 +194,71 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Simpan" />
-                        <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                        @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+
+                        }
+                        @if (Model.AppStatusID == 10 || Model.AppStatusID == 12)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Show Payments Due" id="btnGetPaymentDue" />
+                        }
+                        @if (Model.AppStatusID == 14)
+                        {
+                            // Add a button for showing License print
+                            <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                        }
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                        {
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
+
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                            }
+                        }
+
+                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                            {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                            }*@
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.HawkerApplicationID > 0 && (Model.AppStatusID >= 2 && Model.AppStatusID <= 4))
+                        {
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.HawkerApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.HawkerApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.HawkerApplicationID > 0 && (Model.AppStatusID == 7 || Model.AppStatusID == 6))
+                        {
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.HawkerApplicationID > 0 && (Model.AppStatusID == 8))
+                        {
+                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                        }
+
+                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.HawkerApplicationID > 0)
+                        {
+
+                        }
+
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+
                     </div>
                 </div>
             </div>
@@ -229,8 +307,8 @@
             visibleGridColume = true;
         }
 
-        $("#individualOwner").select2();
-        $("#individualList").select2();
+        $("#individualOwner").select2({ width: '100%' });
+        
 
         AddRules();
 
@@ -256,6 +334,7 @@
         $("#individualList").select2({
             placeholder: "Masukkan Nama atau MyKad",
             minimumInputLength: 2,
+            width: '100%',
             tags: true,
             tokenSeparators: [';'],
             templateSelection: individualFormating,
@@ -323,8 +402,6 @@
             });
         }
 
-
-
         $("#preAppid").val(@Model.HawkerApplicationID);
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
@@ -346,34 +423,46 @@
 
         RequiredDocument();
 
-        if (!$("#frmHawkerApplication").valid()) {
-            return false;
-        }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
-            alert("Please select Mykad/Passport No");
-            return false;
-        } else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) {
-            alert("Please Upload all Required Document");
+        if (!$("#frmHawkerApplication").valid()) 
+        {
             return false;
         }
-        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
-            alert("Please select all checkbox for Required Document");
-            return false;
-        }else {
-            var individuals = $("#individualList").select2('data');
-            if (individuals) {
-                var newIndividuals = [];
-                for(var i =0; i< individuals.length; i++) {
-                    var ind = individuals[i];
-                    if(ind.isNew) {
-                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
-                    }
-                }
-                if(newIndividuals.length >0) {
-                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
-                }
-            }
-            $("#frmHawkerApplication").submit();
-        }
+        else if (userRollTemplate > 1 && $('#Individualids').val() == "") 
+                {
+                    alert("Please select Mykad/Passport No");
+                    return false;
+                } 
+                else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) 
+                        {
+                            alert("Please Upload all Required Document");
+                            return false;
+                        }
+                        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) 
+                                {
+                                    alert("Please select all checkbox for Required Document");
+                                    return false;
+                                }
+                                else 
+                                {
+                                    var individuals = $("#individualList").select2('data');
+                                    if (individuals) 
+                                        {
+                                        var newIndividuals = [];
+                                        for(var i =0; i< individuals.length; i++) 
+                                            {
+                                            var ind = individuals[i];
+                                            if(ind.isNew) 
+                                                {
+                                                    newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                                                }
+                                            }
+                                            if(newIndividuals.length >0) 
+                                            {
+                                                $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                                            }
+                                        }
+                                    $("#frmHawkerApplication").submit();
+                                }
     }
 
 

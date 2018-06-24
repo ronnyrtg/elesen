@@ -11,6 +11,7 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Web.Helpers;
+using TradingLicense.Infrastructure;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -252,36 +253,46 @@ namespace TradingLicense.Web.Controllers
             HawkerApplicationModel hawkerApplicationModel = new HawkerApplicationModel();
             hawkerApplicationModel.ValidStart = DateTime.Today;
             hawkerApplicationModel.ValidStop = DateTime.Today;
-            if (Id != null && Id > 0)
+            List<HAReqDocModel> HAReqDoc = new List<HAReqDocModel>();
+            List<HALinkReqDoc> HALinkReqDoc = new List<HALinkReqDoc>();
+            List<Attchments> Attchments = new List<Attchments>();
+
+            using (var ctx = new LicenseApplicationContext())
             {
-                List<HAReqDocModel> HAReqDoc = new List<HAReqDocModel>();
-                using (var ctx = new LicenseApplicationContext())
+                IQueryable<HAReqDoc> query = ctx.HAReqDocs;
+                HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
+                ViewBag.hawkerDocList = ctx.HAReqDocs.ToList();
+
+                var haLinkInd = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == Id).ToList();
+                hawkerApplicationModel.Individualids = string.Join(",", haLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                var iids = haLinkInd.Select(b => b.IndividualID).ToList();
+                selectedIndividualList = ctx.Individuals
+                    .Where(b => iids.Contains(b.IndividualID))
+                    .Select(fnSelectIndividualFormat)
+                    .ToList();
+
+                hawkerApplicationModel.selectedIndividualList = selectedIndividualList;
+
+                if (Id != null && Id > 0)
                 {
-                    var haLinkInd = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == Id).ToList();
-                    hawkerApplicationModel.Individualids = string.Join(",", haLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
-                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
-                    var iids = haLinkInd.Select(b => b.IndividualID).ToList();
-                    selectedIndividualList = ctx.Individuals
-                        .Where(b => iids.Contains(b.IndividualID))
-                        .Select(fnSelectIndividualFormat)
-                        .ToList();
+                    
 
-                    hawkerApplicationModel.selectedIndividualList = selectedIndividualList;
-
-
-                    IQueryable<HAReqDoc> query = ctx.HAReqDocs;
-                    HAReqDoc = Mapper.Map<List<HAReqDocModel>>(query.ToList());
-                    ViewBag.hawkerDocList = ctx.HAReqDocs.ToList();
-                    if (Id != null && Id > 0)
-                    {
-
-                        int HawkerApplicationID = Convert.ToInt32(Id);
-                        var HawkerApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == HawkerApplicationID).FirstOrDefault();
-                        hawkerApplicationModel = Mapper.Map<HawkerApplicationModel>(HawkerApplication);
-                    }
-
+                    int HawkerApplicationID = Convert.ToInt32(Id);
+                    var HawkerApplication = ctx.HawkerApplications.Where(a => a.HawkerApplicationID == HawkerApplicationID).FirstOrDefault();
+                    hawkerApplicationModel = Mapper.Map<HawkerApplicationModel>(HawkerApplication);
                 }
+
             }
+
+            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            {
+                hawkerApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+                hawkerApplicationModel.UsersID = ProjectSession.User.UsersID;
+            }
+
+            ViewBag.HALinkReqDoc = Attchments;
+            ViewBag.UserRole = ProjectSession.User.RoleTemplateID;
             return View(hawkerApplicationModel);
         }
 
@@ -526,5 +537,12 @@ namespace TradingLicense.Web.Controllers
             }
         }
         #endregion
+
+        public class Attchments
+        {
+            public int RequiredDocID { get; set; }
+            public int Id { get; set; }
+            public string filename { get; set; }
+        }
     }
 }

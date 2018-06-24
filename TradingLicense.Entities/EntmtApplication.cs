@@ -30,14 +30,26 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string StateA { get; set; }
         public int PremiseTypeID { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
+        public string OtherPremiseType { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string WhichFloor { get; set; }
-        public int PremiseLocation { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PremiseLocation { get; set; }
         public float PremiseArea { get; set; }
-        public int PremiseOwnership { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PremiseOwnership { get; set; }
         public int EntmtGroupID { get; set; }
         public int EntmtCodeID { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
+        public string StartStopTime { get; set; }
+        public int PeriodQuantity { get; set; }
+        public int Period { get; set; }
         public int EntmtObjectID { get; set; }
         public int AppStatusID { get; set; }
         
@@ -53,9 +65,9 @@ namespace TradingLicense.Entities
         public DateTime? DatePaid { get; set; }
         public DateTime? ExpireDate { get; set; }
 
+        public virtual BusinessType BusinessType { get; set; }
         public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }
-        public virtual BusinessType BusinessType { get; set; }
         public virtual Company Company { get; set; }
         public virtual Users Users { get; set; }
     }

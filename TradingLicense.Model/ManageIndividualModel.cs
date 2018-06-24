@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,7 @@ namespace TradingLicense.Model
         {
             get
             {
-                if(_tempIndividualLoc == string.Empty)
+                if (_tempIndividualLoc == string.Empty)
                 {
                     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
                     var stringChars = new char[6];

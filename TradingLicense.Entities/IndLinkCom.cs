@@ -7,6 +7,7 @@ namespace TradingLicense.Entities
         [Key]
         public int IndLinkComID { get; set; }
         public int IndividualID { get; set; }
+        public string IndPosition { get; set; }
         public int CompanyID { get; set; }
 
 

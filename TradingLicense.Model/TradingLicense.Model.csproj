@@ -76,6 +76,7 @@
     <Compile Include="HawkerCodeModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="IndLinkAttModel.cs" />
+    <Compile Include="IndLinkComModel.cs" />
     <Compile Include="LAReqDocModel.cs" />
     <Compile Include="LiquorApplicationModel.cs" />
     <Compile Include="LocationModel.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="PremiseApplicationModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RaceModel.cs" />
     <Compile Include="RegistrationModel.cs" />
     <Compile Include="RegularExpressions.cs" />
     <Compile Include="RequiredDocModel.cs" />
