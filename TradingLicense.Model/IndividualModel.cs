@@ -29,7 +29,6 @@ namespace TradingLicense.Model
         [StringLength(200)]
         public string PhoneNo { get; set; }
 
-        [Required(ErrorMessage = "Sila masukkan Email")]
         [Display(Name = "Email")]
         [StringLength(200)]
         public string IndividualEmail { get; set; }

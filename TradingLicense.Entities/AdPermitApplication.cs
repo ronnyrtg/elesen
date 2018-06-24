@@ -8,6 +8,7 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int AdPermitApplicationID { get; set; }
+        public int Mode { get; set; }
         public int LenderApplicationID { get; set; }
         public int Brochure { get; set; }
         public int Newspaper { get; set; }

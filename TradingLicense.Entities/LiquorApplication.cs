@@ -50,6 +50,7 @@ namespace TradingLicense.Entities
         public DateTime? DatePaid { get; set; }
         public DateTime? ExpireDate { get; set; }
 
+        public virtual BusinessType BusinessType { get; set; }
         public virtual Company Company { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

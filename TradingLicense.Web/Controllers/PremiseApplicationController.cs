@@ -420,6 +420,7 @@ namespace TradingLicense.Web.Controllers
             return RedirectToAction("PremiseApplication", "PremiseApplication");
         }
 
+        #region Generate License
         public ActionResult GeneratLicense(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -679,6 +680,7 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }
+        #endregion
 
         /// <summary>
         /// Save PremiseApplication Information
@@ -1140,6 +1142,8 @@ namespace TradingLicense.Web.Controllers
             return userroleTemplate;
         }
 
+        #region Generate Letter
+
         public ActionResult GenerateLetter(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -1566,7 +1570,7 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
-
+        #endregion
 
         private FileStreamResult GeneratePdf(Int32? appId)
         {
@@ -1638,7 +1642,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get Individuale Code
+        /// Get Individual Code
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>

@@ -6,7 +6,6 @@ namespace TradingLicense.Model
     public class AdPermitApplicationModel
     {
         public int AdPermitApplicationID { get; set; }
-        public int BusinessTypeID { get; set; }
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
         public int LenderApplicationID { get; set; }

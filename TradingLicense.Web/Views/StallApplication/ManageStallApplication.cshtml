@@ -13,9 +13,6 @@
 
     List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
 
-    //List<StallReqObj> stallDoc = new List<StallReqObj>();
-    IQueryable stallDoc;
-
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var stallCode = ctx.StallCodes.ToList();
@@ -57,7 +54,7 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.StallApplicationID)
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-6">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.IndividualID, new SelectList(individualOwner, "IndividualID", "FullName"), "Masukkan Nama atau MyKad", new { @id = "individualOwner", @class = "form-control" })
@@ -91,24 +88,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-3">
-                    <div class="form-group">
-
-                        <div class="control-label">Tempoh Sah Lesen Dari <span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ValidStart, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.ValidStart)
-
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-3">
-                    <div class="form-group">
-                        <div class="control-label">Hingga<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ValidStop, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.ValidStop)
-                    </div>
-                </div>
-            </div>
+           
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
@@ -118,7 +98,6 @@
                 </div>
             </div>
 
-            <hr />
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
@@ -131,12 +110,12 @@
                     </div>
                 </div>
             </div>
-            <h4> Required Documents </h4>
+            <h4> Dokumen Wajib </h4>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0">
                     <thead>
                         <th> Disertakan? </th>
-                        <th> Jenis Document </th>
+                        <th> Jenis Dokumen </th>
                     </thead>
                     <tbody>
                         @foreach (var item in stallDocList) {
@@ -166,7 +145,9 @@
         $(function () {
             // This will make every element with the class "date-picker" into a DatePicker element
             $('.date-picker').datepicker({ dateFormat: 'dd/MM/yyyy' });
-            $("#individualList").select2();
+
+            $("#individualOwner").select2({ width: '100%' });
+            $("#individualList").select2({ width: '100%' });
 
             var actionError = '@(TempData["ErrorMessage"])';
             if (actionError != null && actionError != "") {

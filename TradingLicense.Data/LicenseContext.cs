@@ -23,6 +23,7 @@ namespace TradingLicense.Data
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Road> Roads { get; set; }
+        public DbSet<Race> Races { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }

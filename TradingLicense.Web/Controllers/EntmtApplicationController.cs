@@ -625,6 +625,26 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        private Func<EntmtCode, Select2ListItem> fnSelectEntmtCode = bc => new Select2ListItem { id = bc.EntmtCodeID, text = $"{bc.EntmtCodeDesc}" };
+        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
+        /// <summary>
+        /// Get Individual Code
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillIndividual(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var individual = ctx.Individuals
+                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectIndividualFormat).ToList();
+                return Json(individual, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         /// <summary>
         /// Get EntmtApplication Data by ID
         /// </summary>
@@ -661,26 +681,16 @@ namespace TradingLicense.Web.Controllers
                         entmtApplicationModel.selectedEntmtCodeList = entmtCodesList;
                     }
 
-                    var paLinkInd = ctx.EALinkInds.Where(a => a.EntmtApplicationID == EntmtApplicationID).ToList();
-                    if (paLinkInd != null && paLinkInd.Count > 0)
-                    {
-                        entmtApplicationModel.Individualids = (string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray()));
+                    var eaLinkInd = ctx.EALinkInds.Where(a => a.EntmtApplicationID == Id).ToList();
+                    entmtApplicationModel.Individualids = string.Join(",", eaLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+                    var iids = eaLinkInd.Select(b => b.IndividualID).ToList();
+                    selectedIndividualList = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .Select(fnSelectIndividualFormat)
+                        .ToList();
 
-                        List<SelectedIndividualModel> individualList = new List<SelectedIndividualModel>();
-                        foreach (var item in paLinkInd)
-                        {
-                            var Individual = ctx.Individuals.Where(b => b.IndividualID == item.IndividualID).FirstOrDefault();
-                            if (Individual != null && Individual.IndividualID > 0)
-                            {
-                                SelectedIndividualModel selectedIndividualModel = new SelectedIndividualModel();
-                                selectedIndividualModel.id = Individual.IndividualID;
-                                selectedIndividualModel.text = Individual.MykadNo;
-                                individualList.Add(selectedIndividualModel);
-                            }
-                        }
-                        entmtApplicationModel.selectedIndividualList = individualList;
-
-                    }
+                    entmtApplicationModel.selectedIndividualList = selectedIndividualList;
 
                     var EALinkReqDocumentList = ctx.EALinkReqDocs.Where(p => p.EntmtApplicationID == EntmtApplicationID).ToList();
                     if (EALinkReqDocumentList != null && EALinkReqDocumentList.Count > 0)
@@ -1052,32 +1062,29 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get Business Code
+        /// Get Entmt Code
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">The query.</param>
+        /// <param name="selectedMode">The selected mode.</param>
+        /// <param name="selectedSector">The selected sector.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult FillEntmtCode(string query)
+        public JsonResult FillEntmtCode(string query, int selectedMode, int selectedGroup)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var businessCode = ctx.EntmtCodes.Where(t => t.EntmtCodeDesc.ToLower().Contains(query.ToLower())).Select(x => new { id = x.EntmtCodeID, text = x.EntmtCodeDesc }).ToList();
-                return Json(businessCode, JsonRequestBehavior.AllowGet);
-            }
-        }
+                IQueryable<EntmtCode> primaryQuery = ctx.EntmtCodes;
 
-        /// <summary>
-        /// Get Individuale Code
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult FillIndividual(string query)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                var individual = ctx.Individuals.Where(t => t.MykadNo.ToLower().Contains(query.ToLower())).Select(x => new { id = x.IndividualID, text = x.MykadNo }).ToList();
-                return Json(individual, JsonRequestBehavior.AllowGet);
+                if (selectedGroup > 0)
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.EntmtGroupID == selectedGroup);
+                }
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.EntmtCodeDesc.ToLower().Contains(query.ToLower()));
+                }
+                var entmtCode = primaryQuery.Select(fnSelectEntmtCode).ToList();
+                return Json(entmtCode, JsonRequestBehavior.AllowGet);
             }
         }
 

@@ -11,8 +11,8 @@ namespace TradingLicense.Entities
         public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int HawkerCodeID { get; set; }
-        public DateTime ValidStart { get; set; }
-        public DateTime ValidStop { get; set; }
+        public DateTime? ValidStart { get; set; }
+        public DateTime? ValidStop { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string GoodsType { get; set; }
