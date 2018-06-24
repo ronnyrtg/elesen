@@ -3,8 +3,6 @@
 @{
     ViewBag.Title = "View Premise License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    
 }
 
 <div id="divMessage"></div>
@@ -182,9 +180,9 @@
             <div class="col-md-6 col-sm-12">
                 <div class="form-group">
                     <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLetter" name="btnSubmit" />
-                    @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && Model.AppStatusID == 5)
+                    @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.unitroute)
                     {
-                        <input type="button" class="btn btn-primary btSubmit" value="Submit Response" id="btnRouteUnitResponse" name="btnRouteUnitResponse" />
+                        <input type="button" class="btn btn-primary btSubmit" value="Submit Response" id="btnRouteUnitResponse" name="btnRouteUnitResponse" onclick="return Approvedreject()" />
                     }
                     <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                 </div>
@@ -225,20 +223,18 @@
             supportList.Add(new SelectListItem { Text = "Supported", Value = "1" });
             supportList.Add(new SelectListItem { Text = "Not Supported", Value = "0" });
             @Html.HiddenFor(m => m.PremiseApplicationID)
-            <div class="row">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Route Unit Response</h4>
-                    </div>
-                    <div class="modal-body">
-                        <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <div class="control-label">Do you Support</div>
-                                    @Html.DropDownList("Supported", new SelectList(supportList, "Value", "Text"), "Select your response", new { @class = "form-control" })
-                                </div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Route Unit Response</h4>
+                </div>
+                <div class="modal-body">
+                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" name="comment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="control-label">Do you Support</div>
+                                @Html.DropDownList("Supported", new SelectList(supportList, "Value", "Text"), "Select your response", new { @class = "form-control" })
                             </div>
                         </div>
                     </div>
@@ -260,8 +256,9 @@
           window.location.href = link;
         }
 
-        function Approvedreject(name) {
+        function Approvedreject() {
             $('#approvedrejectModal').modal('show');
+            return false;
         }
 
         function validateRouteUnitResponse() {

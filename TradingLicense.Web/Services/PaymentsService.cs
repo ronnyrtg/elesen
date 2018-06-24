@@ -15,6 +15,7 @@ namespace TradingLicense.Web.Services
             PaymentDueModel paymentDueModel = new PaymentDueModel();
             paymentDueModel.IndividualIDs = string.Join(",", ctx.PALinkInd
                                                 .Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID)
+                                                .AsEnumerable()
                                                 .Select(pa => $"~{pa.IndividualID}~"));
             paymentDueModel.AmountDue = totalDue.Value;
             paymentDueModel.PaymentFor = premiseApplicationModel.ReferenceNo;

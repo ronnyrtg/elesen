@@ -28,6 +28,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnSubmit = "Submitted";
         public const string OnRouteSubmit = "SubmittedToRoute";
         public const string OnRejected = "Rejected";
+        public const string OnKIV = "KIV";
 
         #region PremiseApplication
 
@@ -35,6 +36,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: PremiseApplication
         /// </summary>
         /// <returns></returns>
+        [AuthorizationPrivilegeFilter(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel)]
         public ActionResult PremiseApplication()
         {
             
@@ -66,46 +68,6 @@ namespace TradingLicense.Web.Controllers
                         case (int)RollTemplate.Public:
                             {
                                 query = query.Where(q => q.UsersID == ProjectSession.UserID);
-                            }
-                            break;
-                        case (int)RollTemplate.DeskOfficer:
-                            {
-                                var allowedStatus = new List<int> { 1, 6, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.Clerk:
-                            {
-                                var allowedStatus = new List<int> { 2, 3, 4, 6, 9, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.Supervisor:
-                            {
-                                var allowedStatus = new List<int> { 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.RouteUnit:
-                            if (string.IsNullOrEmpty(premiseApplicationId))
-                            {
-                                var departmentID = ProjectSession.User?.DepartmentID;
-                                if (departmentID.HasValue)
-                                {
-                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value).Select(d => d.PremiseApplicationID).ToList();
-                                    query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
-                                }
-                            }
-                            break;
-                        case (int)RollTemplate.Director:
-                            {
-                                var allowedStatus = new List<int> { 6, 7, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.CEO:
-                            {
-                                query = query.Where(q => q.AppStatusID == 8);
                             }
                             break;
                     }
@@ -432,7 +394,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
-                    if (paDepSupp != null && !string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    if (paDepSupp != null && string.IsNullOrEmpty(paDepSupp.SubmittedBy))
                     {
                         paDepSupp.IsSupported = supported == 1;
                         paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
@@ -771,8 +733,8 @@ namespace TradingLicense.Web.Controllers
                 if(pa != null)
                 {
                     PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
-                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.UserName, totalDue);
-                    UpdateStatusId(paModel, ctx, 13, pa); // Payment due
+                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.User?.FullName ?? ProjectSession.UserName, totalDue);
+                    UpdateStatusId(paModel, ctx, (int)PAStausenum.Pendingpayment, pa);
                     TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
                 }
                 else
@@ -811,7 +773,11 @@ namespace TradingLicense.Web.Controllers
             {
                 userroleTemplate = GetUserRoleTemplate(premiseApplicationModel, premiseApplication, ctx);
             }
-
+            var finalStatus = GetStatusOnSubmit(premiseApplicationModel, ctx, premiseApplication, userroleTemplate);
+            if (finalStatus != 0)
+            {
+                premiseApplication.AppStatusID = finalStatus;
+            }
             premiseApplication.DateSubmitted = DateTime.Now;
 
             ctx.PremiseApplications.AddOrUpdate(premiseApplication);
@@ -1012,75 +978,101 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
             premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
-            return SetStatusOnSubmit(premiseApplicationModel, ctx, premiseApplication, roleTemplate);
+            return true;
         }
 
-        private bool SetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
+        private int GetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
         {
-            if (premiseApplication.Mode == 1 && !premiseApplicationModel.IsDraft)
+            PAStausenum finalStatus = 0;
+            if (!premiseApplicationModel.IsDraft)
             {
-                UpdateStatusId(premiseApplicationModel, ctx, 12, premiseApplication); // Letter of notification (with conditions)
-            }
-            else if (premiseApplication.Mode > 1 && !premiseApplicationModel.IsDraft)
-            {
-                int finalStatus = 0;
                 switch (roleTemplate)
                 {
                     case (int)RollTemplate.DeskOfficer:
-                        finalStatus = 2; // submitted clerk;
+                        finalStatus = PAStausenum.submittedtoclerk;
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
                         break;
                     case (int)RollTemplate.Clerk:
-                        if (premiseApplicationModel.SubmitType == OnRouteSubmit)
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
                         {
-                            if (!RouteApplication(premiseApplicationModel, ctx))
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
                             {
-                                return false;
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
                             }
-                            finalStatus = 5; // Route Unit
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnRouteSubmit)
+                        {
+                            RouteApplication(premiseApplicationModel, ctx);
+                            finalStatus = PAStausenum.unitroute;
                         }
                         else if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
-                            finalStatus = 7; // submitted clerk;
+                            finalStatus = PAStausenum.directorcheck;
                         }
                         break;
                     case (int)RollTemplate.Director:
-                        if (premiseApplicationModel.SubmitType == OnSubmit)
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
                             switch (premiseApplicationModel.Mode)
                             {
                                 case 2:
-                                    finalStatus = 10; // Letter of notificaiton (approved)
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
                                     break;
                                 case 3:
-                                    finalStatus = 8; // CEO
+                                    finalStatus = PAStausenum.CEOcheck;
                                     break;
                                 case 4:
-                                    finalStatus = 6; // Meeting
+                                    finalStatus = PAStausenum.meeting;
                                     break;
                             }
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
                         break;
                     case (int)RollTemplate.CEO:
                         if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
-                            finalStatus = 10;
+                            finalStatus = PAStausenum.LetterofnotificationApproved;
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
                         break;
                 }
-                if (finalStatus != 0)
-                {
-                    UpdateStatusId(premiseApplicationModel, ctx, finalStatus, premiseApplication);
-                }
             }
-            return true;
+            else
+            {
+                finalStatus = PAStausenum.draftcreated;
+            }
+            return (int)finalStatus;
         }
 
         /// <summary>
@@ -1143,48 +1135,6 @@ namespace TradingLicense.Web.Controllers
             if (ProjectSession.User.RoleTemplateID != null)
             {
                 userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
-            }
-
-            if (!premiseApplicationModel.IsDraft)
-            {
-                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
-                }
-            }
-            else
-            {
-                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
-                }
-            }
-
-            if (userroleTemplate == (int)RollTemplate.Clerk)
-            {
-                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
-                {
-                    var islinkDept = false;
-                    string[] ids = premiseApplicationModel.BusinessCodeids.Split(',');
-                    foreach (var id in ids)
-                    {
-                        int businessCodeId = Convert.ToInt32(id);
-                        var businesslinkDepartment = ctx.BCLinkDeps.FirstOrDefault(p => p.BusinessCodeID == businessCodeId);
-                        if (businesslinkDepartment != null && businesslinkDepartment.BussCodLinkDepID > 0)
-                        {
-                            islinkDept = true;
-                            break;
-                        }
-                    }
-
-                    premiseApplication.AppStatusID = islinkDept
-                        ? (int)PAStausenum.unitroute
-                        : (int)PAStausenum.supervisorcheck;
-                }
-                else
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
-                }
             }
 
             return userroleTemplate;

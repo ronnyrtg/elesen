@@ -413,6 +413,15 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=6,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=7,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=8,ScreenId=11},
+
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=1,RoleTemplateID=1,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=2,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=3,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=4,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=1,RoleTemplateID=5,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=6,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
             };
             accesspages.ForEach(s => context.AccessPages.Add(s));
             context.SaveChanges();

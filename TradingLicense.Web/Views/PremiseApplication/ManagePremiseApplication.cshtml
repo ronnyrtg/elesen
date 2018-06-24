@@ -2,6 +2,7 @@
 @model TradingLicense.Model.PremiseApplicationModel
 @using AutoMapper;
 @using System.Linq;
+@using TradingLicense.Infrastructure;
 @{
     ViewBag.Title = "Manage Premise License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -77,7 +78,7 @@
             @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
             @Html.HiddenFor(m => m.AppStatusID)
-            if (Model.AppStatusID != 8 && Model.AppStatusID == 6)
+            if (Model.AppStatusID != (int)Enums.PAStausenum.CEOcheck && Model.AppStatusID != (int)Enums.PAStausenum.meeting)
             {
                     @Html.HiddenFor(m => m.SubmitType)
             }
@@ -320,7 +321,7 @@
                         </div>
                     </div>
                 }
-                if (Model.AppStatusID == 8) // Awaiting CEO
+                if (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
                 {
                     List<SelectListItem> supportList = new List<SelectListItem>();
                     supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
@@ -334,12 +335,12 @@
                         </div>
                     </div>
                 }
-                if (Model.AppStatusID == 6) // Meeting
+                if (Model.AppStatusID == (int)Enums.PAStausenum.meeting) // Meeting
                 {
                     List<SelectListItem> supportList = new List<SelectListItem>();
                     supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
                     supportList.Add(new SelectListItem { Text = "Rejected", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
@@ -364,17 +365,15 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1 || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-
                             }
-                            @if (Model.AppStatusID == 10 || Model.AppStatusID == 12)
+                            @if ((Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
-                                <input type="button" class="btn btn-primary btSubmit" value="Show Payments Due" id="btnGetPaymentDue" />
                             }
-                            @if (Model.AppStatusID == 14)
+                            @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
                                 // Add a button for showing License print
                                 <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
@@ -382,11 +381,9 @@
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> }
-
-                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                    <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                                 }
                             }
 
@@ -395,7 +392,7 @@
                                     <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                                 }*@
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0 && (Model.AppStatusID >= 2 && Model.AppStatusID <= 4))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
                             {
                             <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
@@ -411,13 +408,13 @@
 
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == 7 || Model.AppStatusID == 6))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
                             {
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == 8))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
                             {
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
@@ -601,7 +598,7 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
-                            <input type="number" id="totalDue" />
+                            @Html.TextBox("totalDue", new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
@@ -1156,7 +1153,7 @@
             }
         });
         $("#RequiredDocIds").val(RequiredArray);
-        
+
         checkButtonState();
     }
 
@@ -1187,7 +1184,7 @@
             }
         });
         $("#AdditionalDocIds").val(AdditionalArray);
-        
+
         checkButtonState();
     }
 
@@ -1575,26 +1572,26 @@
                 errorMessage(xhr.responseText);
             }
         });
-        
+
     }
 
-        function RoutePremiseApplication() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
-            $("#frmPremiseApplication").submit();
-            return false;
-        }
+    function RoutePremiseApplication() {
+        $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
+        $("#frmPremiseApplication").submit();
+        return false;
+    }
 
-        function Approved() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
-            $("#frmPremiseApplication").submit();
-            return false;
-        }
+    function Approved() {
+        $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
+        $("#frmPremiseApplication").submit();
+        return false;
+    }
 
-        function Rejected() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected');
-            $("#frmPremiseApplication").submit();
-            return false;
-        }
+    function Rejected() {
+        $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected');
+        $("#frmPremiseApplication").submit();
+        return false;
+    }
 
 
     $(document).ready(function () {
@@ -1611,7 +1608,7 @@
         {
             $('#btnLetter').show();
             $('#btnLetter').css('visibility', 'visible');
-            if(!($('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12))
+            if(!($('#Mode').val() == 1 || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
             {
                 $('#btnLetter').hide();
             }
