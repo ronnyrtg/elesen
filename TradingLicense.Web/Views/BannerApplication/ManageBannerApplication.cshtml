@@ -124,10 +124,6 @@
                             <label class="LokasiDipohon">Lokasi Dipohon</label>
                             <input type="hidden" class="LocationId" value="0" />
                         </td>
-                        <td style="width:15%">
-                            <label class="Zone">Zone</label>
-                            <input type="hidden" class="ZoneId" value="0" />
-                        </td>
                         <td style="width:24%">
                             <label class="SaizIklanDipohon">Saiz Iklan Dipohon</label>
                         </td>
@@ -151,10 +147,6 @@
                             <td style="width:24%">
                                 <label class="LokasiDipohon">@item.Location.LocationDesc</label>
                                 <input type="hidden" class="LocationId" value="@item.Location.LocationID" />
-                            </td>
-                            <td style="width:15%">
-                                <label class="Zone">@item.Zone.ZoneCode</label>
-                                <input type="hidden" class="ZoneId" value="@item.Zone.ZoneID" />
                             </td>
                             <td style="width:24%">
                                 <label class="SaizIklanDipohon">@item.BSize.ToString("0.00")</label>
@@ -261,7 +253,7 @@
                         $('#ddlCompany').select2({ width: '100%' });
                         $('#BannerCode').select2({ width: '100%' });
                         $('#ddlLocation').select2({ width: '100%' });
-                        $('#ddlZone').select2({ width: '100%' });
+                        
 
                         $('#addProductItem').click(function () {
                             var isAllValid = validateModel();
@@ -273,8 +265,6 @@
                                 $('.KodIklan', $newRow).text($('#BannerCode option:selected').text());
                                 $('.LocationId', $newRow).val($('#ddlLocation').val());
                                 $('.LokasiDipohon', $newRow).text($('#ddlLocation option:selected').text());
-                                $('.ZoneId', $newRow).val($('#ddlZone').val());
-                                $('.Zone', $newRow).text($('#ddlZone option:selected').text());
                                 var num = parseFloat($('#SaizIklanDipohon').val());
                                 $('.SaizIklanDipohon', $newRow).text(num.toFixed(2));
                                 $('.BilanganIklan', $newRow).text($('#BilanganIklan').val());
@@ -404,7 +394,6 @@
                                         var GridItems = {
                                             BannerCodeID: $('.KodIklanId', this).val(),
                                             LocationID: $('.LocationId', this).val(),
-                                            ZoneID: $('.ZoneId', this).val(),
                                             BSize: $('.SaizIklanDipohon', this).text(),
                                             BQuantity: $('.BilanganIklan', this).text(),
                                             BannerObjectID: $('.BannerObjectId', this).val(),
