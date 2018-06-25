@@ -70,6 +70,18 @@ namespace TradingLicense.Web.Controllers
                                 query = query.Where(q => q.UsersID == ProjectSession.UserID);
                             }
                             break;
+                        case (int)RollTemplate.RouteUnit:
+                            if (string.IsNullOrEmpty(premiseApplicationId))
+                            {
+                                var departmentID = ProjectSession.User?.DepartmentID;
+                                if (departmentID.HasValue)
+                                {
+                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value && string.IsNullOrEmpty(pa.SubmittedBy) && pa.IsActive)
+                                                                .Select(d => d.PremiseApplicationID).Distinct().ToList();
+                                    query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
+                                }
+                            }
+                            break;
                     }
                 }
 
@@ -233,6 +245,45 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get Department support/non-supported Comments for the premise applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="premiseApplicationID">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PremiseRouteComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? premiseApplicationID)
+        {
+            List<PADepSuppModel> premiseRouteComments = new List<PADepSuppModel>();
+            int totalRecord = 0;
+            if (premiseApplicationID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<PADepSupp> query = ctx.PADepSupps
+                                                        .Include("Department")
+                                                        .Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = sortedColumns.GetOrderByString();
+
+                    var result = Mapper.Map<List<PADepSuppModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "SubmittedDate desc" : orderByString).ToList();
+
+                    totalRecord = result.Count;
+
+                    #endregion Sorting
+
+                    // Paging
+                    result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    premiseRouteComments = result;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, premiseRouteComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// Download
         /// </summary>
         /// <param name="attechmentId"></param>
@@ -303,7 +354,7 @@ namespace TradingLicense.Web.Controllers
                         .ToList();
 
                     premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
-
+                    premiseApplicationModel.HasPADepSupp = ctx.PADepSupps.Any(pa => pa.PremiseApplicationID == id.Value);
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
                     premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
@@ -393,12 +444,15 @@ namespace TradingLicense.Web.Controllers
                 var departmentID = ProjectSession.User?.DepartmentID;
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
-                    if (paDepSupp != null && string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID && pa.IsActive).FirstOrDefault();
+                    if (paDepSupp != null)
                     {
                         paDepSupp.IsSupported = supported == 1;
+                        paDepSupp.Comment = comment;
+                        paDepSupp.UserId = ProjectSession.UserID;
                         paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
                         paDepSupp.SubmittedDate = DateTime.Now;
+                        paDepSupp.IsActive = false;
                         ctx.PADepSupps.AddOrUpdate(paDepSupp);
                         ctx.SaveChanges();
 
@@ -1109,12 +1163,23 @@ namespace TradingLicense.Web.Controllers
             {
                 var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                
+
+                var oldPADepSupps = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID && pa.IsActive).ToList();
+                if (oldPADepSupps != null && oldPADepSupps.Count > 0)
+                {
+                    foreach (var oldDepSupp in oldPADepSupps)
+                    {
+                        oldDepSupp.IsActive = false;
+                        ctx.PADepSupps.AddOrUpdate(oldDepSupp);
+                    }
+                }
+
                 foreach (var depId in departmentIds)
                 {
                     var paDepSupp = new PADepSupp();
                     paDepSupp.DepartmentID = depId;
                     paDepSupp.PremiseApplicationID = premiseApplicationModel.PremiseApplicationID;
+                    paDepSupp.IsActive = true;
                     ctx.PADepSupps.Add(paDepSupp);
                 }
 
