@@ -58,6 +58,7 @@ namespace TradingLicense.Model
         public string UploadRequiredDocids { get; set; }
 
         public List<SelectedEntmtCodeModel> selectedEntmtCodeList = new List<SelectedEntmtCodeModel>();
+        public List<SelectedEntmtObjectModel> selectedEntmtObjectList = new List<SelectedEntmtObjectModel>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 
         public class NewIndividualModel

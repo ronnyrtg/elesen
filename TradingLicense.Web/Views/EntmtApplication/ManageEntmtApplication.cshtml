@@ -1,42 +1,41 @@
 ﻿@model TradingLicense.Model.EntmtApplicationModel
 @using AutoMapper;
-@using Mvc.CascadeDropDown
 @{
     ViewBag.Title = "Manage Entmt License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
-@{
+
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
+    List<TradingLicense.Model.EntmtGroupModel> entmtGroupList = new List<TradingLicense.Model.EntmtGroupModel>();
+    List<TradingLicense.Model.SelectedEntmtCodeModel> entmtCodeList = new List<TradingLicense.Model.SelectedEntmtCodeModel>();
+    List<TradingLicense.Model.SelectedEntmtObjectModel> entmtObjectList = new List<TradingLicense.Model.SelectedEntmtObjectModel>();
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+    List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
+    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessType = ctx.BusinessTypes.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+
+        var companies = ctx.Companies.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+
+        var entmtGroup = ctx.EntmtGroups.ToList();
+        entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtGroupModel>>(entmtGroup);
+
+        var premiseType = ctx.PremiseTypes.ToList();
+        PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
+
+        var appStatus = ctx.AppStatus.ToList();
+        appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
+    }
+
     List<SelectListItem> ModeList = new List<SelectListItem>();
     ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
     ModeList.Add(new SelectListItem { Text = "Biasa", Value = "2" });
     ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "3" });
     ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "4" });
-
-    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var businessType = ctx.BusinessTypes.ToList();
-        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
-    }
-
-    List<TradingLicense.Model.EntmtGroupModel> entmtGroupList = new List<TradingLicense.Model.EntmtGroupModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var entmtGroup = ctx.EntmtGroups.ToList();
-        entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtGroupModel>>(entmtGroup);
-    }
-
-    List<TradingLicense.Model.SelectedEntmtCodeModel> entmtCodeList = new List<TradingLicense.Model.SelectedEntmtCodeModel>();
-
-    //Generate list of all Individuals, can select more than one
-    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
-
-    List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var premiseType = ctx.PremiseTypes.ToList();
-        PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
-    }
 
     List<SelectListItem> PremiseLocationList = new List<SelectListItem>();
     PremiseLocationList.Add(new SelectListItem { Text = "Tengah", Value = "Tengah" });
@@ -52,13 +51,6 @@
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
     periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
     periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
-
-    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var appStatus = ctx.AppStatus.ToList();
-        appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
-    }
 
 }
 <div id="divMessage"></div>
@@ -103,6 +95,14 @@
                         @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Masukkan Nama atau Nombor MyKad", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
                         @Html.HiddenFor(model => model.Individualids)
                         @Html.HiddenFor(model => model.newIndividualsList)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Nama Syarikat/Pertubuhan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Pilih Syarikat / Pertubuhan", new { @id = "companyList", @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -248,6 +248,15 @@
                 </div>
                 <div class="header">
                     <h4 id="headerTitle">B. Permohonan Lesen Hiburan</h4>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Hiburan<span class="cfont">*</span></div>
+                            @Html.DropDownList("EntmtObject", new SelectList(Model.selectedEntmtObjectList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtObjectList", @class = "form-control", multiple = "true", onchange = "changeEntmtobject()" })
+                            @Html.HiddenFor(model => model.EntmtObjectids)
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
@@ -428,6 +437,8 @@
         }
 
         $("#individualList").select2({ width: '100%' });
+        $("#entmtObjectList").select2({ width: '100%' });
+        $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
         AddRules();
 
@@ -437,7 +448,19 @@
             return $result;
         }
 
+        function formatEntmtObject(data) {
+            var r = data.text.split('~');
+            var $result = $('<div class="row">' + '<div class="col-md-10">' + r[0] + '</div>' + '</div>');
+            return $result;
+        }
+
         function formatSelectionEntmtCodes(data) {
+            var r = data.text.split('~');
+            var $result = $('<span>' + r[0] + '</span>');
+            return $result;
+        }
+
+        function formatSelectionEntmtObjects(data) {
             var r = data.text.split('~');
             var $result = $('<span>' + r[0] + '</span>');
             return $result;
@@ -452,6 +475,34 @@
             ajax: {
                 type: "POST",
                 url: encodeURI('@Url.Action("FillEntmtCode", "EntmtApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return {
+                        query: query.term,
+                        selectedMode: $('#Mode').val(),
+                        selectedGroup:  $("#EntmtGroupID").val()
+                    }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
+
+        $("#entmtObjectList").select2({
+            placeholder: "Pilih Jenis Hiburan",
+            width: '100%',
+            minimumInputLength: 0,
+            templateResult: formatEntmtObjects,
+            templateSelection: formatSelectionEntmtObjects,
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillEntmtObject", "EntmtApplication")'),
                 //Data: allows us to pass a parameter to the controller
                 data: function (query) {
                     //console.log(query)
@@ -642,6 +693,12 @@
 
     function changeEntmtcode() {
         $('#EntmtCodeids').val($('#entmtCodeList').val());
+        bindAdditionalTable();
+        checkButtonState();
+    }
+
+    function changeEntmtobject() {
+        $('#EntmtObjectids').val($('#entmtObjectList').val());
         bindAdditionalTable();
         checkButtonState();
     }
