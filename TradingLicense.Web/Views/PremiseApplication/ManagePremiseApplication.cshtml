@@ -360,14 +360,28 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">
+                                Route Department Comments
+                            </div>
+                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
+                        </div>
+                    </div>
+                </div>
             }
 
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1 || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                            }
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1))
+                            {
+                                <input type="button" class="btn btn-primary btSubmit" value="Lulus Bersyarat" id="btnLetter" name="btnSubmit" />
                             }
                             @if ((Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
@@ -854,6 +868,10 @@
 
         if(@Model.PremiseApplicationID > 0 && @Model.UserRollTemplate > 1) {
             loadComments();
+        }
+        if(@(Model.HasPADepSupp.ToString().ToLower()) === true)
+        {
+            loadRouteComments();
         }
     });
 
@@ -1471,6 +1489,64 @@
                     "data": "Comment"
                 },
                 { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
+            ]
+        });
+    }
+
+    function loadRouteComments() {
+        $('#RouteComments').show();
+        if ($.fn.DataTable.isDataTable("#tblRouteComments")) {
+            $('#tblRouteComments').dataTable().fnDestroy();
+        }
+
+        var data = { "PremiseApplicationID": @Model.PremiseApplicationID };
+
+        table = $("#tblRouteComments").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": true,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("PremiseRouteComments", "PremiseApplication")',
+                type: "POST",
+                data: data
+            },
+            "columns": [
+                {
+                    "targets": 0,
+                    "searchable": false,
+                    "orderable": false,
+                    "title": "No.",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    "title": "Comment",
+                    "orderable": false,
+                    "data": "Comment"
+                },
+                {
+                    "title": "Department",
+                    "orderable": false,
+                    "data": "Department"
+                },
+                {
+                    "title": "Is Supported",
+                    "orderable": false,
+                    "data": "IsSupported"
+                },
+                {
+                    "title": "Submitted By",
+                    "orderable": false,
+                    "data": "SubmittedBy"
+                },
+                { "title": "Submitted On", "data": "SubmittedDate", "width": "150px", render: renderDateTime },
             ]
         });
     }
