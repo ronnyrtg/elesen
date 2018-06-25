@@ -96,12 +96,68 @@
             <div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">
+                        <div class="control-label"> Nombor Lesen Berniaga Yang Terbaru </div>
+                        @Html.TextBoxFor(m => m.PreviousLicense, new { @class = "form-control" })                   
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label"> Lesen Berniaga Dikeluarkan Pada <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PrevLicDate, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.PrevLicDate)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label"> Lesen Berniaga Ditamatkan Pada <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PrevLicExp, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.PrevLicExp)
+                    </div>
+                </div>
+            </div>
+
+                        <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label"> Nombor Lesen Minuman Keras Yang Terbaru </div>
+                        @Html.TextBoxFor(m => m.PreviousLiquorLicenseNo, new { @class = "form-control" })                   
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label"> Lesen Minuman Keras Dikeluarkan Pada <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PreviousLiquorIssueDate, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.PreviousLiquorIssueDate)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-3">
+                    <div class="form-group">
+                        <div class="control-label"> Lesen Minuman Keras Ditamatkan Pada <span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PreviousLiquorExpDate, new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.PreviousLiquorExpDate)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
                         <div class="control-label">Kod Lesen Minuman Keras</div>
                         @Html.DropDownList("LiquorCode", new SelectList(liquorCodeList.OrderBy(x => x.LiquorCodeID), "LiquorCodeID", "LiquorCodeDesc"), "Pilih Kod Lesen", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">

@@ -24,6 +24,10 @@ namespace TradingLicense.Model
         public DateTime? PrevLicDate { get; set; }
         public DateTime? PrevLicExp { get; set; }
 
+        public string PreviousLiquorLicenseNo { get; set; }
+        public DateTime? PreviousLiquorIssueDate { get; set; }
+        public DateTime? PreviousLiquorExpDate { get; set; }
+
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
 
