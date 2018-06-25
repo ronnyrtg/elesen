@@ -35,6 +35,10 @@ namespace TradingLicense.Entities
         public string PreviousLicense { get; set; }
         public DateTime? PrevLicDate { get; set; }
         public DateTime? PrevLicExp { get; set; }
+        
+        public string PreviousLiquorLicenseNo { get; set; }
+        public DateTime? PreviousLiquorIssueDate { get; set; }
+        public DateTime? PreviousLiquorExpDate { get; set; }
 
         //The user who creates this application
         public int UsersID { get; set; }
