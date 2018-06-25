@@ -51,5 +51,12 @@ namespace TradingLicense.Web.Services
 
             return totalDue;
         }
+
+        public static PaymentReceivedModel AddPaymentRecieved(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, float paidAmount, string userName)
+        {
+            PaymentReceivedModel payment = new PaymentReceivedModel();
+
+            return payment;
+        }
     }
 }

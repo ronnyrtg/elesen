@@ -76,7 +76,7 @@ namespace TradingLicense.Web.Controllers
                                 var departmentID = ProjectSession.User?.DepartmentID;
                                 if (departmentID.HasValue)
                                 {
-                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value && string.IsNullOrEmpty(pa.SubmittedBy))
+                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value && string.IsNullOrEmpty(pa.SubmittedBy) && pa.IsActive)
                                                                 .Select(d => d.PremiseApplicationID).Distinct().ToList();
                                     query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
                                 }
@@ -444,14 +444,15 @@ namespace TradingLicense.Web.Controllers
                 var departmentID = ProjectSession.User?.DepartmentID;
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
-                    if (paDepSupp != null && string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID && pa.IsActive).FirstOrDefault();
+                    if (paDepSupp != null)
                     {
                         paDepSupp.IsSupported = supported == 1;
                         paDepSupp.Comment = comment;
                         paDepSupp.UserId = ProjectSession.UserID;
                         paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
                         paDepSupp.SubmittedDate = DateTime.Now;
+                        paDepSupp.IsActive = false;
                         ctx.PADepSupps.AddOrUpdate(paDepSupp);
                         ctx.SaveChanges();
 
@@ -1162,12 +1163,23 @@ namespace TradingLicense.Web.Controllers
             {
                 var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                
+
+                var oldPADepSupps = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID && pa.IsActive).ToList();
+                if (oldPADepSupps != null && oldPADepSupps.Count > 0)
+                {
+                    foreach (var oldDepSupp in oldPADepSupps)
+                    {
+                        oldDepSupp.IsActive = false;
+                        ctx.PADepSupps.AddOrUpdate(oldDepSupp);
+                    }
+                }
+
                 foreach (var depId in departmentIds)
                 {
                     var paDepSupp = new PADepSupp();
                     paDepSupp.DepartmentID = depId;
                     paDepSupp.PremiseApplicationID = premiseApplicationModel.PremiseApplicationID;
+                    paDepSupp.IsActive = true;
                     ctx.PADepSupps.Add(paDepSupp);
                 }
 
