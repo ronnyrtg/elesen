@@ -33,9 +33,9 @@
 
     List<SelectListItem> ModeList = new List<SelectListItem>();
     ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
-    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "2" });
-    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "3" });
-    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "4" });
+    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
+    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
+    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
 
     List<SelectListItem> PremiseLocationList = new List<SelectListItem>();
     PremiseLocationList.Add(new SelectListItem { Text = "Tengah", Value = "Tengah" });
@@ -248,13 +248,13 @@
                 </div>
                 <div class="header">
                     <h4 id="headerTitle">B. Permohonan Lesen Hiburan</h4>
-                </div>
+                </div><br />
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <div class="control-label">Jenis Hiburan<span class="cfont">*</span></div>
-                            @Html.DropDownList("EntmtObject", new SelectList(Model.selectedEntmtObjectList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtObjectList", @class = "form-control", multiple = "true", onchange = "changeEntmtobject()" })
-                            @Html.HiddenFor(model => model.EntmtObjectids)
+                            @Html.DropDownList("EntmtObject", new SelectList(Model.selectedEntmtObjectList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtObjectList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
+                            @Html.HiddenFor(model => model.EntmtGroupids)
                         </div>
                     </div>
                 </div>
@@ -448,7 +448,7 @@
             return $result;
         }
 
-        function formatEntmtObject(data) {
+        function formatEntmtObjects(data) {
             var r = data.text.split('~');
             var $result = $('<div class="row">' + '<div class="col-md-10">' + r[0] + '</div>' + '</div>');
             return $result;
@@ -471,7 +471,7 @@
             width: '100%',
             minimumInputLength: 0,
             templateResult: formatEntmtCodes,
-            templateSelection: formatSelectionEntmtCodes,
+            templateSelection: formatSelectionEntmtObjects,
             ajax: {
                 type: "POST",
                 url: encodeURI('@Url.Action("FillEntmtCode", "EntmtApplication")'),
@@ -499,7 +499,7 @@
             width: '100%',
             minimumInputLength: 0,
             templateResult: formatEntmtObjects,
-            templateSelection: formatSelectionEntmtObjects,
+            templateSelection: formatSelectionEntmtCodes,
             ajax: {
                 type: "POST",
                 url: encodeURI('@Url.Action("FillEntmtObject", "EntmtApplication")'),
@@ -507,9 +507,7 @@
                 data: function (query) {
                     //console.log(query)
                     return {
-                        query: query.term,
-                        selectedMode: $('#Mode').val(),
-                        selectedGroup:  $("#EntmtGroupID").val()
+                        query: query.term
                     }
                 },
                 //processes the results from the JSON method and gives us the select list
@@ -652,7 +650,7 @@
         }
     }
 
-    function validatePremiseApplication(isdraft) {
+    function validateEntmtApplication(isdraft) {
         $("#UploadRequiredDocids").val(requiredDocList);
 
         RequiredDocument();
