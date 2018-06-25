@@ -1,38 +1,9 @@
-﻿@model TradingLicense.Model.BannerApplicationModel
+﻿@model TradingLicense.Model.MLPermitApplicationModel
 @using AutoMapper;
 @{
-    ViewBag.Title = "ManageBannerApplication";
+    ViewBag.Title = "Manage ML Permit Application";
 }
-@{
-    List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
 
-    //Generate Banner Code list with multiple columns
-    List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-
-        var bCodeList = ctx.BannerCodes
-        .Select(s => new SelectListItem
-        {
-            Value = s.BannerCodeID.ToString(),
-            Text = s.BCodeNumber + " - " + s.BannerCodeDesc.ToString()
-        }).OrderBy(s => s.Text).ToList();
-        ViewBag.bCodeList=new SelectList(bCodeList, "Value", "Text");
-
-        var bannerCode = ctx.BannerCodes.ToList();
-        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
-        ViewBag.IndividualList = ctx.Individuals.ToList();
-        ViewBag.CompList = ctx.Companies.ToList();
-        ViewBag.Location = ctx.Locations.ToList();
-        ViewBag.Zone = ctx.Zones.ToList();
-    }
-
-    List<SelectListItem> periodList = new List<SelectListItem>();
-    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
-    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
-    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
-    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
-}
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">

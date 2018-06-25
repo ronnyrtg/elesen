@@ -51,7 +51,9 @@
   <ItemGroup>
     <Compile Include="AccessPage.cs" />
     <Compile Include="AdditionalDoc.cs" />
-    <Compile Include="AdPermitApplication.cs" />
+    <Compile Include="MLLinkReqDoc.cs" />
+    <Compile Include="MLLinkInd.cs" />
+    <Compile Include="MLPermitApplication.cs" />
     <Compile Include="Attachment.cs" />
     <Compile Include="BannerObject.cs" />
     <Compile Include="BALinkReqDoc.cs" />
@@ -83,7 +85,7 @@
     <Compile Include="LAComment.cs" />
     <Compile Include="LALinkReqDoc.cs" />
     <Compile Include="LAReqDoc.cs" />
-    <Compile Include="LenderApplication.cs" />
+    <Compile Include="MLPremiseApplication.cs" />
     <Compile Include="PADepSupp.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="Race.cs" />

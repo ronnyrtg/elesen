@@ -9,12 +9,12 @@
     <div class="header">
         <div class="row">
             <div class="col-lg-10">
-                <h4>Senarai Lesen Berniaga</h4>
+                <h4>Senarai Permohonan Lesen Premis Pemberi Pinjam Wang</h4>
             </div>
             <div class="col-lg-2">
                 @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel2))
                 {
-                    <button type="button" class="btn btn-primary" onclick="addPremiseApplication();">Permohonan Baru</button>
+                    <button type="button" class="btn btn-primary" onclick="addMLPremiseApplication();">Permohonan Baru</button>
                 }
             </div>
         </div>
@@ -60,9 +60,11 @@
                         }
                         bindTable();
                     });
+                    
                     var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
-                    function addPremiseApplication() {
-                        var link = '@Url.Action("ManagePremiseApplication", "PremiseApplication")';
+                    
+                    function addMLPremiseApplication() {
+                        var link = '@Url.Action("ManageMLPremiseApplication", "MoneyLenderApplication")';
                         window.location.href = link;
                     }
 

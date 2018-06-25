@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AdditionalDocModel.cs" />
-    <Compile Include="AdPermitApplicationModel.cs" />
+    <Compile Include="MLPermitApplicationModel.cs" />
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BannerApplicationModel.cs" />
     <Compile Include="BannerObjectModel.cs" />
@@ -88,6 +88,7 @@
     <Compile Include="LiquorCodeModel.cs" />
     <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="ManageIndividualModel.cs" />
+    <Compile Include="MLPremiseApplicationModel.cs" />
     <Compile Include="PACommentModel.cs" />
     <Compile Include="PADepSuppModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />

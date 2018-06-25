@@ -76,6 +76,12 @@ namespace TradingLicense.Data
         public DbSet<BAReqDoc> BAReqDocs { get; set; }
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
 
+        //Money Lender Application
+        public DbSet<MLPremiseApplication> MLPremiseApplications { get; set; }
+        public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
+        public DbSet<MLLinkInd> MLLinkInds { get; set; }
+        public DbSet<MLLinkReqDoc> MLLinkReqDocs { get; set; }
+
         //Common fields for all applications
         public DbSet<BusinessType> BusinessTypes { get; set; }
         public DbSet<AppStatus> AppStatus { get; set; }
