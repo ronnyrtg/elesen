@@ -32,7 +32,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get EntmtGroup Data
+        /// Save EntmtGroup Data
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
@@ -581,16 +581,55 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, EntmtApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// get Required Document Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
         
 
-        
+        /// <summary>
+        /// Download
+        /// </summary>
+        /// <param name="attechmentID"></param>
+        /// /// <param name="premiseID"></param>
+        /// <returns></returns>
+        public FileResult Download(int? attechmentID, int? premiseID)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var attechment = ctx.Attachments.Where(a => a.AttachmentID == attechmentID).FirstOrDefault();
+                var folder = Server.MapPath(Infrastructure.ProjectConfiguration.AttachmentDocument);
+                try
+                {
+                    try
+                    {
+                        if (attechment != null && attechment.AttachmentID > 0)
+                        {
+                            var path = Path.Combine(folder, attechment.FileName);
+                            return File(path, System.Net.Mime.MediaTypeNames.Application.Octet, attechment.FileName);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
+                catch { }
+                return null;
+            }
+        }
 
         private Func<EntmtCode, Select2ListItem> fnSelectEntmtCode = bc => new Select2ListItem { id = bc.EntmtCodeID, text = $"{bc.EntmtCodeDesc}" };
-        private Func<EntmtObject, Select2ListItem> fnSelectEntmtObject = bc => new Select2ListItem { id = bc.EntmtObjectID, text = $"{bc.EntmtObjectDesc}" };
         private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
 
         /// <summary>
-        /// Fill Individual data in Select2
+        /// Get Individual Code
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -618,13 +657,30 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    //Retrieve data from EntmtApplication table where EntmtApplicationID == Id
                     int EntmtApplicationID = Convert.ToInt32(Id);
                     var entmtApplication = ctx.EntmtApplications.Where(a => a.EntmtApplicationID == EntmtApplicationID).FirstOrDefault();
                     entmtApplicationModel = Mapper.Map<EntmtApplicationModel>(entmtApplication);
 
-                    
-                    //Get list of Individuals linked to this application
+                    var paLinkBC = ctx.EALinkEC.Where(a => a.EntmtApplicationID == EntmtApplicationID).ToList();
+                    if (paLinkBC != null && paLinkBC.Count > 0)
+                    {
+                        entmtApplicationModel.EntmtCodeids = (string.Join(",", paLinkBC.Select(x => x.EntmtCodeID.ToString()).ToArray()));
+
+                        List<SelectedEntmtCodeModel> entmtCodesList = new List<SelectedEntmtCodeModel>();
+                        foreach (var item in paLinkBC)
+                        {
+                            var entmtcode = ctx.EntmtCodes.Where(b => b.EntmtCodeID == item.EntmtCodeID).FirstOrDefault();
+                            if (entmtcode != null && entmtcode.EntmtCodeID > 0)
+                            {
+                                SelectedEntmtCodeModel selectedEntmtCodeModel = new SelectedEntmtCodeModel();
+                                selectedEntmtCodeModel.id = entmtcode.EntmtCodeID;
+                                selectedEntmtCodeModel.text = entmtcode.EntmtCodeDesc;
+                                entmtCodesList.Add(selectedEntmtCodeModel);
+                            }
+                        }
+                        entmtApplicationModel.selectedEntmtCodeList = entmtCodesList;
+                    }
+
                     var eaLinkInd = ctx.EALinkInds.Where(a => a.EntmtApplicationID == Id).ToList();
                     entmtApplicationModel.Individualids = string.Join(",", eaLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
@@ -636,7 +692,6 @@ namespace TradingLicense.Web.Controllers
 
                     entmtApplicationModel.selectedIndividualList = selectedIndividualList;
 
-                    //Get list of Documents linked to this application
                     var EALinkReqDocumentList = ctx.EALinkReqDocs.Where(p => p.EntmtApplicationID == EntmtApplicationID).ToList();
                     if (EALinkReqDocumentList != null && EALinkReqDocumentList.Count > 0)
                     {
@@ -654,13 +709,364 @@ namespace TradingLicense.Web.Controllers
             return View(entmtApplicationModel);
         }
 
-        
         /// <summary>
-        /// Display Entmt Code based on selected Group
+        /// Save EntmtApplication Information
+        /// </summary>
+        /// <param name="entmtApplicationModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageEntmtApplication(EntmtApplicationModel entmtApplicationModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    EntmtApplication entmtApplication;
+                    entmtApplication = Mapper.Map<EntmtApplication>(entmtApplicationModel);
+
+                    int UserroleTemplate = 0;
+                    if (ProjectSession.User != null && ProjectSession.UserID > 0)
+                    {
+                        entmtApplication.UpdatedBy = ProjectSession.User.Username;
+
+                        #region Set PAStatus Value 
+
+                        if (ProjectSession.User.RoleTemplateID != null)
+                        {
+                            UserroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                        }
+
+                        if (entmtApplicationModel.IsDraft)
+                        {
+                            if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
+                            {
+                                entmtApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
+                            }
+                        }
+                        else
+                        {
+                            if (UserroleTemplate == (int)RollTemplate.Public || UserroleTemplate == (int)RollTemplate.DeskOfficer)
+                            {
+                                entmtApplication.AppStatusID = (int)PAStausenum.draftcreated;
+                            }
+                        }
+
+                        if (UserroleTemplate == (int)RollTemplate.Clerk)
+                        {
+                            if (!string.IsNullOrWhiteSpace(entmtApplicationModel.EntmtCodeids))
+                            {
+                                var IslinkDept = false;
+                                string[] ids = entmtApplicationModel.EntmtCodeids.Split(',');
+                                foreach (var id in ids)
+                                {
+                                    int EntmtCodeID = Convert.ToInt32(id);
+                                    var businesslinkDepartment = ctx.ECLinkDeps.Where(p => p.EntmtCodeID == EntmtCodeID).FirstOrDefault();
+                                    if (businesslinkDepartment != null && businesslinkDepartment.EntCodLinkDepID > 0)
+                                    {
+                                        IslinkDept = true;
+                                        break;
+                                    }
+                                }
+
+                                if (IslinkDept)
+                                {
+                                    entmtApplication.AppStatusID = (int)PAStausenum.unitroute;
+                                }
+                                else
+                                {
+                                    entmtApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
+                                }
+                            }
+                            else
+                            {
+                                entmtApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
+                            }
+                        }
+
+                        #endregion
+                    }
+
+                    entmtApplication.DateSubmitted = DateTime.Now;
+
+                    ctx.EntmtApplications.AddOrUpdate(entmtApplication);
+                    ctx.SaveChanges();
+
+                    int entmtApplicationID = entmtApplication.EntmtApplicationID;
+
+                    int roleTemplate = 0;
+                    if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+                    {
+                        roleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                    }
+
+                    if (UserroleTemplate == (int)RollTemplate.Public)
+                    {
+                        if (!string.IsNullOrWhiteSpace(entmtApplicationModel.UploadRequiredDocids))
+                        {
+                            string[] ids = entmtApplicationModel.UploadRequiredDocids.Split(',');
+                            List<RequiredDocList> RequiredDoclist = new List<RequiredDocList>();
+
+                            foreach (string id in ids)
+                            {
+                                string[] rId = id.Split(':');
+
+                                RequiredDocList requiredDocList = new RequiredDocList();
+                                requiredDocList.RequiredDocID = Convert.ToInt32(rId[0]);
+                                requiredDocList.AttachmentID = Convert.ToInt32(rId[1]);
+                                RequiredDoclist.Add(requiredDocList);
+                            }
+
+                            List<int> existingRecord = new List<int>();
+                            var dbEntryRequiredDoc = ctx.EALinkReqDocs.Where(q => q.EntmtApplicationID == entmtApplicationID).ToList();
+                            if (dbEntryRequiredDoc != null && dbEntryRequiredDoc.Count > 0)
+                            {
+                                foreach (var item in dbEntryRequiredDoc)
+                                {
+                                    if (RequiredDoclist.Where(q => q.RequiredDocID == item.RequiredDocID && q.AttachmentID == item.AttachmentID).Count() == 0)
+                                    {
+                                        if (roleTemplate == (int)RollTemplate.Public)
+                                        {
+                                            ctx.EALinkReqDocs.Remove(item);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        existingRecord.Add(item.RequiredDocID);
+                                    }
+                                }
+                                ctx.SaveChanges();
+                            }
+
+                            foreach (var requiredDoc in RequiredDoclist)
+                            {
+                                if (existingRecord.Where(q => q == requiredDoc.RequiredDocID).Count() == 0)
+                                {
+                                    EALinkReqDoc pALinkReqDoc = new EALinkReqDoc();
+                                    pALinkReqDoc.EntmtApplicationID = entmtApplicationID;
+                                    pALinkReqDoc.RequiredDocID = requiredDoc.RequiredDocID;
+                                    pALinkReqDoc.AttachmentID = requiredDoc.AttachmentID;
+                                    ctx.EALinkReqDocs.AddOrUpdate(pALinkReqDoc);
+                                    ctx.SaveChanges();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (roleTemplate == (int)RollTemplate.Public)
+                            {
+                                var EALinkReqDocumentList = ctx.EALinkReqDocs.Where(p => p.EntmtApplicationID == entmtApplicationID).ToList();
+                                if (EALinkReqDocumentList != null && EALinkReqDocumentList.Count > 0)
+                                {
+                                    ctx.EALinkReqDocs.RemoveRange(EALinkReqDocumentList);
+                                    ctx.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                    else if (UserroleTemplate == (int)RollTemplate.DeskOfficer)
+                    {
+                        if (!string.IsNullOrWhiteSpace(entmtApplicationModel.RequiredDocIds))
+                        {
+                            string[] ids = entmtApplicationModel.RequiredDocIds.Split(',');
+                            List<int> RequiredDoclist = new List<int>();
+
+                            foreach (string id in ids)
+                            {
+                                int RequiredDocID = Convert.ToInt32(id);
+                                RequiredDoclist.Add(RequiredDocID);
+                            }
+
+                            List<int> existingRecord = new List<int>();
+                            var dbEntryRequiredDoc = ctx.EALinkReqDocs.Where(q => q.EntmtApplicationID == entmtApplicationID).ToList();
+                            if (dbEntryRequiredDoc != null && dbEntryRequiredDoc.Count > 0)
+                            {
+                                foreach (var item in dbEntryRequiredDoc)
+                                {
+                                    if (RequiredDoclist.Where(q => q == item.RequiredDocID).Count() == 0)
+                                    {
+                                        if (roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                                        {
+                                            ctx.EALinkReqDocs.Remove(item);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        existingRecord.Add(item.RequiredDocID);
+                                    }
+                                }
+                                ctx.SaveChanges();
+                            }
+
+                            foreach (var requiredDoc in RequiredDoclist)
+                            {
+                                if (existingRecord.Where(q => q == requiredDoc).Count() == 0)
+                                {
+                                    EALinkReqDoc pALinkReqDoc = new EALinkReqDoc();
+                                    pALinkReqDoc.EntmtApplicationID = entmtApplicationID;
+                                    pALinkReqDoc.RequiredDocID = requiredDoc;
+                                    ctx.EALinkReqDocs.AddOrUpdate(pALinkReqDoc);
+                                    ctx.SaveChanges();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!entmtApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                            {
+                                var EALinkReqDocumentList = ctx.EALinkReqDocs.Where(p => p.EntmtApplicationID == entmtApplicationID).ToList();
+                                if (EALinkReqDocumentList != null && EALinkReqDocumentList.Count > 0)
+                                {
+                                    ctx.EALinkReqDocs.RemoveRange(EALinkReqDocumentList);
+                                    ctx.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(entmtApplicationModel.EntmtCodeids))
+                    {
+                        string[] ids = entmtApplicationModel.EntmtCodeids.Split(',');
+                        List<int> EntmtCodelist = new List<int>();
+
+                        foreach (string id in ids)
+                        {
+                            int EntmtCodeID = Convert.ToInt32(id);
+                            EntmtCodelist.Add(EntmtCodeID);
+                        }
+
+                        List<int> existingRecord = new List<int>();
+                        var dbEntryPALinkBAct = ctx.EALinkEC.Where(q => q.EntmtApplicationID == entmtApplicationID).ToList();
+                        if (dbEntryPALinkBAct != null && dbEntryPALinkBAct.Count > 0)
+                        {
+                            foreach (var item in dbEntryPALinkBAct)
+                            {
+                                if (EntmtCodelist.Where(q => q == item.EntmtCodeID).Count() == 0)
+                                {
+                                    ctx.EALinkEC.Remove(item);
+                                }
+                                else
+                                {
+                                    existingRecord.Add(item.EntmtCodeID);
+                                }
+                            }
+                            ctx.SaveChanges();
+                        }
+
+                        foreach (var businessCode in EntmtCodelist)
+                        {
+                            if (existingRecord.Where(q => q == businessCode).Count() == 0)
+                            {
+                                EALinkEC EALinkEC = new EALinkEC();
+                                EALinkEC.EntmtApplicationID = entmtApplicationID;
+                                EALinkEC.EntmtCodeID = businessCode;
+                                ctx.EALinkEC.Add(EALinkEC);
+                                ctx.SaveChanges();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var dbEntryPALinkBActs = ctx.EALinkEC.Where(va => va.EntmtApplicationID == entmtApplicationID).ToList();
+                        if (dbEntryPALinkBActs != null && dbEntryPALinkBActs.Count > 0)
+                        {
+                            ctx.EALinkEC.RemoveRange(dbEntryPALinkBActs);
+                            ctx.SaveChanges();
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(entmtApplicationModel.Individualids))
+                    {
+                        string[] ids = entmtApplicationModel.Individualids.Split(',');
+                        List<int> Individualidslist = new List<int>();
+
+                        foreach (string id in ids)
+                        {
+                            int IndividualID = Convert.ToInt32(id);
+                            Individualidslist.Add(IndividualID);
+                        }
+
+                        List<int> existingRecord = new List<int>();
+                        var dbEntryIndividual = ctx.EALinkInds.Where(q => q.EntmtApplicationID == entmtApplicationID).ToList();
+                        if (dbEntryIndividual != null && dbEntryIndividual.Count > 0)
+                        {
+                            foreach (var item in dbEntryIndividual)
+                            {
+                                if (Individualidslist.Where(q => q == item.IndividualID).Count() == 0)
+                                {
+                                    ctx.EALinkInds.Remove(item);
+                                }
+                                else
+                                {
+                                    existingRecord.Add(item.IndividualID);
+                                }
+                            }
+                            ctx.SaveChanges();
+                        }
+
+                        foreach (var individual in Individualidslist)
+                        {
+                            if (existingRecord.Where(q => q == individual).Count() == 0)
+                            {
+                                EALinkInd EALinkInd = new EALinkInd();
+                                EALinkInd.EntmtApplicationID = entmtApplicationID;
+                                EALinkInd.IndividualID = individual;
+                                ctx.EALinkInds.Add(EALinkInd);
+                                ctx.SaveChanges();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var dbEntryEALinkInds = ctx.EALinkInds.Where(va => va.EntmtApplicationID == entmtApplicationID).ToList();
+                        if (dbEntryEALinkInds != null && dbEntryEALinkInds.Count > 0)
+                        {
+                            ctx.EALinkInds.RemoveRange(dbEntryEALinkInds);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Premise License Application saved successfully.";
+
+                return RedirectToAction("EntmtApplication");
+            }
+            else
+            {
+                return View(entmtApplicationModel);
+            }
+        }
+
+        /// <summary>
+        /// Delete EntmtApplication Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteEntmtApplication(int id)
+        {
+            try
+            {
+                var EntmtApplication = new TradingLicense.Entities.EntmtApplication() { EntmtApplicationID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(EntmtApplication).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Get Entmt Code
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="selectedMode">The selected mode.</param>
-        /// <param name="selectedGroup">The selected entertainment group.</param>
+        /// <param name="selectedSector">The selected sector.</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult FillEntmtCode(string query, int selectedMode, int selectedGroup)
@@ -683,27 +1089,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Display Entmt Objects
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult FillEntmtObject(string query)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<EntmtObject> primaryQuery = ctx.EntmtObjects;
-                if (!String.IsNullOrWhiteSpace(query))
-                {
-                    primaryQuery = primaryQuery.Where(bc => bc.EntmtObjectDesc.ToLower().Contains(query.ToLower()));
-                }
-                var entmtObject = primaryQuery.Select(fnSelectEntmtObject).ToList();
-                return Json(entmtObject, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
-        /// get Entmt Code Data
+        /// get Business Code Data
         /// </summary>
         /// <param name="EntmtCodeids"></param>
         /// <returns></returns>
@@ -759,63 +1145,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// get Entmt Object Data
-        /// </summary>
-        /// <param name="EntmtObjectids"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult entmtObject([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string EntmtObjectids)
-        {
-            List<EntmtObjectModel> EntmtObject = new List<EntmtObjectModel>();
-            int totalRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-
-                string[] ids = null;
-
-                if (!string.IsNullOrWhiteSpace(EntmtObjectids))
-                {
-                    ids = EntmtObjectids.Split(',');
-                }
-
-                List<int> EntmtObjectlist = new List<int>();
-
-                foreach (string id in ids)
-                {
-                    int EntmtObjectID = Convert.ToInt32(id);
-                    EntmtObjectlist.Add(EntmtObjectID);
-                }
-
-                IQueryable<EntmtObject> query = ctx.EntmtObjects.Where(r => EntmtObjectlist.Contains(r.EntmtObjectID));
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                var result = Mapper.Map<List<EntmtObjectModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "EntmtObjectID asc" : orderByString).ToList();
-
-                totalRecord = result.Count();
-
-                #endregion Sorting
-
-                EntmtObject = result;
-
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, EntmtObject, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// get Individual name and Mykad data
+        /// get Mykad Data
         /// </summary>
         /// <param name="Individualids"></param>
         /// <returns></returns>
@@ -867,7 +1197,404 @@ namespace TradingLicense.Web.Controllers
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, Individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        } 
+        }
+
+        /// <summary>
+        /// get Additional Document Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="EntmtCodeids"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult AdditionalDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string EntmtCodeids, string entmtApplicationID)
+        {
+            List<TradingLicense.Model.BCLinkADModel> RequiredDocument = new List<Model.BCLinkADModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                string[] ids = null;
+
+                if (!string.IsNullOrWhiteSpace(EntmtCodeids))
+                {
+                    ids = EntmtCodeids.Split(',');
+                }
+
+                List<int> EntmtCodelist = new List<int>();
+
+                if (ids != null)
+                {
+                    foreach (string id in ids)
+                    {
+                        int EntmtCodeID = Convert.ToInt32(id);
+                        EntmtCodelist.Add(EntmtCodeID);
+                    }
+                }
+
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                #endregion Sorting
+
+
+                #region IsChecked
+
+                if (!string.IsNullOrWhiteSpace(entmtApplicationID))
+                {
+                    int premiseAppId;
+                    int.TryParse(entmtApplicationID, out premiseAppId);
+                }
+
+                #endregion
+
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, RequiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Save Attachment Infomration
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult UploadDocument(HttpPostedFileBase DocumentFile)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    if (DocumentFile != null)
+                    {
+                        var file = DocumentFile;
+                        if (file != null && file.ContentLength > 0)
+                        {
+                            var premisevalue = Request["EntmtApplicationID"];
+                            var reqDocvalue = Request["reqDocid"];
+                            var addDocvalue = Request["addDocid"];
+                            var isReqvalue = Request["isReqDoc"];
+
+                            int entmtApplicationID;
+                            if (int.TryParse(premisevalue, out entmtApplicationID) && entmtApplicationID > 0)
+                            {
+                                int requiredDocID;
+                                int.TryParse(reqDocvalue, out requiredDocID);
+
+                                int additionalDocID;
+                                int.TryParse(addDocvalue, out additionalDocID);
+
+                                if (requiredDocID > 0 || additionalDocID > 0)
+                                {
+                                    int isReq;
+                                    int.TryParse(isReqvalue, out isReq);
+
+                                    var fileName = Path.GetFileName(file.FileName);
+
+                                    var folder = Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.PremiseAttachmentDocument + "\\" + entmtApplicationID.ToString());
+                                    var path = Path.Combine(folder, fileName);
+                                    if (!Directory.Exists(folder))
+                                    {
+                                        Directory.CreateDirectory(folder);
+                                    }
+                                    file.SaveAs(path);
+
+                                    Attachment attachment = new Attachment();
+                                    attachment.FileName = fileName;
+                                    ctx.Attachments.AddOrUpdate(attachment);
+                                    ctx.SaveChanges();
+
+                                    if (attachment.AttachmentID > 0)
+                                    {
+                                        if (isReq > 0)
+                                        {
+                                            EALinkReqDoc paLinkReqDoc = new EALinkReqDoc();
+                                            paLinkReqDoc = ctx.EALinkReqDocs.Where(p => p.EntmtApplicationID == entmtApplicationID && p.RequiredDocID == requiredDocID).FirstOrDefault();
+                                            if (paLinkReqDoc != null)
+                                            {
+                                                paLinkReqDoc.AttachmentID = attachment.AttachmentID;
+                                                ctx.EALinkReqDocs.AddOrUpdate(paLinkReqDoc);
+                                                ctx.SaveChanges();
+                                            }
+                                            else
+                                            {
+                                                EALinkReqDoc paLinkReqDocument = new EALinkReqDoc();
+                                                paLinkReqDocument.EntmtApplicationID = entmtApplicationID;
+                                                paLinkReqDocument.RequiredDocID = requiredDocID;
+                                                paLinkReqDocument.AttachmentID = attachment.AttachmentID;
+                                                ctx.EALinkReqDocs.AddOrUpdate(paLinkReqDocument);
+                                                ctx.SaveChanges();
+                                            }
+                                        }
+                                       
+
+                                        return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                    }
+                                    else
+                                    {
+                                        return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
+                                    }
+                                }
+                                else
+                                {
+                                    return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+                            else
+                            {
+                                return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        else
+                        {
+                            return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch
+            {
+                return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Save Attachment Infomration
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult UploadAttechment(HttpPostedFileBase DocumentFile)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    if (DocumentFile != null)
+                    {
+                        var file = DocumentFile;
+                        if (file != null && file.ContentLength > 0)
+                        {
+                            var reqDocvalue = Request["reqDocid"];
+                            var addDocvalue = Request["addDocid"];
+                            var isReqvalue = Request["isReqDoc"];
+
+                            int requiredDocID;
+                            int.TryParse(reqDocvalue, out requiredDocID);
+
+                            int additionalDocID;
+                            int.TryParse(addDocvalue, out additionalDocID);
+
+                            if (requiredDocID > 0 || additionalDocID > 0)
+                            {
+                                int isReq;
+                                int.TryParse(isReqvalue, out isReq);
+
+                                var fileName = Path.GetFileName(file.FileName);
+
+                                var folder = Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument);
+                                var path = Path.Combine(folder, fileName);
+                                if (!Directory.Exists(folder))
+                                {
+                                    Directory.CreateDirectory(folder);
+                                }
+                                file.SaveAs(path);
+
+                                Attachment attachment = new Attachment();
+                                attachment.FileName = fileName;
+                                ctx.Attachments.AddOrUpdate(attachment);
+                                ctx.SaveChanges();
+
+                                if (attachment.AttachmentID > 0)
+                                {
+                                    if (isReq > 0)
+                                    {
+                                        //EALinkReqDoc paLinkReqDoc = new EALinkReqDoc();
+                                        //paLinkReqDoc = ctx.EALinkReqDoc.Where(p => p.EntmtApplicationID == entmtApplicationID && p.RequiredDocID == requiredDocID).FirstOrDefault();
+                                        //if (paLinkReqDoc != null)
+                                        //{
+                                        //    paLinkReqDoc.AttachmentID = attachment.AttachmentID;
+                                        //    ctx.EALinkReqDoc.AddOrUpdate(paLinkReqDoc);
+                                        //    ctx.SaveChanges();
+                                        //}
+                                        //else
+                                        //{
+                                        //    EALinkReqDoc paLinkReqDocument = new EALinkReqDoc();
+                                        //    paLinkReqDocument.EntmtApplicationID = entmtApplicationID;
+                                        //    paLinkReqDocument.RequiredDocID = requiredDocID;
+                                        //    paLinkReqDocument.AttachmentID = attachment.AttachmentID;
+                                        //    ctx.EALinkReqDoc.AddOrUpdate(paLinkReqDocument);
+                                        //    ctx.SaveChanges();
+                                        //}
+
+                                        return Json(new { status = "1", result = new { status = "1", RequiredDocID = requiredDocID, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
+                                    }
+                                    else
+                                    {
+                                        //PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
+                                        //paLinkAddDoc = ctx.PALinkAddDocs.Where(p => p.EntmtApplicationID == entmtApplicationID && p.AdditionalDocID == additionalDocID).FirstOrDefault();
+                                        //if (paLinkAddDoc != null)
+                                        //{
+                                        //    paLinkAddDoc.AttachmentID = attachment.AttachmentID;
+                                        //    ctx.PALinkAddDocs.AddOrUpdate(paLinkAddDoc);
+                                        //    ctx.SaveChanges();
+                                        //}
+                                        //else
+                                        //{
+                                        //    PALinkAddDoc paLinkAddDocument = new PALinkAddDoc();
+                                        //    paLinkAddDocument.EntmtApplicationID = entmtApplicationID;
+                                        //    paLinkAddDocument.AdditionalDocID = additionalDocID;
+                                        //    paLinkAddDocument.AttachmentID = attachment.AttachmentID;
+                                        //    ctx.PALinkAddDocs.AddOrUpdate(paLinkAddDocument);
+                                        //    ctx.SaveChanges();
+                                        //}
+
+                                        return Json(new { status = "1", result = new { status = "1", AdditionalDocID = additionalDocID, AttachmentID = attachment.AttachmentID, AttachmentName = attachment.FileName } }, JsonRequestBehavior.AllowGet);
+                                    }
+
+                                    //return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                }
+                                else
+                                {
+                                    return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+                            else
+                            {
+                                return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        else
+                        {
+                            return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch
+            {
+                return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Save Attachment Infomration
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult SaveComment()
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var premiseID = Request["EntmtApplicationID"];
+                    var comment = Request["comment"];
+                    var approveRejectType = Request["approveRejectType"];  /// 1) Approve  2) Reject 
+
+                    int EntmtApplicationID;
+                    int.TryParse(premiseID, out EntmtApplicationID);
+
+                    int UsersID = 0;
+                    int UserroleTemplate = 0;
+                    if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+                    {
+                        UsersID = ProjectSession.User.UsersID;
+                        UserroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                    }
+
+                    if (EntmtApplicationID > 0 && UsersID > 0 && UserroleTemplate > 0)
+                    {
+                        EAComment eaComment = new EAComment();
+                        eaComment.Comment = comment;
+                        eaComment.EntmtApplicationID = EntmtApplicationID;
+                        eaComment.UsersID = UsersID;
+                        eaComment.CommentDate = DateTime.Now;
+                        ctx.EAComments.AddOrUpdate(eaComment);
+                        ctx.SaveChanges();
+
+                        if (eaComment.EACommentID > 0)
+                        {
+                            var entmtApplication = ctx.EntmtApplications.Where(p => p.EntmtApplicationID == EntmtApplicationID).FirstOrDefault();
+                            var paLinkBC = ctx.EALinkEC.Where(t => t.EntmtApplicationID == EntmtApplicationID).ToList();
+
+                            if (UserroleTemplate == (int)RollTemplate.Clerk)
+                            {
+                                if (approveRejectType == "Approve")
+                                {
+                                    var paLinkEntmtCode = ctx.EALinkEC.Where(t => t.EntmtApplicationID == EntmtApplicationID && t.EntmtCode != null).ToList();
+                                    if (paLinkEntmtCode != null && paLinkEntmtCode.Count > 0)
+                                    {
+                                        if (entmtApplication != null && entmtApplication.EntmtApplicationID > 0)
+                                        {
+                                            entmtApplication.AppStatusID = (int)PAStausenum.unitroute;
+                                            ctx.EntmtApplications.AddOrUpdate(entmtApplication);
+                                            ctx.SaveChanges();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (entmtApplication != null && entmtApplication.EntmtApplicationID > 0)
+                                        {
+                                            entmtApplication.AppStatusID = (int)PAStausenum.LetterofnotificationApproved;
+                                            ctx.EntmtApplications.AddOrUpdate(entmtApplication);
+                                            ctx.SaveChanges();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    entmtApplication.AppStatusID = (int)PAStausenum.draftcreated;
+                                    ctx.EntmtApplications.AddOrUpdate(entmtApplication);
+                                    ctx.SaveChanges();
+                                }
+                            }
+
+                            if (UserroleTemplate == (int)RollTemplate.RouteUnit)
+                            {
+
+                            }
+
+                            if (UserroleTemplate == (int)RollTemplate.Supervisor)
+                            {
+
+                            }
+
+                            if (UserroleTemplate == (int)RollTemplate.Director)
+                            {
+
+                            }
+
+                            return Json(new { status = "1", message = "Comment Save Successfully" }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    else
+                    {
+                        return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            catch
+            {
+                return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         #endregion
 
