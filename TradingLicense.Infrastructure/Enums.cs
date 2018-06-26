@@ -104,14 +104,14 @@
             LetterofnotificationApprovedwithTermsConditions = 11,
 
             /// <summary>
-            /// for set public accept and sign
+            /// for set Pending payment
             /// </summary>
-            publicAcceptAndSign = 12,
+            Pendingpayment = 12,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Pendingpayment = 13,
+            Paid = 13,
 
             /// <summary>
             /// for set License Generated

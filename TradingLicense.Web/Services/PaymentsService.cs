@@ -52,9 +52,18 @@ namespace TradingLicense.Web.Services
             return totalDue;
         }
 
-        public static PaymentReceivedModel AddPaymentRecieved(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, float paidAmount, string userName)
+        public static PaymentReceivedModel AddPaymentRecieved(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int individualID, string userName)
         {
             PaymentReceivedModel payment = new PaymentReceivedModel();
+            payment.IndividualID = individualID;
+            payment.PaymentFor = premiseApplicationModel.ReferenceNo;
+            payment.AmountPaid = premiseApplicationModel.AmountDue;
+            payment.DatePaid = DateTime.Now;
+            payment.ReceivedBy = userName;
+
+            var paymentRecieved = AutoMapper.Mapper.Map<PaymentReceived>(payment);
+            ctx.PaymentReceiveds.Add(paymentRecieved);
+            ctx.SaveChanges();
 
             return payment;
         }

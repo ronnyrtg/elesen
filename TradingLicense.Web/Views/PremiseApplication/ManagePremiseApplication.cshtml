@@ -383,9 +383,13 @@
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Lulus Bersyarat" id="btnLetter" name="btnSubmit" />
                             }
-                            @if ((Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                            }
+                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
+                            {
+                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentRecieved" onclick="showPaymentsRecievedPopup();" />
                             }
                             @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
@@ -612,17 +616,63 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
+                            <div class="control-label">Amount Due<span class="cfont">*</span></div>
                             @Html.TextBox("totalDue", new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <input type="submit" class="btn btn-primary" value="Submit"/>
+                <input type="submit" class="btn btn-primary" value="Submit" onclick="return validatePaymentDue()"/>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     }
+    </div>
+</div>
+<div id="showPaymentsRecieved" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveRecievedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveRecievedPayment", id = "frmsaveRecievedPayment" }))
+        {
+            @Html.HiddenFor(m => m.PremiseApplicationID)
+        <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirm Recieved Payments</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Paid For<span class="cfont">*</span></div>
+                                @Model.ReferenceNo
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Hingga<span class="cfont">*</span></div>
+                                @Model.AmountDue
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Select Individual<span class="cfont">*</span></div>
+                                @Html.DropDownList("individualID", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Submit" onclick="return validateSavePayments()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
     </div>
 </div>
                                                             
@@ -1647,6 +1697,31 @@
             }
         });
 
+    }
+
+    function showPaymentsRecievedPopup() {
+        $("#showPaymentsRecieved").modal('show');
+    }
+
+    function validatePaymentDue() {
+        var due = $('#totalDue').val();
+        if(due === '' || isNaN(due)) {
+            alert('Please entere valid Amount of due');
+            return false;
+        }
+        if(parseFloat(due) <= 0) {
+            var confirmed = confirm('The value of amount due seems to be less than or equal to zero, Please confirm if you want to update the same');
+            return confirmed;
+        }
+        return true;
+    }
+
+    function validateSavePayments() {
+        if($('#individualID').val() === '') {
+            alert('Please select individual who has paid for this application');
+            return false;
+        }
+        return true;
     }
 
     function RoutePremiseApplication() {

@@ -67,6 +67,8 @@ namespace TradingLicense.Model
         public string SubmitType { get; set; }
         public bool HasPADepSupp { get; set; }
 
+        public float AmountDue { get; set; }
+
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 

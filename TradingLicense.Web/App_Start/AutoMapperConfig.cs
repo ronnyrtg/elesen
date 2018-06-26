@@ -55,6 +55,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<PADepSupp, PADepSuppModel>().ForMember(dest => dest.Department, opt => opt.MapFrom(s => $"{s.Department.DepartmentDesc} ({ s.Department.DepartmentCode})"));
                 cfg.CreateMap<MLPremiseApplication, MLPremiseApplicationModel>();
                 cfg.CreateMap<MLPermitApplication, MLPermitApplicationModel>();
+                cfg.CreateMap<PaymentReceivedModel, PaymentReceived>().ForMember(dest => dest.Individual, opt => opt.Ignore());
             });
         }
     }

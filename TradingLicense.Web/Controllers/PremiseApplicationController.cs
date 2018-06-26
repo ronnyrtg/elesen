@@ -377,6 +377,15 @@ namespace TradingLicense.Web.Controllers
                     {
                         premiseApplicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.AdditionalDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
                     }
+
+                    if (premiseApplication.AppStatusID == (int)PAStausenum.Pendingpayment)
+                    {
+                        var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == premiseApplicationModel.ReferenceNo).FirstOrDefault();
+                        if (duePayment != null)
+                        {
+                            premiseApplicationModel.AmountDue = duePayment.AmountDue;
+                        }
+                    }
                 }
             }
 
@@ -803,9 +812,43 @@ namespace TradingLicense.Web.Controllers
         }
 
         [HttpPost]
+        public ActionResult SaveRecievedPayment(int premiseApplicationID, int individualID)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if (pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == pa.ReferenceNo).FirstOrDefault();
+                    if (duePayment != null)
+                    {
+                        paModel.AmountDue = duePayment.AmountDue;
+                    }
+                    PaymentsService.AddPaymentRecieved(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
+                    if (pa.Mode == 0)
+                    {
+                        pa.LicenseStatus = "Lulus Bersyarat";
+                    }
+                    pa.AppStatusID = (int)PAStausenum.LicenseGenerated;
+                    ctx.PremiseApplications.AddOrUpdate(pa);
+                    ctx.SaveChanges();
+                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to find matching premise application ID";
+                }
+            }
+
+            return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
+        }
+
+        [HttpPost]
         public ActionResult GetPaymentDue(int premiseApplicationID)
         {
             bool success = false;
+            bool allowEdit = false;
             var totalDue = 0.0f;
             using (var ctx = new LicenseApplicationContext())
             {
@@ -813,11 +856,20 @@ namespace TradingLicense.Web.Controllers
                 if (pa != null)
                 {
                     PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
-                    totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                    var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == pa.ReferenceNo).FirstOrDefault();
+                    if (duePayment != null)
+                    {
+                        totalDue = duePayment.AmountDue;
+                    }
+                    else
+                    {
+                        totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                        allowEdit = true;
+                    }
                     success = true;
                 }
             }
-            return Json(new { success = success, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = success, allowEdit = allowEdit, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
         }
 
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
