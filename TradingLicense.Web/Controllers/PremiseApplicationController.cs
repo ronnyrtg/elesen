@@ -412,16 +412,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    //Receive id and convert to int
+                    
                     int premiseApplicationId = Convert.ToInt32(id);
-                    //Search for first matching PremiseApplicationID from PremiseApplications Context
                     var premiseApplication = ctx.PremiseApplications.FirstOrDefault(a => a.PremiseApplicationID == premiseApplicationId);
-                    //Map data from PremiseApplication model according to the variables found above
                     premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
-                    //Find rows in PALinkBC table that match the condition PremiseApplicationID = id, converts it to List
+                    
                     var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
-                    //Data fetched from variable above is filled into BusinessCodeids from PremiseApplicationModel, converted into string type array
                     premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
                     
 
@@ -812,7 +809,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveRecievedPayment(int premiseApplicationID, int individualID)
+        public ActionResult SaveReceivedPayment(int premiseApplicationID, int individualID)
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -825,7 +822,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         paModel.AmountDue = duePayment.AmountDue;
                     }
-                    PaymentsService.AddPaymentRecieved(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
+                    PaymentsService.AddPaymentReceived(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
                     if (pa.Mode == 0)
                     {
                         pa.LicenseStatus = "Lulus Bersyarat";

@@ -73,7 +73,6 @@
             @Html.HiddenFor(m => m.UsersID)
             @Html.HiddenFor(m => m.UserRollTemplate)
             @Html.HiddenFor(m => m.RequiredDocIds)
-            @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
             @Html.HiddenFor(m => m.AppStatusID)
             if (Model.AppStatusID != (int)Enums.PAStausenum.CEOcheck && Model.AppStatusID != (int)Enums.PAStausenum.meeting)
@@ -82,7 +81,10 @@
             }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
+<<<<<<< HEAD
             @Html.HiddenFor(m => m.UploadAdditionalDocIds)
+=======
+>>>>>>> b7c2b47f983e68d7588bdadac0680bbd5d6cbdc7
 
             <div class="row">
                 <div class="col-lg-3 col-md-6">
@@ -114,7 +116,18 @@
                 </div>
             </div>
             <div class="row">
+<<<<<<< HEAD
                 <div class="col-sm-6">
+=======
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
+                        
+                    </div>
+                </div>
+
+                <div class="col-md-offset-3 col-lg-3 col-md-3">
+>>>>>>> b7c2b47f983e68d7588bdadac0680bbd5d6cbdc7
                     <div class="form-group">
                         @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                         {
@@ -128,8 +141,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
-                        @Html.HiddenFor(model => model.BusinessCodeids)
+                        
                     </div>
                 </div>
             </div>
@@ -140,9 +152,7 @@
                             Nama Penuh (Mykad/Paspot).   @if (Model.UserRollTemplate > 2)
                             {<span class="cfont">*</span>}
                         </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)
+                        
                     </div>
                 </div>
             </div>
@@ -205,8 +215,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Luas Premis<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
-                        @Html.ValidationMessageFor(m => m.PremiseArea)
+                       
                     </div>
                 </div>
             </div>
@@ -214,8 +223,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PremiseOwnership)
+                        
                     </div>
                 </div>
             </div>
@@ -223,8 +231,7 @@
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.StartRent, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.StartRent)
+                       
                     </div>
                 </div>
             </div>
@@ -232,8 +239,7 @@
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Hingga<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.StopRent, new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.StopRent)
+                        
                     </div>
                 </div>
             </div>
@@ -241,7 +247,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
+                        
                     </div>
                 </div>
             </div>
@@ -249,7 +255,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nyatakan Jenis Premis (Jika tiada dalam senarai)</div>
-                        @Html.TextBoxFor(m => m.OtherPremiseType, new { @class = "form-control" })
+                        
                     </div>
                 </div>
             </div>
@@ -257,7 +263,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Tingkat</div>
-                        @Html.TextBoxFor(m => m.WhichFloor, new { @class = "form-control" })
+                       
                     </div>
                 </div>
             </div>
@@ -399,34 +405,34 @@
                                     <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                                 }*@
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.MLPremiseApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
                             {
                             <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.MLPremiseApplicationID > 0)
                             {
 
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.MLPremiseApplicationID > 0)
                             {
 
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.MLPremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
                             {
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
                             <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.MLPremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
                             {
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.MLPremiseApplicationID > 0)
                             {
 
                             }
@@ -594,7 +600,7 @@
     <div class="modal-dialog modal-lg">
     @using (Html.BeginForm("SavePaymentDue", "PremiseApplication", FormMethod.Post, new { name = "frmsavePaymentDue", id = "frmsavePaymentDue" }))
     {
-        @Html.HiddenFor(m => m.PremiseApplicationID)
+        @Html.HiddenFor(m => m.MLPremiseApplicationID)
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -796,19 +802,7 @@
             }
         });
 
-        var businessSelecteId = [];
-        if ('@Model.BusinessCodeids' != null && '@Model.BusinessCodeids' != '') {
-            var BussinessCodeIds = '@Model.BusinessCodeids';
-
-            var arr = BussinessCodeIds.split(',');
-            $.each(arr, function (index, value) {
-                businessSelecteId.push(value);
-            });
-            $('#businessCodeList').val(businessSelecteId);
-            $('#businessCodeList').trigger('change');
-        } else {
-            businessSelecteId = [];
-        }
+        
 
         var individualSelecteId = [];
         if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
@@ -840,17 +834,9 @@
             });
         }
 
-        if ('@Model.UploadAdditionalDocids' != null && '@Model.UploadAdditionalDocids' != '') {
+        
 
-            var UploadAdditionalDocumentlist = '@Model.UploadAdditionalDocids';
-
-            var arr = UploadAdditionalDocumentlist.split(',');
-            $.each(arr, function (index, value) {
-                addtionalDocList.push(value);
-            });
-        }
-
-        $("#preAppid").val(@Model.PremiseApplicationID);
+        $("#preAppid").val(@Model.MLPremiseApplicationID);
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
             $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
@@ -859,7 +845,7 @@
             }
         });
 
-        if(@Model.PremiseApplicationID > 0 && @Model.UserRollTemplate > 1) {
+        if(@Model.MLPremiseApplicationID > 0 && @Model.UserRollTemplate > 1) {
             loadComments();
         }
         if(@(Model.HasPADepSupp.ToString().ToLower()) === true)
@@ -964,8 +950,8 @@
         var param = {};
         param["businessTypeID"] = $("#BusinessTypeID").val();
 
-        if ($("#PremiseApplicationID").val() > 0) {
-            param["premiseApplicationID"] = $("#PremiseApplicationID").val();
+        if ($("#MLPremiseApplicationID").val() > 0) {
+            param["premiseApplicationID"] = $("#MLPremiseApplicationID").val();
         } else {
             param["premiseApplicationID"] = "";
         }
@@ -1043,7 +1029,7 @@
 
                         } else {
                             if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["MLPremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
                             } else {
                                 appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
                             }
@@ -1060,8 +1046,8 @@
         var param = {};
         param["BusinessCodeids"] = $("#BusinessCodeids").val();
 
-        if ($("#PremiseApplicationID").val() > 0) {
-            param["premiseApplicationID"] = $("#PremiseApplicationID").val();
+        if ($("#MLPremiseApplicationID").val() > 0) {
+            param["premiseApplicationID"] = $("#MLPremiseApplicationID").val();
         } else {
             param["premiseApplicationID"] = "";
         }
@@ -1139,7 +1125,7 @@
 
                         } else {
                             if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["MLPremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
                             } else {
                                 appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
                             }
@@ -1226,7 +1212,7 @@
                 data.append("DocumentFile", files[0]);
             }
 
-            data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+            data.append("MLPremiseApplicationID", @Model.MLPremiseApplicationID);
             data.append("reqDocid", $("#reqDocid").val());
             data.append("addDocid", $("#addDocid").val());
             data.append("isReqDoc", $("#isReqDoc").val());
@@ -1406,7 +1392,7 @@
         } else {
 
             var data = new FormData();
-            data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+            data.append("MLPremiseApplicationID", @Model.MLPremiseApplicationID);
             data.append("comment", $("#txtComment").val());
 
             if ($("#lblapprovedreject").html() == "Approve") {
@@ -1449,7 +1435,7 @@
             $('#tblComments').dataTable().fnDestroy();
         }
 
-        var data = { "PremiseApplicationID": @Model.PremiseApplicationID };
+        var data = { "MLPremiseApplicationID": @Model.MLPremiseApplicationID };
 
         table = $("#tblComments").dataTable({
             "lengthChange": true,
@@ -1492,7 +1478,7 @@
             $('#tblRouteComments').dataTable().fnDestroy();
         }
 
-        var data = { "PremiseApplicationID": @Model.PremiseApplicationID };
+        var data = { "MLPremiseApplicationID": @Model.MLPremiseApplicationID };
 
         table = $("#tblRouteComments").dataTable({
             "lengthChange": true,
@@ -1619,7 +1605,7 @@
     function showPaymentsDuePopup() {
 
         var data = new FormData();
-        data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+        data.append("MLPremiseApplicationID", @Model.MLPremiseApplicationID);
 
         var ajaxRequest = $.ajax({
             type: "POST",
@@ -1664,7 +1650,7 @@
     $(document).ready(function () {
         hideLetterDropDown();
         $('#btnLetter').click(function () {
-            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=@Model.PremiseApplicationID");
+            $('.modal-body iframe').attr('src', "../PremiseApplication/GenerateLetter?AppId=@Model.MLPremiseApplicationID");
             $('#myModal').modal('show');
         });
     });

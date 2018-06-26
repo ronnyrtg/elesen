@@ -298,7 +298,8 @@ namespace TradingLicense.Data.Migrations
                 new AppStatus {StatusDesc="Letter of Notification (Approved with Terms & Conditions)" ,PercentProgress =70},
                 new AppStatus {StatusDesc="Pending payment" ,PercentProgress =80},
                 new AppStatus {StatusDesc="Paid" ,PercentProgress =90},
-                new AppStatus {StatusDesc="Print License" ,PercentProgress =100},
+                new AppStatus {StatusDesc="Print License" ,PercentProgress =95},
+                new AppStatus {StatusDesc="Complete" ,PercentProgress =100},
             };
             AppStatus.ForEach(s => context.AppStatus.Add(s));
             context.SaveChanges();

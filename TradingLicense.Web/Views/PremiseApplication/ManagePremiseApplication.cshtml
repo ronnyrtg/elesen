@@ -389,12 +389,12 @@
                             }
                             @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentRecieved" onclick="showPaymentsRecievedPopup();" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
                             }
                             @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
                                 // Add a button for showing License print
-                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
                             }
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
@@ -579,6 +579,27 @@
 
     </div>
 </div>
+
+<div id="myModalLicense" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">License Details</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
                                                             
       <div id="myModal" class="modal fade" role="dialog">
           <div class="modal-dialog modal-lg">
@@ -630,16 +651,16 @@
     }
     </div>
 </div>
-<div id="showPaymentsRecieved" class="modal fade" role="dialog">
+<div id="showPaymentsReceived" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
-        @using (Html.BeginForm("SaveRecievedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveRecievedPayment", id = "frmsaveRecievedPayment" }))
+        @using (Html.BeginForm("SaveReceivedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveReceivedPayment", id = "frmsaveReceivedPayment" }))
         {
             @Html.HiddenFor(m => m.PremiseApplicationID)
         <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Confirm Recieved Payments</h4>
+                    <h4 class="modal-title">Confirm Received Payments</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -690,6 +711,14 @@
         })
 </script>
 <script>
+
+    $(document).ready(function () {
+        $('#btnLicense').click(function () {
+            $('.modal-body iframe').attr('src', "../PremiseApplication/GeneratLicense?AppId=@Model.PremiseApplicationID");
+            $('#myModalLicense').modal('show');
+        });
+    });
+
 
     var userRollTemplate = 0;
     var visibleGridColume = false;
@@ -752,6 +781,7 @@
         $("#businessCodeList").select2({
             placeholder: "Search for a Business Code",
             minimumInputLength: 0,
+            width: '100%',
             templateResult: formatBusinessCodes,
             templateSelection: formatSelectionBusinessCodes,
             ajax: {
@@ -811,6 +841,7 @@
         $("#individualList").select2({
             placeholder: "Select Full Name or Mykad/Passport No",
             minimumInputLength: 2,
+            width: '100%',
             tags: true,
             tokenSeparators: [';'],
             templateSelection: individualFormating,
@@ -911,7 +942,7 @@
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
             $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
-            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
                 event.preventDefault();
             }
         });
@@ -1514,6 +1545,7 @@
             "pageLength": 50,
             "processing": true,
             "serverSide": true,
+            "responsive": true,
             "bPaginate": true,
             "bInfo": false,
             "orderMulti": false,
@@ -1534,11 +1566,16 @@
                     }
                 },
                 {
-                    "title": "Comment",
+                    "title": "Ulasan",
                     "orderable": false,
                     "data": "Comment"
                 },
-                { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
+                {
+                    "title": "Pengulas",
+                    "orderable": false,
+                    "data": "FullName"
+                },
+                { "title": "Ulasan dibuat pada", "data": "CommentDate", "width": "150px", render: renderDateTime },
             ]
         });
     }
@@ -1699,8 +1736,8 @@
 
     }
 
-    function showPaymentsRecievedPopup() {
-        $("#showPaymentsRecieved").modal('show');
+    function showPaymentsReceivedPopup() {
+        $("#showPaymentsReceived").modal('show');
     }
 
     function validatePaymentDue() {
