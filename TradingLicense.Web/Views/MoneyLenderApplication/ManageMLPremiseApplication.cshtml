@@ -69,7 +69,7 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPremiseApplication", id = "frmPremiseApplication" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.PremiseApplicationID)
+            @Html.HiddenFor(m => m.MLPremiseApplicationID)
             @Html.HiddenFor(m => m.UsersID)
             @Html.HiddenFor(m => m.UserRollTemplate)
             @Html.HiddenFor(m => m.RequiredDocIds)
@@ -82,7 +82,7 @@
             }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
-            @Html.HiddenFor(m => m.UploadAdditionalDocids)
+            @Html.HiddenFor(m => m.UploadAdditionalDocIds)
 
             <div class="row">
                 <div class="col-lg-3 col-md-6">
@@ -114,14 +114,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="form-group">
-                        <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
-                    </div>
-                </div>
-
-                <div class="col-md-offset-3 col-lg-3 col-md-3">
+                <div class="col-sm-6">
                     <div class="form-group">
                         @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                         {

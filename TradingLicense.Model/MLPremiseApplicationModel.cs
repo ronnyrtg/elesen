@@ -46,7 +46,16 @@ namespace TradingLicense.Model
        
         public string ReferenceNo { get; set; }
         public DateTime? LExpireDate { get; set; }
+        public string RequiredDocIds { get; set; }
+        public string AdditionalDocIds { get; set; }
+        public string SubmitType { get; set;  }
+        public string UploadAdditionalDocIds { get; set; }
+        public string newIndividualsList { get; set; }
+        public string PremiseArea { get; set; }
+        public string PremiseOwnership { get; set; }
+        public string BusinessCodeIds { get; set; }
 
+        public List<Select2ListItem> selectedBusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
     }
 }
