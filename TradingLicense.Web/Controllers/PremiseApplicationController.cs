@@ -812,7 +812,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveRecievedPayment(int premiseApplicationID, int individualID)
+        public ActionResult SaveReceivedPayment(int premiseApplicationID, int individualID)
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -825,7 +825,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         paModel.AmountDue = duePayment.AmountDue;
                     }
-                    PaymentsService.AddPaymentRecieved(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
+                    PaymentsService.AddPaymentReceived(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
                     if (pa.Mode == 0)
                     {
                         pa.LicenseStatus = "Lulus Bersyarat";

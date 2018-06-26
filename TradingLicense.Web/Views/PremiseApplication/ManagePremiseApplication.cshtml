@@ -389,7 +389,7 @@
                             }
                             @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentRecieved" onclick="showPaymentsRecievedPopup();" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
                             }
                             @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
@@ -630,16 +630,16 @@
     }
     </div>
 </div>
-<div id="showPaymentsRecieved" class="modal fade" role="dialog">
+<div id="showPaymentsReceived" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
-        @using (Html.BeginForm("SaveRecievedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveRecievedPayment", id = "frmsaveRecievedPayment" }))
+        @using (Html.BeginForm("SaveReceivedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveReceivedPayment", id = "frmsaveReceivedPayment" }))
         {
             @Html.HiddenFor(m => m.PremiseApplicationID)
         <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Confirm Recieved Payments</h4>
+                    <h4 class="modal-title">Confirm Received Payments</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -1699,8 +1699,8 @@
 
     }
 
-    function showPaymentsRecievedPopup() {
-        $("#showPaymentsRecieved").modal('show');
+    function showPaymentsReceivedPopup() {
+        $("#showPaymentsReceived").modal('show');
     }
 
     function validatePaymentDue() {
