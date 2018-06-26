@@ -250,7 +250,7 @@
                     <h4 id="headerTitle">B. Permohonan Lesen Hiburan</h4>
                 </div><br />
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 col-lg-12">
                         <div class="form-group">
                             <div class="control-label">Jenis Hiburan<span class="cfont">*</span></div>
                             @Html.DropDownList("EntmtObject", new SelectList(Model.selectedEntmtObjectList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtObjectList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
