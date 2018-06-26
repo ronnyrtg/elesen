@@ -781,6 +781,7 @@
         $("#businessCodeList").select2({
             placeholder: "Search for a Business Code",
             minimumInputLength: 0,
+            width: '100%',
             templateResult: formatBusinessCodes,
             templateSelection: formatSelectionBusinessCodes,
             ajax: {
@@ -840,6 +841,7 @@
         $("#individualList").select2({
             placeholder: "Select Full Name or Mykad/Passport No",
             minimumInputLength: 2,
+            width: '100%',
             tags: true,
             tokenSeparators: [';'],
             templateSelection: individualFormating,
@@ -940,7 +942,7 @@
 
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
             $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
-            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
                 event.preventDefault();
             }
         });
@@ -1543,6 +1545,7 @@
             "pageLength": 50,
             "processing": true,
             "serverSide": true,
+            "responsive": true,
             "bPaginate": true,
             "bInfo": false,
             "orderMulti": false,
@@ -1563,11 +1566,16 @@
                     }
                 },
                 {
-                    "title": "Comment",
+                    "title": "Ulasan",
                     "orderable": false,
                     "data": "Comment"
                 },
-                { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
+                {
+                    "title": "Pengulas",
+                    "orderable": false,
+                    "data": "FullName"
+                },
+                { "title": "Ulasan dibuat pada", "data": "CommentDate", "width": "150px", render: renderDateTime },
             ]
         });
     }

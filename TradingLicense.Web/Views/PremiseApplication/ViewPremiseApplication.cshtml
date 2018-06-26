@@ -40,7 +40,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Jenis Perniagaan</div>
-                    <div class="well">@Model.BusinessTypeDesc</div>
+                    <div class="well">@Model.BusinessTypeID</div>
                 </div>
             </div>
         </div>
@@ -58,7 +58,7 @@
                     <div class="control-label">Kod Perniagaan</div>
                     <div class="well">
                        
-                            <label>@Model.BusinessCodeids</label>
+                            <label>@Model.selectedbusinessCodeList</label>
                             <br />
                         
                     </div>
@@ -179,12 +179,6 @@
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 <div class="form-group">
-                    
-                    @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.unitroute)
-                    {
-                        <input type="button" class="btn btn-primary btSubmit" value="Submit Response" id="btnRouteUnitResponse" name="btnRouteUnitResponse" onclick="return Approvedreject()" />
-                        <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLetter" name="btnSubmit" />
-                    }
                     <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                 </div>
             </div>
@@ -192,93 +186,13 @@
     </div>
 </div>
 
-<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">License Details</h4>
-            </div>
-            <div class="modal-body">
-                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!--approved/reject-->
-<div id="approvedrejectModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-
-        @using (Html.BeginForm("SaveRouteUnitComment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
-        {
-            List<SelectListItem> supportList = new List<SelectListItem>();
-            supportList.Add(new SelectListItem { Text = "Supported", Value = "1" });
-            supportList.Add(new SelectListItem { Text = "Not Supported", Value = "0" });
-            @Html.HiddenFor(m => m.PremiseApplicationID)
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Route Unit Response</h4>
-                </div>
-                <div class="modal-body">
-                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" name="comment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <div class="control-label">Do you Support</div>
-                                @Html.DropDownList("Supported", new SelectList(supportList, "Value", "Text"), "Select your response", new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" onclick="return validateRouteUnitResponse()">Submit to Clerk</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        }
-
-    </div>
-</div>
-
 @section scripts{
-    <script>
-        function back() {
-          var link = '@Url.Action("PremiseApplication", "PremiseApplication")';
-          window.location.href = link;
-        }
+<script>
+    function back() {
+        var link = '@Url.Action("PremiseApplication", "PremiseApplication")';
+        window.location.href = link;
+    }
 
-        function Approvedreject() {
-            $('#approvedrejectModal').modal('show');
-            return false;
-        }
-
-        function validateRouteUnitResponse() {
-            if ($('#txtComment').val() == "") {
-                alert("Please Enter your comment");
-                return false;
-            } else if ($('#Supported').val() == "") {
-                alert("Please select Do you support this Premise application");
-                return false;
-            }
-            return true;
-        }
-
-        $(document).ready(function () {
-            $('#btnLetter').click(function () {
-                var AppId = $('#PremiseApplicationID').val();
-                $('.modal-body iframe').attr('src', "../PremiseApplication/GeneratLicense?AppId=" + AppId);
-                $('#myModal').modal('show');
-            });
-        });
-    </script>
+       
+</script>
 }

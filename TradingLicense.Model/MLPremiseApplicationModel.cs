@@ -35,9 +35,15 @@ namespace TradingLicense.Model
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
 
+        public string RequiredDocIds { get; set; }
         public string UploadRequiredDocids { get; set; }
         public int UserRollTemplate { get; set; }
         public bool IsDraft { get; set; }
+
+        public string newComment { get; set; }
+        public string Supported { get; set; }
+        public string SubmitType { get; set; }
+        public bool HasPADepSupp { get; set; }
 
         public string UpdatedBy { get; set; }
         public DateTime? DateApproved { get; set; }
