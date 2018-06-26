@@ -4,20 +4,7 @@
 <div class="navbar navbar-inverse">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.DeskOfficer, SystemEnum.PageRight.CrudLevel))
-{
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    Profail
-                    <!--Profile-->
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
-                    <li>@Html.ActionLink("Senarai Syarikat/Pertubuhan (Test)", "Company", "Master")</li>
-                </ul>
-            </li>
-}
+
 @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Profile, SystemEnum.PageRight.CrudLevel))
 {
             <li class="dropdown">
@@ -49,12 +36,14 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Daftar Individu (Test)", "Individual", "Master")</li>
+                    <li>@Html.ActionLink("Daftar Syarikat (Test)", "Company", "Master")</li>
                     <li>@Html.ActionLink("Lesen Berniaga (Test)", "PremiseApplication", "PremiseApplication")</li>
                     <li>@Html.ActionLink("Lesen Penjaja (Test)", "HawkerApplication", "HawkerApplication")</li>
                     <li>@Html.ActionLink("Lesen Pasar (Test)", "StallApplication", "StallApplication")</li>
                     <li>@Html.ActionLink("Lesen Hiburan (Test)", "EntmtApplication", "EntmtApplication")</li>
-                    <li><a href="#">Lesen Premis Pemberi Pinjam Wang</a></li>
-                    <li><a href="#">Permit Iklan Pemberi Pinjam Wang</a></li>
+                    <li>@Html.ActionLink("Lesen Premis Pemberi Pinjam Wang (Test)", "MLPremiseApplication", "MoneyLenderApplication")</li>
+                    <li>@Html.ActionLink("Permit Iklan Pemberi Pinjam Wang (Test)", "MLPermitApplication", "MoneyLenderApplication")</li>
                     <li>@Html.ActionLink("Lesen Minuman Keras (Test)", "LiquorApplication", "LiquorApplication")</li>
                     <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerApplication", "BannerApplication")</li>
                 </ul>
@@ -112,6 +101,7 @@
                     <li role="separator" class="divider"></li>
                     <li>@Html.ActionLink("Jenis Perniagaan (Test)", "BusinessType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
+                    <li>@Html.ActionLink("Senarai Bangsa (Test)", "Race", "Master")</li>
                     <li>@Html.ActionLink("Jenis Premis (Test)", "PremiseType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Status Permohonan (Test)", "AppStatus", "Master")</li>
                     <li>@Html.ActionLink("Dokumen Tambahan (Test)", "AdditionalDoc", "Master")</li>

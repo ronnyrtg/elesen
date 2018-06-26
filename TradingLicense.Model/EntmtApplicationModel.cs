@@ -18,14 +18,18 @@ namespace TradingLicense.Model
         public string PcodeA { get; set; }
         public string StateA { get; set; }
         public int PremiseTypeID { get; set; }
+        public string OtherPremiseType { get; set; }
         public string WhichFloor { get; set; }
-        public int PremiseLocation { get; set; }
+        public string PremiseLocation { get; set; }
         [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
         [Required(ErrorMessage = "Sila pilih pemilikan premis")]
-        public int PremiseOwnership { get; set; }
+        public string PremiseOwnership { get; set; }
         public int EntmtGroupID { get; set; }
         public int EntmtCodeID { get; set; }
+        public string StartStopTime { get; set; }
+        public int PeriodQuantity { get; set; }
+        public int Period { get; set; }
         public int EntmtObjectID { get; set; }
         public int AppStatusID { get; set; }
 
@@ -42,6 +46,7 @@ namespace TradingLicense.Model
         public string EntmtCodeids { get; set; }
         public string Individualids { get; set; }
         public string RequiredDocIds { get; set; }
+        public string newIndividualsList { get; set; }
 
         public string EntmtGroupCode { get; set; }
         public string EntmtGroupDesc { get; set; }
@@ -53,6 +58,13 @@ namespace TradingLicense.Model
         public string UploadRequiredDocids { get; set; }
 
         public List<SelectedEntmtCodeModel> selectedEntmtCodeList = new List<SelectedEntmtCodeModel>();
-        public List<SelectedIndividualModel> selectedIndividualList = new List<SelectedIndividualModel>();
+        public List<SelectedEntmtObjectModel> selectedEntmtObjectList = new List<SelectedEntmtObjectModel>();
+        public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
+
+        public class NewIndividualModel
+        {
+            public string fullName { get; set; }
+            public string passportNo { get; set; }
+        }
     }
 }

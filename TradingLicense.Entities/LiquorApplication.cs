@@ -35,6 +35,10 @@ namespace TradingLicense.Entities
         public string PreviousLicense { get; set; }
         public DateTime? PrevLicDate { get; set; }
         public DateTime? PrevLicExp { get; set; }
+        
+        public string PreviousLiquorLicenseNo { get; set; }
+        public DateTime? PreviousLiquorIssueDate { get; set; }
+        public DateTime? PreviousLiquorExpDate { get; set; }
 
         //The user who creates this application
         public int UsersID { get; set; }
@@ -50,6 +54,7 @@ namespace TradingLicense.Entities
         public DateTime? DatePaid { get; set; }
         public DateTime? ExpireDate { get; set; }
 
+        public virtual BusinessType BusinessType { get; set; }
         public virtual Company Company { get; set; }
         public virtual AppStatus AppStatus { get; set; }
         public virtual Individual Individual { get; set; }

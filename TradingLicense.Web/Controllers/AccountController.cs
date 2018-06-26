@@ -25,7 +25,7 @@ namespace TradingLicense.Web.Controllers
         {
             if (ProjectSession.UserID > 0)
             {
-                return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
+                return RedirectToAction(Actions.PremiseApplication, Pages.Controllers.PremiseApplication);
             }
 
             LoginModel loginModel = new LoginModel();
@@ -118,7 +118,7 @@ namespace TradingLicense.Web.Controllers
                                     }
                                     else
                                     {
-                                        return RedirectToAction(Actions.Individual, Pages.Controllers.Master);
+                                        return RedirectToAction(Actions.PremiseApplication, Pages.Controllers.PremiseApplication);
                                     }
                                 }
                                 else

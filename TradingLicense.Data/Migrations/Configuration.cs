@@ -1,5 +1,6 @@
 namespace TradingLicense.Data.Migrations
 {
+    using System;
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using TradingLicense.Entities;
@@ -35,6 +36,32 @@ namespace TradingLicense.Data.Migrations
             sector.ForEach(s => context.Sectors.Add(s));
             context.SaveChanges();
 
+            var businesstypes = new List<BusinessType>
+            {
+                new BusinessType {BusinessTypeCode="I",BusinessTypeDesc="HAK MILIK PERSEORANGAN" },
+                new BusinessType {BusinessTypeCode="O",BusinessTypeDesc="LAIN-LAIN" },
+                new BusinessType {BusinessTypeCode="P",BusinessTypeDesc="PERKONGSIAN" },
+                new BusinessType {BusinessTypeCode="U",BusinessTypeDesc="SYARIKAT AWAM BERHAD" },
+                new BusinessType {BusinessTypeCode="C",BusinessTypeDesc="SYARIKAT KERJASAMA" },
+                new BusinessType {BusinessTypeCode="R",BusinessTypeDesc="SYARIKAT SENDIRIAN BERHAD" },
+                new BusinessType {BusinessTypeCode="G",BusinessTypeDesc="JABATAN KERAJAAN" },
+                new BusinessType {BusinessTypeCode="E",BusinessTypeDesc="SEKOLAH/INSTITUSI PENDIDIKAN" },
+            };
+            businesstypes.ForEach(s => context.BusinessTypes.Add(s));
+            context.SaveChanges();
+
+            var race = new List<Race>
+            {
+                new Race {RaceDesc="Melayu"},
+                new Race {RaceDesc="Cina"},
+                new Race {RaceDesc="India"},
+                new Race {RaceDesc="Bumiputra Sabah"},
+                new Race {RaceDesc="Bumiputra Sarawak"},
+                new Race {RaceDesc="Bangsa dari luar negara Malaysia"},
+            };
+            race.ForEach(s => context.Races.Add(s));
+            context.SaveChanges();
+
             var entmtGroup = new List<EntmtGroup>
             {
                 new EntmtGroup {EntmtGroupID=1,EntmtGroupCode="L001",EntmtGroupDesc="Oditorium/Dewan"},
@@ -48,23 +75,8 @@ namespace TradingLicense.Data.Migrations
                 new EntmtGroup {EntmtGroupID=9,EntmtGroupCode="L009",EntmtGroupDesc="Dewan Biliard/Snuker"},
                 new EntmtGroup {EntmtGroupID=10,EntmtGroupCode="L010",EntmtGroupDesc="Stadium"},
                 new EntmtGroup {EntmtGroupID=11,EntmtGroupCode="L011",EntmtGroupDesc="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran"},
-                new EntmtGroup {EntmtGroupID=12,EntmtGroupCode="L012",EntmtGroupDesc="Hiburan bagi maksud pendidikan yang disediakan oleh sekolah, universiti, maktab, PIBG, kumpulan guru atau murid"},
-                new EntmtGroup {EntmtGroupID=13,EntmtGroupCode="L013",EntmtGroupDesc="Sukan atau permainan bertaraf amatur"},
-                new EntmtGroup {EntmtGroupID=14,EntmtGroupCode="L014",EntmtGroupDesc="Hiburan yang disediakan oleh jabatan kerajaan, Badan berkanun, pertubuhan, orang, kelab, persatuan, organisasi, jawatankuasa atau institut bagi maksud agama, kebajikan atau khairat"},
             };
             entmtGroup.ForEach(s => context.EntmtGroups.Add(s));
-            context.SaveChanges();
-
-            var businesstypes = new List<BusinessType>
-            {
-                new BusinessType {BusinessTypeCode="I",BusinessTypeDesc="HAK MILIK PERSEORANGAN" },
-                new BusinessType {BusinessTypeCode="O",BusinessTypeDesc="LAIN-LAIN" },
-                new BusinessType {BusinessTypeCode="P",BusinessTypeDesc="PERKONGSIAN" },
-                new BusinessType {BusinessTypeCode="U",BusinessTypeDesc="SYARIKAT AWAM BERHAD" },
-                new BusinessType {BusinessTypeCode="C",BusinessTypeDesc="SYARIKAT KERJASAMA" },
-                new BusinessType {BusinessTypeCode="R",BusinessTypeDesc="SYARIKAT SENDIRIAN BERHAD" },
-            };
-            businesstypes.ForEach(s => context.BusinessTypes.Add(s));
             context.SaveChanges();
 
             var businesscode = new List<BusinessCode>
@@ -244,25 +256,16 @@ namespace TradingLicense.Data.Migrations
                 new Individual{FullName="Ali Bin Abu",MykadNo="710213-12-4820",NationalityID=1,PhoneNo="0108103140",AddressIC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IndividualEmail="aliabu@yahoo.com",Gender=1},
                 new Individual{FullName="Siti Aminah",MykadNo="610122-12-4933",NationalityID=1,PhoneNo="0112546778",AddressIC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IndividualEmail="sitiaminah@gmail.com",Gender=2},
                 new Individual{FullName="Chin Chee Kiong",MykadNo="500101-12-5129",NationalityID=1,PhoneNo="0148552370",AddressIC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IndividualEmail="chinchee70@gmail.com",Gender=1},
+                new Individual{FullName="Abdul Azis Hj Ibrahim",MykadNo="600501125629",NationalityID=1,Gender=1},
+                new Individual{FullName="Arif Koh",MykadNo="H0392480",NationalityID=1,Gender=1},
+                new Individual{FullName="Chan Chew Houi",MykadNo="790402086273",NationalityID=1,Gender=1},
+                new Individual{FullName="Chua Kai Wen",MykadNo="760814125411",NationalityID=1,Gender=1},
+                new Individual{FullName="Harilal Vasudevan",MykadNo="660823125343",NationalityID=1,Gender=1},
+                new Individual{FullName="Hilary Koh Chin Kian @ Koh Chean Kan",MykadNo="551109125597",NationalityID=1,Gender=1},
+                new Individual{FullName="Hj Mohd Ismail Bin Abdul Rahman",MykadNo="540521125093",NationalityID=1,Gender=1},
+                new Individual{FullName="Imelda Binti Michael",MykadNo="840110125552",NationalityID=1,Gender=2},
             };
             individuals.ForEach(s => context.Individuals.Add(s));
-            context.SaveChanges();
-
-            var companies = new List<Company>
-            {
-                new Company {RegistrationNo="75278-T",CompanyName="Chin Recycle",CompanyAddress="Lot 12-F, Blok 20, Jalan Tenaga, Labuan"},
-                new Company {RegistrationNo="801234-V",CompanyName="Kejora Bersatu Sdn Bhd",CompanyAddress="No.7, 1st Floor, Financial Park, Jalan Merdeka, 87000 Labuan"},
-            };
-            companies.ForEach(s => context.Companies.Add(s));
-            context.SaveChanges();
-
-            var indlinkcoms = new List<IndLinkCom>
-            {
-                new IndLinkCom {IndividualID=1,CompanyID=2 },
-                new IndLinkCom {IndividualID=2,CompanyID=2 },
-                new IndLinkCom {IndividualID=3,CompanyID=1 },
-            };
-            indlinkcoms.ForEach(s => context.IndLinkComs.Add(s));
             context.SaveChanges();
 
 
@@ -283,19 +286,19 @@ namespace TradingLicense.Data.Migrations
             var AppStatus = new List<AppStatus>
             {
                 new AppStatus {StatusDesc="Draft created" ,PercentProgress =1},
-                new AppStatus {StatusDesc="Submitted to clerk" ,PercentProgress =5},
-                new AppStatus {StatusDesc="Pending client document submission" ,PercentProgress =10},
+                new AppStatus {StatusDesc="Document Incomplete" ,PercentProgress =5},
+                new AppStatus {StatusDesc="Submitted to clerk" ,PercentProgress =10},
                 new AppStatus {StatusDesc="Processing by Clerk" ,PercentProgress =20},
                 new AppStatus {StatusDesc="Route Unit" ,PercentProgress =30},
-                new AppStatus {StatusDesc="Meeting" ,PercentProgress =40},
-                new AppStatus {StatusDesc="Awaiting Director Response" ,PercentProgress =50},
+                new AppStatus {StatusDesc="Awaiting Director Response" ,PercentProgress =40},
+                new AppStatus {StatusDesc="Meeting" ,PercentProgress =50},
                 new AppStatus {StatusDesc="Awaiting CEO Approval" ,PercentProgress =60},
-                new AppStatus {StatusDesc="Processing Letter by Clerk" ,PercentProgress =70},
-                new AppStatus {StatusDesc="Letter of notification (Approved)" ,PercentProgress =80},
-                new AppStatus {StatusDesc="Letter of notification (Rejected)" ,PercentProgress =80},
-                new AppStatus {StatusDesc="Letter of notification (Approved with Terms & Conditions)" ,PercentProgress =80},
-                new AppStatus {StatusDesc="Pending payment" ,PercentProgress =90},
-                new AppStatus {StatusDesc="License Generated" ,PercentProgress =100},
+                new AppStatus {StatusDesc="Letter of Notification (Approved)" ,PercentProgress =70},
+                new AppStatus {StatusDesc="Letter of Notification (Rejected)" ,PercentProgress =100},
+                new AppStatus {StatusDesc="Letter of Notification (Approved with Terms & Conditions)" ,PercentProgress =70},
+                new AppStatus {StatusDesc="Pending payment" ,PercentProgress =80},
+                new AppStatus {StatusDesc="Paid" ,PercentProgress =90},
+                new AppStatus {StatusDesc="Print License" ,PercentProgress =100},
             };
             AppStatus.ForEach(s => context.AppStatus.Add(s));
             context.SaveChanges();
@@ -384,7 +387,7 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="DeskOfficer",CrudLevel=0,RoleTemplateID=8,ScreenId=9},
 
                 new AccessPage {PageDesc="Profile",CrudLevel=0,RoleTemplateID=1,ScreenId=10},
-                new AccessPage {PageDesc="Profile",CrudLevel=0,RoleTemplateID=2,ScreenId=10},
+                new AccessPage {PageDesc="Profile",CrudLevel=2,RoleTemplateID=2,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=2,RoleTemplateID=3,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=3,RoleTemplateID=4,ScreenId=10},
                 new AccessPage {PageDesc="Profile",CrudLevel=3,RoleTemplateID=5,ScreenId=10},
@@ -400,6 +403,15 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=6,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=7,ScreenId=11},
                 new AccessPage {PageDesc="Process",CrudLevel=4,RoleTemplateID=8,ScreenId=11},
+
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=1,RoleTemplateID=1,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=2,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=3,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=4,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=1,RoleTemplateID=5,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=6,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
+                new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
             };
             accesspages.ForEach(s => context.AccessPages.Add(s));
             context.SaveChanges();
@@ -420,6 +432,8 @@ namespace TradingLicense.Data.Migrations
                 new Users {FullName="Mazalan Bin Hassin",Username="mazalan",Password="rGWQ/rZGq74=",Email="mazalan.hassin@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
                 new Users {FullName="R. Norasliana Binti Ramlee",Username="norasliana",Password="rGWQ/rZGq74=",Email="ana.ramli@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
                 new Users {FullName="Jabatan Bomba & Penyelamat Malaysia",Username="bomba",Password="rGWQ/rZGq74=",Email="jbpm_labuan.bomba@1govuc.gov.my", RoleTemplateID=5,DepartmentID=1},
+                new Users {FullName="Bahagian Perancangan",Username="bpp",Password="rGWQ/rZGq74=",Email="bpp@pl.gov.my", RoleTemplateID=5,DepartmentID=3},
+                new Users {FullName="Unit Kesihatan",Username="uks",Password="rGWQ/rZGq74=",Email="uks@pl.gov.my", RoleTemplateID=5,DepartmentID=5},
                 new Users {FullName="Ronny Jimmy",Username="ronny",Password="rGWQ/rZGq74=",Email="ronnyrtg@yahoo.com", RoleTemplateID=8,DepartmentID=1},
             };
             users.ForEach(s => context.Users.Add(s));
@@ -560,6 +574,36 @@ namespace TradingLicense.Data.Migrations
             };
 			additionaldocs.ForEach(s => context.AdditionalDocs.Add(s));
             context.SaveChanges();
+
+            var companies = new List<Company>
+            {
+                new Company {RegistrationNo="75278-T",CompanyName="Chin Recycle",CompanyPhone="087430010",SSMRegDate=DateTime.Parse("01-01-2018"),SSMExpDate=DateTime.Parse("31-12-2018"),CompanyAddress="Lot 12-F, Blok 20, Jalan Tenaga, Labuan"},
+                new Company {RegistrationNo="801234-V",CompanyName="Kejora Bersatu Sdn Bhd",CompanyPhone="087450690",SSMRegDate=DateTime.Parse("01-06-2017"),SSMExpDate=DateTime.Parse("30-06-2018"),CompanyAddress="No.7, 1st Floor, Financial Park, Jalan Merdeka, 87000 Labuan"},
+                new Company {RegistrationNo="991345-V",CompanyName="Kentucky Fried Chicken (KFC)",CompanyPhone="087421090",SSMRegDate=DateTime.Parse("11-Aug-2018"),SSMExpDate=DateTime.Parse("12-Aug-2019"),CompanyAddress="D002, Tingkat Bawah, Bangunan Financial Park, 87000 Wilayah Persekutuan, Labuan"},
+                new Company {RegistrationNo="129074-M",CompanyName="Marry Brown",CompanyPhone="087-411555",SSMRegDate=DateTime.Parse("13-Oct-2018"),SSMExpDate=DateTime.Parse("12-Oct-2019"),CompanyAddress="U0357, Jalan Tun Mustapha"},
+                new Company {RegistrationNo="203976-T",CompanyName="Borneo Combat Gym",CompanyPhone="011-3516 1698",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019"),CompanyAddress="U350-519, 5th Floor Time Square, F.T., 87000 Labuan, Wilayah Persekutuan Labuan"},
+                new Company {RegistrationNo="987264-H",CompanyName="Dorsett Grand Labuan",CompanyPhone="+608 7422 000",SSMRegDate=DateTime.Parse("01-Jan-2018"),SSMExpDate=DateTime.Parse("01-Jan-2019"),CompanyAddress="462 Jalan Merdeka,87029 Labuan F.T., Malaysia "},
+                new Company {RegistrationNo="987264-H",CompanyName="Red Tomato Hotel",CompanyPhone="087-412 963",SSMRegDate=DateTime.Parse("01-Nov-2018"),SSMExpDate=DateTime.Parse("01-Nov-2019"),CompanyAddress="Jalan Bunga Mawar, Bandar Labuan, 87000 Labuan, Wilayah Persekutuan Labuan"},
+                new Company {RegistrationNo="355817-T",CompanyName="Olympic Pool & Snooker",CompanyPhone="087-467522",SSMRegDate=DateTime.Parse("01-Mar-2018"),SSMExpDate=DateTime.Parse("01-Mar-2019"),CompanyAddress="Jalan Utama Jaya, Bandar Labuan, 87000 Labuan, Wilayah Persekutuan Labuan"},
+                new Company {RegistrationNo="188846-T",CompanyName="Kedai Gunting Rambut Wahab",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019"),CompanyAddress="Bandar Labuan, 87000 Labuan, Labuan Federal Territory"},
+                new Company {RegistrationNo="203433-V",CompanyName="Klinik Suria (Labuan) Sdn. Bhd.",CompanyPhone="087-504 969",SSMRegDate=DateTime.Parse("01-Apr-2018"),SSMExpDate=DateTime.Parse("01-Apr-2019"),CompanyAddress=" U0200, Jalan Tun Mustapha, Sabah, 87000 Labuan"},
+                new Company {RegistrationNo="203433-V",CompanyName="Wong Brothers Workshop & Service Sdn. Bhd.",CompanyPhone="087-414 784",SSMRegDate=DateTime.Parse("21-Jan-2018"),SSMExpDate=DateTime.Parse("21-Jan-2019"),CompanyAddress="U0112, Jalan Bunga Raya, P.O.Box 63,87008 Labuan"},
+                new Company {RegistrationNo="203433-V",CompanyName="Hobby Mix.",CompanyPhone="087-429 428",SSMRegDate=DateTime.Parse("31-Jan-2018"),SSMExpDate=DateTime.Parse("31-Jan-2019"),CompanyAddress="Mile 4 1/2, Jalan Rancha - Rancha, P.O.Box 80219, Wilayah Persekutuan, 87012 Labuan"},                new Company {CompanyName="Thirumurugan Temple",CompanyAddress="87000 Labuan, Labuan Federal Territory"},
+                new Company {CompanyName="Jabatan Kerja Raya",CompanyPhone="087-414 040",CompanyAddress="Jalan Kampung Jawa Peti Surat 2"},
+                new Company {CompanyName="Sekolah Menengah Sains Labuan",CompanyPhone="(+60) 87 461525",CompanyAddress="Jalan Sungai Pagar, 87032 Wilayah Persekutuan Labuan"},
+            };
+            companies.ForEach(s => context.Companies.Add(s));
+            context.SaveChanges();
+
+            var indlinkcoms = new List<IndLinkCom>
+            {
+                new IndLinkCom {IndividualID=1,CompanyID=2 },
+                new IndLinkCom {IndividualID=2,CompanyID=2 },
+                new IndLinkCom {IndividualID=3,CompanyID=1 },
+            };
+            indlinkcoms.ForEach(s => context.IndLinkComs.Add(s));
+            context.SaveChanges();
+
 
             var hawkerCodes = new List<HawkerCode>
             {
@@ -732,10 +776,6 @@ namespace TradingLicense.Data.Migrations
                 new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",Fee=300.0f,Period=1,PeriodQuantity=1},
                 new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 200 meter persegi",Fee=500.0f,Period=1,PeriodQuantity=1},
                 new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Lesen sementara",Fee=10.0f,Period=4,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=12,EntmtCodeDesc="Apa-apa hiburan bagi maksud pendidikan yang disediakan oleh mana-mana sekolah, university, maktab, PIBG, kumpulan guru atau murid",Fee=0.0f,Period=2,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=13,EntmtCodeDesc="Apa-apa sukan atau permainan yang bertaraf amatur yang disediakan oleh sesuatu pertubuhan atau badan",Fee=0.0f,Period=2,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=14,EntmtCodeDesc="Apa-apa hiburan yang disediakan oleh mana-mana jabatan ke bagi maksud keagamaan, kebajikan atau khairat, tetapi tidak termasuk hiburan di luar bangunan kuil.",Fee=0.0f,Period=2,PeriodQuantity=1},
-
             };
             entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
             context.SaveChanges();

@@ -46,40 +46,42 @@
 
         public enum PAStausenum
         {
+            unknown = 0,
+
             /// <summary>
             /// for set draft created
             /// </summary>
             draftcreated = 1,
 
             /// <summary>
+            /// for set document incomplete
+            /// </summary>
+            documentIncomplete = 2,
+
+            /// <summary>
             /// for set submitted to clerk
             /// </summary>
-            submittedtoclerk = 2,
+            submittedtoclerk = 3,
+
+            /// <summary>
+            /// for set processing by clerk
+            /// </summary>
+            processingByClerk = 4,
 
             /// <summary>
             /// for set unit route
             /// </summary>
-            unitroute = 3,
-
-            /// <summary>
-            /// for set supervisor check
-            /// </summary>
-            supervisorcheck = 4,
+            unitroute = 5,
 
             /// <summary>
             /// for set director check
             /// </summary>
-            directorcheck = 5,
+            directorcheck = 6,
 
             /// <summary>
             /// for set meeting
             /// </summary>
-            meeting = 6,
-
-            /// <summary>
-            /// for set KIV at Meeting
-            /// </summary>
-            KIVatMeeting = 7,
+            meeting = 7,
 
             /// <summary>
             /// for set CEO check
@@ -87,34 +89,49 @@
             CEOcheck = 8,
 
             /// <summary>
-            /// for set KIV at CEO
-            /// </summary>
-            KIVatCEO = 9,
-
-            /// <summary>
             /// for set Letter of notification (Approved)
             /// </summary>
-            LetterofnotificationApproved = 10,
+            LetterofnotificationApproved = 9,
 
             /// <summary>
             /// for set Letter of notification (Rejected)
             /// </summary>
-            LetterofnotificationRejected = 11,
+            LetterofnotificationRejected = 10,
 
             /// <summary>
             /// for set Letter of notification (Approved with Terms & Conditions)
             /// </summary>
-            LetterofnotificationApprovedwithTermsConditions = 12,
+            LetterofnotificationApprovedwithTermsConditions = 11,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Pendingpayment = 13,
+            Pendingpayment = 12,
+
+            /// <summary>
+            /// for set Pending payment
+            /// </summary>
+            Paid = 13,
 
             /// <summary>
             /// for set License Generated
             /// </summary>
             LicenseGenerated = 14,
+
+            /// <summary>
+            /// for set supervisor check
+            /// </summary>
+            supervisorcheck = 24,
+
+            /// <summary>
+            /// for set KIV at Meeting
+            /// </summary>
+            KIVatMeeting = 25,
+
+            /// <summary>
+            /// for set KIV at CEO
+            /// </summary>
+            KIVatCEO = 26,
         }
 
         public enum RollTemplate

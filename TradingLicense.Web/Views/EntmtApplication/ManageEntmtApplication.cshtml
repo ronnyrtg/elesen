@@ -1,41 +1,62 @@
 ﻿@model TradingLicense.Model.EntmtApplicationModel
 @using AutoMapper;
-@using Mvc.CascadeDropDown
 @{
     ViewBag.Title = "Manage Entmt License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
-@{
+
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
+    List<TradingLicense.Model.EntmtGroupModel> entmtGroupList = new List<TradingLicense.Model.EntmtGroupModel>();
+    List<TradingLicense.Model.SelectedEntmtCodeModel> entmtCodeList = new List<TradingLicense.Model.SelectedEntmtCodeModel>();
+    List<TradingLicense.Model.SelectedEntmtObjectModel> entmtObjectList = new List<TradingLicense.Model.SelectedEntmtObjectModel>();
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+    List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
+
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var businessType = ctx.BusinessTypes.ToList();
         businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
-    }
 
-    List<TradingLicense.Model.EntmtGroupModel> entmtGroupList = new List<TradingLicense.Model.EntmtGroupModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
+        var companies = ctx.Companies.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+
         var entmtGroup = ctx.EntmtGroups.ToList();
         entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtGroupModel>>(entmtGroup);
-    }
 
-    List<TradingLicense.Model.SelectedEntmtCodeModel> entmtCodeList = new List<TradingLicense.Model.SelectedEntmtCodeModel>();
+        var premiseType = ctx.PremiseTypes.ToList();
+        PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
 
-    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
-
-    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
         var appStatus = ctx.AppStatus.ToList();
         appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
     }
+
+    List<SelectListItem> ModeList = new List<SelectListItem>();
+    ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
+    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
+    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
+    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
+
+    List<SelectListItem> PremiseLocationList = new List<SelectListItem>();
+    PremiseLocationList.Add(new SelectListItem { Text = "Tengah", Value = "Tengah" });
+    PremiseLocationList.Add(new SelectListItem { Text = "Tepi", Value = "Tepi" });
+    PremiseLocationList.Add(new SelectListItem { Text = "Berasingan", Value = "Berasingan" });
+
+    List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Pemunya", Value = "Pemunya" });
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Penyewa", Value = "Penyewa" });
+
+    List<SelectListItem> periodList = new List<SelectListItem>();
+    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
+    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
+    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
+    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
 
 }
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Kemaskini Permohonan Lesen Untuk Membuka Tempat Hiburan</h4>
+        <h5 id="headerTitle">Bahagian I: Butir-Butir Pemohon</h5>
     </div>
     <div class="body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmEntmtApplication", id = "frmEntmtApplication" }))
@@ -46,174 +67,273 @@
             @Html.HiddenFor(m => m.UserRollTemplate)
             @Html.HiddenFor(m => m.RequiredDocIds)
             @Html.HiddenFor(m => m.IsDraft)
-
             @Html.HiddenFor(m => m.UploadRequiredDocids)
+
 
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
-                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                        <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.Mode, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Mode)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Syarikat/Pertubuhan<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="form-group">
-                        <div class="control-label">Kategori Tempat Hiburan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.EntmtGroupID, new SelectList(entmtGroupList.OrderBy(x => x.EntmtGroupID), "EntmtGroupID", "EntmtGroupDesc"), "Pilih Kategori", new { @class = "form-control"})
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">Ciri-ciri Premis Hiburan<span class="cfont">*</span></div>
-                        @Html.DropDownList("EntmtCode", new SelectList(Model.selectedEntmtCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtCodeList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
-                        @Html.HiddenFor(model => model.EntmtCodeids)
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindEntmtCodeTable(); return false;'>View</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Mykad/Passport No.   @if (Model.UserRollTemplate > 2)
-                            {<span class="cfont">*</span>}
-                        </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Masukkan Nama atau Nombor MyKad", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
                         @Html.HiddenFor(model => model.Individualids)
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" style="margin-top: 15px;" onclick='bindMykadTable(); return false;'>View</button>
+                        @Html.HiddenFor(model => model.newIndividualsList)
                     </div>
                 </div>
             </div>
-
             <div class="row">
-                <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="control-label">
-                            Document List.   @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                        <div class="control-label">Nama Syarikat/Pertubuhan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Pilih Syarikat / Pertubuhan", new { @id = "companyList", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div>
+                <h5>Bahagian II: Butir-Butir Permohonan</h5><div class="header"><h4>A. Permohonan Lesen Untuk Membuka Tempat Hiburan</h4>
+            </div>
+            <br />
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.Addra1, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra2, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra3, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra4, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Poskod<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PcodeA, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Negeri<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.StateA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Nyatakan Jenis Premis (Jika tiada dalam senarai)</div>
+                        @Html.TextBoxFor(m => m.OtherPremiseType, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Tingkat</div>
+                        @Html.TextBoxFor(m => m.WhichFloor, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Kedudukan Premis<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(model => model.PremiseLocation, new SelectList(PremiseLocationList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Luas Lantai (meter persegi)</div>
+                        @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Pemunyaan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(model => model.PremiseOwnership, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Hiburan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.EntmtGroupID, new SelectList(entmtGroupList.OrderBy(x => x.EntmtGroupID), "EntmtGroupID", "EntmtGroupDesc"), "Pilih Kategori", new { @class = "form-control" })
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Ciri-ciri Premis Hiburan<span class="cfont">*</span></div>
+                            @Html.DropDownList("EntmtCode", new SelectList(Model.selectedEntmtCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtCodeList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
+                            @Html.HiddenFor(model => model.EntmtCodeids)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Waktu Pengendalian</div>
+                            @Html.TextBoxFor(m => m.StartStopTime, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Tempoh Lesen</div>
+                            @Html.TextBoxFor(m => m.PeriodQuantity, new {@Value = 1, @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            @Html.DropDownListFor(model => model.Period, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="header">
+                    <h4 id="headerTitle">B. Permohonan Lesen Hiburan</h4>
+                </div><br />
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Hiburan<span class="cfont">*</span></div>
+                            @Html.DropDownList("EntmtObject", new SelectList(Model.selectedEntmtObjectList.OrderBy(x => x.text), "id", "text"), "Pilih Kod", new { @id = "entmtObjectList", @class = "form-control", multiple = "true", onchange = "changeEntmtcode()" })
+                            @Html.HiddenFor(model => model.EntmtGroupids)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">
+                                Document List.   @if (Model.UserRollTemplate > 1)
+                                {<span class="cfont">*</span>}
+                            </div>
+                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
+                        </div>
+                    </div>
+                </div>
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-                        {
-                            if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
+                                if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                                {
+                                    if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                                    {<input type="submit" class="btn btn-primary" onclick='frmSubmit(false); return false;' id="btnsubmitdraft" value="Save Draft " /> }
+                                }
+
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {<input type="submit" class="btn btn-primary" onclick='frmSubmit(false); return false;' id="btnsubmitdraft" value="Save Draft " /> }
+                                {
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                }
                             }
 
-                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
+                            @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                                {
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                }*@
+
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.EntmtApplicationID > 0)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
+                                <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
                             }
-                        }
 
-                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.EntmtApplicationID > 0)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                            }*@
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.EntmtApplicationID > 0)
-                        {
-                            <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
-                            <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
-                        }
+                            }
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.EntmtApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.EntmtApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.EntmtApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.EntmtApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.EntmtApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.EntmtApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.EntmtApplicationID > 0)
-                        {
+                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.EntmtApplicationID > 0)
+                            {
 
-                        }
+                            }
 
-                        @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.EntmtApplicationID > 0)
-                        {
+                            <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
 
-                        }
-
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
-
+                        </div>
                     </div>
                 </div>
+                }
             </div>
-        }
-    </div>
 </div>
 
-<!--Entmt Code Modal -->
-<div id="entmtCodeModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Entmt Code</h4>
-            </div>
-            <div class="modal-body">
-                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblEntmtCode"></table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!--mykadCodeModal-->
-<div id="mykadCodeModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Mykad/Passport</h4>
-            </div>
-            <div class="modal-body">
-                <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblMykad"></table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Upload Doc-->
 <div id="uploadDocumentModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
@@ -283,169 +403,315 @@
 </style>
 
 @section scripts{
-    <script>
+<script>
 
     var userRollTemplate = 0;
     var visibleGridColume = false;
     var visibleGridUploadColume = false;
 
     var requiredDocList = [];
-    var addtionalDocList = [];
+    var selectedMode = '@ViewBag.SelectedMode';
 
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
-         errorMessage(actionError);
+        errorMessage(actionError);
     }
 
     $(function () {
 
         userRollTemplate = $("#UserRollTemplate").val();
+
+        var success = '@(TempData["SuccessMessage"])';
+        if (success != null && success != "") {
+            successMessage(success);
+        }
+
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
         visibleGridUploadColume = true;
-            if (userRollTemplate > 1) {
-                visibleGridColume = true;
-            }
+        if (userRollTemplate > 1) {
+            visibleGridColume = true;
+        }
 
-            $("#entmtCodeList").select2();
-            $("#individualList").select2();
+        $("#individualList").select2({ width: '100%' });
+        $("#entmtObjectList").select2({ width: '100%' });
+        $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
-            AddRules();
+        AddRules();
 
-            $("#entmtCodeList").select2({
-                placeholder: "Search for a Entmt Code",
-                minimumInputLength: 2,
-                ajax: {
-                    type: "POST",
-                    url: encodeURI('@Url.Action("FillEntmtCode", "EntmtApplication")'),
-                    //Data: allows us to pass a parameter to the controller
-                    data: function (query) {
-                        //console.log(query)
-                        return { query: query.term }
-                    },
-                    //processes the results from the JSON method and gives us the select list
-                    processResults: function (data) {
-                        //console.log(data)
-                        return {
-                            results: data
-                        };
+        function formatEntmtCodes(data) {
+            var r = data.text.split('~');
+            var $result = $('<div class="row">' + '<div class="col-md-10">' + r[0] + '</div>' + '</div>');
+            return $result;
+        }
+
+        function formatEntmtObjects(data) {
+            var r = data.text.split('~');
+            var $result = $('<div class="row">' + '<div class="col-md-10">' + r[0] + '</div>' + '</div>');
+            return $result;
+        }
+
+        function formatSelectionEntmtCodes(data) {
+            var r = data.text.split('~');
+            var $result = $('<span>' + r[0] + '</span>');
+            return $result;
+        }
+
+        function formatSelectionEntmtObjects(data) {
+            var r = data.text.split('~');
+            var $result = $('<span>' + r[0] + '</span>');
+            return $result;
+        }
+
+        $("#entmtCodeList").select2({
+            placeholder: "Pilih Kod Hiburan",
+            width: '100%',
+            minimumInputLength: 0,
+            templateResult: formatEntmtCodes,
+            templateSelection: formatSelectionEntmtObjects,
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillEntmtCode", "EntmtApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return {
+                        query: query.term,
+                        selectedMode: $('#Mode').val(),
+                        selectedGroup:  $("#EntmtGroupID").val()
                     }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
                 }
-            });
+            }
+        });
 
-             $("#individualList").select2({
-                placeholder: "Select  Mykad/Passport No",
-                minimumInputLength: 2,
-                ajax: {
-                    type: "POST",
-                    url: encodeURI('@Url.Action("FillIndividual", "EntmtApplication")'),
-                    //Data: allows us to pass a parameter to the controller
-                    data: function (query) {
-                        //console.log(query)
-                        return { query: query.term }
-                    },
-                    //processes the results from the JSON method and gives us the select list
-                    processResults: function (data) {
-                        //console.log(data)
-                        return {
-                            results: data
-                        };
+        $("#entmtObjectList").select2({
+            placeholder: "Pilih Jenis Hiburan",
+            width: '100%',
+            minimumInputLength: 0,
+            templateResult: formatEntmtObjects,
+            templateSelection: formatSelectionEntmtCodes,
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillEntmtObject", "EntmtApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return {
+                        query: query.term
                     }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
                 }
-            });
+            }
+        });
 
-            var businessSelecteId = [];
-            if ('@Model.EntmtCodeids' != null && '@Model.EntmtCodeids' != '') {
-                var EntmtCodeIds = '@Model.EntmtCodeids';
-
-                var arr = EntmtCodeIds.split(',');
-                $.each(arr, function (index, value) {
-                    businessSelecteId.push(value);
-                });
-                $('#entmtCodeList').val(businessSelecteId);
-                $('#entmtCodeList').trigger('change');
-            } else {
-                businessSelecteId = [];
+        function individualFormating(state) {
+            if (!state.isNew) {
+                return state.text;
             }
 
-            var individualSelecteId = [];
-            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
-                var individualIds = '@Model.Individualids';
-
-                var arr = individualIds.split(',');
-                $.each(arr, function (index, value) {
-                    individualSelecteId.push(value);
+            state.text = state.fullName + ' (' + state.passportNo +')';
+            var $state = $(
+              '<span>' + state.text +'&nbsp;</span>'
+            );
+            if(state.isNew) {
+                var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                editLink.on('click', function() {
+                    showIndividualModal(state);
                 });
-                $('#individualList').val(individualSelecteId);
-                $('#individualList').trigger('change');
-            } else {
-                individualSelecteId = [];
+                $state.append(editLink);
             }
+            return $state;
+        }
 
-           if(@Model.BusinessTypeID >0)
-           {
-               $("#BusinessTypeID").val(@Model.BusinessTypeID);
-               bindTable();
-           }
-
-            if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
-
-                var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
-
-                var arr = UploadRequiredDocumentlist.split(',');
-                $.each(arr, function (index, value) {
-                    requiredDocList.push(value);
-                });
-            }
-
-            
-
-            $("#preAppid").val(@Model.EntmtApplicationID);
-
-            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
-                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
-                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-                    event.preventDefault();
+        $("#individualList").select2({
+            placeholder: "Masukkan Nama atau MyKad",
+            minimumInputLength: 2,
+            width: '100%',
+            tags: true,
+            tokenSeparators: [';'],
+            templateSelection: individualFormating,
+            createTag: function (params) {
+                var term = params.term;
+                var indexOfPassport = term.indexOf('(');
+                var fullName= '';
+                var passportNo = '';
+                if(indexOfPassport > 0) {
+                    var endIndex = term.indexOf(')', indexOfPassport);
+                    passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                    fullName = term.substring(0, indexOfPassport);
+                } else {
+                    fullName = term;
                 }
+
+                return {
+                    id: term,
+                    text: fullName + ' (' + passportNo +')',
+                    fullName: fullName,
+                    passportNo: passportNo,
+                    isNew: true
+                };
+            },
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillIndividual", "EntmtApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return { query: query.term }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
+
+        var entmtSelecteId = [];
+        if ('@Model.EntmtCodeids' != null && '@Model.EntmtCodeids' != '') {
+            var EntmtCodeIds = '@Model.EntmtCodeids';
+
+            var arr = EntmtCodeIds.split(',');
+            $.each(arr, function (index, value) {
+                entmtSelecteId.push(value);
             });
+            $('#entmtCodeList').val(entmtSelecteId);
+            $('#entmtCodeList').trigger('change');
+        } else {
+            entmtSelecteId = [];
+        }
+
+        var individualSelecteId = [];
+        if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
+            var individualIds = '@Model.Individualids';
+
+            var arr = individualIds.split(',');
+            $.each(arr, function (index, value) {
+                individualSelecteId.push(value);
+            });
+            $('#individualList').val(individualSelecteId);
+            $('#individualList').trigger('change');
+        } else {
+            individualSelecteId = [];
+        }
+
+        if(@Model.BusinessTypeID >0)
+        {
+            $("#BusinessTypeID").val(@Model.BusinessTypeID);
+            bindTable();
+        }
+
+        if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+            var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+            var arr = UploadRequiredDocumentlist.split(',');
+            $.each(arr, function (index, value) {
+                requiredDocList.push(value);
+            });
+        }
+
+        $("#preAppid").val(@Model.EntmtApplicationID);
+
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (8 < event.which && event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
     });
 
+    if(@Model.EntmtApplicationID > 0 && @Model.UserRollTemplate > 1) {
+        loadComments();
+    }
+
     function frmSubmit(isdraft) {
-
         $("#IsDraft").val(isdraft);
-        $("#UploadRequiredDocids").val(requiredDocList);
+        if (validateEntmtApplication(isdraft)) {
+            $("#frmEntmtApplication").submit();
+        }
+    }
 
-        AdditionalChecked();
+    function validateEntmtApplication(isdraft) {
+        $("#UploadRequiredDocids").val(requiredDocList);
 
         RequiredDocument();
 
-            if (!$("#frmEntmtApplication").valid()) {
-                return false;
-            }else if ($('#EntmtCodeids').val() == "") {
-                alert("Please select Entmt Code");
-                return false;
-            }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
-                alert("Please select Mykad/Passport No");
-                return false;
-            } else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) {
-                alert("Please Upload all Required Document");
-                return false;
+        if (!$("#frmEntmtApplication").valid()) {
+            return false;
+        }else if ($('#EntmtCodeids').val() == "") {
+            alert("Sila pilih Kod Hiburan");
+            return false;
+        }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
+            alert("Sila pilih nama atau nombor myKad");
+            return false;
+        } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+            alert("Sila masukkan semua dokumen wajib");
+            return false;
+        }
+        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
+            alert("Sila semak semua dokumen wajib");
+            return false;
+        }
+        else {
+            var individuals = $("#individualList").select2('data');
+            if (individuals) {
+                var newIndividuals = [];
+                for(var i =0; i< individuals.length; i++) {
+                    var ind = individuals[i];
+                    if(ind.isNew) {
+                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                    }
+                }
+                if(newIndividuals.length >0) {
+                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                }
             }
-            
-            else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
-                alert("Please select all checkbox for Required Document");
-                return false;
-            
-            }else {
-                $("#frmEntmtApplication").submit();
-            }
+        }
+        return true;
     }
 
     function changeEntmtcode() {
-            $('#EntmtCodeids').val($('#entmtCodeList').val());
-            bindAdditionalTable();
+        $('#EntmtCodeids').val($('#entmtCodeList').val());
+        bindAdditionalTable();
+        checkButtonState();
+    }
+
+    function changeEntmtobject() {
+        $('#EntmtObjectids').val($('#entmtObjectList').val());
+        bindAdditionalTable();
+        checkButtonState();
     }
 
     function changeIndindividual() {
-            $('#Individualids').val($('#individualList').val());
+        var individuals = $("#individualList").select2('data');
+        var newIndividuals = [];
+        for (var i = 0; i < individuals.length; i++) {
+            var ind = individuals[i];
+            if (!ind.isNew) {
+                newIndividuals.push(ind.id);
+            }
+        }
+        $('#Individualids').val(newIndividuals.join(','));
+        //alert($('#Individualids').val());
     }
 
     function back() {
@@ -455,94 +721,15 @@
 
     function businessTypeChange() {
         if ($("#BusinessTypeID").val() > 0) {
-             bindTable();
+            bindTable();
         }
+        checkButtonState();
     }
 
     function bindDownload(attechmentID) {
         if (attechmentID > 0) {
             window.location.href = "@Url.Action("Download", "EntmtApplication")" + "?attechmentID=" + attechmentID;
         }
-    }
-
-    function bindSearchEntmtCode() {
-
-        var param = {};
-        param["EntmtCodeids"] = $("#EntmtCodeids").val();
-        return param;
-    }
-
-    function bindEntmtCodeTable() {
-
-            if ($("#EntmtCodeids").val() == "") {
-                return false;
-            }
-
-            $('#entmtCodeModal').modal('show');
-
-            if ($.fn.DataTable.isDataTable("#tblEntmtCode")) {
-                $('#tblEntmtCode').dataTable().fnDestroy();
-            }
-
-            table = $("#tblEntmtCode").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("EntmtCode", "EntmtApplication")',
-                    type: "POST",
-                    data: bindSearchEntmtCode()
-                },
-                "columns": [
-                    { "title": "Code Number", "data": "CodeNumber", "orderable": false },
-                    { "title": "Code Description", "data": "CodeDesc", "orderable": false }
-                ]
-            });
-    }
-
-    function bindSearchMykad() {
-
-        var param = {};
-        param["Individualids"] = $("#Individualids").val();
-        return param;
-    }
-
-    function bindMykadTable() {
-
-            if ($("#Individualids").val() == "") {
-                return false;
-            }
-
-            $('#mykadCodeModal').modal('show');
-
-            if ($.fn.DataTable.isDataTable("#tblMykad")) {
-                $('#tblMykad').dataTable().fnDestroy();
-            }
-
-            table = $("#tblMykad").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("Mykad", "EntmtApplication")',
-                    type: "POST",
-                    data: bindSearchMykad()
-                },
-                "columns": [
-                    { "title": "Full Name", "data": "FullName", "orderable": false },
-                    { "title": "Mykad No", "data": "MykadNo", "orderable": false }
-                ]
-            });
     }
 
     function bindSearch() {
@@ -560,89 +747,90 @@
 
     function bindTable() {
 
-            $('#RequiredDocument').show();
-            if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
-                $('#tblBusinessType').dataTable().fnDestroy();
-            }
+        $('#RequiredDocument').show();
+        if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+            $('#tblBusinessType').dataTable().fnDestroy();
+        }
 
-            table = $("#tblBusinessType").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("RequiredDocument", "EntmtApplication")',
-                    type: "POST",
-                    data: bindSearch()
+        table = $("#tblBusinessType").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": false,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("RequiredDocument", "EntmtApplication")',
+                type: "POST",
+                data: bindSearch()
+            },
+            "columns": [
+                {
+                    "title": "Disertakan?",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate > 1) {
+                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                        }
+                        return appendstring
+                    },
+                    width: "7%",
+                    "orderable": false,
+                    "visible": visibleGridColume,
                 },
-                "columns": [
-                    {
-                        "title": "Action",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridColume,
+                { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
+                {
+                    "title": "Muat Naik",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+                        if (userRollTemplate == 1) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        }
+                        else if (userRollTemplate > 2) {
+                            appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                        }
+                        return appendstring
                     },
-                    { "title": "Required Document", "data": "RequiredDocDesc", "orderable": false },
-                    {
-                        "title": "Action",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridUploadColume,
-                    },
-                    {
-                        "title": "File Name",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
+                    width: "7%",
+                    "orderable": false,
+                    "visible": visibleGridUploadColume,
+                },
+                {
+                    "title": "Nama Fail",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
 
-                            if (visibleGridUploadColume) {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
-                                }
+                        if (visibleGridUploadColume) {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
 
                             } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["EntmtApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
                             }
-                            return appendstring
-                        },
-                        "orderable": false,
-                    }
-                ]
+
+                        } else {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["EntmtApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                            } else {
+                                appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                            }
+                        }
+                        return appendstring
+                    },
+                    "orderable": false,
+                }
+            ]
         });
     }
 
-   
-   
+
+
+
 
     function RequiredDocument() {
 
@@ -656,171 +844,158 @@
     }
 
     function checkButtonState() {
-        var isAddtional = false;
-        if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
-            isAddtional = true;
-        }
 
         var isDocument = false;
         if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
             isDocument = true;
         }
 
-        if (isAddtional && isDocument) {
+        if (isDocument) {
             $('.btSubmit').show();
         } else {
             $('.btSubmit').hide();
         }
     }
 
-    
+
 
     function RequiredDocumentModel(Requiredid) {
-            $("#reqDocid").val(Requiredid);
-            $("#addDocid").val("0");
-            $('#isReqDoc').val("1");
-            $('#uploadDocumentModal').modal('show');
-        }
-
-   
-
-        var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
-        var _validFileExtensions = [];
-        _validFileExtensions = strValidateFileFormate.split(",");
-
-        function UploadDocument(){
-
-            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
-
-                var data = new FormData();
-                var files = $("#DocumentFile").get(0).files;
-
-                if (files.length > 0) {
-                    data.append("DocumentFile", files[0]);
-                }
-
-                data.append("EntmtApplicationID", @Model.EntmtApplicationID);
-                data.append("reqDocid", $("#reqDocid").val());
-                data.append("addDocid", $("#addDocid").val());
-                data.append("isReqDoc", $("#isReqDoc").val());
-
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("UploadDocument", "EntmtApplication")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#DocumentFile").val("");
-                            if (result.status == 1) {
-                                successMessage(result.message);
-
-                                if ($("#isReqDoc").val() > 0) {
-                                    bindTable();
-                                } 
-                            }
-                            else {
-                                errorMessage(result.message);
-                            }
-                        }
-                        $("#uploadDocumentModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
-                    }
-                });
-
-        } else {
-                alert("Please Select Valid File");
-            }
+        $("#reqDocid").val(Requiredid);
+        $('#isReqDoc').val("1");
+        $('#uploadDocumentModal').modal('show');
     }
 
-     function UploadAttechment(){
 
-            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
 
-                var data = new FormData();
-                var files = $("#DocumentFile").get(0).files;
+    var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
+    var _validFileExtensions = [];
+    _validFileExtensions = strValidateFileFormate.split(",");
 
-                if (files.length > 0) {
-                    data.append("DocumentFile", files[0]);
-                }
+    function UploadDocument(){
 
-                data.append("reqDocid", $("#reqDocid").val());
-                data.append("addDocid", $("#addDocid").val());
-                data.append("isReqDoc", $("#isReqDoc").val());
+        if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
 
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("UploadAttechment", "EntmtApplication")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#DocumentFile").val("");
-                            if (result.status == 1) {
-                                successMessage("Document Upload Successfully");
+            var data = new FormData();
+            var files = $("#DocumentFile").get(0).files;
 
-                                console.log(result.result);
-                                if ($("#isReqDoc").val() > 0) {
-                                    var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
-                                    $('.lablereqdocument').each(function () {
-                                        if ($(this).attr('id') == lblreqAttachment) {
-                                            $("#" + lblreqAttachment).html(result.result.AttachmentName);
-                                            RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
-                                        }
-                                    });
-                                } else {
-                                    var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
-                                    $('.lableadddocument').each(function () {
-                                        if ($(this).attr('id') == lbladdAttachment) {
-                                            $("#" + lbladdAttachment).html(result.result.AttachmentName);
-                                            AdditionalDocumentDublicateCheck(result.result.AdditionalDocID, result.result.AttachmentID)
-                                        }
-                                    });
-                                }
-                            }
-                            else {
-                                errorMessage(result.message);
+            if (files.length > 0) {
+                data.append("DocumentFile", files[0]);
+            }
+
+            data.append("EntmtApplicationID", @Model.EntmtApplicationID);
+            data.append("reqDocid", $("#reqDocid").val());
+            data.append("isReqDoc", $("#isReqDoc").val());
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("UploadDocument", "EntmtApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#DocumentFile").val("");
+                        if (result.status == 1) {
+                            successMessage(result.message);
+
+                            if ($("#isReqDoc").val() > 0) {
+                                bindTable();
+                            } else {
+                                bindAdditionalTable();
                             }
                         }
-                        $("#uploadDocumentModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
+                        else {
+                            errorMessage(result.message);
+                        }
                     }
-                });
+                    $("#uploadDocumentModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
 
-            } else {
-                alert("Please Select Valid File");
+        } else {
+            alert("Please Select Valid File");
+        }
+    }
+
+    function UploadAttechment(){
+
+        if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+
+            var data = new FormData();
+            var files = $("#DocumentFile").get(0).files;
+
+            if (files.length > 0) {
+                data.append("DocumentFile", files[0]);
             }
+
+            data.append("reqDocid", $("#reqDocid").val());
+            data.append("isReqDoc", $("#isReqDoc").val());
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("UploadAttechment", "EntmtApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#DocumentFile").val("");
+                        if (result.status == 1) {
+                            successMessage("Document Upload Successfully");
+
+                            console.log(result.result);
+                            if ($("#isReqDoc").val() > 0) {
+                                var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
+                                $('.lablereqdocument').each(function () {
+                                    if ($(this).attr('id') == lblreqAttachment) {
+                                        $("#" + lblreqAttachment).html(result.result.AttachmentName);
+                                        RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            errorMessage(result.message);
+                        }
+                    }
+                    $("#uploadDocumentModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
+
+        } else {
+            alert("Please Select Valid File");
+        }
     }
 
     function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
         var itemfound = 0;
         var itemFoundbool = false;
 
-            for (var i = 0; i < requiredDocList.length; i++) {
-                var doc = requiredDocList[i].split(',');
-                var document = doc[0].split(':');
-                if (document[0] == RequiredDocID ) {
-                    itemfound = i;
-                    itemFoundbool = true;
-                    i = requiredDocList.length+1;
-                }
+        for (var i = 0; i < requiredDocList.length; i++) {
+            var doc = requiredDocList[i].split(',');
+            var document = doc[0].split(':');
+            if (document[0] == RequiredDocID ) {
+                itemfound = i;
+                itemFoundbool = true;
+                i = requiredDocList.length+1;
             }
-
-            if (itemFoundbool) {
-                requiredDocList.splice(itemfound, 1);
-            }
-
-            var requiredDocument = RequiredDocID + ":" + AttachmentID;
-            requiredDocList.push(requiredDocument);
         }
+
+        if (itemFoundbool) {
+            requiredDocList.splice(itemfound, 1);
+        }
+
+        var requiredDocument = RequiredDocID + ":" + AttachmentID;
+        requiredDocList.push(requiredDocument);
+    }
 
     function AddRules()
     {
@@ -834,25 +1009,25 @@
         });
     }
 
-        function Approvedreject(name) {
-            if (name == "approved") {
-                $("#lblapprovedreject").html("Approve");
-                $("#txtComment").rules("remove", "required");
-            }
-            else {
-                AddRules();
-                $("#lblapprovedreject").html("Reject");
-                $("#txtComment").rules("add", "required");
-            }
-            $("#lblheaderTitle").html("Add Comment");
-            $('#approvedrejectModal').modal('show');
+    function Approvedreject(name) {
+        if (name == "approved") {
+            $("#lblapprovedreject").html("Approve");
+            $("#txtComment").rules("remove", "required");
         }
+        else {
+            AddRules();
+            $("#lblapprovedreject").html("Reject");
+            $("#txtComment").rules("add", "required");
+        }
+        $("#lblheaderTitle").html("Add Comment");
+        $('#approvedrejectModal').modal('show');
+    }
 
-        function SaveComment() {
+    function SaveComment() {
 
-            if (!$("#frmsaveComment").valid()) {
-                return false;
-            } else {
+        if (!$("#frmsaveComment").valid()) {
+            return false;
+        } else {
 
             var data = new FormData();
             data.append("EntmtApplicationID", @Model.EntmtApplicationID);
@@ -864,32 +1039,96 @@
                 data.append("approveRejectType", "Reject");
             }
 
-                 var ajaxRequest = $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("SaveComment", "EntmtApplication")',
-                        contentType: false,
-                        processData: false,
-                        data: data,
-                        async: false,
-                        success: function (result) {
-                            if (result != null) {
-                                $("#txtComment").val("");
-                                if (result.status == 1) {
-                                    successMessage(result.message);
-                                    back();
-                                }
-                                else {
-                                    errorMessage(result.message);
-                                }
-                            }
-                            $("#approvedrejectModal").modal('hide');
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            errorMessage(xhr.responseText);
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveComment", "EntmtApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#txtComment").val("");
+                        if (result.status == 1) {
+                            successMessage(result.message);
+                            back();
                         }
-                 });
+                        else {
+                            errorMessage(result.message);
+                        }
+                    }
+                    $("#approvedrejectModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
 
+        }
+    }
+
+    $(document).ready(function () {
+        hideLetterDropDown();
+        $('#btnLetter').click(function () {
+            $('.modal-body iframe').attr('src', "../EntmtApplication/GenerateLetter?AppId=1");
+            $('#myModal').modal('show');
+        });
+    });
+
+    function hideLetterDropDown()
+    {
+        if($('#btnLetter') != null)
+        {
+            document.getElementById('btnLetter').style.display=''
+            $('#btnLetter').css('visibility', 'visible');
+            if($('#Mode').val() != 1 || $('#AppStatusID').val() == 10 || $('#AppStatusID').val() == 11 || $('#AppStatusID').val() == 12)
+            {
+                document.getElementById('btnLetter').style.display='none';
             }
         }
-    </script>
+    }
+
+    function loadComments() {
+        $('#Comments').show();
+        if ($.fn.DataTable.isDataTable("#tblComments")) {
+            $('#tblComments').dataTable().fnDestroy();
+        }
+
+        var data = { "EntmtApplicationID": @Model.EntmtApplicationID };
+
+        table = $("#tblComments").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "bPaginate": true,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("EntmtComments", "EntmtApplication")',
+                type: "POST",
+                data: data
+            },
+            "columns": [
+                {
+                    "targets": 0,
+                    "searchable": false,
+                    "orderable": false,
+                    "title": "No.",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    "title": "Comment",
+                    "orderable": false,
+                    "data": "Comment"
+                },
+                { "title": "Posted On", "data": "CommentDate", "width": "150px", render: renderDateTime },
+            ]
+        });
+    }
+</script>
 }

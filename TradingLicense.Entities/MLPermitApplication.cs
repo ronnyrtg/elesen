@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class AdPermitApplication
+    public class MLPermitApplication
     {
         [Key]
-        public int AdPermitApplicationID { get; set; }
+        public int MLPermitApplicationID { get; set; }
+        public int Mode { get; set; }
         public int LenderApplicationID { get; set; }
         public int Brochure { get; set; }
         public int Newspaper { get; set; }

@@ -28,6 +28,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnSubmit = "Submitted";
         public const string OnRouteSubmit = "SubmittedToRoute";
         public const string OnRejected = "Rejected";
+        public const string OnKIV = "KIV";
 
         #region PremiseApplication
 
@@ -35,6 +36,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: PremiseApplication
         /// </summary>
         /// <returns></returns>
+        [AuthorizationPrivilegeFilter(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel)]
         public ActionResult PremiseApplication()
         {
             
@@ -68,44 +70,16 @@ namespace TradingLicense.Web.Controllers
                                 query = query.Where(q => q.UsersID == ProjectSession.UserID);
                             }
                             break;
-                        case (int)RollTemplate.DeskOfficer:
-                            {
-                                var allowedStatus = new List<int> { 1, 6, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.Clerk:
-                            {
-                                var allowedStatus = new List<int> { 2, 3, 4, 6, 9, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.Supervisor:
-                            {
-                                var allowedStatus = new List<int> { 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
                         case (int)RollTemplate.RouteUnit:
                             if (string.IsNullOrEmpty(premiseApplicationId))
                             {
                                 var departmentID = ProjectSession.User?.DepartmentID;
                                 if (departmentID.HasValue)
                                 {
-                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value).Select(d => d.PremiseApplicationID).ToList();
+                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value && string.IsNullOrEmpty(pa.SubmittedBy) && pa.IsActive)
+                                                                .Select(d => d.PremiseApplicationID).Distinct().ToList();
                                     query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
                                 }
-                            }
-                            break;
-                        case (int)RollTemplate.Director:
-                            {
-                                var allowedStatus = new List<int> { 6, 7, 10, 11, 12, 13, 14 };
-                                query = query.Where(q => allowedStatus.Contains(q.AppStatusID));
-                            }
-                            break;
-                        case (int)RollTemplate.CEO:
-                            {
-                                query = query.Where(q => q.AppStatusID == 8);
                             }
                             break;
                     }
@@ -271,6 +245,45 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
+        /// Get Department support/non-supported Comments for the premise applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="premiseApplicationID">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PremiseRouteComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? premiseApplicationID)
+        {
+            List<PADepSuppModel> premiseRouteComments = new List<PADepSuppModel>();
+            int totalRecord = 0;
+            if (premiseApplicationID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<PADepSupp> query = ctx.PADepSupps
+                                                        .Include("Department")
+                                                        .Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = sortedColumns.GetOrderByString();
+
+                    var result = Mapper.Map<List<PADepSuppModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "SubmittedDate desc" : orderByString).ToList();
+
+                    totalRecord = result.Count;
+
+                    #endregion Sorting
+
+                    // Paging
+                    result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    premiseRouteComments = result;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, premiseRouteComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// Download
         /// </summary>
         /// <param name="attechmentId"></param>
@@ -341,7 +354,7 @@ namespace TradingLicense.Web.Controllers
                         .ToList();
 
                     premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
-
+                    premiseApplicationModel.HasPADepSupp = ctx.PADepSupps.Any(pa => pa.PremiseApplicationID == id.Value);
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
                     premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
@@ -364,6 +377,15 @@ namespace TradingLicense.Web.Controllers
                     {
                         premiseApplicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.AdditionalDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
                     }
+
+                    if (premiseApplication.AppStatusID == (int)PAStausenum.Pendingpayment)
+                    {
+                        var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == premiseApplicationModel.ReferenceNo).FirstOrDefault();
+                        if (duePayment != null)
+                        {
+                            premiseApplicationModel.AmountDue = duePayment.AmountDue;
+                        }
+                    }
                 }
             }
 
@@ -372,7 +394,7 @@ namespace TradingLicense.Web.Controllers
                 premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
                 premiseApplicationModel.UsersID = ProjectSession.User.UsersID;
             }
-
+            
             premiseApplicationModel.IsDraft = false;
             return View(premiseApplicationModel);
         }
@@ -431,12 +453,15 @@ namespace TradingLicense.Web.Controllers
                 var departmentID = ProjectSession.User?.DepartmentID;
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID).FirstOrDefault();
-                    if (paDepSupp != null && !string.IsNullOrEmpty(paDepSupp.SubmittedBy))
+                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID && pa.IsActive).FirstOrDefault();
+                    if (paDepSupp != null)
                     {
                         paDepSupp.IsSupported = supported == 1;
+                        paDepSupp.Comment = comment;
+                        paDepSupp.UserId = ProjectSession.UserID;
                         paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
                         paDepSupp.SubmittedDate = DateTime.Now;
+                        paDepSupp.IsActive = false;
                         ctx.PADepSupps.AddOrUpdate(paDepSupp);
                         ctx.SaveChanges();
 
@@ -458,6 +483,7 @@ namespace TradingLicense.Web.Controllers
             return RedirectToAction("PremiseApplication", "PremiseApplication");
         }
 
+        #region Generate License
         public ActionResult GeneratLicense(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -717,6 +743,7 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }
+        #endregion
 
         /// <summary>
         /// Save PremiseApplication Information
@@ -771,8 +798,41 @@ namespace TradingLicense.Web.Controllers
                 if(pa != null)
                 {
                     PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
-                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.UserName, totalDue);
-                    UpdateStatusId(paModel, ctx, 13, pa); // Payment due
+                    PaymentsService.AddPaymentDue(paModel, ctx, ProjectSession.User?.FullName ?? ProjectSession.UserName, totalDue);
+                    UpdateStatusId(paModel, ctx, (int)PAStausenum.Pendingpayment, pa);
+                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to find matching premise application ID";
+                }
+            }
+
+            return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
+        }
+
+        [HttpPost]
+        public ActionResult SaveRecievedPayment(int premiseApplicationID, int individualID)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var pa = ctx.PremiseApplications.Where(p => p.PremiseApplicationID == premiseApplicationID).FirstOrDefault();
+                if (pa != null)
+                {
+                    PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
+                    var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == pa.ReferenceNo).FirstOrDefault();
+                    if (duePayment != null)
+                    {
+                        paModel.AmountDue = duePayment.AmountDue;
+                    }
+                    PaymentsService.AddPaymentRecieved(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
+                    if (pa.Mode == 0)
+                    {
+                        pa.LicenseStatus = "Lulus Bersyarat";
+                    }
+                    pa.AppStatusID = (int)PAStausenum.LicenseGenerated;
+                    ctx.PremiseApplications.AddOrUpdate(pa);
+                    ctx.SaveChanges();
                     TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
                 }
                 else
@@ -788,6 +848,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult GetPaymentDue(int premiseApplicationID)
         {
             bool success = false;
+            bool allowEdit = false;
             var totalDue = 0.0f;
             using (var ctx = new LicenseApplicationContext())
             {
@@ -795,11 +856,20 @@ namespace TradingLicense.Web.Controllers
                 if (pa != null)
                 {
                     PremiseApplicationModel paModel = Mapper.Map<PremiseApplicationModel>(pa);
-                    totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                    var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == pa.ReferenceNo).FirstOrDefault();
+                    if (duePayment != null)
+                    {
+                        totalDue = duePayment.AmountDue;
+                    }
+                    else
+                    {
+                        totalDue = PaymentsService.CalculatePaymentDue(paModel, ctx);
+                        allowEdit = true;
+                    }
                     success = true;
                 }
             }
-            return Json(new { success = success, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = success, allowEdit = allowEdit, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
         }
 
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
@@ -811,7 +881,11 @@ namespace TradingLicense.Web.Controllers
             {
                 userroleTemplate = GetUserRoleTemplate(premiseApplicationModel, premiseApplication, ctx);
             }
-
+            var finalStatus = GetStatusOnSubmit(premiseApplicationModel, ctx, premiseApplication, userroleTemplate);
+            if (finalStatus != 0)
+            {
+                premiseApplication.AppStatusID = finalStatus;
+            }
             premiseApplication.DateSubmitted = DateTime.Now;
 
             ctx.PremiseApplications.AddOrUpdate(premiseApplication);
@@ -1012,75 +1086,101 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
             premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
-            return SetStatusOnSubmit(premiseApplicationModel, ctx, premiseApplication, roleTemplate);
+            return true;
         }
 
-        private bool SetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
+        private int GetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
         {
-            if (premiseApplication.Mode == 1 && !premiseApplicationModel.IsDraft)
+            PAStausenum finalStatus = 0;
+            if (!premiseApplicationModel.IsDraft)
             {
-                UpdateStatusId(premiseApplicationModel, ctx, 12, premiseApplication); // Letter of notification (with conditions)
-            }
-            else if (premiseApplication.Mode > 1 && !premiseApplicationModel.IsDraft)
-            {
-                int finalStatus = 0;
                 switch (roleTemplate)
                 {
                     case (int)RollTemplate.DeskOfficer:
-                        finalStatus = 2; // submitted clerk;
+                        finalStatus = PAStausenum.submittedtoclerk;
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
                         break;
                     case (int)RollTemplate.Clerk:
-                        if (premiseApplicationModel.SubmitType == OnRouteSubmit)
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
                         {
-                            if (!RouteApplication(premiseApplicationModel, ctx))
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
                             {
-                                return false;
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
                             }
-                            finalStatus = 5; // Route Unit
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnRouteSubmit)
+                        {
+                            RouteApplication(premiseApplicationModel, ctx);
+                            finalStatus = PAStausenum.unitroute;
                         }
                         else if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
-                            finalStatus = 7; // submitted clerk;
+                            finalStatus = PAStausenum.directorcheck;
                         }
                         break;
                     case (int)RollTemplate.Director:
-                        if (premiseApplicationModel.SubmitType == OnSubmit)
+                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (premiseApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (premiseApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
                             switch (premiseApplicationModel.Mode)
                             {
                                 case 2:
-                                    finalStatus = 10; // Letter of notificaiton (approved)
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
                                     break;
                                 case 3:
-                                    finalStatus = 8; // CEO
+                                    finalStatus = PAStausenum.CEOcheck;
                                     break;
                                 case 4:
-                                    finalStatus = 6; // Meeting
+                                    finalStatus = PAStausenum.meeting;
                                     break;
                             }
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
                         break;
                     case (int)RollTemplate.CEO:
                         if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
-                            finalStatus = 10;
+                            finalStatus = PAStausenum.LetterofnotificationApproved;
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = 11; // Letter of notificaiton (Rejected)
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
                         break;
                 }
-                if (finalStatus != 0)
-                {
-                    UpdateStatusId(premiseApplicationModel, ctx, finalStatus, premiseApplication);
-                }
             }
-            return true;
+            else
+            {
+                finalStatus = PAStausenum.draftcreated;
+            }
+            return (int)finalStatus;
         }
 
         /// <summary>
@@ -1115,12 +1215,23 @@ namespace TradingLicense.Web.Controllers
             {
                 var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
                 var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-                
+
+                var oldPADepSupps = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID && pa.IsActive).ToList();
+                if (oldPADepSupps != null && oldPADepSupps.Count > 0)
+                {
+                    foreach (var oldDepSupp in oldPADepSupps)
+                    {
+                        oldDepSupp.IsActive = false;
+                        ctx.PADepSupps.AddOrUpdate(oldDepSupp);
+                    }
+                }
+
                 foreach (var depId in departmentIds)
                 {
                     var paDepSupp = new PADepSupp();
                     paDepSupp.DepartmentID = depId;
                     paDepSupp.PremiseApplicationID = premiseApplicationModel.PremiseApplicationID;
+                    paDepSupp.IsActive = true;
                     ctx.PADepSupps.Add(paDepSupp);
                 }
 
@@ -1145,50 +1256,10 @@ namespace TradingLicense.Web.Controllers
                 userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
             }
 
-            if (!premiseApplicationModel.IsDraft)
-            {
-                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.submittedtoclerk;
-                }
-            }
-            else
-            {
-                if (userroleTemplate == (int)RollTemplate.Public || userroleTemplate == (int)RollTemplate.DeskOfficer)
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.draftcreated;
-                }
-            }
-
-            if (userroleTemplate == (int)RollTemplate.Clerk)
-            {
-                if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
-                {
-                    var islinkDept = false;
-                    string[] ids = premiseApplicationModel.BusinessCodeids.Split(',');
-                    foreach (var id in ids)
-                    {
-                        int businessCodeId = Convert.ToInt32(id);
-                        var businesslinkDepartment = ctx.BCLinkDeps.FirstOrDefault(p => p.BusinessCodeID == businessCodeId);
-                        if (businesslinkDepartment != null && businesslinkDepartment.BussCodLinkDepID > 0)
-                        {
-                            islinkDept = true;
-                            break;
-                        }
-                    }
-
-                    premiseApplication.AppStatusID = islinkDept
-                        ? (int)PAStausenum.unitroute
-                        : (int)PAStausenum.supervisorcheck;
-                }
-                else
-                {
-                    premiseApplication.AppStatusID = (int)PAStausenum.supervisorcheck;
-                }
-            }
-
             return userroleTemplate;
         }
+
+        #region Generate Letter
 
         public ActionResult GenerateLetter(Int32? appId)
         {
@@ -1616,7 +1687,7 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
-
+        #endregion
 
         private FileStreamResult GeneratePdf(Int32? appId)
         {
@@ -1688,7 +1759,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get Individuale Code
+        /// Get Individual Code
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>

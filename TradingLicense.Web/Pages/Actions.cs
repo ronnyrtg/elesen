@@ -21,6 +21,10 @@
         public const string Individual = "Individual";
         #endregion
 
+        #region PremiseApplication
+        public const string PremiseApplication = "PremiseApplication";
+        #endregion
+
         #region Error
 
         public const string AccessDenied = "AccessDenied";

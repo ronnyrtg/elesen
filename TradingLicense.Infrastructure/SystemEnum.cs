@@ -81,6 +81,12 @@ namespace TradingLicense.Infrastructure
             /// </summary>
             [Description("Company")]
             Company = 12,
+
+            /// <summary>
+            /// Company
+            /// </summary>
+            [Description("Company")]
+            PremiseApplication = 13,
         }
 
 

@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class EntmtApplication
+    public class MLPremiseApplication
     {
         [Key]
-        public int EntmtApplicationID { get; set; }
+        public int MLPremiseApplicationID { get; set; }
         public int Mode { get; set; }
         public int BusinessTypeID { get; set; }
         public int CompanyID { get; set; }
@@ -29,45 +29,36 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string StateA { get; set; }
-        public int PremiseTypeID { get; set; }
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
-        public string OtherPremiseType { get; set; }
-        [StringLength(50)]
-        [Column(TypeName = "VARCHAR2")]
-        public string WhichFloor { get; set; }
-        [StringLength(10)]
-        [Column(TypeName = "VARCHAR2")]
-        public string PremiseLocation { get; set; }
-        public float PremiseArea { get; set; }
-        [StringLength(10)]
-        [Column(TypeName = "VARCHAR2")]
-        public string PremiseOwnership { get; set; }
-        public int EntmtGroupID { get; set; }
-        public int EntmtCodeID { get; set; }
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
-        public string StartStopTime { get; set; }
-        public int PeriodQuantity { get; set; }
-        public int Period { get; set; }
-        public int EntmtObjectID { get; set; }
+        //For Business Types 2 and above
+        public float? AuthorizedCapital { get; set; }
+        public float? PaidUpCapital { get; set; }
+        public float? IssuedCapital { get; set; }
+        public float? CashCapital { get; set; }
+        public float? OtherCapital { get; set; }
+        public float? BankSource { get; set; }
+        public float? SavingSource { get; set; }
+        public float? LoanSource { get; set; }
+        public float? OtherSource { get; set; }
         public int AppStatusID { get; set; }
-        
 
         //The user who creates this application
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
+
+        //The staff processing this application
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
         public DateTime? DatePaid { get; set; }
-        public DateTime? ExpireDate { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ReferenceNo { get; set; }
+        public DateTime? LExpireDate { get; set; }
 
-        public virtual BusinessType BusinessType { get; set; }
-        public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }
+        public virtual BusinessType BusinessType { get; set; }
         public virtual Company Company { get; set; }
         public virtual Users Users { get; set; }
     }

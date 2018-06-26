@@ -3,10 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
-    public class AdPermitApplicationModel
+    public class MLPermitApplicationModel
     {
-        public int AdPermitApplicationID { get; set; }
-        public int BusinessTypeID { get; set; }
+        public int MLPermitApplicationID { get; set; }
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
         public int LenderApplicationID { get; set; }

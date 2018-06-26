@@ -51,7 +51,6 @@
                 <div class="form-group">
                     <div class="control-label">No. Pendaftaran Perniagaan/Syarikat<span class="cfont">*</span></div>
                     @Html.TextBoxFor(m => m.RegistrationNo, new { @class = "form-control", @maxlength = "50" })
-                    @Html.ValidationMessageFor(m => m.RegistrationNo)
                 </div>
             </div>
         </div>
@@ -76,6 +75,80 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
+                    <div class="control-label">Modal Dibenarkan</div>
+                    @Html.TextBoxFor(m => m.AuthorisedCapital, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Modal Terbitan</div>
+                    @Html.TextBoxFor(m => m.IssuedCapital, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Modal Berbayar</div>
+                    @Html.TextBoxFor(m => m.PaidUpCapital, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <hr />
+        <h3>Sumber kumpulan wang</h3>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Bank/Institusi kewangan</div>
+                    @Html.TextBoxFor(m => m.BankSource, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Simpanan</div>
+                    @Html.TextBoxFor(m => m.DepositSource, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Pinjaman</div>
+                    @Html.TextBoxFor(m => m.LoanSource, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">(daripada siapa)</div>
+                    @Html.TextBoxFor(m => m.LoanSourceName, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">Lain-lain</div>
+                    @Html.TextBoxFor(m => m.OtherSource, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="control-label">(sila nyatakan)</div>
+                    @Html.TextBoxFor(m => m.OtherSourceName, new { @class = "form-control", @maxlength = "10" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
                     <div class="checkbox">
                         <label>
                             @Html.CheckBoxFor(model => model.Active)
@@ -94,7 +167,8 @@
                 </div>
             </div>
         </div>
-            }
+
+        }
 
         </div>
 </div>

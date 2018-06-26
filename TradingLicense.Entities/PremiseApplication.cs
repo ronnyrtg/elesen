@@ -61,9 +61,9 @@ namespace TradingLicense.Entities
         public string LicenseStatus { get; set; }
         public DateTime? ExpireDate { get; set; }
 
+        public virtual BusinessType BusinessType { get; set; }
         public virtual PremiseType PremiseType { get; set; }
         public virtual AppStatus AppStatus { get; set; }
-        public virtual BusinessType BusinessType { get; set; }
         public virtual Users Users { get; set; }
         public virtual Company Company { get; set; }
         public virtual Sector Sector { get; set; }

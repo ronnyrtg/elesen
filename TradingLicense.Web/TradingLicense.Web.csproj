@@ -190,6 +190,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LiquorApplicationController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
+    <Compile Include="Controllers\MoneyLenderApplicationController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
@@ -541,6 +542,16 @@
     <Content Include="Views\Master\_Attachments.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CheckBoxListItem.cshtml" />
     <Content Include="Views\Master\_ViewAttachments.cshtml" />
+    <Content Include="Views\Master\Race.cshtml" />
+    <Content Include="Views\Master\ManageRace.cshtml" />
+    <Content Include="Views\MoneyLenderApplication\ManageMLPermitApplication.cshtml" />
+    <Content Include="Views\MoneyLenderApplication\MLPermitApplication.cshtml" />
+    <Content Include="Views\MoneyLenderApplication\ManageMLPremiseApplication.cshtml" />
+    <Content Include="Views\MoneyLenderApplication\MLPremiseApplication.cshtml" />
+    <Content Include="Views\LiquorApplication\ManageLiquorApplication.cshtml" />
+    <Content Include="Views\LiquorApplication\ManageLAReqDoc.cshtml" />
+    <Content Include="Views\LiquorApplication\LiquorApplication.cshtml" />
+    <Content Include="Views\LiquorApplication\LAReqDoc.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

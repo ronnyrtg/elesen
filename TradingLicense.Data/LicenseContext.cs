@@ -23,6 +23,7 @@ namespace TradingLicense.Data
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Road> Roads { get; set; }
+        public DbSet<Race> Races { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
@@ -74,6 +75,12 @@ namespace TradingLicense.Data
         public DbSet<BannerObject> BannerObjects { get; set; }
         public DbSet<BAReqDoc> BAReqDocs { get; set; }
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
+
+        //Money Lender Application
+        public DbSet<MLPremiseApplication> MLPremiseApplications { get; set; }
+        public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
+        public DbSet<MLLinkInd> MLLinkInds { get; set; }
+        public DbSet<MLLinkReqDoc> MLLinkReqDocs { get; set; }
 
         //Common fields for all applications
         public DbSet<BusinessType> BusinessTypes { get; set; }
