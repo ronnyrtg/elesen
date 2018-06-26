@@ -13,9 +13,6 @@
 
     List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
 
-    //List<StallReqObj> stallDoc = new List<StallReqObj>();
-    IQueryable stallDoc;
-
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var stallCode = ctx.StallCodes.ToList();
@@ -141,7 +138,7 @@
                     <tbody>
                         @foreach (var item in stallDocList) {
                         <tr>
-                            <td> <input name="chk_@item.SAReqDocID" value="0" onclick="CheckRequiredDocument()" type="checkbox" /></td>
+                            <td> <input name="chk_@item.SAReqDocID" value="0" onclick="checkRequiredDocument()" type="checkbox" /></td>
                             <td> @item.RequiredDoc.RequiredDocDesc </td>
                         </tr>
                         }
@@ -162,7 +159,13 @@
 </div>
 @section scripts{
     <script>
-    //Code to wire up your DatePicker
+        function checkRequiredDocument() {
+            //var val = $(this).val();
+            //var id = $(this).attr("name");
+            //alert("Checkbox: ", val, id);
+            console.log(this);
+        }
+
         $(function () {
             // This will make every element with the class "date-picker" into a DatePicker element
             $('.date-picker').datepicker({ dateFormat: 'dd/MM/yyyy' });
@@ -177,8 +180,6 @@
                 var link = '@Url.Action("StallApplication", "StallApplication")';
                 window.location.href = link;
             }
-
-
 
             function individualFormating(state) {
                 if (!state.isNew) {
