@@ -52,9 +52,7 @@ namespace TradingLicense.Model
        
         public string ReferenceNo { get; set; }
         public DateTime? LExpireDate { get; set; }
-        public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
-        public string SubmitType { get; set;  }
         public string UploadAdditionalDocIds { get; set; }
         public string newIndividualsList { get; set; }
         public string PremiseArea { get; set; }
