@@ -18,6 +18,7 @@ namespace TradingLicense.Model
         public string Addra4 { get; set; }
         public string PcodeA { get; set; }
         public string StateA { get; set; }
+
         //For Business Types 2 and above
         public float? AuthorizedCapital { get; set; }
         public float? PaidUpCapital { get; set; }
