@@ -4,23 +4,27 @@
     ViewBag.Title = "ManageBannerApplication";
 }
 @{
-    List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
+    List<TradingLicense.Entities.BAReqDoc>
+    bannerDocList = new List<TradingLicense.Entities.BAReqDoc>
+        ();
 
-    //Generate Banner Code list with multiple columns
-    List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
+        //Generate Banner Code list with multiple columns
+        List<TradingLicense.Model.BannerCodeModel>
+            bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>
+                ();
+                using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+                {
 
-        var bCodeList = ctx.BannerCodes
-        .Select(s => new SelectListItem
-        {
-            Value = s.BannerCodeID.ToString(),
-            Text = s.BCodeNumber + " - " + s.BannerCodeDesc.ToString()
-        }).OrderBy(s => s.Text).ToList();
-        ViewBag.bCodeList=new SelectList(bCodeList, "Value", "Text");
+                var bCodeList = ctx.BannerCodes
+                .Select(s => new SelectListItem
+                {
+                Value = s.BannerCodeID.ToString(),
+                Text = s.BCodeNumber + " - " + s.BannerCodeDesc.ToString()
+                }).OrderBy(s => s.Text).ToList();
+                ViewBag.bCodeList=new SelectList(bCodeList, "Value", "Text");
 
-        var bannerCode = ctx.BannerCodes.ToList();
-        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
+                var bannerCode = ctx.BannerCodes.ToList();
+                bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
         ViewBag.IndividualList = ctx.Individuals.ToList();
         ViewBag.CompList = ctx.Companies.ToList();
         ViewBag.Location = ctx.Locations.ToList();
@@ -228,8 +232,9 @@
                         <div class="form-group">
                             @if (!(@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
                             {
+                                <input type="button" class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter" name="btnSubmit" />
                                 <input type="button" name="btnSubmit" class="btn btn-info submitbtn" id="btnDraft" value="Draft" />
-                                    <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Simpan" />
+                                <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Simpan" />
                             }
                             <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                         </div>
@@ -238,6 +243,25 @@
                 }
             </div>
             </div>
+
+           <div id="myModal" class="modal fade" role="dialog">
+               <div class="modal-dialog modal-lg">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">License Details</h4>
+                       </div>
+                       <div class="modal-body">
+                           <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                       </div>
+                   </div>
+
+               </div>
+           </div>
             @section scripts{
                 <script>
                     var actionError = '@(TempData["ErrorMessage"])';
@@ -253,7 +277,7 @@
                         $('#ddlCompany').select2({ width: '100%' });
                         $('#BannerCode').select2({ width: '100%' });
                         $('#ddlLocation').select2({ width: '100%' });
-                        
+
 
                         $('#addProductItem').click(function () {
                             var isAllValid = validateModel();
@@ -453,6 +477,13 @@
                             }
                         });
 
+                    });
+                    $(document).ready(function () {
+                        $('#btnLetter').click(function () {
+                            var AppId = $('#PremiseApplicationID').val();
+                            $('.modal-body iframe').attr('src', "../PremiseApplication/GeneratLicense?AppId=" + AppId);
+                            $('#myModal').modal('show');
+                        });
                     });
                 </script>
             }
