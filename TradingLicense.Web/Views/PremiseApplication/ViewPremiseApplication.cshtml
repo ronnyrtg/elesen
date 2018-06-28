@@ -18,17 +18,17 @@
                     <div class="control-label">Jenis Kelulusan</div>
                     <div class="well">
                         @switch (Model.Mode)
-                            {
-                                case 1:
+                        {
+                            case 1:
                                 <label>Ekspres</label>
-                                    break;
-                                case 2:
+                                break;
+                            case 2:
                                 <label>Kelulusan Pengarah</label>
-                                    break;
-                                case 3:
+                                break;
+                            case 3:
                                 <label>Kelulusan KPE</label>
-                                    break;
-                                case 4:
+                                break;
+                            case 4:
                                 <label>Kelulusan Mesyuarat</label>
                                 break;
                         }
@@ -57,15 +57,15 @@
                 <div class="form-group">
                     <div class="control-label">Kod Perniagaan</div>
                     <div class="well">
-                       
-                            <label>@Model.BusinessCodeids</label>
-                            <br />
-                        
+
+                        <label>@Model.BusinessCodeids</label>
+                        <br />
+
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -179,11 +179,10 @@
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 <div class="form-group">
-                    
+
                     @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.unitroute)
                     {
                         <input type="button" class="btn btn-primary btSubmit" value="Submit Response" id="btnRouteUnitResponse" name="btnRouteUnitResponse" onclick="return Approvedreject()" />
-                        <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLetter" name="btnSubmit" />
                     }
                     <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                 </div>

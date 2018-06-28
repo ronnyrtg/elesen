@@ -1,4 +1,4 @@
-﻿using DataTables.Mvc;
+﻿ using DataTables.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;

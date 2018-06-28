@@ -18,6 +18,7 @@ namespace TradingLicense.Model
         public string Addra4 { get; set; }
         public string PcodeA { get; set; }
         public string StateA { get; set; }
+
         //For Business Types 2 and above
         public float? AuthorizedCapital { get; set; }
         public float? PaidUpCapital { get; set; }
@@ -35,9 +36,15 @@ namespace TradingLicense.Model
         public int UsersID { get; set; }
         public DateTime DateSubmitted { get; set; }
 
+        public string RequiredDocIds { get; set; }
         public string UploadRequiredDocids { get; set; }
         public int UserRollTemplate { get; set; }
         public bool IsDraft { get; set; }
+
+        public string newComment { get; set; }
+        public string Supported { get; set; }
+        public string SubmitType { get; set; }
+        public bool HasPADepSupp { get; set; }
 
         public string UpdatedBy { get; set; }
         public DateTime? DateApproved { get; set; }
@@ -46,7 +53,14 @@ namespace TradingLicense.Model
        
         public string ReferenceNo { get; set; }
         public DateTime? LExpireDate { get; set; }
+        public string AdditionalDocIds { get; set; }
+        public string UploadAdditionalDocIds { get; set; }
+        public string newIndividualsList { get; set; }
+        public string PremiseArea { get; set; }
+        public string PremiseOwnership { get; set; }
+        public string BusinessCodeIds { get; set; }
 
+        public List<Select2ListItem> selectedBusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
     }
 }
