@@ -758,7 +758,7 @@ namespace TradingLicense.Web.Controllers
                     var BannerApp = ctx.BannerApplications.Where(x => x.BannerApplicationID == appId).ToList();
                     if (BannerApp.Count == 0)
                     {
-                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Premise ApplicationID!');</script>");
+                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Banner ApplicationID!');</script>");
                     }
                     else
                     {
@@ -895,7 +895,19 @@ namespace TradingLicense.Web.Controllers
                                     
                                     if(i==mLen)
                                     {
-                                        graph.DrawString(strLocDesc.Substring(TLen-1, (strLocDesc.Length- TLen) + 1), nfont, XBrushes.Black, new XRect(44, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        Int32 sIndex = 0;
+                                        Int32 EIndex = 0;
+                                        sIndex = 0;
+                                        EIndex =strLocDesc.Length;
+                                        if (TLen >0)
+                                        {
+                                            sIndex = TLen - 1;
+                                        }
+                                        if(TLen > 0)
+                                        {
+                                            EIndex = (strLocDesc.Length - TLen) + 1;
+                                        }
+                                        graph.DrawString(strLocDesc.Substring(sIndex, EIndex), nfont, XBrushes.Black, new XRect(44, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         System.Drawing.Point pt9 = new System.Drawing.Point(44, lineheight + 13);
                                         System.Drawing.Point pt10 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight + 13);
                                         graph.DrawLine(lineRed1, pt9, pt10);
@@ -911,7 +923,14 @@ namespace TradingLicense.Web.Controllers
 
                                 }
                             }
-                            lineheight = lineheight + 25;
+                            
+                            if (strLocDesc != "")
+                            {
+                                lineheight = lineheight + 5;
+                            }
+                            else
+                            { lineheight = lineheight + 25; }
+                            
                             graph.DrawString("mulai dari:", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             System.Drawing.Point pt11 = new System.Drawing.Point(82, lineheight + 13);
                             System.Drawing.Point pt12 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight + 13);
@@ -929,12 +948,69 @@ namespace TradingLicense.Web.Controllers
                             {
                                 graph.DrawString(string.Format("{0:dd MMMM yyyy}", item.DateApproved.Value.AddYears(1)), nfont, XBrushes.Black, new XRect(77, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
-                            graph.DrawString("200", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            pt13 = new System.Drawing.Point(322, lineheight + 13);
-                            pt14 = new System.Drawing.Point(360, lineheight + 13);
-                            graph.DrawLine(lineRed1, pt13, pt14);
-                            graph.DrawString("tertakluk kepada syarat-syarat berikut:", nfont, XBrushes.Black, new XRect(361, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //graph.DrawString("200", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            //pt13 = new System.Drawing.Point(322, lineheight + 13);
+                            //pt14 = new System.Drawing.Point(360, lineheight + 13);
+                            //graph.DrawLine(lineRed1, pt13, pt14);
+                            graph.DrawString("tertakluk kepada syarat-syarat berikut:", nfont, XBrushes.Black, new XRect(335, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 25;
+                            string strComment = "";
+                            foreach (var item3 in ctx.BAComments.Where(x=> x.BannerApplicationID ==item.BannerApplicationID ) )
+                            {
+                                if(item3.Comment != null)
+                                {
+                                    strComment = strComment + item3.Comment + ",";
+                                }
+                            }
+                            if(strComment != "")
+                            {
+                                var mLen = (strComment.Length) / 115;
+                                Int32 TLen = 0;
+                                if (mLen.ToString().Contains("."))
+                                {
+                                    mLen = Convert.ToInt32(mLen.ToString().Split('.')[0]) + 1;
+                                }
+                                for (int i = 0; i <= mLen; i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        TLen = 0;
+                                    }
+                                    else
+                                    {
+                                        TLen = (i * 115) + 1;
+                                    }
+
+                                    if (i == mLen)
+                                    {
+                                        Int32 sIndex = 0;
+                                        Int32 EIndex = 0;
+                                        sIndex = 0;
+                                        EIndex = strComment.Length;
+                                        if (TLen > 0)
+                                        {
+                                            sIndex = TLen - 1;
+                                        }
+                                        if (TLen > 0)
+                                        {
+                                            EIndex = (strComment.Length - TLen) + 1;
+                                        }
+                                        graph.DrawString(strComment.Substring(sIndex, EIndex), nfont, XBrushes.Black, new XRect(44, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        System.Drawing.Point pt9 = new System.Drawing.Point(44, lineheight + 13);
+                                        System.Drawing.Point pt10 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight + 13);
+                                        graph.DrawLine(lineRed1, pt9, pt10);
+                                    }
+                                    else
+                                    {
+                                        graph.DrawString(strComment.Substring(TLen, 115), nfont, XBrushes.Black, new XRect(44, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        System.Drawing.Point pt9 = new System.Drawing.Point(44, lineheight + 13);
+                                        System.Drawing.Point pt10 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight + 13);
+                                        graph.DrawLine(lineRed1, pt9, pt10);
+                                    }
+                                    lineheight = lineheight + 25;
+
+                                }
+                            }
                             graph.DrawString("Fee Lesen: RM", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             pt13 = new System.Drawing.Point(97, lineheight + 13);
                             pt14 = new System.Drawing.Point(250, lineheight + 13);

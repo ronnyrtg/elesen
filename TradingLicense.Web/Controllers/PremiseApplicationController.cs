@@ -443,7 +443,7 @@ namespace TradingLicense.Web.Controllers
                        // .Select(b => b.RequiredDocDesc)
                         //.ToList();
 
-                    premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
+                    //premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
 
                     //List Additional Documents
                     var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id);
