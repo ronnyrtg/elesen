@@ -72,6 +72,12 @@ namespace TradingLicense.Model
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 
+        //For ViewPremiseApplication page
+        public List<string> businessCodeList = new List<string>();
+        public List<string> individualList = new List<string>();
+        public List<string> RequiredDocDescs = new List<string>();
+        public List<string> AdditionalDocDescs = new List<string>();
+
         public static string GetReferenceNo(int premiseApplicationId, DateTime submittedDateTime)
         {
             return $"{submittedDateTime.Year}/PA/{premiseApplicationId.ToString().PadLeft(6, '0')}";

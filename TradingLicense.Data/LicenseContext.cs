@@ -75,6 +75,7 @@ namespace TradingLicense.Data
         public DbSet<BannerObject> BannerObjects { get; set; }
         public DbSet<BAReqDoc> BAReqDocs { get; set; }
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
+        public DbSet<BAComment> BAComments { get; set; }
 
         //Money Lender Application
         public DbSet<MLPremiseApplication> MLPremiseApplications { get; set; }
