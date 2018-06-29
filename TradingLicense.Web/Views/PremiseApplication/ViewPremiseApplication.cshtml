@@ -71,9 +71,9 @@
                 <div class="form-group">
                     <div class="control-label">Nama Penuh (MyKad/Paspot)</div>
                     <div class="well">
-                        @foreach (var item in Model.individualList)
+                        @foreach (var item in Model.indLinkList)
                         {
-                            @Html.ActionLink(@item.ToString(), "Individual", "Master");<br />
+                            @Html.ActionLink(item.IndName, "ViewIndividual", "master", new { id = item.IndListID }, new { target = "_blank" });
                         }
                     </div>
                 </div>
@@ -84,7 +84,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <div class="control-label">Nama Syarikat</div>
-                    <div class="well">@Model.CompanyName</div>
+                    <div class="well">@Html.ActionLink(Model.CompanyName, "ManageCompany", "master", new { id = Model.CompanyID }, new { target = "_blank" })</div>
                 </div>
             </div>
         </div>
@@ -173,9 +173,9 @@
                         Senarai Dokumen Wajib
                     </div>
                     <div class="well">
-                    @foreach (var item in Model.RequiredDocDescs)
+                    @foreach (var item in Model.RequiredDocNames)
                     {
-                        @item.ToString();<br />
+                        @Html.ActionLink(item.reqDocDesc, "Download", "PremiseApplication", new { filename = item.AttName }, new { target = "_blank" });<br />
                     }
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                     <div class="well">
                        @foreach (var item in Model.AdditionalDocDescs)
                        {
-                        @item.ToString();<br />
+                            @Html.ActionLink(item.addDocDesc, "Download", "PremiseApplication", new { filename = item.AttName }, new { target = "_blank" });<br />
                        }
                     </div>
                 </div>

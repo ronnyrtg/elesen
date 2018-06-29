@@ -400,7 +400,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get PremiseApplication Data by ID
+        /// View PremiseApplication Data by ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -431,28 +431,43 @@ namespace TradingLicense.Web.Controllers
                     var iids = paLinkInd.Select(b => b.IndividualID).ToList();
                     var indList = ctx.Individuals
                         .Where(b => iids.Contains(b.IndividualID))
-                        .Select(b => b.FullName)
+                        .Select(b => new IndividualLink()
+                        {
+                            IndListID = b.IndividualID,
+                            IndName = b.FullName,
+                        })
                         .ToList();
-                    premiseApplicationModel.individualList = indList;
+                    premiseApplicationModel.indLinkList = indList;
 
                     //List required Documents
-                    //var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id);
-                    //var rids = paLinkReq.Select(b => b.RequiredDocID).ToList();
-                    //var requiredDocDescs = ctx.RequiredDocs
-                      //  .Where(b => rids.Contains(b.RequiredDocID))
-                       // .Select(b => b.RequiredDocDesc)
-                        //.ToList();
+                    var requiredDocNames = from pa in ctx.PALinkReqDoc
+                                           join re in ctx.RequiredDocs on pa.RequiredDocID equals re.RequiredDocID
+                                           join at in ctx.Attachments on pa.AttachmentID equals at.AttachmentID
+                                           where pa.PremiseApplicationID == id
+                                           select new reqDocLink
+                                           {
+                                               AttName = at.FileName,
+                                               reqDocDesc = re.RequiredDocDesc
+                                           };
+                                                               
+                    premiseApplicationModel.RequiredDocNames = requiredDocNames.ToList();
 
-                    //premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
 
                     //List Additional Documents
-                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id);
-                    var aids = paLinkAdd.Select(b => b.AdditionalDocID).ToList();
-                    var addDocDescs = ctx.AdditionalDocs
-                        .Where(b => aids.Contains(b.AdditionalDocID))
-                        .Select(b => b.DocDesc)
-                        .ToList();
-                    premiseApplicationModel.AdditionalDocDescs = addDocDescs;
+                    var addDocDescs = from pa in ctx.PALinkAddDocs
+                                           join re in ctx.AdditionalDocs on pa.AdditionalDocID equals re.AdditionalDocID
+                                           join at in ctx.Attachments on pa.AttachmentID equals at.AttachmentID
+                                           where pa.PremiseApplicationID == id
+                                           select new addDocLink
+                                           {
+                                               AttName = at.FileName,
+                                               addDocDesc = re.DocDesc
+                                           };
+
+
+                    premiseApplicationModel.AdditionalDocDescs = addDocDescs.ToList();
+
+                    
                 }
             }
 
@@ -1747,9 +1762,10 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
         }
-
+       
         private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
         private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
 
         /// <summary>
         /// Get Business Code
@@ -1950,7 +1966,7 @@ namespace TradingLicense.Web.Controllers
 
                                     var fileName = Path.GetFileName(file.FileName);
 
-                                    var folder = Server.MapPath(ProjectConfiguration.PremiseAttachmentDocument + "\\" + premiseApplicationId.ToString());
+                                    var folder = Server.MapPath("~/Documents/Attachment/PremiseApplication/" + premiseApplicationId.ToString());
                                     var path = Path.Combine(folder, fileName);
                                     if (!Directory.Exists(folder))
                                     {

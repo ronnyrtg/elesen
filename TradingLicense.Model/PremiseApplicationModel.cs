@@ -74,9 +74,9 @@ namespace TradingLicense.Model
 
         //For ViewPremiseApplication page
         public List<string> businessCodeList = new List<string>();
-        public List<string> individualList = new List<string>();
-        public List<string> RequiredDocDescs = new List<string>();
-        public List<string> AdditionalDocDescs = new List<string>();
+        public List<IndividualLink> indLinkList = new List<IndividualLink>();
+        public List<reqDocLink> RequiredDocNames = new List<reqDocLink>();
+        public List<addDocLink> AdditionalDocDescs = new List<addDocLink>();
 
         public static string GetReferenceNo(int premiseApplicationId, DateTime submittedDateTime)
         {
@@ -93,5 +93,23 @@ namespace TradingLicense.Model
     {
         public string fullName { get; set; }
         public string passportNo { get; set; }
+    }
+
+    public class IndividualLink
+    {
+        public int IndListID { get; set; }
+        public string IndName { get; set; }
+    }
+
+    public class reqDocLink
+    {
+        public string AttName { get; set; }
+        public string reqDocDesc { get; set; }
+    }
+
+    public class addDocLink
+    {
+        public string AttName { get; set; }
+        public string addDocDesc { get; set; }
     }
 }
