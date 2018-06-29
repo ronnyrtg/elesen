@@ -22,8 +22,16 @@ namespace TradingLicense.Entities
         public DateTime SubmittedDate { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual PremiseApplication PremiseApplication { get; set; }
+        public int Commentor
+        {
+            get
+            {
+                return UserId;
+            }
+        }
 
+        public virtual PremiseApplication PremiseApplication { get; set; }
+        public virtual Users Users { get; set; }
         public virtual Department Department { get; set; }
     }
 }

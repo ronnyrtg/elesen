@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AccessPage.cs" />
     <Compile Include="AdditionalDoc.cs" />
+    <Compile Include="BAComment.cs" />
     <Compile Include="MLLinkReqDoc.cs" />
     <Compile Include="MLLinkInd.cs" />
     <Compile Include="MLPermitApplication.cs" />
