@@ -341,7 +341,6 @@ namespace TradingLicense.Web.Controllers
                     premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
 
                     var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
-
                     premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
 
                     //TODO: replaced with this for avoid calling database in foreach loop
@@ -355,6 +354,7 @@ namespace TradingLicense.Web.Controllers
 
                     premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
                     premiseApplicationModel.HasPADepSupp = ctx.PADepSupps.Any(pa => pa.PremiseApplicationID == id.Value);
+
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
                     premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
@@ -416,20 +416,42 @@ namespace TradingLicense.Web.Controllers
                     int premiseApplicationId = Convert.ToInt32(id);
                     var premiseApplication = ctx.PremiseApplications.FirstOrDefault(a => a.PremiseApplicationID == premiseApplicationId);
                     premiseApplicationModel = Mapper.Map<PremiseApplicationModel>(premiseApplication);
-
                     
-                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
-                    premiseApplicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
-                    
+                    //List all Selected Business Codes
+                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == premiseApplicationId).ToList();
+                    var bids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
+                    var businessList = ctx.BusinessCodes
+                        .Where(b => bids.Contains(b.BusinessCodeID))
+                        .Select(b => b.CodeDesc)
+                        .ToList();
+                    premiseApplicationModel.businessCodeList = businessList;
 
+                    //List all individual names
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
-                    premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    var iids = paLinkInd.Select(b => b.IndividualID).ToList();
+                    var indList = ctx.Individuals
+                        .Where(b => iids.Contains(b.IndividualID))
+                        .Select(b => b.FullName)
+                        .ToList();
+                    premiseApplicationModel.individualList = indList;
 
-                    var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id).ToList();
-                    premiseApplicationModel.RequiredDocIds = string.Join(",", paLinkReq.Select(x => x.RequiredDocID.ToString()).ToArray());
+                    //List required Documents
+                    var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id);
+                    var rids = paLinkReq.Select(b => b.RequiredDocID).ToList();
+                    var requiredDocDescs = ctx.RequiredDocs
+                        .Where(b => rids.Contains(b.RequiredDocID))
+                        .Select(b => b.RequiredDocDesc)
+                        .ToList();                    
+                    premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
 
-                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id).ToList();
-                    premiseApplicationModel.AdditionalDocIds = string.Join(",", paLinkAdd.Select(x => x.AdditionalDocID.ToString()).ToArray());
+                    //List Additional Documents
+                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id);
+                    var aids = paLinkAdd.Select(b => b.AdditionalDocID).ToList();
+                    var addDocDescs = ctx.AdditionalDocs
+                        .Where(b => aids.Contains(b.AdditionalDocID))
+                        .Select(b => b.DocDesc)
+                        .ToList();
+                    premiseApplicationModel.AdditionalDocDescs = addDocDescs;
                 }
             }
 

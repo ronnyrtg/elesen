@@ -48,7 +48,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Kumpulan Kod Perniagaan</div>
-                    <div class="well">@Model.SectorID</div>
+                    <div class="well">@Model.SectorDesc</div>
                 </div>
             </div>
         </div>
@@ -57,10 +57,10 @@
                 <div class="form-group">
                     <div class="control-label">Kod Perniagaan</div>
                     <div class="well">
-
-                        <label>@Model.BusinessCodeids</label>
-                        <br />
-
+                        @foreach (var item in Model.businessCodeList)
+                        {
+                            @item.ToString();<br />
+                        }
                     </div>
                 </div>
             </div>
@@ -71,7 +71,10 @@
                 <div class="form-group">
                     <div class="control-label">Nama Penuh (MyKad/Paspot)</div>
                     <div class="well">
-                        <label>@Model.Individualids</label>
+                        @foreach (var item in Model.individualList)
+                        {
+                            @Html.ActionLink(@item.ToString(), "Individual", "Master");<br />
+                        }
                     </div>
                 </div>
             </div>
@@ -120,7 +123,16 @@
             <div class="col-md-3 col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Pemilikan Premis</div>
-                    <div class="well">@Model.PremiseOwnership</div>
+                    <div class="well">
+                     @switch (Model.PremiseOwnership)
+                        {
+                            case 1:
+                                <label>Pemilikan Sendiri</label>
+                                break;
+                            case 2:
+                                <label>Sewaan</label>
+                                break;
+                        }</div>
                 </div>
             </div>
         </div>
@@ -128,7 +140,7 @@
             <div class="col-md-6 col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Tempoh Sewaan Premis</div>
-                    <div class="well">Dari @Model.StartRent hingga @Model.StopRent</div>
+                    <div class="well">Dari @Model.StartRent.ToString("dd-MMM-yyyy") hingga @Model.StopRent.ToString("dd-MMM-yyyy")</div>
                 </div>
             </div>
         </div>
@@ -161,7 +173,10 @@
                         Senarai Dokumen Wajib
                     </div>
                     <div class="well">
-                        @Model.RequiredDocIds
+                    @foreach (var item in Model.RequiredDocDescs)
+                    {
+                        @item.ToString();<br />
+                    }
                     </div>
                 </div>
             </div>
@@ -171,7 +186,10 @@
                         Senarai Dokumen Tambahan
                     </div>
                     <div class="well">
-                        @Model.AdditionalDocIds
+                       @foreach (var item in Model.AdditionalDocDescs)
+                       {
+                        @item.ToString();<br />
+                       }
                     </div>
                 </div>
             </div>

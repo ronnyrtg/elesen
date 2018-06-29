@@ -18,5 +18,6 @@ namespace TradingLicense.Model
         public DateTime SubmittedDate { get; set; }
         public bool IsActive { get; set; }
         public string Department { get; set; }
+        public string Commentor { get; set; }
     }
 }
