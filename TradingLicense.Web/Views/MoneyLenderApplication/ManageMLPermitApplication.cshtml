@@ -2,7 +2,20 @@
 @using AutoMapper;
 @{
     ViewBag.Title = "Manage ML Permit Application";
+
+
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+    List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
+    List<TradingLicense.Model.CompanyModel> companyList = new List<TradingLicense.Model.CompanyModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var individualOwnerList = ctx.Individuals.ToList();
+        individualOwner = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individualOwnerList);
+        companyList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(ctx.Companies.ToList());
+    }
 }
+
 
 <div id="divMessage"></div>
 <div class="card">
@@ -14,15 +27,14 @@
     @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerApplication", id = "frmBannerApplication" }))
     {
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.BannerApplicationID)
+        @Html.HiddenFor(m => m.MLPermitApplicationID)
         @Html.HiddenFor(m => m.AppStatusID)
 
         <div class="row">
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                    @*@Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })*@
-                    @Html.DropDownList("IndividualID", new SelectList(ViewBag.IndividualList, "IndividualID", "FullName"), new { name = "ddlIndividual", id = "ddlIndividual", @class = "form-control" })
+                    @Html.DropDownList("IndividualID", new SelectList(individualOwner, "IndividualID", "FullName"), new { name = "ddlIndividual", id = "ddlIndividual", @class = "form-control" })
                     @Html.ValidationMessageFor(m => m.IndividualID)
                 </div>
             </div>
@@ -31,106 +43,31 @@
                 <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
                         <div class="control-label">Nama Perniagaan (Jika ada)</div>
-                        @Html.DropDownList("CompanyID", new SelectList(ViewBag.CompList, "CompanyID", "CompanyName"), new { name = "ddlCompany", id = "ddlCompany", @class = "form-control" })
+                        @Html.DropDownList("CompanyID", new SelectList(companyList, "CompanyID", "CompanyName"), new { name = "ddlCompany", id = "ddlCompany", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.CompanyID)
                     </div>
                 </div>
             </div>
-            <div class="header">
-                <h4 id="headerTitle">Senarai Iklan</h4>
-            </div><br />
-            <div class="row">
-                <div class="col-sm-12 col-lg-8">
+                <hr/>
+                <div class="row">
+                    <div class="col-sm-12">
                     <div class="form-group">
-                        <div class="control-label">Kod Iklan</div>
-                        @Html.DropDownList("BannerCode", new SelectList(ViewBag.bCodeList, "value", "Text"), new { @class = "form-control" })
-                        <span class="text-danger BannerCodeVal"></span>
+                        <div class="h4"> Jenis Iklan</div>
+                        <div>
+                            <table>
+                                <tr><td width="80">@Html.CheckBoxFor(m => m.Brochure, new { @class = "form-control" }) </td><td>Brosur</td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Newspaper, new { @class = "form-control" }) </td><td> Akhbar </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.SignBoard, new { @class = "form-control" }) </td><td> Papan Tanda </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Radio, new { @class = "form-control" }) </td><td> Radio </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Internet, new { @class = "form-control" }) </td><td> Internet </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Television, new { @class = "form-control" }) </td><td> Televisyen </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.VCD, new { @class = "form-control" }) </td><td> Cakera Padat </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Cinema, new { @class = "form-control" }) </td><td> Panggung Wayang </td></tr>
+                                <tr><td>@{Html.CheckBoxFor(m => m.Others, new { @class = "form-control" }); } </td><td> @{ Html.TextBoxFor(m => m.SpecifyOthers, new { @class = "form-control", @placeholder = "Lain-Lain (Sila Nyatakan) " }); } </td></tr>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Lokasi Dipohon</div>
-                        @Html.DropDownList("LocationID", new SelectList(ViewBag.Location, "LocationID", "LocationDesc"), new { name = "ddlLocation", id = "ddlLocation", @class = "form-control" })
-                        <span class="text-danger LocationVal"></span>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
-                        <input style="text-align:right" type="text" id="SaizIklanDipohon" name="SaizIklanDipohon" class="form-control" />
-                        <span class="text-danger SizeVal"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Bilangan Iklan</div>
-                        <input style="text-align:right" type="text" id="BilanganIklan" name="Bilangan Iklan" class="form-control" />
-                        <span class="text-danger quantityVal"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">&nbsp;</div>
-                        <input type="button" id="addProductItem" class="btn btn-primary" value="Tambah Iklan" />
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="gridItems">
-
-                    <tr id="productItemRow">
-                        <td style="width:16%">
-                            <label class="KodIklan">Kod Iklan</label>
-                            <input type="hidden" class="KodIklanId" value="0" />
-                        </td>
-                        <td style="width:24%">
-                            <label class="LokasiDipohon">Lokasi Dipohon</label>
-                            <input type="hidden" class="LocationId" value="0" />
-                        </td>
-                        <td style="width:24%">
-                            <label class="SaizIklanDipohon">Saiz Iklan Dipohon</label>
-                        </td>
-                        <td>
-                            <label class="BilanganIklan">Bilangan Iklan</label>
-                            <input type="hidden" class="BannerObjectId" value="0" />
-                        </td>
-
-                        <td class="itemEditRow"></td>
-                    </tr>
-                    @foreach (var item in ViewBag.BannerObjects)
-                    {
-                        var @bCode = item.BannerCode.BCodeNumber;
-                        var @BDesc = item.BannerCode.BannerCodeDesc;
-                        <tr>
-                            <td style="width:36%">
-
-                                <label class="KodIklan">@bCode - @BDesc  </label>
-                                <input type="hidden" class="KodIklanId" value="@item.BannerCode.BannerCodeID" />
-                            </td>
-                            <td style="width:24%">
-                                <label class="LokasiDipohon">@item.Location.LocationDesc</label>
-                                <input type="hidden" class="LocationId" value="@item.Location.LocationID" />
-                            </td>
-                            <td style="width:24%">
-                                <label class="SaizIklanDipohon">@item.BSize.ToString("0.00")</label>
-                            </td>
-                            <td>
-                                <label class="BilanganIklan">@item.BQuantity</label>
-                                <input type="hidden" class="BannerObjectId" value="@item.BannerObjectID" />
-                            </td>
-
-                            <td class="itemEditRow"><button type="button" class="btn btn-danger btn-xs remove" title="Delete">Remove</button></td>
-                        </tr>
-                    }
-                </table>
                 </div>
                 <hr />
 
@@ -143,51 +80,26 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="Docs">
-                                    @foreach (var item in ViewBag.bannerDocList)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <label>
-                                                    @if (@ViewBag.UserRole != 2)
-                                                    {
-                                                        <input class="fileupload" type="file" multiple id='@item.RequiredDocID' />
-                                                            <input type="hidden" value='@item.RequiredDocID' class="hdndocId" />
-                                                    }
-                                                    else
-                                                    {
-                                                        if (@Model.BannerApplicationID > 0 && (@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
-                                                        {
-                                                            <input class="chkClass" checked type="checkbox" id='@item.RequiredDocID' />
-                                                        }
-                                                        else
-                                                        { <input class="chkClass" type="checkbox" id='@item.RequiredDocID' /> }
-                                                    }
-                                                </label>
-                                                <ul class="attachment">
-                                                    @if (@ViewBag.UserRole != 2)
-                                                    {
-                                                        foreach (var item1 in ViewBag.BALinkReqDoc)
-                                                        {
-                                                            <li>
-                                                                @if (@item1.RequiredDocID == @item.RequiredDocID)
-                                                                {
-                                                                    <a class="title" href="#"><label class="fname">@item1.filename</label> </a>
-                                                                        <a href="javascript:void(0);" data-id="@item1.Id" class="deleteItem"><i class="glyphicon glyphicon-remove-circle"></i></a>
-                                                                }
-                                                            </li>
-                                                        }
-                                                    }
-                                                </ul>
-
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    @item.RequiredDoc.RequiredDocDesc
-                                                </label>
-
-                                            </td>
-                                        </tr>
-                                    }
+                                    <tr>
+                                        <th> Pilih </th>
+                                        <th> Name Document </th>
+                                        <th> Upload File </th>
+                                    </tr>
+                                    <tr><td><input type="checkbox" name="printedMediaCheckbox" /></td>
+                                        <td> Tiga Salinan Setiap Jenis Iklan (Brosur, Akhbar atau Laman Web)
+                                        </td>
+                                        <td>
+                                            <input class="fileupload" type="file" multiple id="printedMedia" />
+                                        </td>
+                                    </tr>
+                                    <tr><td><input type="checkbox" name="videoMediaCheckbox" /></td>
+                                        <td>
+                                            Tiga Salinan Setiap Jenis Iklan ( Sound atau Video )
+                                        </td>
+                                        <td>
+                                            <input class="fileupload" type="file" multiple id="videoMedia" />
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -348,7 +260,7 @@
                                 })
                                 var today = new Date();
                                 var BannerApp = {
-                                    BannerApplicationID: '@Model.BannerApplicationID',
+                                    BannerApplicationID: '@Model.MLPermitApplicationID',
                                     CompanyID: $('#ddlCompany').val(),
                                     IndividualID: $('#ddlIndividual').val(),
                                     AppStatusID: 0,
@@ -368,7 +280,7 @@
                                             BSize: $('.SaizIklanDipohon', this).text(),
                                             BQuantity: $('.BilanganIklan', this).text(),
                                             BannerObjectID: $('.BannerObjectId', this).val(),
-                                            BannerApplicationID: '@Model.BannerApplicationID'
+                                            BannerApplicationID: '@Model.MLPermitApplicationID'
                                         }
                                         list.push(GridItems);
                                     }
@@ -410,7 +322,7 @@
                                 $.ajax({
                                     url: '@Url.Action("DeleteFile")',
                                     type: 'POST',
-                                    data: { id: $(this).data('id'), FileName: $(this).parent().find('.fname').text(), BannerAppId: '@Model.BannerApplicationID' }
+                                    data: { id: $(this).data('id'), FileName: $(this).parent().find('.fname').text(), BannerAppId: '@Model.MLPermitApplicationID' }
                                 }).done(function (data) {
                                     if (data.Result == "1") {
                                         $ctrl.closest('li').remove();
