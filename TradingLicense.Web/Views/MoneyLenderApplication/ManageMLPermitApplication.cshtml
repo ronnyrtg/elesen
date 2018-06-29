@@ -7,20 +7,32 @@
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
     List<TradingLicense.Model.IndividualModel> individualOwner = new List<TradingLicense.Model.IndividualModel>();
     List<TradingLicense.Model.CompanyModel> companyList = new List<TradingLicense.Model.CompanyModel>();
+    List<TradingLicense.Model.MLPremiseApplicationModel> premisList = new List<TradingLicense.Model.MLPremiseApplicationModel>();
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var individualOwnerList = ctx.Individuals.ToList();
         individualOwner = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individualOwnerList);
         companyList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(ctx.Companies.ToList());
+        var MLPermitQuery = ctx.MLPermitApplications.Where(m => m.AppStatusID == 15); // TODO: exclude expired license.
+        premisList = Mapper.Map<List<TradingLicense.Model.MLPremiseApplicationModel>>(ctx.MLPermitApplications.Where(m => m.AppStatusID == 15).ToList());
     }
+
+
+    List<SelectListItem> ModeList = new List<SelectListItem>();
+    ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
+    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
+    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
+    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
+
+
 }
 
 
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Butir-Butir Pemohon</h4>
+        <h4 id="headerTitle">Butir-Butir Pemohon Permit Iklan Peminjam Wang </h4>
     </div>
     <div class="body">
 
@@ -29,7 +41,15 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.MLPermitApplicationID)
         @Html.HiddenFor(m => m.AppStatusID)
-
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="form-group">
+                    <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
+                     @Html.DropDownListFor(m => m.Mode, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control", onchange = "hideLetterDropDown()" })
+                     @Html.ValidationMessageFor(m => m.Mode)
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
@@ -45,6 +65,23 @@
                         <div class="control-label">Nama Perniagaan (Jika ada)</div>
                         @Html.DropDownList("CompanyID", new SelectList(companyList, "CompanyID", "CompanyName"), new { name = "ddlCompany", id = "ddlCompany", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.CompanyID)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">No Lesen Permit Pemberi Pinjam Wang</div>
+                        @Html.DropDownList("PremisApplicationID", new SelectList(premisList, "MLPremiseApplicationID", "ReferenceNo"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LenderApplicationID)
+                    </div>
+                </div>
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label"></div>
+                        <div> <br/> Lesen Expiry Date
+                            <label id="lesen expire date"> 2018/10/20 </label>
+                        </div>
                     </div>
                 </div>
             </div>
