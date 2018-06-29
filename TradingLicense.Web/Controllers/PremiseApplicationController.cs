@@ -436,12 +436,13 @@ namespace TradingLicense.Web.Controllers
                     premiseApplicationModel.individualList = indList;
 
                     //List required Documents
-                    var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id);
-                    var rids = paLinkReq.Select(b => b.RequiredDocID).ToList();
-                    var requiredDocDescs = ctx.RequiredDocs
-                        .Where(b => rids.Contains(b.RequiredDocID))
-                        .Select(b => b.RequiredDocDesc)
-                        .ToList();                    
+                    //var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id);
+                    //var rids = paLinkReq.Select(b => b.RequiredDocID).ToList();
+                    //var requiredDocDescs = ctx.RequiredDocs
+                      //  .Where(b => rids.Contains(b.RequiredDocID))
+                       // .Select(b => b.RequiredDocDesc)
+                        //.ToList();
+
                     premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
 
                     //List Additional Documents

@@ -19,7 +19,7 @@ namespace TradingLicense.Entities
 
         public DateTime CommentDate { get; set; }
 
-        public virtual PremiseApplication BannerApplication { get; set; }
+        public virtual BannerApplication BannerApplication { get; set; }
 
         public virtual Users Users { get; set; }
     }
