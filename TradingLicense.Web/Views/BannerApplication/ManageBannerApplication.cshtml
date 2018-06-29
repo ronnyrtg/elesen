@@ -230,9 +230,12 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
+                            @if (@Model.AppStatusID == 13)
+                            {
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen Iklan" id="btnLetter" name="btnSubmit" />
+                            }
                             @if (!(@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter" name="btnSubmit" />
                                 <input type="button" name="btnSubmit" class="btn btn-info submitbtn" id="btnDraft" value="Draft" />
                                 <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Simpan" />
                             }
@@ -480,8 +483,8 @@
                     });
                     $(document).ready(function () {
                         $('#btnLetter').click(function () {
-                            var AppId = $('#PremiseApplicationID').val();
-                            $('.modal-body iframe').attr('src', "../PremiseApplication/GeneratLicense?AppId=" + AppId);
+                            var AppId = $('#BannerApplicationID').val();
+                            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + AppId);
                             $('#myModal').modal('show');
                         });
                     });
