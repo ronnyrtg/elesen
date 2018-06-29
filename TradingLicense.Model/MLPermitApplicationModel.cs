@@ -9,15 +9,15 @@ namespace TradingLicense.Model
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
         public int LenderApplicationID { get; set; }
-        public int Brochure { get; set; }
-        public int Newspaper { get; set; }
-        public int SignBoard { get; set; }
-        public int Radio { get; set; }
-        public int Internet { get; set; }
-        public int Television { get; set; }
-        public int VCD { get; set; }
-        public int Cinema { get; set; }
-        public int Others { get; set; }
+        public bool Brochure { get; set; }
+        public bool Newspaper { get; set; }
+        public bool SignBoard { get; set; }
+        public bool Radio { get; set; }
+        public bool Internet { get; set; }
+        public bool Television { get; set; }
+        public bool VCD { get; set; }
+        public bool Cinema { get; set; }
+        public bool Others { get; set; }
         public string SpecifyOthers { get; set; }
         public int AppStatusID { get; set; }
 

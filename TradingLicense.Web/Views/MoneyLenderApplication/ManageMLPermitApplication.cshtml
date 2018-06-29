@@ -48,6 +48,27 @@
                     </div>
                 </div>
             </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="h4"> Jenis Iklan</div>
+                        <div>
+                            <table>
+                                <tr><td width="80">@Html.CheckBoxFor(m => m.Brochure, new { @class = "form-control" }) </td><td>Brosur</td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Newspaper, new { @class = "form-control" }) </td><td> Akhbar </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.SignBoard, new { @class = "form-control" }) </td><td> Papan Tanda </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Radio, new { @class = "form-control" }) </td><td> Radio </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Internet, new { @class = "form-control" }) </td><td> Internet </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Television, new { @class = "form-control" }) </td><td> Televisyen </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.VCD, new { @class = "form-control" }) </td><td> Cakera Padat </td></tr>
+                                <tr><td>@Html.CheckBoxFor(m => m.Cinema, new { @class = "form-control" }) </td><td> Panggung Wayang </td></tr>
+                                <tr><td>@{Html.CheckBoxFor(m => m.Others, new { @class = "form-control" }); } </td><td> @{ Html.TextBoxFor(m => m.SpecifyOthers, new { @class = "form-control", @placeholder = "Lain-Lain (Sila Nyatakan) " }); } </td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                </div>
                 <hr />
 
                 <div class="row">
@@ -59,13 +80,19 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="Docs">
-                                    <tr><td> Tiga Salinan Setiap Jenis Iklan (Brosur, Akhbar atau Laman Web)
+                                    <tr>
+                                        <th> Pilih </th>
+                                        <th> Name Document </th>
+                                        <th> Upload File </th>
+                                    </tr>
+                                    <tr><td><input type="checkbox" name="printedMediaCheckbox" /></td>
+                                        <td> Tiga Salinan Setiap Jenis Iklan (Brosur, Akhbar atau Laman Web)
                                         </td>
                                         <td>
                                             <input class="fileupload" type="file" multiple id="printedMedia" />
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr><td><input type="checkbox" name="videoMediaCheckbox" /></td>
                                         <td>
                                             Tiga Salinan Setiap Jenis Iklan ( Sound atau Video )
                                         </td>
