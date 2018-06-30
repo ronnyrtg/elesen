@@ -24,8 +24,10 @@ namespace TradingLicense.Web.Controllers
     public class BannerApplicationController : BaseController
     {
         LicenseApplicationContext db = new LicenseApplicationContext();
+        
         #region BannerCode
 
+        #region Display BannerCode page
         /// <summary>
         /// GET: BannerCode
         /// </summary>
@@ -34,9 +36,11 @@ namespace TradingLicense.Web.Controllers
         {
             return View();
         }
+        #endregion
 
+        #region BannerCode list for Datatable
         /// <summary>
-        /// Save Banner Code Data
+        /// BannerCode List page
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
@@ -94,7 +98,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, bannerCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region ManageBannerCode page
         /// <summary>
         /// Get BannerCode Data by ID
         /// </summary>
@@ -116,9 +122,11 @@ namespace TradingLicense.Web.Controllers
 
             return View(bannerCodeModel);
         }
+        #endregion
 
+        #region Save BannerCode
         /// <summary>
-        /// Save Banner Code Infomration
+        /// Save Banner Code data
         /// </summary>
         /// <param name="bannerCodeModel"></param>
         /// <returns></returns>
@@ -152,7 +160,9 @@ namespace TradingLicense.Web.Controllers
             }
 
         }
+        #endregion
 
+        #region Delete Banner Code data
         /// <summary>
         /// Delete Banner Code Information
         /// </summary>
@@ -176,7 +186,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
+        #region Check Duplicate Banner Code
         /// <summary>
         /// Check Duplicate
         /// </summary>
@@ -195,6 +207,7 @@ namespace TradingLicense.Web.Controllers
                 return existObj != null;
             }
         }
+        #endregion
 
         #endregion
 
@@ -425,11 +438,15 @@ namespace TradingLicense.Web.Controllers
                             {
                                 if (ProjectSession.User.RoleTemplateID == 3)
                                 {
-                                    AppStatusId = 7;
+                                    AppStatusId = 6;
                                 }
                                 else if (ProjectSession.User.RoleTemplateID == 2)
                                 {
-                                    AppStatusId = 2;
+                                    AppStatusId = 3;
+                                }
+                                else if (ProjectSession.User.RoleTemplateID == 6)
+                                {
+                                    AppStatusId = 9;
                                 }
                                 else
                                 {
@@ -440,7 +457,7 @@ namespace TradingLicense.Web.Controllers
                             {
                                 if (ProjectSession.User.RoleTemplateID == 3)
                                 {
-                                    AppStatusId = 4;
+                                    AppStatusId = 2;
                                 }
                                 else
                                 {
@@ -746,6 +763,8 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Generate License PDF
+
         public ActionResult GenerateLetter(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -1007,6 +1026,7 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
+        #endregion
 
         public class Attchments
         {

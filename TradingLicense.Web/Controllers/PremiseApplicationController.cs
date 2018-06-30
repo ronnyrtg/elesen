@@ -30,6 +30,9 @@ namespace TradingLicense.Web.Controllers
         public const string OnRejected = "Rejected";
         public const string OnKIV = "KIV";
 
+        private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
+        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+
         #region PremiseApplication
 
         /// <summary>
@@ -38,12 +41,11 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [AuthorizationPrivilegeFilter(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel)]
         public ActionResult PremiseApplication()
-        {
-            
-            
+        {           
             return View();
         }
 
+        #region PremiseApplication List page
         /// <summary>
         /// Get PremiseApplication Data
         /// </summary>
@@ -108,7 +110,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, premiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region PremiseApplication By Individual
         /// <summary>
         /// Get PremiseApplication Data
         /// </summary>
@@ -144,7 +148,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, premiseApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Required Doc List Datatable
         /// <summary>
         /// Get Required Document Data
         /// </summary>
@@ -206,7 +212,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Comments List Datatable
         /// <summary>
         /// Get Comments for the premise applicaiton
         /// </summary>
@@ -243,7 +251,9 @@ namespace TradingLicense.Web.Controllers
             }            
             return Json(new DataTablesResponse(requestModel.Draw, premiseComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Route Comments Datatable
         /// <summary>
         /// Get Department support/non-supported Comments for the premise applicaiton
         /// </summary>
@@ -282,7 +292,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, premiseRouteComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Download Attachment Files
         /// <summary>
         /// Download
         /// </summary>
@@ -321,7 +333,9 @@ namespace TradingLicense.Web.Controllers
                 return null;
             }
         }
+        #endregion
 
+        #region ManagePremiseApplication
         /// <summary>
         /// Get PremiseApplication Data by ID
         /// </summary>
@@ -398,9 +412,11 @@ namespace TradingLicense.Web.Controllers
             premiseApplicationModel.IsDraft = false;
             return View(premiseApplicationModel);
         }
+        #endregion
 
+        #region ViewPremiseApplication
         /// <summary>
-        /// Get PremiseApplication Data by ID
+        /// View PremiseApplication Data by ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -431,28 +447,43 @@ namespace TradingLicense.Web.Controllers
                     var iids = paLinkInd.Select(b => b.IndividualID).ToList();
                     var indList = ctx.Individuals
                         .Where(b => iids.Contains(b.IndividualID))
-                        .Select(b => b.FullName)
+                        .Select(b => new IndividualLink()
+                        {
+                            IndListID = b.IndividualID,
+                            IndName = b.FullName,
+                        })
                         .ToList();
-                    premiseApplicationModel.individualList = indList;
+                    premiseApplicationModel.indLinkList = indList;
 
                     //List required Documents
-                    //var paLinkReq = ctx.PALinkReqDoc.Where(a => a.PremiseApplicationID == id);
-                    //var rids = paLinkReq.Select(b => b.RequiredDocID).ToList();
-                    //var requiredDocDescs = ctx.RequiredDocs
-                      //  .Where(b => rids.Contains(b.RequiredDocID))
-                       // .Select(b => b.RequiredDocDesc)
-                        //.ToList();
+                    var requiredDocNames = from pa in ctx.PALinkReqDoc
+                                           join re in ctx.RequiredDocs on pa.RequiredDocID equals re.RequiredDocID
+                                           join at in ctx.Attachments on pa.AttachmentID equals at.AttachmentID
+                                           where pa.PremiseApplicationID == id
+                                           select new reqDocLink
+                                           {
+                                               AttName = at.FileName,
+                                               reqDocDesc = re.RequiredDocDesc
+                                           };
+                                                               
+                    premiseApplicationModel.RequiredDocNames = requiredDocNames.ToList();
 
-                    //premiseApplicationModel.RequiredDocDescs = requiredDocDescs;
 
                     //List Additional Documents
-                    var paLinkAdd = ctx.PALinkAddDocs.Where(a => a.PremiseApplicationID == id);
-                    var aids = paLinkAdd.Select(b => b.AdditionalDocID).ToList();
-                    var addDocDescs = ctx.AdditionalDocs
-                        .Where(b => aids.Contains(b.AdditionalDocID))
-                        .Select(b => b.DocDesc)
-                        .ToList();
-                    premiseApplicationModel.AdditionalDocDescs = addDocDescs;
+                    var addDocDescs = from pa in ctx.PALinkAddDocs
+                                           join re in ctx.AdditionalDocs on pa.AdditionalDocID equals re.AdditionalDocID
+                                           join at in ctx.Attachments on pa.AttachmentID equals at.AttachmentID
+                                           where pa.PremiseApplicationID == id
+                                           select new addDocLink
+                                           {
+                                               AttName = at.FileName,
+                                               addDocDesc = re.DocDesc
+                                           };
+
+
+                    premiseApplicationModel.AdditionalDocDescs = addDocDescs.ToList();
+
+                    
                 }
             }
 
@@ -462,7 +493,9 @@ namespace TradingLicense.Web.Controllers
             }
             return View(premiseApplicationModel);
         }
+        #endregion
 
+        #region Save Route Comments data
         [HttpPost]
         public ActionResult SaveRouteUnitComment(int premiseApplicationID, string comment, int supported)
         {
@@ -502,8 +535,9 @@ namespace TradingLicense.Web.Controllers
 
             return RedirectToAction("PremiseApplication", "PremiseApplication");
         }
+        #endregion
 
-        #region Generate License
+        #region Generate License PDF
         public ActionResult GeneratLicense(Int32? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
@@ -765,6 +799,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Save ManagePremiseApplication Data
         /// <summary>
         /// Save PremiseApplication Information
         /// </summary>
@@ -808,7 +843,9 @@ namespace TradingLicense.Web.Controllers
                 return View(premiseApplicationModel);
             }
         }
+        #endregion
 
+        #region Save PaymentDue Data
         [HttpPost]
         public ActionResult SavePaymentDue(int premiseApplicationID, float totalDue)
         {
@@ -830,7 +867,9 @@ namespace TradingLicense.Web.Controllers
 
             return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
         }
+        #endregion
 
+        #region Save Received Payment Data
         [HttpPost]
         public ActionResult SaveReceivedPayment(int premiseApplicationID, int individualID)
         {
@@ -863,7 +902,9 @@ namespace TradingLicense.Web.Controllers
 
             return Redirect(Url.Action("ManagePremiseApplication", "PremiseApplication") + "?id=" + premiseApplicationID);
         }
+        #endregion
 
+        #region Get PaymentDue data
         [HttpPost]
         public ActionResult GetPaymentDue(int premiseApplicationID)
         {
@@ -891,7 +932,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new { success = success, allowEdit = allowEdit, totalDue = totalDue }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Save PremiseApplication data
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
@@ -1108,7 +1151,9 @@ namespace TradingLicense.Web.Controllers
             premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
             return true;
         }
+        #endregion
 
+        #region Get AppStatusID Upon Submit Button
         private int GetStatusOnSubmit(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, PremiseApplication premiseApplication, int roleTemplate)
         {
             PAStausenum finalStatus = 0;
@@ -1202,7 +1247,9 @@ namespace TradingLicense.Web.Controllers
             }
             return (int)finalStatus;
         }
+        #endregion
 
+        #region Get List of Route Departments in Datatable
         /// <summary>
         /// Gets List of department details to which this premise application will be routed.
         /// </summary>
@@ -1220,6 +1267,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(new DataTablesResponse(requestModel.Draw, Mapper.Map<List<DepartmentModel>>(departmentList), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
+
+        #region Update AppStatusID
 
         private void UpdateStatusId(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int appStatusId, PremiseApplication premiseApplication = null)
         {
@@ -1228,7 +1278,9 @@ namespace TradingLicense.Web.Controllers
             ctx.PremiseApplications.AddOrUpdate(premiseApplication);
             ctx.SaveChanges();
         }
+        #endregion
 
+        #region Save Departments data linked to Selected BusinessCode in PADepSupp table
         private bool RouteApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
@@ -1264,6 +1316,9 @@ namespace TradingLicense.Web.Controllers
             }
             return true;
         }
+        #endregion
+
+        #region Get Roletemplate from ProjectSession
 
         private static int GetUserRoleTemplate(PremiseApplicationModel premiseApplicationModel,
             PremiseApplication premiseApplication, LicenseApplicationContext ctx)
@@ -1278,8 +1333,9 @@ namespace TradingLicense.Web.Controllers
 
             return userroleTemplate;
         }
+        #endregion
 
-        #region Generate Letter
+        #region Generate Letter PDF
 
         public ActionResult GenerateLetter(Int32? appId)
         {
@@ -1707,7 +1763,6 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
-        #endregion
 
         private FileStreamResult GeneratePdf(Int32? appId)
         {
@@ -1723,7 +1778,9 @@ namespace TradingLicense.Web.Controllers
                 return null;
             }
         }
+        #endregion
 
+        #region Delete PremiseApplication
         /// <summary>
         /// Delete PremiseApplication Information
         /// </summary>
@@ -1747,10 +1804,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
-        private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
-        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
-
+        #region Get Business Code data for Datatable
         /// <summary>
         /// Get Business Code
         /// </summary>
@@ -1777,7 +1833,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
+        #region Get Individual Name (MyKad) for Datatable
         /// <summary>
         /// Get Individual Code
         /// </summary>
@@ -1794,7 +1852,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(individual, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
+        #region Get MyKad data for Datatable
         /// <summary>
         /// get Mykad Data
         /// </summary>
@@ -1831,7 +1891,9 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Get Additional Doc data for Datatable
         /// <summary>
         /// get Additional Document Data
         /// </summary>
@@ -1911,9 +1973,11 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Save Attachment data and Upload Files
         /// <summary>
-        /// Save Attachment Infomration
+        /// Save Attachment Information
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -1950,7 +2014,7 @@ namespace TradingLicense.Web.Controllers
 
                                     var fileName = Path.GetFileName(file.FileName);
 
-                                    var folder = Server.MapPath(ProjectConfiguration.PremiseAttachmentDocument + "\\" + premiseApplicationId.ToString());
+                                    var folder = Server.MapPath("~/Documents/Attachment/PremiseApplication/" + premiseApplicationId.ToString());
                                     var path = Path.Combine(folder, fileName);
                                     if (!Directory.Exists(folder))
                                     {
@@ -2028,9 +2092,11 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
+        #region Save Attachment/ UploadAttechment
         /// <summary>
-        /// Save Attachment Infomration
+        /// Save Attachment Information
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -2150,9 +2216,11 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
         }
+        #endregion
 
+        #region Save Comments
         /// <summary>
-        /// Save Attachment Infomration
+        /// Save PAComment
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -2258,9 +2326,9 @@ namespace TradingLicense.Web.Controllers
                 return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
             }
         }
-
         #endregion
 
+        #endregion
 
         //TODO: Move all business code  logic to BusinessCodeController or at least a BusinessCodeService
 

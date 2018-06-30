@@ -23,8 +23,8 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string HawkerLocation { get; set; }
         public int HelperA { get; set; }
-        public int HelperB { get; set; }
-        public int HelperC { get; set; }
+        public int? HelperB { get; set; }
+        public int? HelperC { get; set; }
         public int AppStatusID { get; set; }
 
         //The user who creates this application
@@ -38,6 +38,7 @@ namespace TradingLicense.Entities
         public DateTime LastUpdated { get; set; }
         public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
+        public float? TotalFee { get; set; }
         public DateTime? DatePaid { get; set; }
         public DateTime? ExpireDate { get; set; }
         [StringLength(50)]

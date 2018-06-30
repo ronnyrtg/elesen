@@ -25,6 +25,8 @@ namespace TradingLicense.Entities
         public float? TotalFee { get; set; }
         public float? ProcessingFee { get; set; }
         public DateTime? DatePaid { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
         public string ReferenceNo { get; set; }
         public DateTime? ExpireDate { get; set; }
 

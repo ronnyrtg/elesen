@@ -51,7 +51,12 @@ namespace TradingLicense.Entities
         public DateTime LastUpdated { get; set; }
         public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
+        public float? TotalFee { get; set; }
         public DateTime? DatePaid { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ReferenceNo { get; set; }
+        public string LicenseStatus { get; set; }
         public DateTime? ExpireDate { get; set; }
 
         public virtual BusinessType BusinessType { get; set; }
