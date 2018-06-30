@@ -49,6 +49,7 @@ namespace TradingLicense.Model
         public string UpdatedBy { get; set; }
         public DateTime? DateApproved { get; set; }
         public float? ProcessingFee { get; set; }
+        public string LicenseStatus { get; set; }
         public DateTime? DatePaid { get; set; }
        
         public string ReferenceNo { get; set; }

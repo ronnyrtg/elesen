@@ -45,6 +45,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public float? ProcessingFee { get; set; }
+        public float? TotalFee { get; set; }
         public int AppStatusID { get; set; }
 
         //User that creates the application, either Public user or Desk Officer

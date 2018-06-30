@@ -20,8 +20,8 @@ namespace TradingLicense.Model
         [StringLength(255)]
         public string HawkerLocation { get; set; }
         public int HelperA { get; set; }
-        public int HelperB { get; set; }
-        public int HelperC { get; set; }
+        public int? HelperB { get; set; }
+        public int? HelperC { get; set; }
         public int AppStatusID { get; set; }
 
         public int UsersID { get; set; }

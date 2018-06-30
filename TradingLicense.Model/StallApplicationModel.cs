@@ -19,8 +19,8 @@ namespace TradingLicense.Model
         [StringLength(255)]
         public string StallLocation { get; set; }
         public int HelperA { get; set; }
-        public int HelperB { get; set; }
-        public int HelperC { get; set; }
+        public int? HelperB { get; set; }
+        public int? HelperC { get; set; }
         public string GoodsType { get; set; }
         public int AppStatusID { get; set; }
 
@@ -30,6 +30,8 @@ namespace TradingLicense.Model
         public string UpdatedBy { get; set; }
         public float? ProcessingFee { get; set; }
         public DateTime DatePaid { get; set; }
+        public string LicenseStatus { get; set; }
+        public string ReferenceNo { get; set; }
         public DateTime DateApproved { get; set; }
         public DateTime ExpireDate { get; set; }
 
