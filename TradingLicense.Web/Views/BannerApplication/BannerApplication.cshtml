@@ -96,13 +96,7 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        {
-                            "title": "No. Rujukan",
-                            "data": "BannerApplicationID",
-                            "render": function (data, type, row) {
-                                return '2018/B/NEW/0000'+ data;
-                            }
-                        },
+                        { "title": "No. Rujukan","data": "ReferenceNo"},
                         { "title": "Nama Pemohon.", "data": "Individual.FullName" },
                         { "title": "Nama Perniagaan", "data": "Company.CompanyName" },
                         { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
