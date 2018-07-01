@@ -4,31 +4,25 @@
     ViewBag.Title = "ManageBannerApplication";
 }
 @{
-    List<TradingLicense.Entities.BAReqDoc>
-    bannerDocList = new List<TradingLicense.Entities.BAReqDoc>
-        ();
+    List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
+    List<TradingLicense.Model.CompanyModel> companyList = new List<TradingLicense.Model.CompanyModel>();
+    List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
+    List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
+    List<TradingLicense.Model.LocationModel> locationList = new List<TradingLicense.Model.LocationModel>();
 
-        //Generate Banner Code list with multiple columns
-        List<TradingLicense.Model.BannerCodeModel>
-            bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>
-                ();
-                using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-                {
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var individuals = ctx.Individuals.ToList();
+        individualList = Mapper.Map<List<TradingLicense.Model.IndividualModel>>(individuals);
 
-                var bCodeList = ctx.BannerCodes
-                .Select(s => new SelectListItem
-                {
-                Value = s.BannerCodeID.ToString(),
-                Text = s.BCodeNumber + " - " + s.BannerCodeDesc.ToString()
-                }).OrderBy(s => s.Text).ToList();
-                ViewBag.bCodeList=new SelectList(bCodeList, "Value", "Text");
+        var companies = ctx.Companies.ToList();
+        companyList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
 
-                var bannerCode = ctx.BannerCodes.ToList();
-                bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCode);
-        ViewBag.IndividualList = ctx.Individuals.ToList();
-        ViewBag.CompList = ctx.Companies.ToList();
-        ViewBag.Location = ctx.Locations.ToList();
-        ViewBag.Zone = ctx.Zones.ToList();
+        var bannerCodes = ctx.BannerCodes.ToList();
+        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BannerCodeModel>>(bannerCodes);
+
+        var locations = ctx.Locations.ToList();
+        locationList = Mapper.Map<List<TradingLicense.Model.LocationModel>>(locations);
     }
 
     List<SelectListItem> periodList = new List<SelectListItem>();
@@ -36,6 +30,10 @@
     periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
     periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
     periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
+
+    List<SelectListItem> supportList = new List<SelectListItem>();
+    supportList.Add(new SelectListItem { Text = "Lulus", Value = "1" });
+    supportList.Add(new SelectListItem { Text = "Tidak Lulus", Value = "0" });
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -54,190 +52,33 @@
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                    @*@Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })*@
-                    @Html.DropDownList("IndividualID", new SelectList(ViewBag.IndividualList, "IndividualID", "FullName"), new { name = "ddlIndividual", id = "ddlIndividual", @class = "form-control" })
+                    @Html.DropDownListFor(m => m.IndividualID, new SelectList(individualList, "IndividualID", "FullName"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control" })
                     @Html.ValidationMessageFor(m => m.IndividualID)
                 </div>
             </div>
         </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Nama Perniagaan (Jika ada)</div>
-                        @Html.DropDownList("CompanyID", new SelectList(ViewBag.CompList, "CompanyID", "CompanyName"), new { name = "ddlCompany", id = "ddlCompany", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CompanyID)
-                    </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Nama Perniagaan (Jika ada)</div>
+                    @Html.DropDownListFor(m => m.CompanyID, new SelectList(companyList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companiesList", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CompanyID)
                 </div>
             </div>
-            <div class="header">
-                <h4 id="headerTitle">Senarai Iklan</h4>
-            </div><br />
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Kod Iklan</div>
-                        @Html.DropDownList("BannerCode", new SelectList(ViewBag.bCodeList, "value", "Text"), new { @class = "form-control" })
-                        <span class="text-danger BannerCodeVal"></span>
-                    </div>
+        </div>
+        <div class="header">
+            <h4 id="headerTitle">Senarai Iklan</h4>
+        </div><br />
+        if (Model.AppStatusID >= 1)
+        {
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary btSubmit" onclick='return AddBannerObject();'>Tambah Iklan</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Lokasi Dipohon</div>
-                        @Html.DropDownList("LocationID", new SelectList(ViewBag.Location, "LocationID", "LocationDesc"), new { name = "ddlLocation", id = "ddlLocation", @class = "form-control" })
-                        <span class="text-danger LocationVal"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
-                        <input style="text-align:right" type="text" id="SaizIklanDipohon" name="SaizIklanDipohon" class="form-control" />
-                        <span class="text-danger SizeVal"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">Bilangan Iklan</div>
-                        <input style="text-align:right" type="text" id="BilanganIklan" name="Bilangan Iklan" class="form-control" />
-                        <span class="text-danger quantityVal"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">&nbsp;</div>
-                        <input type="button" id="addProductItem" class="btn btn-primary" value="Tambah Iklan" />
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="gridItems">
-
-                    <tr id="productItemRow">
-                        <td style="width:16%">
-                            <label class="KodIklan">Kod Iklan</label>
-                            <input type="hidden" class="KodIklanId" value="0" />
-                        </td>
-                        <td style="width:24%">
-                            <label class="LokasiDipohon">Lokasi Dipohon</label>
-                            <input type="hidden" class="LocationId" value="0" />
-                        </td>
-                        <td style="width:24%">
-                            <label class="SaizIklanDipohon">Saiz Iklan Dipohon</label>
-                        </td>
-                        <td>
-                            <label class="BilanganIklan">Bilangan Iklan</label>
-                            <input type="hidden" class="BannerObjectId" value="0" />
-                        </td>
-
-                        <td class="itemEditRow"></td>
-                    </tr>
-                    @foreach (var item in ViewBag.BannerObjects)
-                    {
-                        var @bCode = item.BannerCode.BCodeNumber;
-                        var @BDesc = item.BannerCode.BannerCodeDesc;
-                        <tr>
-                            <td>
-
-                                <label class="KodIklan">@bCode - @BDesc  </label>
-                                <input type="hidden" class="KodIklanId" value="@item.BannerCode.BannerCodeID" />
-                            </td>
-                            <td>
-                                <label class="LokasiDipohon">@item.Location.LocationDesc</label>
-                                <input type="hidden" class="LocationId" value="@item.Location.LocationID" />
-                            </td>
-                            <td>
-                                <label class="SaizIklanDipohon">@item.BSize.ToString("0.00")</label>
-                            </td>
-                            <td>
-                                <label class="BilanganIklan">@item.BQuantity</label>
-                                <input type="hidden" class="BannerObjectId" value="@item.BannerObjectID" />
-                            </td>
-
-                            <td class="itemEditRow"><button type="button" class="btn btn-danger btn-xs remove" title="Delete">Padam</button></td>
-                        </tr>
-                    }
-                </table>
-                </div>
-                <hr />
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <div class="header">
-                                <h4 id="headerTitle">Dokumen Wajib</h4>
-                            </div><br />
-                            <div class="alert alert-danger" id="chkReqDoc" role="alert" style="display:none;">
-                                Sila semak semua dokumen yang wajib disertakan bersama permohonan ini.
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered dataTable no-footer" style="width:100%" role="grid" cellspacing="0" id="Docs">
-                                    @foreach (var item in ViewBag.bannerDocList)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <label>
-                                                    @if (@ViewBag.UserRole != 2)
-                                                    {
-                                                        <input class="fileupload" type="file" multiple id='@item.RequiredDocID' />
-                                                            <input type="hidden" value='@item.RequiredDocID' class="hdndocId" />
-                                                    }
-                                                    else
-                                                    {
-                                                        if (@Model.BannerApplicationID > 0 && (@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
-                                                        {
-                                                            <input class="chkClass" checked type="checkbox" id='@item.RequiredDocID' />
-                                                        }
-                                                        else
-                                                        { <input class="chkClass" type="checkbox" id='@item.RequiredDocID' /> }
-                                                    }
-                                                </label>
-                                                <ul class="attachment">
-                                                    @if (@ViewBag.UserRole != 2)
-                                                    {
-                                                        foreach (var item1 in ViewBag.BALinkReqDoc)
-                                                        {
-                                                            <li>
-                                                                @if (@item1.RequiredDocID == @item.RequiredDocID)
-                                                                {
-                                                                    <a class="title" href="#"><label class="fname">@item1.filename</label> </a>
-                                                                        <a href="javascript:void(0);" data-id="@item1.Id" class="deleteItem"><i class="glyphicon glyphicon-remove-circle"></i></a>
-                                                                }
-                                                            </li>
-                                                        }
-                                                    }
-                                                </ul>
-
-                                            </td>
-                                            <td>
-                                                <label>
-                                                    @item.RequiredDoc.RequiredDocDesc
-                                                </label>
-
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
-                        <div class="form-group">                            
-                            <div class="header">
-                                <h4 id="headerTitle">Senarai Catatan</h4>
-                            </div><br />                           
-                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
-                        </div>
-                    </div>
-                </div>
+        </div>
+        }
         if (ViewBag.UserRole > 1)
         {
             <div class="row">
@@ -258,9 +99,6 @@
             </div>
             if (ViewBag.UserRole == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director)
             {
-                List<SelectListItem> supportList = new List<SelectListItem>();
-                supportList.Add(new SelectListItem { Text = "Lulus", Value = "1" });
-                supportList.Add(new SelectListItem { Text = "Tidak Lulus", Value = "0" });
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -290,7 +128,7 @@
                             {
                                 <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Hantar" />
                             }
-                            <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
+                            <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                         </div>
                     </div>
                 </div>
@@ -313,237 +151,184 @@
                    </div>
                </div>
            </div>
+        <div id="showAddBannerObject" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                @using (Html.BeginForm("AddBannerObject", "BannerApplication", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
+                {
+                    @Html.HiddenFor(m => m.BannerApplicationID)
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Tambah Iklan</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Kod Iklan</div>
+                                        @Html.DropDownList("BannerCode", new SelectList(bannerCodeList, "BannerCodeID", "BannerCodeDesc"), new { @class = "form-control" })
+                                        <span class="text-danger BannerCodeVal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Lokasi Dipohon</div>
+                                        @Html.DropDownList("Location", new SelectList(locationList, "LocationID", "LocationDesc"), new { @class = "form-control" })
+                                        <span class="text-danger LocationVal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                                        <input style="text-align:left" type="text" name="SaizIklan" class="form-control allownumericwithdecimal" />
+                                        <span class="text-danger SizeVal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Bilangan Iklan</div>
+                                        <input style="text-align:left" type="text" name="BilanganIklan" class="form-control allowinteger" />
+                                        <span class="text-danger quantityVal"></span>
+                                    </div>
+                                </div>
+                            </div>                       
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-primary" value="Tambah" onclick="return validateSaveObjects()" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     }
+</div>
+</div>
 @section scripts{
-    <script>
-        var actionError = '@(TempData["ErrorMessage"])';
-        if (actionError != null && actionError != "") {
-            errorMessage(actionError);
-        }
-        function back() {
-            var link = '@Url.Action("BannerApplication", "BannerApplication")';
-            window.location.href = link;
-        }
-        $(document).ready(function () {
-            $('#ddlIndividual').select2({ width: '100%' });
-            $('#ddlCompany').select2({ width: '100%' });
-            $('#BannerCode').select2({ width: '100%' });
-            $('#ddlLocation').select2({ width: '100%' });
+<script>
+    var actionError = '@(TempData["ErrorMessage"])';
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
 
+    function back() {
+        var link = '@Url.Action("BannerApplication", "BannerApplication")';
+        window.location.href = link;
+    }
 
-            $('#addProductItem').click(function () {
-                var isAllValid = validateModel();
+    //Select2 for Individual & Company
+    $(function () {
 
-                if (isAllValid) {
-                    var $newRow = $('#productItemRow').clone().removeAttr('id');
+        $('#companiesList').select2({ width: '100%', placeholder: "Pilih Nama Syarikat", minimumInputLength: 2 });
 
-                    $('.KodIklanId', $newRow).val($('#BannerCode').val());
-                    $('.KodIklan', $newRow).text($('#BannerCode option:selected').text());
-                    $('.LocationId', $newRow).val($('#ddlLocation').val());
-                    $('.LokasiDipohon', $newRow).text($('#ddlLocation option:selected').text());
-                    var num = parseFloat($('#SaizIklanDipohon').val());
-                    $('.SaizIklanDipohon', $newRow).text(num.toFixed(2));
-                    $('.BilanganIklan', $newRow).text($('#BilanganIklan').val());
-                    $('.itemEditRow', $newRow).append('<button type="button" class="btn btn-danger btn-xs remove" title="Delete" >Remove</button>');
-                    $('#gridItems').append($newRow);
-                    $('#BilanganIklan').val('');
-                    $('#SaizIklanDipohon').val('');
-
-                }
-            });
-
-            $('#gridItems').on('click', '.remove', function () {
-                $(this).parents('tr').remove();
-            });
-
-            function validateModel() {
-                var result = true;
-
-                if ($('#BannerCode').val() == "") {
-                    $('#BannerCode').siblings('span.BannerCodeVal').text("Please Enter BannerCode.");
-                    result = false;
-                }
-
-                if ($('#ddlLocation').val() == "") {
-                    $('#ddlLocation').siblings('span.LocationVal').text("Please Enter Location.");
-                    result = false;
-                }
-
-                if ($('#SaizIklanDipohon').val() == "") {
-                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter Size.");
-                    result = false;
-                }
-                if (isNaN($('#SaizIklanDipohon').val())) {
-                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter number in size.");
-                    result = false;
-                }
-
-
-                if ($('#BilanganIklan').val() == "") {
-                    $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter Quantity.");
-                    result = false;
-                }
-                if (isNaN($('#BilanganIklan').val())) {
-                    $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter number in quantity.");
-                    result = false;
-                }
-
-                return result;
+        function individualFormating(state) {
+            if (!state.isNew) {
+                return state.text;
             }
-            $('#BilanganIklan').change(function () {
-                if ($('#BilanganIklan').val() != "" && !isNaN($('#BilanganIklan').val())) {
-                    $('#BilanganIklan').siblings('span.quantityVal').text("");
-                }
-            });
 
-            $('#SaizIklanDipohon').change(function () {
-                if ($('#SaizIklanDipohon').val() != "" && !isNaN($('#SaizIklanDipohon').val())) {
-                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("");
-                }
-            });
+            state.text = state.fullName + ' (' + state.passportNo + ')';
+            var $state = $(
+              '<span>' + state.text + '&nbsp;</span>'
+            );
+            if (state.isNew) {
+                var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                editLink.on('click', function () {
+                    showIndividualModal(state);
+                });
+                $state.append(editLink);
+            }
+            return $state;
+        }
 
-            $('#BannerCode').change(function () {
-                if ($('#BannerCode').val() != "" && !isNaN($('#BannerCode').val())) {
-                    $('#BannerCode').siblings('span.BannerCodeVal').text("");
-                }
-            });
-
-            $('#ddlLocation').change(function () {
-                if ($('#ddlLocation').val() != "" && !isNaN($('#ddlLocation').val())) {
-                    $('#ddlLocation').siblings('span.LocationVal').text("");
-                }
-            });
-
-            $('.submitbtn').click(function () {
-
-                // Checking whether FormData is available in browser
-                if (window.FormData !== undefined) {
-                    var fileData = new FormData();
-                    var listImg = [];
-                    var list = [];
-                    var BannerApplist = [];
-                    if ('@ViewBag.UserRole' == '2') {
-                        var chkCnt = $('input.chkClass').length;
-                        var chkcntChecked = $('input.chkClass:checked').length
-                        if (chkCnt != chkcntChecked) {
-                            $('#chkReqDoc').fadeIn();
-                            return false;
-                        }
-                    }
-
-                    $('#Docs tbody tr').each(function (index, ele) {
-                        if ('@ViewBag.UserRole' != '2') {
-                            var fileUpload = $(".fileupload", this).get(0);
-                            var files = fileUpload.files;
-
-                            for (var i = 0; i < files.length; i++) {
-                                var flname = files[i].name + '_' + $('.hdndocId', this).val();
-                                fileData.append(flname, files[i]);
-                            }
-
-                            for (var i = 0; i < files.length; i++) {
-                                var ImgModel = {
-                                    Id: $('.hdndocId', this).val(),
-                                    filename: files[i].name,
-                                    RequiredDocID: 0
-                                }
-                                listImg.push(ImgModel);
-                            }
-                        }
-                    })
-                    var today = new Date();
-                    var BannerApp = {
-                        BannerApplicationID: '@Model.BannerApplicationID',
-                        CompanyID: $('#ddlCompany').val(),
-                        IndividualID: $('#ddlIndividual').val(),
-                        AppStatusID: 0,
-                        UsersID: 0,
-                        DateSubmitted: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
-                        UpdatedBy: ''
-                    }
-                    BannerApplist.push(BannerApp);
-
-
-
-                    $('#gridItems tbody tr').each(function (index, ele) {
-                        if ($('.KodIklanId', this).val() != null && $('.KodIklanId', this).val() != "" && $('.KodIklanId', this).val() != "0") {
-                            var GridItems = {
-                                BannerCodeID: $('.KodIklanId', this).val(),
-                                LocationID: $('.LocationId', this).val(),
-                                BSize: $('.SaizIklanDipohon', this).text(),
-                                BQuantity: $('.BilanganIklan', this).text(),
-                                BannerObjectID: $('.BannerObjectId', this).val(),
-                                BannerApplicationID: '@Model.BannerApplicationID'
-                            }
-                            list.push(GridItems);
-                        }
-                    })
-
-                    fileData.append("ImgModel", JSON.stringify(listImg))
-                    fileData.append("IndividualId", $('#ddlIndividual').val())
-                    fileData.append("compId", $('#ddlCompany').val())
-                    fileData.append("gridItems", JSON.stringify(list))
-                    fileData.append("BannerApplist", JSON.stringify(BannerApplist))
-                    fileData.append("btnType", $(this).attr('id'))
-
-                    $.ajax({
-                        url: '/BannerApplication/SaveManageBannerApplication',
-                        type: "POST",
-                        contentType: false,//'application/json',
-                        processData: false,
-                        data: fileData,
-                        success: function (result) {
-                            if (result == "0") {
-                                errorMessage('Problem In Saving Data...Try Again.');
-                            }
-                            else {
-                                window.location.href = '/BannerApplication/BannerApplication';
-                            }
-                        },
-                        error: function (err) {
-                            alert(err.statusText);
-                        }
-                    });
+        $("#individualList").select2({
+            placeholder: "Select Full Name or Mykad/Passport No",
+            minimumInputLength: 2,
+            width: '100%',
+            tags: true,
+            tokenSeparators: [';'],
+            templateSelection: individualFormating,
+            createTag: function (params) {
+                var term = params.term;
+                var indexOfPassport = term.indexOf('(');
+                var fullName = '';
+                var passportNo = '';
+                if (indexOfPassport > 0) {
+                    var endIndex = term.indexOf(')', indexOfPassport);
+                    passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                    fullName = term.substring(0, indexOfPassport);
                 } else {
-                    errorMessage('Formatted Data Is Not Supported.');
+                    fullName = term;
                 }
-            });
-            $('.deleteItem').click(function (e) {
-                e.preventDefault();
-                var $ctrl = $(this);
-                if (confirm('Do you really want to delete this file?')) {
-                    $.ajax({
-                        url: '@Url.Action("DeleteFile")',
-                        type: 'POST',
-                        data: { id: $(this).data('id'), FileName: $(this).parent().find('.fname').text(), BannerAppId: '@Model.BannerApplicationID' }
-                    }).done(function (data) {
-                        if (data.Result == "1") {
-                            $ctrl.closest('li').remove();
-                        }
-                        else {
-                            errorMessage("There is something wrong. Please try again.");
-                        }
-                    }).fail(function () {
-                        errorMessage("There is something wrong. Please try again.");
-                    })
+
+                return {
+                    id: term,
+                    text: fullName + ' (' + passportNo + ')',
+                    fullName: fullName,
+                    passportNo: passportNo,
+                    isNew: true
+                };
+            },
+            ajax: {
+                type: "POST",
+                url: encodeURI('@Url.Action("FillIndividual", "PremiseApplication")'),
+                //Data: allows us to pass a parameter to the controller
+                data: function (query) {
+                    //console.log(query)
+                    return { query: query.term }
+                },
+                //processes the results from the JSON method and gives us the select list
+                processResults: function (data) {
+                    //console.log(data)
+                    return {
+                        results: data
+                    };
                 }
-            });
+            }
+        });
+    });
 
-        });
-        $(document).ready(function () {
-            $('#btnLicense').click(function () {
-                var AppId = $('#BannerApplicationID').val();
-                $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLicense?AppId=" + AppId);
-                $('#myModal').modal('show');
-            });
+     function AddBannerObject() {
+        $("#showAddBannerObject").modal('show');
+         //Form input control modes
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                event.preventDefault();
+            }
         });
 
-        $(document).ready(function () {
-            $('#btnLetter').click(function () {
-                var AppId = $('#BannerApplicationID').val();
-                $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + AppId);
-                $('#myModal').modal('show');
-            });
+        $(".allowinteger").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            if ((event.which != 46) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                event.preventDefault();
+            }
         });
-    </script>
+
+
+     }
+
+    // Generate license PDF
+    $(document).ready(function () {
+        $('#btnLicense').click(function () {
+            var AppId = $('#BannerApplicationID').val();
+            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLicense?AppId=" + AppId);
+            $('#myModal').modal('show');
+        });
+    });
+    // Generate Letter PDF
+    $(document).ready(function () {
+        $('#btnLetter').click(function () {
+            var AppId = $('#BannerApplicationID').val();
+            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + AppId);
+            $('#myModal').modal('show');
+        });
+    });
+</script>
 }

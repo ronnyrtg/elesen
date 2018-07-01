@@ -14,9 +14,6 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila masukkan penerangan jenis iklan")]
         [StringLength(255)]
         public string BannerCodeDesc { get; set; }
-        [Display(Name = "Processing Fee")]
-        [Required(ErrorMessage = "Sila masukkan Yuran Pemprosesan")]
-        public float ProcessingFee { get; set; }
         [Display(Name = "Extra Fee after first 8 meter square")]
         public float ExtraFee { get; set; }
         [Display(Name = "Period")]

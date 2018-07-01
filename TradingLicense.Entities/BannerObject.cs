@@ -13,6 +13,7 @@ namespace TradingLicense.Entities
         public int BannerCodeID { get; set; }
         public int BQuantity { get; set; }
         public float BSize { get; set; }
+        public float Fee { get; set; }
 
         public virtual BannerApplication BannerApplication { get; set; }
         public virtual Location Location { get; set; }

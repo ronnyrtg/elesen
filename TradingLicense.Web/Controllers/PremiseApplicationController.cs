@@ -344,7 +344,6 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManagePremiseApplication(int? id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
-            //TODO: I guess 2012 year is outdated
             premiseApplicationModel.StartRent = DateTime.Today;
             premiseApplicationModel.StopRent = DateTime.Today;
             if (id != null && id > 0)

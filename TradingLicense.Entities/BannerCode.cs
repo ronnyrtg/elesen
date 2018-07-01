@@ -14,7 +14,6 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string BannerCodeDesc { get; set; }
-        public float ProcessingFee { get; set; }
         public float ExtraFee { get; set; }
         public int Period { get; set; }
         public int PeriodQuantity { get; set; }
@@ -24,7 +23,5 @@ namespace TradingLicense.Entities
         {
             Active = true;
         }
-
-        public virtual BannerApplication BannerApplication { get; set; }
     }
 }

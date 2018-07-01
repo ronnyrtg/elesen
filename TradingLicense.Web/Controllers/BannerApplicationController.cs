@@ -18,7 +18,6 @@ using System.Data.Entity;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing.Layout;
-using System.Data.Entity.SqlServer;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -341,13 +340,14 @@ namespace TradingLicense.Web.Controllers
                 BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
                 ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
 
-                var qry = ctx.Individuals.Where(e => e.IndividualID == 1);
-
                 if (Id != null && Id > 0)
                 {
-                    BannerObjectModel = db.BannerObjects.Include("BannerCode")
-                                             .Include("Location")
-                                             .Where(x => x.BannerApplicationID == Id).ToList();
+                    BannerObjectModel = db.BannerObjects
+                        .Include("BannerCode")
+                        .Include("Location")
+                        .Where(x => x.BannerApplicationID == Id)
+                        .ToList();
+
                     var Docs = (from d in db.BALinkReqDocs
                                 join f in db.Attachments
                                 on d.AttachmentID equals f.AttachmentID
@@ -366,15 +366,6 @@ namespace TradingLicense.Web.Controllers
                         Atch.filename = item.FileName;
                         Attchments.Add(Atch);
                     }
-
-                    int bannerApplicationID = Convert.ToInt32(Id);
-                    var bannerApplication = ctx.BannerApplications.Where(a => a.BannerApplicationID == bannerApplicationID).FirstOrDefault();
-                    bannerApplicationModel.BannerApplicationID = bannerApplication.BannerApplicationID;
-                    Int32? CompId = bannerApplication.CompanyID;
-                    bannerApplicationModel.CompanyID = Convert.ToInt32(CompId);
-                    bannerApplicationModel.IndividualID = bannerApplication.IndividualID;
-                    bannerApplicationModel.AppStatusID = bannerApplication.AppStatusID;  
-                    //bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
                 }
             }
             ViewBag.BALinkReqDoc = Attchments;
@@ -407,7 +398,7 @@ namespace TradingLicense.Web.Controllers
             JavaScriptSerializer jss2 = new JavaScriptSerializer();
             Attchment = jss2.Deserialize<List<Attchments>>(ImgModel);
 
-            int totalApproved = 0;
+            
             int scope_id = 0;
             int BannerApplicationID = 0;
 
@@ -419,6 +410,10 @@ namespace TradingLicense.Web.Controllers
                     {
                         foreach (var item in BannerApp)
                         {
+                            float ProcessingFee = 0;
+                            float Fee = 0;
+                            int totalApplied = 0;
+                            int totalApproved = 0;
                             int AppStatusId = 0;
                             string RefNo = "";
 
@@ -426,8 +421,21 @@ namespace TradingLicense.Web.Controllers
                             {
                                 if (ProjectSession.User.RoleTemplateID == 2)
                                 {
+                                    using (var ctx = new LicenseApplicationContext())
+                                    {
+                                        IQueryable<BannerApplication> query = ctx.BannerApplications
+                                            .Where(b => b.DateSubmitted.Year == DateTime.Now.Year);
+                                        totalApplied = query.Count();
+
+                                        var query2 = ctx.BannerObjects
+                                            .Where(bo => bo.BannerApplicationID == item.BannerApplicationID)                                       
+                                            .Sum(bo => bo.Fee);
+                                        Fee = query2;
+                                    }
+                                    totalApplied = totalApplied + 1;
                                     AppStatusId = 3;
-                                    RefNo = DateTime.Now.Year + "/BA/NEW/" + item.BannerApplicationID.ToString().PadLeft(6, '0');
+                                    ProcessingFee = 25;
+                                    RefNo = DateTime.Now.Year + "/BA/NEW/" + totalApplied.ToString().PadLeft(6, '0');
                                 }
                                 else if (ProjectSession.User.RoleTemplateID == 3)
                                 {
@@ -438,7 +446,7 @@ namespace TradingLicense.Web.Controllers
                                     using (var ctx = new LicenseApplicationContext())
                                     {
                                         IQueryable<BannerApplication> query = ctx.BannerApplications
-                                            .Where(b => b.AppStatusID == 15 && SqlFunctions.DatePart("yyyy", b.DateApproved) == DateTime.Now.Year);
+                                            .Where(b => b.AppStatusID == 15 &&  b.DateApproved.Value.Year == DateTime.Now.Year);
                                         totalApproved = query.Count();
                                     }
 
@@ -464,10 +472,14 @@ namespace TradingLicense.Web.Controllers
                             }
 
                             BannerApplicationID = item.BannerApplicationID;
+                            item.IndividualID = Convert.ToInt32(IndividualId);
+                            item.CompanyID = Convert.ToInt32(compId);
                             item.ReferenceNo = RefNo;
                             item.UsersID = ProjectSession.UserID;
                             item.UpdatedBy = ProjectSession.User.FullName;
                             item.AppStatusID = AppStatusId;
+                            item.ProcessingFee = ProcessingFee;
+                            item.TotalFee = Fee;
                             if (BannerApplicationID > 0)
                             {
                                 db.Entry(item).State = EntityState.Modified;
@@ -541,6 +553,48 @@ namespace TradingLicense.Web.Controllers
                 }
             }
             return Json(Convert.ToString(0));
+        }
+        #endregion
+
+        #region Save Banner Objects
+        [HttpPost]
+        public ActionResult AddBannerObject(int bannerApplicationID, int BannerCode, int Location, float SaizIklan, int BilanganIklan )
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var ba = ctx.BannerObjects.Where(p => p.BannerApplicationID == bannerApplicationID).FirstOrDefault();
+                var Fee = ctx.BannerCodes.Where(p => p.BannerCodeID == BannerCode).Select(p => p.PeriodFee).FirstOrDefault();
+                var eFee = ctx.BannerCodes.Where(p => p.BannerCodeID == BannerCode).Select(p => p.ExtraFee).FirstOrDefault();
+                float TotalFee = 0;
+
+                if (ba != null)
+                {
+                    ba.BannerApplicationID = bannerApplicationID;
+                    ba.BannerCodeID = BannerCode;
+                    ba.LocationID = Location;
+                    ba.BSize = SaizIklan;
+                    ba.BQuantity = BilanganIklan;
+                    if(SaizIklan <= 8)
+                    {
+                        TotalFee = Fee * BilanganIklan;
+                    }
+                    else
+                    {
+                        TotalFee = (((float)Math.Floor(SaizIklan - 8)*eFee)+ Fee)*BilanganIklan;
+                    }
+                    ba.Fee = TotalFee;
+
+                    ctx.BannerObjects.AddOrUpdate(ba);
+                    ctx.SaveChanges();
+                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Unable to find matching banner application ID";
+                }
+            }
+
+            return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + bannerApplicationID);
         }
         #endregion
 

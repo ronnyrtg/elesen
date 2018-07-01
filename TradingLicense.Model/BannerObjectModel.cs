@@ -8,6 +8,7 @@ namespace TradingLicense.Model
         public int BannerApplicationID { get; set; }
         public int BQuantity { get; set; }
         public float BSize { get; set; }
+        public float Fee { get; set; }
         [Required(ErrorMessage = "Sila masukkan lokasi iklan")]
         [StringLength(255)]
         public int LocationID { get; set; }

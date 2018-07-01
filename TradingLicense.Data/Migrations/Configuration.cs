@@ -633,12 +633,12 @@ namespace TradingLicense.Data.Migrations
 
             var bannerCodes = new List<BannerCode>
             {
-                new BannerCode {BCodeNumber="O001",BannerCodeDesc="Iklan Tidak Bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
-                new BannerCode {BCodeNumber="O002",BannerCodeDesc="Iklan Bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
-                new BannerCode {BCodeNumber="O003",BannerCodeDesc="Iklan Kecil",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
-                new BannerCode {BCodeNumber="O004",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – tidak bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
-                new BannerCode {BCodeNumber="O005",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – bercahaya",ProcessingFee=25.0f,ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=200.0f},
-                new BannerCode {BCodeNumber="O006",BannerCodeDesc="Tanda Langit",ProcessingFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
+                new BannerCode {BCodeNumber="O001",BannerCodeDesc="Iklan Tidak Bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
+                new BannerCode {BCodeNumber="O002",BannerCodeDesc="Iklan Bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
+                new BannerCode {BCodeNumber="O003",BannerCodeDesc="Iklan Kecil",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
+                new BannerCode {BCodeNumber="O004",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – tidak bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
+                new BannerCode {BCodeNumber="O005",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=200.0f},
+                new BannerCode {BCodeNumber="O006",BannerCodeDesc="Tanda Langit",Period=1,PeriodQuantity=1,PeriodFee=100.0f},
             };
             bannerCodes.ForEach(s => context.BannerCodes.Add(s));
             context.SaveChanges();

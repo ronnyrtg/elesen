@@ -40,9 +40,6 @@ namespace TradingLicense.Model
 
         public float AmountDue { get; set; }
 
-        public List<SelectedBannerObjectModel> selectedbannerobjectList = new List<SelectedBannerObjectModel>();
-        public List<SelectedBannerCodeModel> selectedbannercodeList = new List<SelectedBannerCodeModel>();
-
         public static string GetReferenceNo(int bannerApplicationId, DateTime submittedDateTime)
         {
             return $"{submittedDateTime.Year}/BA/NEW/{bannerApplicationId.ToString().PadLeft(6, '0')}";
