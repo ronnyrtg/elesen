@@ -41,6 +41,10 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc))
                             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
+                cfg.CreateMap<BannerApplication, BannerApplicationModel>()
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
+                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));                            
                 cfg.CreateMap<PremiseApplicationModel, PremiseApplication>();
                 cfg.CreateMap<BCLinkAD, BCLinkADModel>().ForMember(dest => dest.DocDesc, opt => opt.MapFrom(s => s.AdditionalDoc.DocDesc));
                 cfg.CreateMap<BCLinkADModel, BCLinkAD>();
@@ -60,6 +64,10 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<MLPremiseApplication, MLPremiseApplicationModel>();
                 cfg.CreateMap<MLPermitApplication, MLPermitApplicationModel>();
                 cfg.CreateMap<PaymentReceivedModel, PaymentReceived>().ForMember(dest => dest.Individual, opt => opt.Ignore());
+                cfg.CreateMap<StallApplication, StallApplicationModel>()
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
+                            .ForMember(dest => dest.StallCodeDesc, opt => opt.MapFrom(s => s.StallCode.StallCodeDesc))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
             });
         }
     }

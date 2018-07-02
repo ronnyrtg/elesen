@@ -104,9 +104,7 @@
                         <div class="control-label">
                             Nama Pembantu (Mykad/Paspot)
                         </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)                    
+                        @Html.DropDownListFor(m => m.HelperA, new SelectList(individualList, "IndividualID", "FullName"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control" })                  
                     </div>
                 </div>
             </div>
@@ -167,6 +165,11 @@
             console.log(this);
         }
 
+        function back() {
+            var link = '@Url.Action("StallApplication", "StallApplication")';
+            window.location.href = link;
+        }
+
         $(function () {
             // This will make every element with the class "date-picker" into a DatePicker element
             $('.date-picker').datepicker({ dateFormat: 'dd/MM/yyyy' });
@@ -179,10 +182,7 @@
                 errorMessage(actionError);
             }
 
-            function back() {
-                var link = '@Url.Action("StallApplication", "StallApplication")';
-                window.location.href = link;
-            }
+
 
             function individualFormating(state) {
                 if (!state.isNew) {
@@ -203,19 +203,7 @@
                 return $state;
             }
 
-            var individualSelecteId = [];
-            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
-                var individualIds = '@Model.Individualids';
-
-                var arr = individualIds.split(',');
-                $.each(arr, function (index, value) {
-                    individualSelecteId.push(value);
-                });
-                $('#individualList').val(individualSelecteId);
-                $('#individualList').trigger('change');
-            } else {
-                individualSelecteId = [];
-            }
+            
 
             $("#individualList").select2({
                 placeholder: "Select Full Name or Mykad/Passport No",

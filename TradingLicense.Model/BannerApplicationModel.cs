@@ -33,8 +33,17 @@ namespace TradingLicense.Model
         public bool IsDraft { get; set; }
         public string UploadRequiredDocids { get; set; }
 
-        public List<SelectedBannerObjectModel> selectedbannerobjectList = new List<SelectedBannerObjectModel>();
-        public List<SelectedBannerCodeModel> selectedbannercodeList = new List<SelectedBannerCodeModel>();
+        public string newComment { get; set; }
+        public string Supported { get; set; }
+        public string SubmitType { get; set; }
+        public bool HasPADepSupp { get; set; }
+
+        public float AmountDue { get; set; }
+
+        public static string GetReferenceNo(int bannerApplicationId, DateTime submittedDateTime)
+        {
+            return $"{submittedDateTime.Year}/BA/NEW/{bannerApplicationId.ToString().PadLeft(6, '0')}";
+        }
     }
    
 }

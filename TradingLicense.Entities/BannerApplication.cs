@@ -28,6 +28,7 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string ReferenceNo { get; set; }
+        public string LicenseStatus { get; set; }
         public DateTime? ExpireDate { get; set; }
 
         public virtual AppStatus AppStatus { get; set; }

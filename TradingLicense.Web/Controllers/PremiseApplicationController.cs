@@ -344,7 +344,6 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManagePremiseApplication(int? id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
-            //TODO: I guess 2012 year is outdated
             premiseApplicationModel.StartRent = DateTime.Today;
             premiseApplicationModel.StopRent = DateTime.Today;
             if (id != null && id > 0)
@@ -799,7 +798,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save ManagePremiseApplication Data
+        #region Check ManagePremiseApplication data isValid
         /// <summary>
         /// Save PremiseApplication Information
         /// </summary>
@@ -934,7 +933,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save PremiseApplication data
+        #region Save data from ManagePremiseApplication
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);
