@@ -197,7 +197,7 @@
                         <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                         @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                        @*<input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />*@
 
                         }
                         @if (Model.AppStatusID == 10 || Model.AppStatusID == 12)
@@ -257,7 +257,6 @@
                         {
 
                         }
-
                         <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
 
                     </div>
@@ -266,7 +265,24 @@
         }
     </div>
 </div>
+ <div id="myModal" class="modal fade" role="dialog">
+     <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                 <h4 class="modal-title">License Details</h4>
+             </div>
+             <div class="modal-body">
+                 <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
 
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+
+     </div>
+ </div>
 @section scripts{                                                                                                  
 <script type="text/javascript">
         $(function () {
@@ -817,9 +833,9 @@
     }
 
     $(document).ready(function () {
-        hideLetterDropDown();
+        //hideLetterDropDown();
         $('#btnLetter').click(function () {
-            $('.modal-body iframe').attr('src', "../HawkerApplication/GenerateLetter?AppId=1");
+            $('.modal-body iframe').attr('src', "../HawkerApplication/GeneratLicense?AppId=" + '@ViewBag.HawkerApplicationID');
             $('#myModal').modal('show');
         });
     });
@@ -879,12 +895,5 @@
             ]
         });
     }
-    $('#btnLetter').click(function () {
-        var AppId = $('#HawkerApplicationID').val();
-        $('.modal-body iframe').attr('src', "../HawkerApplication/GeneratLicense?AppId=" + '@ViewBag.HawkerApplicationID');
-        $('#myModal').modal('show');
-    });
-
-
 </script>
 }
