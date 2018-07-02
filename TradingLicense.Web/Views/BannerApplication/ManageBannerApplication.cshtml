@@ -1,10 +1,11 @@
 ﻿@model TradingLicense.Model.BannerApplicationModel
 @using AutoMapper;
+@using TradingLicense.Infrastructure;
 @{
     ViewBag.Title = "ManageBannerApplication";
 }
 @{
-    List<TradingLicense.Entities.BAReqDoc> bannerDocList = new List<TradingLicense.Entities.BAReqDoc>();
+    
     List<TradingLicense.Model.CompanyModel> companyList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
     List<TradingLicense.Model.BannerCodeModel> bannerCodeList = new List<TradingLicense.Model.BannerCodeModel>();
@@ -46,8 +47,12 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.BannerApplicationID)
+        @Html.HiddenFor(m => m.UsersID)
+        @Html.HiddenFor(m => m.UserRollTemplate)
+        @Html.HiddenFor(m => m.RequiredDocIds)
         @Html.HiddenFor(m => m.IsDraft)
         @Html.HiddenFor(m => m.AppStatusID)
+        @Html.HiddenFor(m => m.Fee)
 
         <div class="row">
             <div class="col-sm-12 col-lg-6">
@@ -68,8 +73,44 @@
             </div>
         </div>
         <div class="header">
-            <h4 id="headerTitle">Senarai Iklan</h4>
+            <h4 id="headerTitle">Butir-Butir Iklan</h4>
         </div><br />
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Kod Iklan</div>
+                    @Html.DropDownListFor(m => m.BannerCodeID, new SelectList(bannerCodeList, "BannerCodeID", "BannerCodeDesc"), new { @class = "form-control" })
+                    <span class="text-danger BannerCodeVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Lokasi Dipohon</div>
+                    @Html.DropDownListFor(m => m.LocationID, new SelectList(locationList, "LocationID", "LocationDesc"), new { @class = "form-control" })
+                    <span class="text-danger LocationVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                    @Html.TextBoxFor(m => m.BSize, new { @class = "form-control allownumericwithdecimal" })
+                    <span class="text-danger SizeVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Bilangan Iklan</div>
+                    @Html.TextBoxFor(m => m.BQuantity, new { @class = "form-control allowinteger" })
+                    <span class="text-danger quantityVal"></span>
+                </div>
+            </div>
+        </div>
         if (Model.AppStatusID >= 1)
         {
         <div class="row">
@@ -80,7 +121,17 @@
             </div>
         </div>
         }
-        if (ViewBag.UserRole > 1)
+        <div class="row">
+            <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                <div class="form-group">
+                    <div class="header">
+                        <h4 id="headerTitle">Senarai Dokumen Wajib</h4>
+                    </div><br />
+                    <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
+                </div>
+            </div>
+        </div>
+        if (Model.UserRollTemplate > 1)
         {
             <div class="row">
                 <div class="col-lg-12 col-md-12">
@@ -98,7 +149,7 @@
                     </div>
                 </div>
             </div>
-            if (ViewBag.UserRole == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director)
+            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
             {
                 <div class="row">
                     <div class="col-sm-6">
@@ -109,122 +160,222 @@
                     </div>
                 </div>
             }
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            
-                            @if (@Model.AppStatusID == 13)
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                        }
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                        }
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
+                        }
+                        @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
+                        {
+                            // Add a button for showing License print
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                        }
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
+                        {
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)Enums.PAStausenum.draftcreated)
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen Iklan" id="btnLicense" name="btnSubmit" />
+                                <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
-                            @if (@Model.AppStatusID == 9)
+                        }
+
+                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-                            }
-                            @if (@Model.AppStatusID < 9)
-                            {
-                                <input type="button" class="btn btn-info submitbtn" value="Simpan Draf" id="btnDraft" name="btnSubmit" />
-                            }
-                            @if (!(@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
-                            {
-                                <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Hantar" />
-                            }
-                            <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
-                        </div>
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                            }*@
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && Model.BannerApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
+                        {
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.BannerApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.BannerApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
+                        {
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
+                        {
+                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.BannerApplicationID > 0)
+                        {
+
+                        }
+
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+
                     </div>
                 </div>
+            </div>
         }
 
-           <div id="myModal" class="modal fade" role="dialog">
-               <div class="modal-dialog modal-lg">
-                   <div class="modal-content">
-                       <div class="modal-header">
-                           <button type="button" class="close" data-dismiss="modal">&times;</button>
-                           <h4 class="modal-title">License Details</h4>
-                       </div>
-                       <div class="modal-body">
-                           <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+<!--Upload Doc-->
+<div id="uploadDocumentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        @using (Html.BeginForm("UploadDocument", "BannerApplication", FormMethod.Post, new { name = "frmuploadDocument", id = "frmuploadDocument", enctype = "multipart/form-data" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload Document</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="reqDocid" id="reqDocid">
+                    <input type="hidden" name="isReqDoc" id="isReqDoc">
 
-                       </div>
-                       <div class="modal-footer">
-                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                       </div>
-                   </div>
-               </div>
-           </div>
-        <div id="showAddBannerObject" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-                @using (Html.BeginForm("AddBannerObject", "BannerApplication", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
-                {
-                    @Html.HiddenFor(m => m.BannerApplicationID)
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Tambah Iklan</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-sm-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="control-label">Kod Iklan</div>
-                                        @Html.DropDownList("BannerCode", new SelectList(bannerCodeList, "BannerCodeID", "BannerCodeDesc"), new { @class = "form-control" })
-                                        <span class="text-danger BannerCodeVal"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="control-label">Lokasi Dipohon</div>
-                                        @Html.DropDownList("Location", new SelectList(locationList, "LocationID", "LocationDesc"), new { @class = "form-control" })
-                                        <span class="text-danger LocationVal"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
-                                        <input style="text-align:left" type="text" name="SaizIklan" class="form-control allownumericwithdecimal" />
-                                        <span class="text-danger SizeVal"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="control-label">Bilangan Iklan</div>
-                                        <input style="text-align:left" type="text" name="BilanganIklan" class="form-control allowinteger" />
-                                        <span class="text-danger quantityVal"></span>
-                                    </div>
-                                </div>
-                            </div>                       
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-primary" value="Tambah" onclick="return validateSaveObjects()" />
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                        </div>
-                    </div>
-                }
+                    <input type="file" id="DocumentFile" name="file" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf, image/*" /><br />
+                </div>
+                <div class="modal-footer">
+                    @if (Model.UserRollTemplate > (int)Enums.RollTemplate.DeskOfficer)
+                    {
+                        <input type="button" class="btn btn-primary" onclick="return UploadDocument()" value="Upload" />
+                    }
+                    else
+                    {
+                        if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public)
+                        {
+                            <input type="button" class="btn btn-primary" onclick="return UploadAttechment()" value="Upload" />
+                        }
+                    }
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">License Details</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+<div id="showAddBannerObject" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddBannerObject", "BannerApplication", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
+        {
+            @Html.HiddenFor(m => m.BannerApplicationID)
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Iklan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Kod Iklan</div>
+                                @Html.DropDownList("BannerCode", new SelectList(bannerCodeList, "BannerCodeID", "BannerCodeDesc"), new { @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Lokasi Dipohon</div>
+                                @Html.DropDownList("Location", new SelectList(locationList, "LocationID", "LocationDesc"), new { @class = "form-control" })
+                                <span class="text-danger LocationVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                                <input style="text-align:left" type="text" name="SaizIklan" class="form-control allownumericwithdecimal" />
+                                <span class="text-danger SizeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Bilangan Iklan</div>
+                                <input style="text-align:left" type="text" name="BilanganIklan" class="form-control allowinteger" />
+                                <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>                       
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return validateSaveObjects()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
     }
 </div>
 </div>
 @section scripts{
 <script>
+    var userRollTemplate = 0;
+    var visibleGridColume = false;
+    var visibleGridUploadColume = false;
+
+    var requiredDocList = [];
+    var addtionalDocList = [];
+
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
         errorMessage(actionError);
     }
 
-    function frmSubmit(isdraft) {
-        $("#IsDraft").val(isdraft);
-        if (validateBannerApplication(isdraft)) {
-            $("#frmBannerApplication").submit();
+    $(function () {
+
+        $('.form-control').keypress(function (e) {
+            if (e.which == 13) {
+                bindTable();
+                return false;
+            }
+        });
+
+        var success = '@(TempData["SuccessMessage"])';
+        if (success != null && success != "") {
+            successMessage(success);
         }
-    }
+        bindTable();
+    });
 
     function back() {
         var link = '@Url.Action("BannerApplication", "BannerApplication")';
@@ -233,6 +384,38 @@
 
     //Select2 for Individual & Company
     $(function () {
+
+        userRollTemplate = $("#UserRollTemplate").val();
+
+        var success = '@(TempData["SuccessMessage"])';
+        if (success != null && success != "") {
+            successMessage(success);
+        }
+
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
+        visibleGridUploadColume = true;
+        if (userRollTemplate > 1) {
+            visibleGridColume = true;
+        }
+
+        //Form input control modes
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                event.preventDefault();
+            }
+        });
+
+        $(".allowinteger").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            if ((event.which != 46) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                event.preventDefault();
+            }
+        });
 
         $('#companiesList').select2({ width: '100%', placeholder: "Pilih Nama Syarikat", minimumInputLength: 2 });
 
@@ -304,6 +487,7 @@
 
      function AddBannerObject() {
         $("#showAddBannerObject").modal('show');
+
          //Form input control modes
         $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
             $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
@@ -322,6 +506,282 @@
 
      }
 
+     function bindTable() {
+
+         $('#RequiredDocument').show();
+         if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+             $('#tblBusinessType').dataTable().fnDestroy();
+         }
+
+
+         table = $("#tblBusinessType").dataTable({
+             "lengthChange": true,
+             "searching": false,
+             "pageLength": 50,
+             "processing": true,
+             "serverSide": true,
+             "bPaginate": false,
+             "bInfo": false,
+             "orderMulti": false,
+             "ajax": {
+                 url: '@Url.Action("RequiredDocument", "BannerApplication")',
+                 type: "POST",
+                 data: bindSearch()
+             },
+             "columns": [
+                 {
+                     "title": "Disertakan?",
+                     "data": null,
+                     "render": function (data, type, row) {
+                         var appendstring = '';
+                         if (userRollTemplate > 1) {
+                             appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                         }
+                         return appendstring
+                     },
+                     width: "7%",
+                     "orderable": false,
+                     "visible": visibleGridColume,
+                 },
+                 { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
+                 {
+                     "title": "Muat Naik",
+                     "data": null,
+                     "render": function (data, type, row) {
+                         var appendstring = '';
+                         if (userRollTemplate == 1) {
+                             appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                         }
+                         else if (userRollTemplate > 2) {
+                             appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                         }
+                         return appendstring
+                     },
+                     width: "7%",
+                     "orderable": false,
+                     "visible": visibleGridUploadColume,
+                 },
+                 {
+                     "title": "Nama Fail",
+                     "data": null,
+                     "render": function (data, type, row) {
+                         var appendstring = '';
+
+                         if (visibleGridUploadColume) {
+                             if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                 appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+
+                             } else {
+                                 appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
+                             }
+
+                         } else {
+                             if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                 appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["PremiseApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                             } else {
+                                 appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                             }
+                         }
+                         return appendstring
+                     },
+                     "orderable": false,
+                 }
+             ]
+         });
+     }
+
+    if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+        var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+        var arr = UploadRequiredDocumentlist.split(',');
+        $.each(arr, function (index, value) {
+            requiredDocList.push(value);
+        });
+    }
+
+    $("#preAppid").val(@Model.BannerApplicationID);
+
+    function RequiredDocument() {
+
+        var RequiredArray = [];
+        $('.chkreqdoc').each(function () {
+            if ($(this).is(":checked")) {
+                RequiredArray.push($(this).val());
+            }
+        });
+        $("#RequiredDocIds").val(RequiredArray);
+
+        checkButtonState();
+    }
+
+    function checkButtonState() {
+
+        var isDocument = false;
+        if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
+            isDocument = true;
+        }
+
+        if (isDocument) {
+            $('.btSubmit').show();
+        } else {
+            $('.btSubmit').hide();
+        }
+    }
+
+    function RequiredDocumentModel(Requiredid) {
+        $("#reqDocid").val(Requiredid);
+        $('#isReqDoc').val("1");
+        $('#uploadDocumentModal').modal('show');
+    }
+
+    if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+        var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+        var arr = UploadRequiredDocumentlist.split(',');
+        $.each(arr, function (index, value) {
+            requiredDocList.push(value);
+        });
+    }
+
+    function frmSubmit(isdraft) {
+        $("#IsDraft").val(isdraft);
+        if (validateBannerApplication(isdraft)) {
+            $("#frmBannerApplication").submit();
+        }
+    }
+
+    function validateBannerApplication(isdraft) {
+        $("#UploadRequiredDocids").val(requiredDocList);
+
+        RequiredDocument();
+
+        if (!$("#frmBannerApplication").valid()) {
+            return false;
+        } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+            alert("Please Upload all Required Document");
+            return false;
+        } else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
+            alert("Please select all checkbox for Required Document");
+            return false;
+        } else {
+            var individuals = $("#individualList").select2('data');
+            if (individuals) {
+                var newIndividuals = [];
+                for (var i = 0; i < individuals.length; i++) {
+                    var ind = individuals[i];
+                    if (ind.isNew) {
+                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                    }
+                }
+                if (newIndividuals.length > 0) {
+                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                }
+            }
+        }
+        return true;
+    }
+
+    function bindDownload(attechmentID) {
+        if (attechmentID > 0) {
+            window.location.href = "@Url.Action("Download", "BannerApplication")" + "?attechmentID=" + attechmentID;
+        }
+    }
+
+    function SaveComment() {
+
+        if (!$("#frmsaveComment").valid()) {
+            return false;
+        } else {
+
+            var data = new FormData();
+            data.append("BannerApplicationID", @Model.BannerApplicationID);
+            data.append("comment", $("#txtComment").val());
+
+            if ($("#lblapprovedreject").html() == "Approve") {
+                data.append("approveRejectType", "Approve");
+            } else {
+                data.append("approveRejectType", "Reject");
+            }
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveComment", "BannerApplication")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    if (result != null) {
+                        $("#txtComment").val("");
+                        if (result.status == 1) {
+                            successMessage(result.message);
+                            back();
+                        }
+                        else {
+                            errorMessage(result.message);
+                        }
+                    }
+                    $("#approvedrejectModal").modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
+
+        }
+    }
+
+    function loadComments() {
+        $('#Comments').show();
+        if ($.fn.DataTable.isDataTable("#tblComments")) {
+            $('#tblComments').dataTable().fnDestroy();
+        }
+
+        var data = { "BannerApplicationID": @Model.BannerApplicationID };
+
+        table = $("#tblComments").dataTable({
+            "lengthChange": true,
+            "searching": false,
+            "pageLength": 50,
+            "processing": true,
+            "serverSide": true,
+            "responsive": true,
+            "bPaginate": true,
+            "bInfo": false,
+            "orderMulti": false,
+            "ajax": {
+                url: '@Url.Action("BannerComments", "BannerApplication")',
+                type: "POST",
+                data: data
+            },
+            "columns": [
+                {
+                    "targets": 0,
+                    "searchable": false,
+                    "orderable": false,
+                    "title": "No.",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.settings._iDisplayStart + meta.row + 1;
+                    }
+                },
+                {
+                    "title": "Ulasan",
+                    "orderable": false,
+                    "data": "Comment"
+                },
+                {
+                    "title": "Pengulas",
+                    "orderable": false,
+                    "data": "FullName"
+                },
+                { "title": "Ulasan dibuat pada", "data": "CommentDate", "width": "150px", render: renderDateTime },
+            ]
+        });
+    }
+
     // Generate license PDF
     $(document).ready(function () {
         $('#btnLicense').click(function () {
@@ -338,5 +798,6 @@
             $('#myModal').modal('show');
         });
     });
+
 </script>
 }

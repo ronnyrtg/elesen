@@ -33,6 +33,12 @@ namespace TradingLicense.Model
         public bool IsDraft { get; set; }
         public string UploadRequiredDocids { get; set; }
 
+        public int BannerCodeID { get; set; }
+        public int LocationID { get; set; }
+        public float BSize { get; set; }
+        public int BQuantity { get; set; }
+        public float Fee { get; set; }
+
         public string newComment { get; set; }
         public string Supported { get; set; }
         public string SubmitType { get; set; }
