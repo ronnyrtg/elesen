@@ -20,6 +20,7 @@ using PdfSharp.Pdf;
 using PdfSharp.Drawing.Layout;
 using static TradingLicense.Infrastructure.Enums;
 using TradingLicense.Web.Services;
+using TradingLicense.Web.Helpers;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -266,6 +267,59 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Required Doc List Datatable
+        /// <summary>
+        /// Get Required Document Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="bannerApplicationId">The banner application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string bannerApplicationId)
+        {
+            List<BAReqDocModel> requiredDocument = new List<BAReqDocModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+
+                var bareqdoc = ctx.BAReqDocs.ToList();
+                requiredDocument = Mapper.Map<List<BAReqDocModel>>(bareqdoc);
+                totalRecord = requiredDocument.Count;
+
+                #region IsChecked
+
+                if (!string.IsNullOrWhiteSpace(bannerApplicationId))
+                {
+                    int bannerAppId;
+                    int.TryParse(bannerApplicationId, out bannerAppId);
+
+                    var baLinkReqDoc = ctx.BALinkReqDocs.Where(p => p.BannerApplicationID == bannerAppId).ToList();
+                    foreach (var item in requiredDocument)
+                    {
+                        if (baLinkReqDoc.Count > 0)
+                        {
+                            var resultpalinkReq = baLinkReqDoc.FirstOrDefault(p => p.BannerApplicationID == bannerAppId);
+                            if (resultpalinkReq != null)
+                            {
+                                item.IsChecked = "checked";
+                                var attechmentdetails = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == resultpalinkReq.AttachmentID);
+                                if (attechmentdetails != null)
+                                {
+                                    item.AttachmentFileName = attechmentdetails.FileName;
+                                    item.AttachmentId = attechmentdetails.AttachmentID;
+                                    item.BannerApplicationID = bannerAppId;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region Get BannerApplication Data By Individual for Datatable
         /// <summary>
         /// Get BannerApplication Data By Individual for Datatable
@@ -333,51 +387,41 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageBannerApplication(int? Id)
+        public ActionResult ManageBannerApplication(int? id)
         {
             BannerApplicationModel bannerApplicationModel = new BannerApplicationModel();
-            List<BannerObject> BannerObjectModel = new List<BannerObject>();
-            List<BAReqDocModel> BAReqDoc = new List<BAReqDocModel>();
-            List<BALinkReqDoc> BALinkReqDoc = new List<BALinkReqDoc>();
-            List<Attchments> Attchments = new List<Attchments>();
-
-            using (var ctx = new LicenseApplicationContext())
+            
+            if (id != null && id > 0)
             {
-                IQueryable<BAReqDoc> query = ctx.BAReqDocs;
-                BAReqDoc = Mapper.Map<List<BAReqDocModel>>(query.ToList());
-                ViewBag.bannerDocList = ctx.BAReqDocs.ToList();
-
-                if (Id != null && Id > 0)
+                using (var ctx = new LicenseApplicationContext())
                 {
-                    var bannerApplication = ctx.BannerApplications.FirstOrDefault(a => a.BannerApplicationID == Id);
+                    var bannerApplication = ctx.BannerApplications.FirstOrDefault(a => a.BannerApplicationID == id);
                     bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
 
-                    var baLinkBO = ctx.BannerObjects.Where(a => a.BannerApplicationID == Id).ToList();
-                    bannerApplicationModel.BannerObjectids = string.Join(",", baLinkBO.Select(x => x.BannerCodeID.ToString()).ToArray());
-
-                    var Docs = (from d in db.BALinkReqDocs
-                                join f in db.Attachments
-                                on d.AttachmentID equals f.AttachmentID
-                                where d.BannerApplicationID == Id
-                                select new
-                                {
-                                    AttachmentID = d.AttachmentID,
-                                    RequiredDocID = d.RequiredDocID,
-                                    FileName = f.FileName
-                                }).ToList();
-                    foreach (var item in Docs)
+                    var baLinkReqDocumentList = ctx.BALinkReqDocs.ToList();
+                    if (baLinkReqDocumentList.Count > 0)
                     {
-                        Attchments Atch = new Attchments();
-                        Atch.Id = Convert.ToInt32(item.AttachmentID);
-                        Atch.RequiredDocID = item.RequiredDocID;
-                        Atch.filename = item.FileName;
-                        Attchments.Add(Atch);
+                        bannerApplicationModel.UploadRequiredDocids = (string.Join(",", baLinkReqDocumentList.Select(x => x.RequiredDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
+                    }
+
+                    if (bannerApplication.AppStatusID == (int)PAStausenum.Pendingpayment)
+                    {
+                        var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == bannerApplicationModel.ReferenceNo).FirstOrDefault();
+                        if (duePayment != null)
+                        {
+                            bannerApplicationModel.AmountDue = duePayment.AmountDue;
+                        }
                     }
                 }
             }
-            ViewBag.BALinkReqDoc = Attchments;
-            ViewBag.BannerObjects = BannerObjectModel;
-            ViewBag.UserRole = ProjectSession.User.RoleTemplateID;
+
+            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            {
+                bannerApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+                bannerApplicationModel.UsersID = ProjectSession.User.UsersID;
+            }
+
+            bannerApplicationModel.IsDraft = false;
             return View(bannerApplicationModel);
         }
         #endregion
@@ -480,6 +524,9 @@ namespace TradingLicense.Web.Controllers
                 bannerApplication.AppStatusID = finalStatus;
             }
             bannerApplication.DateSubmitted = DateTime.Now;
+            bannerApplication.IndividualID = bannerApplicationModel.IndividualID;
+            bannerApplication.CompanyID = bannerApplicationModel.CompanyID;
+            bannerApplication.UpdatedBy = ProjectSession.UserName;
 
             ctx.BannerApplications.AddOrUpdate(bannerApplication);
             ctx.SaveChanges();
@@ -509,11 +556,11 @@ namespace TradingLicense.Web.Controllers
                 {
                     if (roleTemplate == (int)RollTemplate.Public)
                     {
-                        var baLinkReqDocumentList = ctx.BALinkReqDocs
+                        var paLinkReqDocUmentList = ctx.BALinkReqDocs
                             .Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
-                        if (baLinkReqDocumentList.Count > 0)
+                        if (paLinkReqDocUmentList.Count > 0)
                         {
-                            ctx.BALinkReqDocs.RemoveRange(baLinkReqDocumentList);
+                            ctx.BALinkReqDocs.RemoveRange(paLinkReqDocUmentList);
                             ctx.SaveChanges();
                         }
                     }
@@ -529,15 +576,22 @@ namespace TradingLicense.Web.Controllers
                 {
                     if (!bannerApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
                     {
-                        var baLinkReqDocumentList = ctx.BALinkReqDocs.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
-                        if (baLinkReqDocumentList.Count > 0)
+                        var paLinkReqDocUmentList = ctx.BALinkReqDocs.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
                         {
-                            ctx.BALinkReqDocs.RemoveRange(baLinkReqDocumentList);
+                            ctx.BALinkReqDocs.RemoveRange(paLinkReqDocUmentList);
                             ctx.SaveChanges();
                         }
                     }
                 }
             }
+            BannerObject bo = new BannerObject();
+            bo.BannerCodeID = bannerApplicationModel.BannerCodeID;
+            bo.LocationID = bannerApplicationModel.LocationID;
+            bo.BSize = bannerApplicationModel.BSize;
+            bo.BQuantity = bannerApplicationModel.BQuantity;
+            ctx.BannerObjects.Add(bo);
+            ctx.SaveChanges();
 
             if (!string.IsNullOrWhiteSpace(bannerApplicationModel.newComment))
             {
@@ -678,7 +732,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult BAReqDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BAReqDocDesc)
         {
-            List<TradingLicense.Model.BAReqDocModel> BAReqDoc = new List<Model.BAReqDocModel>();
+            List<BAReqDocModel> BAReqDoc = new List<BAReqDocModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {

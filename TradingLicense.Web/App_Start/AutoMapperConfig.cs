@@ -68,6 +68,10 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
                             .ForMember(dest => dest.StallCodeDesc, opt => opt.MapFrom(s => s.StallCode.StallCodeDesc))
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
+                cfg.CreateMap<HawkerApplication, HawkerApplicationModel>()
+                           .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
+                           .ForMember(dest => dest.HawkerCodeDesc, opt => opt.MapFrom(s => s.HawkerCode.HawkerCodeDesc))
+                           .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
             });
         }
     }
