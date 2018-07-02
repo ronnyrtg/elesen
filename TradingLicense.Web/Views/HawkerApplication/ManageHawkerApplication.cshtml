@@ -194,6 +194,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
+                        <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                         @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
@@ -308,7 +309,7 @@
         }
 
         $("#individualOwner").select2({ width: '100%' });
-        
+
 
         AddRules();
 
@@ -423,40 +424,40 @@
 
         RequiredDocument();
 
-        if (!$("#frmHawkerApplication").valid()) 
+        if (!$("#frmHawkerApplication").valid())
         {
             return false;
         }
-        else if (userRollTemplate > 1 && $('#Individualids').val() == "") 
+        else if (userRollTemplate > 1 && $('#Individualids').val() == "")
                 {
                     alert("Please select Mykad/Passport No");
                     return false;
-                } 
-                else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length) 
+                }
+                else if (userRollTemplate == 1 && isdraft && $('.lablereqdocument').length != requiredDocList.length)
                         {
                             alert("Please Upload all Required Document");
                             return false;
                         }
-                        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) 
+                        else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length)
                                 {
                                     alert("Please select all checkbox for Required Document");
                                     return false;
                                 }
-                                else 
+                                else
                                 {
                                     var individuals = $("#individualList").select2('data');
-                                    if (individuals) 
+                                    if (individuals)
                                         {
                                         var newIndividuals = [];
-                                        for(var i =0; i< individuals.length; i++) 
+                                        for(var i =0; i< individuals.length; i++)
                                             {
                                             var ind = individuals[i];
-                                            if(ind.isNew) 
+                                            if(ind.isNew)
                                                 {
                                                     newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
                                                 }
                                             }
-                                            if(newIndividuals.length >0) 
+                                            if(newIndividuals.length >0)
                                             {
                                                 $("#newIndividualsList").val(JSON.stringify(newIndividuals));
                                             }
@@ -878,6 +879,12 @@
             ]
         });
     }
+    $('#btnLetter').click(function () {
+        var AppId = $('#HawkerApplicationID').val();
+        $('.modal-body iframe').attr('src', "../HawkerApplication/GeneratLicense?AppId=" + '@ViewBag.HawkerApplicationID');
+        $('#myModal').modal('show');
+    });
+
 
 </script>
 }

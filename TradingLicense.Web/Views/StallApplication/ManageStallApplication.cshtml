@@ -203,7 +203,7 @@
                 return $state;
             }
 
-            
+
 
             $("#individualList").select2({
                 placeholder: "Select Full Name or Mykad/Passport No",
@@ -264,11 +264,11 @@
             }
             $(document).ready(function () {
                 $('#btnLetter').click(function () {
-                    var AppId = $('#BannerApplicationID').val();
-                    $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + AppId);
+                    var AppId = $('#StallApplicationID').val();
+                    $('.modal-body iframe').attr('src', "../StallApplication/GeneratLicense?AppId=" + '@ViewBag.StallApplicationID');
                     $('#myModal').modal('show');
                 });
-
+            });
         });
     </script>
 }

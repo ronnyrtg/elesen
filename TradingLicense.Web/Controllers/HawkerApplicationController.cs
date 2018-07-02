@@ -12,6 +12,10 @@ using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Web.Helpers;
 using TradingLicense.Infrastructure;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Drawing;
+using System.IO;
+using PdfSharp.Pdf;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -293,6 +297,7 @@ namespace TradingLicense.Web.Controllers
 
             ViewBag.HALinkReqDoc = Attchments;
             ViewBag.UserRole = ProjectSession.User.RoleTemplateID;
+            ViewBag.HawkerApplicationID = Convert.ToInt32(Id);
             return View(hawkerApplicationModel);
         }
 
@@ -535,6 +540,397 @@ namespace TradingLicense.Web.Controllers
             {
                 return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
             }
+        }
+        #endregion
+
+        #region Generate License PDF
+        public ActionResult GeneratLicense(Int32? appId)
+        {
+            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var StallApp = ctx.HawkerApplications
+                                        .Where(x => x.HawkerApplicationID == appId).ToList();
+                    if (StallApp.Count == 0)
+                    {
+                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Hawker ApplicationID!');</script>");
+                    }
+                    else
+                    {
+                        foreach (var item in StallApp)
+                        {
+                            int lineheight = 20;
+                            PdfDocument pdf = new PdfDocument();
+                            pdf.Info.Title = "PDF License";
+                            PdfPage pdfPage = pdf.AddPage();
+                            XFont fontitalik = new XFont("Verdana", 8, XFontStyle.Italic);
+                            XGraphics graph = XGraphics.FromPdfPage(pdfPage);
+                            XFont font = new XFont("Verdana", 9, XFontStyle.Bold);
+                            XFont lbfont = new XFont("Verdana", 11, XFontStyle.Bold);
+                            XFont nfont = new XFont("Verdana", 9, XFontStyle.Regular);
+                            XFont nUfont = new XFont("Verdana", 9, XFontStyle.Underline);
+                            XFont sfont = new XFont("Verdana", 8, XFontStyle.Regular);
+
+                            XImage xImage1 = XImage.FromFile(Server.MapPath("~\\images\\logoPL.png"));
+                            graph.DrawImage(xImage1, 30, 50, 100, 75);
+
+                            graph.DrawString("PERBADANAN LABUAN", lbfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Wisma Perbadanan Labuan", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Peti Surat 81245", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("87022 Willayah Persekutuan Labuan", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Tel No 		", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(": 087-408692/596", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Faks No    ", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(": 087-408348", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("WEBSITE  ", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(": www.pf.gov.my", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 25;
+                            XPen lineRed1 = new XPen(XColors.Black, 0.5);
+                            System.Drawing.Point pt1 = new System.Drawing.Point(30, lineheight);
+                            System.Drawing.Point pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight);
+                            graph.DrawLine(lineRed1, pt1, pt2);
+                            lineheight = lineheight + 10;
+                            graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("UNDANG-UNDANG KECIL PELESENAN PENJAJA(WILAYAH PERSEKUTUAN LABUAN) 2016", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                            lineheight = lineheight + 15;
+                            
+                            lineheight = lineheight + 15;
+                            XTextFormatter tf = new XTextFormatter(graph);
+                            XRect rect = new XRect(450, lineheight, 100, 100);
+                            graph.DrawRectangle(lineRed1, rect);
+
+                            var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                            var individualActualPath = Path.Combine(individualUploadPath, item.IndividualID.ToString("D6"));
+
+                            var IndItm = ctx.Individuals.Where(x => x.IndividualID == item.IndividualID).ToList();
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
+                                {
+                                    var individualActualPath1 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
+                                    if (System.IO.File.Exists(individualActualPath1))
+                                    {
+                                        xImage1 = XImage.FromFile(individualActualPath1);
+                                        graph.DrawImage(xImage1,450 , lineheight, 100, 100);
+                                    }
+                                }
+                            }
+                            graph.DrawString("NO.LESEN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.ReferenceNo != null)
+                            {
+                                graph.DrawString(item.ReferenceNo, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            
+                            lineheight = lineheight + 15;
+                            graph.DrawString("Nama Pemilik", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(item.IndividualID.ToString("D6"), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NO.K/P", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.Individual != null && item.Individual.MykadNo != null)
+                            {
+                                graph.DrawString(item.Individual.MykadNo, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("ALAMAT", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+
+                            if (item.Individual != null && item.Individual.AddressIC != null)
+                            {
+                                if (item.Individual.AddressIC.ToString().Length > 55)
+                                {
+                                    graph.DrawString(item.Individual.AddressIC.Substring(0, 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    lineheight = lineheight + 15;
+                                    graph.DrawString(item.Individual.AddressIC.Substring(55, item.Individual.AddressIC.ToString().Length - 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                                else
+                                {
+                                    graph.DrawString(item.Individual.AddressIC, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 25;
+                            graph.DrawString("JENIS LESEN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.HawkerCode != null && item.HawkerCode.HawkerCodeDesc != null)
+                            {
+                                graph.DrawString(item.HawkerCode.HawkerCodeDesc, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("TEMPOH SAH LESEN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            string HW = item.HawkerCode.PeriodQuantity.ToString();
+                            if(item.HawkerCode != null && item.HawkerCode.Period == 1)
+                            {
+                                HW = HW + " " + "Tahun";
+                            }
+                            else if(item.HawkerCode != null &&  item.HawkerCode.Period == 2)
+                            {
+                                HW = HW + " " + "Bulan";
+                            }
+                            else if (item.HawkerCode != null &&  item.HawkerCode.Period == 3)
+                            {
+                                HW = HW + " " + "Minggu";
+                            }
+                            else if (item.HawkerCode != null &&  item.HawkerCode.Period == 4)
+                            {
+                                HW = HW + " " + "Hari";
+                            }
+                            graph.DrawString(HW, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 15;
+                            graph.DrawString("JENIS BARANG DIJAJA", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.GoodsType != null)
+                            {
+                                graph.DrawString(item.GoodsType, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("MASA PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.OperationHours != null)
+                            {
+                                graph.DrawString(item.OperationHours, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("LOKASI PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.HawkerLocation != null)
+                            {
+                                graph.DrawString(item.HawkerLocation, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+
+                            lineheight = lineheight + 20;
+
+                            tf = new XTextFormatter(graph);
+                            rect = new XRect(450, lineheight, 100, 100);
+                            graph.DrawRectangle(lineRed1, rect);
+                            IndItm = ctx.Individuals.Where(x => x.IndividualID == item.HelperA).ToList();
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
+                                {
+                                    individualActualPath = Path.Combine(individualUploadPath, IndItm[0].IndividualID.ToString("D6"));
+                                    var individualActualPath2 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
+                                    if (System.IO.File.Exists(individualActualPath2))
+                                    {
+                                        xImage1 = XImage.FromFile(individualActualPath2);
+                                        graph.DrawImage(xImage1, 450, lineheight, 100, 100);
+                                    }
+                                }
+                            }
+                            lineheight = lineheight + 20;
+                            graph.DrawString("NAMA PEMBANTU", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].FullName != null)
+                                {
+                                    graph.DrawString(IndItm[0].FullName, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NO.KP", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].MykadNo != null)
+                                {
+                                    graph.DrawString(IndItm[0].MykadNo, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("ALAMAT", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].AddressIC != null)
+                                {
+                                    if (IndItm[0].AddressIC.ToString().Length > 55)
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(0, 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        lineheight = lineheight + 15;
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(55, IndItm[0].AddressIC.ToString().Length - 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                    else
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                }
+                            }
+
+                            lineheight = lineheight + 90;
+                            tf = new XTextFormatter(graph);
+                            rect = new XRect(450, lineheight, 100, 100);
+                            graph.DrawRectangle(lineRed1, rect);
+                            if (item.HelperB == null)
+                            {
+                                IndItm = ctx.Individuals.Where(x => x.IndividualID == 0).ToList();
+                            }
+                            else
+                            {
+                                IndItm = ctx.Individuals.Where(x => x.IndividualID == item.HelperB).ToList();
+                            }
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
+                                {
+                                    individualActualPath = Path.Combine(individualUploadPath, IndItm[0].IndividualID.ToString("D6"));
+                                    var individualActualPath3 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
+                                    if (System.IO.File.Exists(individualActualPath3))
+                                    {
+                                        xImage1 = XImage.FromFile(individualActualPath3);
+                                        graph.DrawImage(xImage1, 450, lineheight, 100, 100);
+                                    }
+                                }
+                            }
+
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NAMA PEMBANTU", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].FullName != null)
+                                {
+                                    graph.DrawString(IndItm[0].FullName, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NO.KP", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].MykadNo != null)
+                                {
+                                    graph.DrawString(IndItm[0].MykadNo, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("ALAMAT", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].AddressIC != null)
+                                {
+                                    if (IndItm[0].AddressIC.ToString().Length > 55)
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(0, 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        lineheight = lineheight + 15;
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(55, IndItm[0].AddressIC.ToString().Length - 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                    else
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                }
+                            }
+
+                            lineheight = lineheight + 90;
+                            tf = new XTextFormatter(graph);
+                            rect = new XRect(450, lineheight, 100, 100);
+                            graph.DrawRectangle(lineRed1, rect);
+                            if (item.HelperC == null)
+                            {
+                                IndItm = ctx.Individuals.Where(x => x.IndividualID == 0).ToList();
+                            }
+                            else
+                            {
+                                IndItm = ctx.Individuals.Where(x => x.IndividualID == item.HelperC).ToList();
+                            }
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
+                                {
+                                    individualActualPath = Path.Combine(individualUploadPath, IndItm[0].IndividualID.ToString("D6"));
+                                    var individualActualPath3 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
+                                    if (System.IO.File.Exists(individualActualPath3))
+                                    {
+                                        xImage1 = XImage.FromFile(individualActualPath3);
+                                        graph.DrawImage(xImage1, 450, lineheight, 100, 100);
+                                    }
+                                }
+                            }
+
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NAMA PEMBANTU", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].FullName != null)
+                                {
+                                    graph.DrawString(IndItm[0].FullName, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("NO.KP", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].MykadNo != null)
+                                {
+                                    graph.DrawString(IndItm[0].MykadNo, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
+                            }
+                            lineheight = lineheight + 15;
+                            graph.DrawString("ALAMAT", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (IndItm != null && IndItm.Count() > 0)
+                            {
+                                if (IndItm[0].AddressIC != null)
+                                {
+                                    if (IndItm[0].AddressIC.ToString().Length > 55)
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(0, 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                        lineheight = lineheight + 15;
+                                        graph.DrawString(IndItm[0].AddressIC.Substring(55, IndItm[0].AddressIC.ToString().Length - 55), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                    else
+                                    {
+                                        graph.DrawString(IndItm[0].AddressIC, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    }
+                                }
+                            }
+
+                            lineheight = lineheight + 65;
+                            System.Drawing.Point pt3 = new System.Drawing.Point(30, lineheight);
+                            System.Drawing.Point pt4 = new System.Drawing.Point(170, lineheight);
+                            graph.DrawLine(lineRed1, pt3, pt4);
+                            lineheight = lineheight + 5;
+                            graph.DrawString("b.p.", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("KETUA PEGAWAI EKSEKUTIF", nfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 12;
+                            graph.DrawString("PERBADANAN LABUAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("Tarikh:", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            pt3 = new System.Drawing.Point(65, lineheight + 13);
+                            pt4 = new System.Drawing.Point(150, lineheight + 13);
+                            graph.DrawLine(lineRed1, pt3, pt4);
+                            lineheight = lineheight + 20;
+                            graph.DrawString("***LESEN INI HENDAKLAH DIPAMERKAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+
+
+                            MemoryStream strm = new MemoryStream();
+                            pdf.Save(strm, false);
+                            return File(strm, "application/pdf");
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }
         #endregion
 

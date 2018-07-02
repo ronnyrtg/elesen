@@ -299,7 +299,7 @@ namespace TradingLicense.Web.Controllers
 
                 }
             }
-
+            ViewBag.StallApplicationID = Convert.ToInt32(Id);
             return View(stallApplicationModel);
         }
 
@@ -522,7 +522,7 @@ namespace TradingLicense.Web.Controllers
                                         .Where(x => x.StallApplicationID == appId).ToList();
                     if (StallApp.Count == 0)
                     {
-                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Premise ApplicationID!');</script>");
+                        return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Stall ApplicationID!');</script>");
                     }
                     else
                     {
@@ -564,7 +564,7 @@ namespace TradingLicense.Web.Controllers
                             System.Drawing.Point pt1 = new System.Drawing.Point(30, lineheight);
                             System.Drawing.Point pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width)-30, lineheight);
                             graph.DrawLine(lineRed1, pt1, pt2);
-                            lineheight = lineheight + 20;
+                            lineheight = lineheight + 10;
                             graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter );
                             lineheight = lineheight + 15;
                             graph.DrawString("UNDANG-UNDANG KECIL PASAR(WP LABUAN) 2016", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter );
@@ -572,7 +572,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("PEMILIK", nUfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft );
                             lineheight = lineheight + 15;
                             XTextFormatter tf = new XTextFormatter(graph);
-                            XRect rect = new XRect(30, lineheight, 118, 130);
+                            XRect rect = new XRect(30, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
 
                             var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
@@ -581,13 +581,13 @@ namespace TradingLicense.Web.Controllers
                             var IndItm = ctx.Individuals.Where(x => x.IndividualID == item.IndividualID).ToList(); 
                             if(IndItm != null && IndItm.Count() > 0)
                             {
-                                if(IndItm[0].Attachment.FileName != null)
+                                if(IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
                                 {
                                    var individualActualPath1 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
                                     if (System.IO.File.Exists(individualActualPath1))
                                     {
                                         xImage1 = XImage.FromFile(individualActualPath1);
-                                        graph.DrawImage(xImage1, 30, lineheight, 120, 135);
+                                        graph.DrawImage(xImage1, 30, lineheight, 100, 100);
                                     }
                                 }
                             }
@@ -609,7 +609,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
                             graph.DrawString("NO.K/P", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if(item.Individual.MykadNo != null)
+                            if(item.Individual != null && item.Individual.MykadNo != null)
                             {
                                 graph.DrawString(item.Individual.MykadNo, nUfont, XBrushes.Black, new XRect(305, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -617,7 +617,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("ALAMAT", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             
-                        if(item.Individual.AddressIC != null)
+                        if(item.Individual != null && item.Individual.AddressIC != null)
                             {
                                 if(item.Individual.AddressIC.ToString().Length  >55)
                                 {
@@ -648,7 +648,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
                             graph.DrawString("JENIS JUALAN", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if(item.StallCode.StallCodeDesc != null)
+                            if(item.StallCode != null && item.StallCode.StallCodeDesc != null)
                             {
                                 graph.DrawString(item.StallCode.StallCodeDesc, nUfont, XBrushes.Black, new XRect(305, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -664,23 +664,23 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("PEMBANTU", nUfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 20;
                             tf = new XTextFormatter(graph);
-                            rect = new XRect(30, lineheight, 118, 130);
+                            rect = new XRect(30, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
                             IndItm = ctx.Individuals.Where(x => x.IndividualID == item.HelperA).ToList();
                             if (IndItm != null && IndItm.Count() > 0)
                             {
-                                if (IndItm[0].Attachment.FileName != null)
+                                if (IndItm[0].Attachment != null && IndItm[0].Attachment.FileName != null)
                                 {
                                     individualActualPath = Path.Combine(individualUploadPath, IndItm[0].IndividualID.ToString("D6"));
                                     var individualActualPath2 = Path.Combine(individualActualPath, IndItm[0].Attachment.FileName);
                                     if (System.IO.File.Exists(individualActualPath2))
                                     {
                                         xImage1 = XImage.FromFile(individualActualPath2);
-                                        graph.DrawImage(xImage1, 30, lineheight, 120, 135);
+                                        graph.DrawImage(xImage1, 30, lineheight, 100, 100);
                                     }
                                 }
                             }
-                            lineheight = lineheight + 40;
+                            lineheight = lineheight + 30;
                             graph.DrawString("NAMA PEMBANTU", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             if (IndItm != null && IndItm.Count() > 0)
@@ -722,7 +722,7 @@ namespace TradingLicense.Web.Controllers
 
                             lineheight = lineheight + 90;
                             tf = new XTextFormatter(graph);
-                            rect = new XRect(30, lineheight, 118, 130);
+                            rect = new XRect(30, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
                             if(item.HelperB == null)
                             {
@@ -741,12 +741,12 @@ namespace TradingLicense.Web.Controllers
                                         if (System.IO.File.Exists(individualActualPath3))
                                         {
                                             xImage1 = XImage.FromFile(individualActualPath3);
-                                            graph.DrawImage(xImage1, 30, lineheight, 120, 135);
+                                            graph.DrawImage(xImage1, 30, lineheight, 100, 100);
                                         }
                                     }
                                 }
                             
-                            lineheight = lineheight + 40;
+                            lineheight = lineheight + 30;
                             graph.DrawString("NAMA PEMBANTU", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             if (IndItm != null && IndItm.Count() > 0)
@@ -787,17 +787,17 @@ namespace TradingLicense.Web.Controllers
                             }
                             lineheight = lineheight + 75;
                             pt3 = new System.Drawing.Point(30, lineheight);
-                            pt4 = new System.Drawing.Point(160, lineheight);
+                            pt4 = new System.Drawing.Point(170, lineheight);
                             graph.DrawLine(lineRed1, pt3, pt4);
                             lineheight = lineheight + 5;
                             graph.DrawString("b.p.", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("KETUA PEGAWAI EKSEKUTIF", nfont, XBrushes.Black, new XRect(47, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("KETUA PEGAWAI EKSEKUTIF", nfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 12;
                             graph.DrawString("PERBADANAN LABUAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 20;
                             graph.DrawString("Tarikh:", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             pt3 = new System.Drawing.Point(65, lineheight+13);
-                            pt4 = new System.Drawing.Point(140, lineheight+13);
+                            pt4 = new System.Drawing.Point(150, lineheight+13);
                             graph.DrawLine(lineRed1, pt3, pt4);
                             lineheight = lineheight + 20;
                             graph.DrawString("***LESEN INI HENDAKLAH DIPAMERKAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
