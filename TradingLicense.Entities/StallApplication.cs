@@ -19,6 +19,8 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string StallLocation { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string GoodsType { get; set; }
         public int HelperA { get; set; }
         public int? HelperB { get; set; }

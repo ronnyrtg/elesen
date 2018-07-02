@@ -798,7 +798,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save ManagePremiseApplication Data
+        #region Check ManagePremiseApplication data isValid
         /// <summary>
         /// Save PremiseApplication Information
         /// </summary>
@@ -933,7 +933,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save PremiseApplication data
+        #region Save data from ManagePremiseApplication
         private bool SavePremiseApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var premiseApplication = Mapper.Map<PremiseApplication>(premiseApplicationModel);

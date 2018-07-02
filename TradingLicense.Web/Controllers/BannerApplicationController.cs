@@ -18,11 +18,18 @@ using System.Data.Entity;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing.Layout;
+using static TradingLicense.Infrastructure.Enums;
+using TradingLicense.Web.Services;
 
 namespace TradingLicense.Web.Controllers
 {
     public class BannerApplicationController : BaseController
     {
+        public const string OnSubmit = "Submitted";
+        public const string OnRouteSubmit = "SubmittedToRoute";
+        public const string OnRejected = "Rejected";
+        public const string OnKIV = "KIV";
+
         LicenseApplicationContext db = new LicenseApplicationContext();
         
         #region BannerCode
@@ -346,7 +353,7 @@ namespace TradingLicense.Web.Controllers
                     bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
 
                     var baLinkBO = ctx.BannerObjects.Where(a => a.BannerApplicationID == Id).ToList();
-                    bannerApplicationModel.BannerObjectids = string.Join(",", baLinkBO.Select(x => x.BannerCodeID.ToString()).ToArray();
+                    bannerApplicationModel.BannerObjectids = string.Join(",", baLinkBO.Select(x => x.BannerCodeID.ToString()).ToArray());
 
                     var Docs = (from d in db.BALinkReqDocs
                                 join f in db.Attachments
@@ -375,6 +382,82 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Get AppStatusID Upon Submit Button
+        private int GetStatusOnSubmit(BannerApplicationModel bannerApplicationModel, LicenseApplicationContext ctx, BannerApplication bannerApplication, int roleTemplate)
+        {
+            PAStausenum finalStatus = 0;
+            if (!bannerApplicationModel.IsDraft)
+            {
+                switch (roleTemplate)
+                {
+                    case (int)RollTemplate.DeskOfficer:
+                        finalStatus = PAStausenum.submittedtoclerk;
+                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        break;
+                    case (int)RollTemplate.Clerk:
+                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (bannerApplicationModel.SubmitType == OnSubmit)
+                        {
+                            finalStatus = PAStausenum.directorcheck;
+                        }
+                        break;
+                        case (int)RollTemplate.Director:
+                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationApproved;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                            }
+                        }
+                        else if (bannerApplicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
+                        }
+                        break;
+                    case (int)RollTemplate.CEO:
+                        if (bannerApplicationModel.SubmitType == OnSubmit)
+                        {
+                            finalStatus = PAStausenum.LetterofnotificationApproved;
+                        }
+                        else if (bannerApplicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                finalStatus = PAStausenum.draftcreated;
+            }
+            return (int)finalStatus;
+        }
+        #endregion
+
         #region Save ManageBannerApplication
         /// <summary>
         /// Save Banner Application Information
@@ -382,11 +465,109 @@ namespace TradingLicense.Web.Controllers
         /// <param name="bannerApplicationModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string btnType)
+        private bool SaveManageBannerApplication(BannerApplicationModel bannerApplicationModel, LicenseApplicationContext ctx)
         {
-            
-            
-           
+            var bannerApplication = Mapper.Map<BannerApplication>(bannerApplicationModel);
+
+            int userroleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.UserID > 0)
+            {
+                userroleTemplate = GetUserRoleTemplate(bannerApplicationModel, bannerApplication, ctx);
+            }
+            var finalStatus = GetStatusOnSubmit(bannerApplicationModel, ctx, bannerApplication, userroleTemplate);
+            if (finalStatus != 0)
+            {
+                bannerApplication.AppStatusID = finalStatus;
+            }
+            bannerApplication.DateSubmitted = DateTime.Now;
+
+            ctx.BannerApplications.AddOrUpdate(bannerApplication);
+            ctx.SaveChanges();
+
+            int bannerApplicationId = bannerApplication.BannerApplicationID;
+            if (bannerApplicationModel.BannerApplicationID == 0)
+            {
+                bannerApplicationModel.BannerApplicationID = bannerApplicationId;
+                bannerApplication.ReferenceNo = BannerApplicationModel.GetReferenceNo(bannerApplicationId, bannerApplication.DateSubmitted);
+                ctx.BannerApplications.AddOrUpdate(bannerApplication);
+                ctx.SaveChanges();
+            }
+
+            int roleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            {
+                roleTemplate = ProjectSession.User.RoleTemplateID.Value;
+            }
+
+            if (userroleTemplate == (int)RollTemplate.Public)
+            {
+                if (!string.IsNullOrWhiteSpace(bannerApplicationModel.UploadRequiredDocids))
+                {
+                    BADocumentService.UpdateDocs(bannerApplicationModel, ctx, bannerApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (roleTemplate == (int)RollTemplate.Public)
+                    {
+                        var baLinkReqDocumentList = ctx.BALinkReqDocs
+                            .Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
+                        if (baLinkReqDocumentList.Count > 0)
+                        {
+                            ctx.BALinkReqDocs.RemoveRange(baLinkReqDocumentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+            else if (userroleTemplate == (int)RollTemplate.DeskOfficer)
+            {
+                if (!string.IsNullOrWhiteSpace(bannerApplicationModel.RequiredDocIds))
+                {
+                    BADocumentService.UpdateRequiredDocs(bannerApplicationModel, ctx, bannerApplicationId, roleTemplate);
+                }
+                else
+                {
+                    if (!bannerApplicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                    {
+                        var baLinkReqDocumentList = ctx.BALinkReqDocs.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
+                        if (baLinkReqDocumentList.Count > 0)
+                        {
+                            ctx.BALinkReqDocs.RemoveRange(baLinkReqDocumentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(bannerApplicationModel.newComment))
+            {
+                BAComment comment = new BAComment();
+                comment.Comment = bannerApplicationModel.newComment;
+                comment.CommentDate = DateTime.Now;
+                comment.BannerApplicationID = bannerApplicationId;
+                comment.UsersID = ProjectSession.UserID;
+                ctx.BAComments.Add(comment);
+                ctx.SaveChanges();
+            }
+            bannerApplicationModel.BannerApplicationID = bannerApplicationId;
+            return true;
+        }
+        #endregion
+
+        #region Get Roletemplate from ProjectSession
+
+        private static int GetUserRoleTemplate(BannerApplicationModel bannerApplicationModel,
+            BannerApplication bannerApplication, LicenseApplicationContext ctx)
+        {
+            int userroleTemplate = 0;
+            bannerApplication.UpdatedBy = ProjectSession.User.Username;
+
+            if (ProjectSession.User.RoleTemplateID != null)
+            {
+                userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+            }
+
+            return userroleTemplate;
         }
         #endregion
 

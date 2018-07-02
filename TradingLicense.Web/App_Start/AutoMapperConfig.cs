@@ -64,6 +64,10 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<MLPremiseApplication, MLPremiseApplicationModel>();
                 cfg.CreateMap<MLPermitApplication, MLPermitApplicationModel>();
                 cfg.CreateMap<PaymentReceivedModel, PaymentReceived>().ForMember(dest => dest.Individual, opt => opt.Ignore());
+                cfg.CreateMap<StallApplication, StallApplicationModel>()
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
+                            .ForMember(dest => dest.StallCodeDesc, opt => opt.MapFrom(s => s.StallCode.StallCodeDesc))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
             });
         }
     }
