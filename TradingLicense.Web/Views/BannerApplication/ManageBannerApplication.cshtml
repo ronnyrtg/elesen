@@ -46,6 +46,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.BannerApplicationID)
+        @Html.HiddenFor(m => m.IsDraft)
         @Html.HiddenFor(m => m.AppStatusID)
 
         <div class="row">
@@ -216,6 +217,13 @@
     var actionError = '@(TempData["ErrorMessage"])';
     if (actionError != null && actionError != "") {
         errorMessage(actionError);
+    }
+
+    function frmSubmit(isdraft) {
+        $("#IsDraft").val(isdraft);
+        if (validateBannerApplication(isdraft)) {
+            $("#frmBannerApplication").submit();
+        }
     }
 
     function back() {

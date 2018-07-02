@@ -342,11 +342,11 @@ namespace TradingLicense.Web.Controllers
 
                 if (Id != null && Id > 0)
                 {
-                    BannerObjectModel = db.BannerObjects
-                        .Include("BannerCode")
-                        .Include("Location")
-                        .Where(x => x.BannerApplicationID == Id)
-                        .ToList();
+                    var bannerApplication = ctx.BannerApplications.FirstOrDefault(a => a.BannerApplicationID == Id);
+                    bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
+
+                    var baLinkBO = ctx.BannerObjects.Where(a => a.BannerApplicationID == Id).ToList();
+                    bannerApplicationModel.BannerObjectids = string.Join(",", baLinkBO.Select(x => x.BannerCodeID.ToString()).ToArray();
 
                     var Docs = (from d in db.BALinkReqDocs
                                 join f in db.Attachments
@@ -382,177 +382,11 @@ namespace TradingLicense.Web.Controllers
         /// <param name="bannerApplicationModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string ImgModel, string gridItems, string BannerApplist, string btnType)
+        public JsonResult SaveManageBannerApplication(string IndividualId, string compId, string btnType)
         {
-
-
-            List<BannerObject> BannerObjectData;
-            JavaScriptSerializer jss = new JavaScriptSerializer();
-            BannerObjectData = jss.Deserialize<List<BannerObject>>(gridItems);
-
-            List<BannerApplication> BannerApp;
-            JavaScriptSerializer jss1 = new JavaScriptSerializer();
-            BannerApp = jss1.Deserialize<List<BannerApplication>>(BannerApplist);
-
-            List<Attchments> Attchment;
-            JavaScriptSerializer jss2 = new JavaScriptSerializer();
-            Attchment = jss2.Deserialize<List<Attchments>>(ImgModel);
-
             
-            int scope_id = 0;
-            int BannerApplicationID = 0;
-
-            if (btnType != "" && IndividualId != "" && compId != "")
-            {
-                using (var transaction = db.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        foreach (var item in BannerApp)
-                        {
-                            float ProcessingFee = 0;
-                            float Fee = 0;
-                            int totalApplied = 0;
-                            int totalApproved = 0;
-                            int AppStatusId = 0;
-                            string RefNo = "";
-
-                            if (btnType == "btnSubmit")
-                            {
-                                if (ProjectSession.User.RoleTemplateID == 2)
-                                {
-                                    using (var ctx = new LicenseApplicationContext())
-                                    {
-                                        IQueryable<BannerApplication> query = ctx.BannerApplications
-                                            .Where(b => b.DateSubmitted.Year == DateTime.Now.Year);
-                                        totalApplied = query.Count();
-
-                                        var query2 = ctx.BannerObjects
-                                            .Where(bo => bo.BannerApplicationID == item.BannerApplicationID)                                       
-                                            .Sum(bo => bo.Fee);
-                                        Fee = query2;
-                                    }
-                                    totalApplied = totalApplied + 1;
-                                    AppStatusId = 3;
-                                    ProcessingFee = 25;
-                                    RefNo = DateTime.Now.Year + "/BA/NEW/" + totalApplied.ToString().PadLeft(6, '0');
-                                }
-                                else if (ProjectSession.User.RoleTemplateID == 3)
-                                {
-                                    AppStatusId = 6;
-                                }
-                                else if (ProjectSession.User.RoleTemplateID == 6)
-                                {
-                                    using (var ctx = new LicenseApplicationContext())
-                                    {
-                                        IQueryable<BannerApplication> query = ctx.BannerApplications
-                                            .Where(b => b.AppStatusID == 15 &&  b.DateApproved.Value.Year == DateTime.Now.Year);
-                                        totalApproved = query.Count();
-                                    }
-
-                                    AppStatusId = 9;
-                                    totalApproved = totalApproved + 1;
-                                    RefNo = DateTime.Now.Year + "/BA/" + totalApproved.ToString().PadLeft(6, '0');
-                                }
-                            }
-                            if (btnType == "btnDraft")
-                            {
-                                if (ProjectSession.User.RoleTemplateID == 2)
-                                {
-                                    AppStatusId = 1;
-                                }
-                                else if (ProjectSession.User.RoleTemplateID == 3)
-                                {
-                                    AppStatusId = 4;
-                                }
-                                else if (ProjectSession.User.RoleTemplateID == 6)
-                                {
-                                    AppStatusId = 6;
-                                }
-                            }
-
-                            BannerApplicationID = item.BannerApplicationID;
-                            item.IndividualID = Convert.ToInt32(IndividualId);
-                            item.CompanyID = Convert.ToInt32(compId);
-                            item.ReferenceNo = RefNo;
-                            item.UsersID = ProjectSession.UserID;
-                            item.UpdatedBy = ProjectSession.User.FullName;
-                            item.AppStatusID = AppStatusId;
-                            item.ProcessingFee = ProcessingFee;
-                            item.TotalFee = Fee;
-                            if (BannerApplicationID > 0)
-                            {
-                                db.Entry(item).State = EntityState.Modified;
-                            }
-                            else
-                            {
-                                db.Entry(item).State = EntityState.Added;
-                            }
-                            db.SaveChanges();
-                            scope_id = item.BannerApplicationID;
-                        }
-                        db.BannerObjects.RemoveRange(db.BannerObjects.Where(x => x.BannerApplicationID == scope_id));
-                        db.SaveChanges();
-                        foreach (var item in BannerObjectData)
-                        {
-                            item.BannerApplicationID = scope_id;
-                            db.BannerObjects.AddOrUpdate(item);
-                            db.SaveChanges();
-                        }
-                        
-                        foreach (var item in Attchment)
-                        {
-                            Attachment Atch = new Attachment();
-                            Atch.AttachmentID = 0;
-                            Atch.FileName = item.filename;
-                            db.Attachments.AddOrUpdate(Atch);
-                            db.SaveChanges();
-                            var AtchId = Atch.AttachmentID;
-                            BALinkReqDoc ReqDoc = new BALinkReqDoc();
-                            ReqDoc.AttachmentID = AtchId;
-                            ReqDoc.BALinkReqDocID = 0;
-                            ReqDoc.BannerApplicationID = scope_id;
-                            ReqDoc.RequiredDocID = item.Id;
-                            db.BALinkReqDocs.AddOrUpdate(ReqDoc);
-                            db.SaveChanges();
-                        }
-                        if (Request.Files.Count > 0)
-                        {
-                            HttpFileCollectionBase files = Request.Files;
-                            for (int i = 0; i < files.Count; i++)
-                            {
-
-                                HttpPostedFileBase file = files[i];
-                                string fname;
-                                if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                                {
-                                    string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                                    fname = testfiles[testfiles.Length - 1];
-                                }
-                                else
-                                {
-                                    fname = file.FileName;
-                                }
-                                if (!System.IO.Directory.Exists(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id)))
-                                {
-                                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id));
-                                }
-                                fname = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/" + scope_id), fname);
-                                file.SaveAs(fname);
-
-                            }
-                        }
-                        transaction.Commit();
-                        TempData["SuccessMessage"] = "Banner Application saved successfully.";
-                        return Json(Convert.ToString(1));
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                }
-            }
-            return Json(Convert.ToString(0));
+            
+           
         }
         #endregion
 
