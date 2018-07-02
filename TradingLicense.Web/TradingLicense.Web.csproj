@@ -63,6 +63,10 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -248,6 +252,8 @@
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\Datatables\responsive.dataTables.min.css" />
     <Content Include="Content\select2\select2.min.css" />
+    <Content Include="Documents\Attachment\Individual\000001\test.jpg" />
+    <Content Include="Documents\Attachment\Individual\000002\test2.jpg" />
     <Content Include="images\logoPL.jpg" />
     <Content Include="images\logoPL.png" />
     <Content Include="images\wm1.png" />
@@ -557,7 +563,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
     <Folder Include="Documents\Attachment\BannerApplication\" />
-    <Folder Include="Documents\Attachment\Individual\" />
     <Folder Include="Documents\Attachment\PremiseApplication\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Payment\" />
