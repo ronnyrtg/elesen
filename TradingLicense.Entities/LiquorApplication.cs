@@ -32,13 +32,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string StateA { get; set; }
         public int AppStatusID { get; set; }
-        public string PreviousLicense { get; set; }
-        public DateTime? PrevLicDate { get; set; }
-        public DateTime? PrevLicExp { get; set; }
-        
-        public string PreviousLiquorLicenseNo { get; set; }
-        public DateTime? PreviousLiquorIssueDate { get; set; }
-        public DateTime? PreviousLiquorExpDate { get; set; }
+       
 
         //The user who creates this application
         public int UsersID { get; set; }
@@ -56,6 +50,8 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string ReferenceNo { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
         public string LicenseStatus { get; set; }
         public DateTime? ExpireDate { get; set; }
 

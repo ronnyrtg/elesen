@@ -194,7 +194,6 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                         @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == 10 || Model.AppStatusID == 11 || Model.AppStatusID == 12))
                         {
                         @*<input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />*@
@@ -207,8 +206,7 @@
                         }
                         @if (Model.AppStatusID == 14)
                         {
-                            // Add a button for showing License print
-                            <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                            <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                         }
                         @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                         {
