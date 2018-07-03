@@ -597,13 +597,13 @@ namespace TradingLicense.Web.Controllers
                             System.Drawing.Point pt1 = new System.Drawing.Point(30, lineheight);
                             System.Drawing.Point pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 30, lineheight);
                             graph.DrawLine(lineRed1, pt1, pt2);
-                            lineheight = lineheight + 10;
+                            lineheight = lineheight + 7;
                             graph.DrawString("LESEN", lbfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
-                            lineheight = lineheight + 15;
+                            lineheight = lineheight + 13;
                             graph.DrawString("UNDANG-UNDANG KECIL PELESENAN PENJAJA(WILAYAH PERSEKUTUAN LABUAN) 2016", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
-                            lineheight = lineheight + 15;
+                            lineheight = lineheight + 20;
                             
-                            lineheight = lineheight + 15;
+                            
                             XTextFormatter tf = new XTextFormatter(graph);
                             XRect rect = new XRect(450, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
@@ -772,7 +772,7 @@ namespace TradingLicense.Web.Controllers
                                 }
                             }
 
-                            lineheight = lineheight + 90;
+                            lineheight = lineheight + 70;
                             tf = new XTextFormatter(graph);
                             rect = new XRect(450, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
@@ -838,7 +838,7 @@ namespace TradingLicense.Web.Controllers
                                 }
                             }
 
-                            lineheight = lineheight + 80;
+                            lineheight = lineheight + 70;
                             tf = new XTextFormatter(graph);
                             rect = new XRect(450, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
