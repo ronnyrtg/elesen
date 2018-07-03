@@ -10,8 +10,6 @@ using System.Linq.Dynamic;
 using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Web.Classes;
-using System.Web.Script.Serialization;
-using System.Web;
 using System.IO;
 using TradingLicense.Infrastructure;
 using System.Data.Entity;
@@ -21,6 +19,7 @@ using PdfSharp.Drawing.Layout;
 using static TradingLicense.Infrastructure.Enums;
 using TradingLicense.Web.Services;
 using TradingLicense.Web.Helpers;
+using System.Web;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -320,6 +319,31 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Banner Object List Datatable
+        /// <summary>
+        /// Get Banner Object Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="bannerApplicationId">The banner application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerObject([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? bannerApplicationId)
+        {
+            List<BannerObjectModel> bannerObject = new List<BannerObjectModel>();
+            int totalRecord = 0;
+            if (bannerApplicationId.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var bannerObj = ctx.BannerObjects.Where(bo => bo.BannerApplicationID == bannerApplicationId).ToList();
+                    bannerObject = Mapper.Map<List<BannerObjectModel>>(bannerObj);
+                    totalRecord = bannerObject.Count;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, bannerObject, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region Get BannerApplication Data By Individual for Datatable
         /// <summary>
         /// Get BannerApplication Data By Individual for Datatable
@@ -385,7 +409,7 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Get BannerApplication Data by ID
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public ActionResult ManageBannerApplication(int? id)
         {
@@ -397,6 +421,9 @@ namespace TradingLicense.Web.Controllers
                 {
                     var bannerApplication = ctx.BannerApplications.FirstOrDefault(a => a.BannerApplicationID == id);
                     bannerApplicationModel = Mapper.Map<BannerApplicationModel>(bannerApplication);
+
+                    var bannerObjects = ctx.BannerObjects.Where(a => a.BannerApplicationID == id).ToList();
+                    bannerApplicationModel.totalObjects = bannerObjects.Count;
 
                     var baLinkReqDocumentList = ctx.BALinkReqDocs.ToList();
                     if (baLinkReqDocumentList.Count > 0)
@@ -423,6 +450,52 @@ namespace TradingLicense.Web.Controllers
 
             bannerApplicationModel.IsDraft = false;
             return View(bannerApplicationModel);
+        }
+        #endregion
+
+        #region Check ManageBannerApplication data isValid
+        /// <summary>
+        /// Check BannerApplication Information
+        /// </summary>
+        /// <param name="bannerApplicationModel">The premise application model.</param>
+        /// <param name="btnSubmit">The BTN submit.</param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBannerApplication(BannerApplicationModel bannerApplicationModel, string btnSubmit)
+        {
+            try
+            {
+
+                if (ModelState.IsValid)
+                {
+                    bool saveSuccess = false;
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        saveSuccess = SaveBannerApplication(bannerApplicationModel, ctx);
+                    }
+                    if (saveSuccess && bannerApplicationModel.IsDraft)
+                    {
+                        TempData["SuccessMessage"] = "Banner License Application draft saved successfully.";
+
+                        return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + bannerApplicationModel.BannerApplicationID);
+                    }
+                    if (saveSuccess)
+                    {
+                        TempData["SuccessMessage"] = "Banner License Application saved successfully.";
+                        return RedirectToAction("BannerApplication");
+                    }
+                    return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + bannerApplicationModel.BannerApplicationID);
+                }
+
+
+                return View(bannerApplicationModel);
+            }
+            catch (Exception)
+            {
+
+                return View(bannerApplicationModel);
+            }
         }
         #endregion
 
@@ -509,9 +582,12 @@ namespace TradingLicense.Web.Controllers
         /// <param name="bannerApplicationModel"></param>
         /// <returns></returns>
         [HttpPost]
-        private bool SaveManageBannerApplication(BannerApplicationModel bannerApplicationModel, LicenseApplicationContext ctx)
+        private bool SaveBannerApplication(BannerApplicationModel bannerApplicationModel, LicenseApplicationContext ctx)
         {
             var bannerApplication = Mapper.Map<BannerApplication>(bannerApplicationModel);
+            int bannerApplicationId = bannerApplication.BannerApplicationID;
+            var balist = ctx.BannerApplications.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
+            var baObjlist = ctx.BannerObjects.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
 
             int userroleTemplate = 0;
             if (ProjectSession.User != null && ProjectSession.UserID > 0)
@@ -526,13 +602,13 @@ namespace TradingLicense.Web.Controllers
             bannerApplication.DateSubmitted = DateTime.Now;
             bannerApplication.IndividualID = bannerApplicationModel.IndividualID;
             bannerApplication.CompanyID = bannerApplicationModel.CompanyID;
-            bannerApplication.UpdatedBy = ProjectSession.UserName;
+            bannerApplication.UpdatedBy = ProjectSession.User.Username;
 
             ctx.BannerApplications.AddOrUpdate(bannerApplication);
             ctx.SaveChanges();
 
-            int bannerApplicationId = bannerApplication.BannerApplicationID;
-            if (bannerApplicationModel.BannerApplicationID == 0)
+            
+            if (bannerApplicationModel.AppStatusID == 1)
             {
                 bannerApplicationModel.BannerApplicationID = bannerApplicationId;
                 bannerApplication.ReferenceNo = BannerApplicationModel.GetReferenceNo(bannerApplicationId, bannerApplication.DateSubmitted);
@@ -585,13 +661,29 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            BannerObject bo = new BannerObject();
-            bo.BannerCodeID = bannerApplicationModel.BannerCodeID;
-            bo.LocationID = bannerApplicationModel.LocationID;
-            bo.BSize = bannerApplicationModel.BSize;
-            bo.BQuantity = bannerApplicationModel.BQuantity;
-            ctx.BannerObjects.Add(bo);
-            ctx.SaveChanges();
+            
+            if (true)
+            {
+                BannerObject bannerOb = new BannerObject();
+                bannerOb.BannerApplicationID = bannerApplicationModel.BannerApplicationID;
+                bannerOb.BannerCodeID = bannerApplicationModel.BannerCodeID;
+                bannerOb.LocationID = bannerApplicationModel.LocationID;
+                bannerOb.BSize = bannerApplicationModel.BSize;
+                bannerOb.BQuantity = bannerApplicationModel.BQuantity;
+                float totalFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.PeriodFee).Single();
+                float extFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.ExtraFee).Single();
+                if (bannerApplicationModel.BSize > 8)
+                {
+                    bannerOb.Fee = (((float)Math.Floor(bannerApplicationModel.BSize - 8))*extFee) + bannerApplicationModel.BQuantity * totalFee;
+                }
+                else
+                {
+                    bannerOb.Fee = bannerApplicationModel.BQuantity * totalFee;
+                }               
+                ctx.BannerObjects.Add(bannerOb);
+                ctx.SaveChanges();
+            }
+           
 
             if (!string.IsNullOrWhiteSpace(bannerApplicationModel.newComment))
             {
@@ -603,7 +695,6 @@ namespace TradingLicense.Web.Controllers
                 ctx.BAComments.Add(comment);
                 ctx.SaveChanges();
             }
-            bannerApplicationModel.BannerApplicationID = bannerApplicationId;
             return true;
         }
         #endregion
@@ -627,7 +718,7 @@ namespace TradingLicense.Web.Controllers
 
         #region Save Banner Objects
         [HttpPost]
-        public ActionResult AddBannerObject(int bannerApplicationID, int BannerCode, int Location, float SaizIklan, int BilanganIklan )
+        public ActionResult AddBannerObject(int bannerApplicationID, int BannerCode, int Location, float BSize, int BQuantity )
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -641,29 +732,55 @@ namespace TradingLicense.Web.Controllers
                     ba.BannerApplicationID = bannerApplicationID;
                     ba.BannerCodeID = BannerCode;
                     ba.LocationID = Location;
-                    ba.BSize = SaizIklan;
-                    ba.BQuantity = BilanganIklan;
-                    if(SaizIklan <= 8)
+                    ba.BSize = BSize;
+                    ba.BQuantity = BQuantity;
+                    if(BSize <= 8)
                     {
-                        TotalFee = Fee * BilanganIklan;
+                        TotalFee = Fee * BQuantity;
                     }
                     else
                     {
-                        TotalFee = (((float)Math.Floor(SaizIklan - 8)*eFee)+ Fee)*BilanganIklan;
+                        TotalFee = (((float)Math.Floor(BSize - 8)*eFee)+ Fee)*BQuantity;
                     }
                     ba.Fee = TotalFee;
 
-                    ctx.BannerObjects.AddOrUpdate(ba);
+                    ctx.BannerObjects.Add(ba);
                     ctx.SaveChanges();
-                    TempData["SuccessMessage"] = "Premise License Application payments saved successfully.";
+                    TempData["SuccessMessage"] = "Iklan berjaya ditambah.";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Unable to find matching banner application ID";
+                    TempData["ErrorMessage"] = "Iklan tidak berjaya ditambah";
                 }
             }
 
             return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + bannerApplicationID);
+        }
+        #endregion
+
+        #region Delete Banner Objects from Datatable List
+        /// <summary>
+        /// Delete Banner Object from ManageBannerApplication
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBannerObject(int id)
+        {
+            try
+            {
+                var bannerObject = new BannerObject() { BannerObjectID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(bannerObject).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " rekod telah dipadamkan" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "rekod tidak berjaya dipadamkan" }, JsonRequestBehavior.AllowGet);
+            }
         }
         #endregion
 
@@ -707,6 +824,143 @@ namespace TradingLicense.Web.Controllers
                     transaction.Rollback();
                     return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
                 }
+            }
+        }
+        #endregion
+
+        #region Save Attachment data and Upload Files
+        /// <summary>
+        /// Save Attachment Information
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult UploadDocument(HttpPostedFileBase documentFile)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    if (documentFile != null)
+                    {
+                        var file = documentFile;
+                        if (file.ContentLength > 0)
+                        {
+                            var premisevalue = Request["BannerApplicationID"];
+                            var reqDocvalue = Request["reqDocid"];
+                            var isReqvalue = Request["isReqDoc"];
+
+                            int bannerApplicationId;
+                            if (int.TryParse(premisevalue, out bannerApplicationId) && bannerApplicationId > 0)
+                            {
+                                int requiredDocId;
+                                int.TryParse(reqDocvalue, out requiredDocId);                                
+
+                                if (requiredDocId > 0)
+                                {
+                                    int isReq;
+                                    int.TryParse(isReqvalue, out isReq);
+
+                                    var fileName = Path.GetFileName(file.FileName);
+
+                                    var folder = Server.MapPath("~/Documents/Attachment/BannerApplication/" + bannerApplicationId.ToString());
+                                    var path = Path.Combine(folder, fileName);
+                                    if (!Directory.Exists(folder))
+                                    {
+                                        Directory.CreateDirectory(folder);
+                                    }
+                                    file.SaveAs(path);
+
+                                    Attachment attachment = new Attachment();
+                                    attachment.FileName = fileName;
+                                    ctx.Attachments.AddOrUpdate(attachment);
+                                    ctx.SaveChanges();
+
+                                    if (attachment.AttachmentID > 0)
+                                    {
+                                        if (isReq > 0)
+                                        {
+                                            BALinkReqDoc baLinkReqDoc;
+                                            baLinkReqDoc = ctx.BALinkReqDocs.FirstOrDefault(p => p.BannerApplicationID == bannerApplicationId && p.RequiredDocID == requiredDocId);
+                                            if (baLinkReqDoc != null)
+                                            {
+                                                baLinkReqDoc.AttachmentID = attachment.AttachmentID;
+                                                ctx.BALinkReqDocs.AddOrUpdate(baLinkReqDoc);
+                                                ctx.SaveChanges();
+                                            }
+                                            else
+                                            {
+                                                BALinkReqDoc baLinkReqDocument = new BALinkReqDoc();
+                                                baLinkReqDocument.BannerApplicationID = bannerApplicationId;
+                                                baLinkReqDocument.RequiredDocID = requiredDocId;
+                                                baLinkReqDocument.AttachmentID = attachment.AttachmentID;
+                                                ctx.BALinkReqDocs.AddOrUpdate(baLinkReqDocument);
+                                                ctx.SaveChanges();
+                                            }
+                                        }
+                                        
+
+                                        return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                    }
+
+                                    return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
+                                }
+
+                                return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                            }
+
+                            return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                    }
+                    return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch
+            {
+                return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region Download Attachment Files
+        /// <summary>
+        /// Download
+        /// </summary>
+        /// <param name="attechmentId"></param>
+        /// /// <param name="bannerId"></param>
+        /// <returns></returns>
+        public FileResult Download(int? attechmentId, int? bannerId)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var attechment = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == attechmentId);
+                var folder = Server.MapPath(ProjectConfiguration.AttachmentDocument);
+                try
+                {
+                    try
+                    {
+                        if (attechment != null && attechment.AttachmentID > 0)
+                        {
+                            var path = Path.Combine(folder, attechment.FileName);
+                            return File(path, System.Net.Mime.MediaTypeNames.Application.Octet, attechment.FileName);
+                        }
+
+                        return null;
+                    }
+                    catch
+                    {
+                        // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+
+                    }
+                }
+                catch
+                {
+                    // todo: this is very bad code with empty catch. Log or write or do anything to notify  about error
+
+                }
+                return null;
             }
         }
         #endregion

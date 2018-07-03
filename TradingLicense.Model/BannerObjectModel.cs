@@ -14,6 +14,9 @@ namespace TradingLicense.Model
         public int LocationID { get; set; }
         [Required(ErrorMessage = "Sila pilih kod iklan")]
         public int BannerCodeID { get; set; }
+
+        public string BannerCodeDesc { get; set; }
+        public string LocationDesc { get; set; }
     }
     public class SelectedBannerObjectModel
     {

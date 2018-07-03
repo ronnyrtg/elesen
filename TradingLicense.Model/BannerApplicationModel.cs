@@ -8,6 +8,7 @@ namespace TradingLicense.Model
     {
         public int BannerApplicationID { get; set; }
         public int? CompanyID { get; set; }
+        [Required(ErrorMessage = "Sila masukkan nama pemohon")]
         public int IndividualID { get; set; }
         public int AppStatusID { get; set; }
 
@@ -23,8 +24,7 @@ namespace TradingLicense.Model
         public string LicenseStatus { get; set; }
         public DateTime ExpireDate { get; set; }
 
-        public string BannerObjectids { get; set; }
-        public string BannerCodeids { get; set; }
+        public int totalObjects { get; set; }
         public string RequiredDocIds { get; set; }
         public string FullName { get; set; }
         public string CompanyName { get; set; }

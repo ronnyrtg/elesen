@@ -821,7 +821,7 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
 
             }

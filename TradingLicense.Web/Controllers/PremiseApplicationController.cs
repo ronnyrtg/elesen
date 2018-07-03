@@ -1779,7 +1779,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Delete PremiseApplication
+        #region Delete PremiseApplication from Datatable List
         /// <summary>
         /// Delete PremiseApplication Information
         /// </summary>
@@ -2328,8 +2328,6 @@ namespace TradingLicense.Web.Controllers
         #endregion
 
         #endregion
-
-        //TODO: Move all business code  logic to BusinessCodeController or at least a BusinessCodeService
 
         #region BusinessCode
 
