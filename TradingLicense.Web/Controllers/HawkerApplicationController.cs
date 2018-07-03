@@ -591,7 +591,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString(": 087-408348", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("WEBSITE  ", nfont, XBrushes.Black, new XRect(135, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(": www.pf.gov.my", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(": www.pl.gov.my", nfont, XBrushes.Black, new XRect(205, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 25;
                             XPen lineRed1 = new XPen(XColors.Black, 0.5);
                             System.Drawing.Point pt1 = new System.Drawing.Point(30, lineheight);
@@ -634,7 +634,11 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
                             graph.DrawString("Nama Pemilik", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(item.IndividualID.ToString("D6"), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if(item.Individual !=null && item.Individual.FullName != null )
+                            {
+                                graph.DrawString(item.Individual.FullName, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            
                             lineheight = lineheight + 15;
                             graph.DrawString("NO.K/P", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -834,7 +838,7 @@ namespace TradingLicense.Web.Controllers
                                 }
                             }
 
-                            lineheight = lineheight + 90;
+                            lineheight = lineheight + 80;
                             tf = new XTextFormatter(graph);
                             rect = new XRect(450, lineheight, 100, 100);
                             graph.DrawRectangle(lineRed1, rect);
@@ -911,8 +915,12 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("PERBADANAN LABUAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 20;
                             graph.DrawString("Tarikh:", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if(item.DateApproved != null )
+                            {
+                                graph.DrawString(string.Format("{0:dd MMMM yyyy}", item.DateApproved ), nfont, XBrushes.Black, new XRect(67, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
                             pt3 = new System.Drawing.Point(65, lineheight + 13);
-                            pt4 = new System.Drawing.Point(150, lineheight + 13);
+                            pt4 = new System.Drawing.Point(160, lineheight + 13);
                             graph.DrawLine(lineRed1, pt3, pt4);
                             lineheight = lineheight + 20;
                             graph.DrawString("***LESEN INI HENDAKLAH DIPAMERKAN", nfont, XBrushes.Black, new XRect(32, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
