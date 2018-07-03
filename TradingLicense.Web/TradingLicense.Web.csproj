@@ -252,9 +252,6 @@
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\Datatables\responsive.dataTables.min.css" />
     <Content Include="Content\select2\select2.min.css" />
-    <Content Include="Documents\Attachment\Individual\000001\test.jpg" />
-    <Content Include="Documents\Attachment\Individual\000002\test2.jpg" />
-    <Content Include="Documents\Attachment\Individual\000004\test4.jpg" />
     <Content Include="images\logoPL.jpg" />
     <Content Include="images\logoPL.png" />
     <Content Include="images\wm1.png" />
@@ -564,6 +561,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
     <Folder Include="Documents\Attachment\BannerApplication\" />
+    <Folder Include="Documents\Attachment\Individual\" />
     <Folder Include="Documents\Attachment\PremiseApplication\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Payment\" />

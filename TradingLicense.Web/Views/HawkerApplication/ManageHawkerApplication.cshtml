@@ -204,7 +204,7 @@
                             <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
                                 <input type="button" class="btn btn-primary btSubmit" value="Show Payments Due" id="btnGetPaymentDue" />
                         }
-                        @if (Model.AppStatusID == 14)
+                        @if (Model.AppStatusID >= 14)
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                         }
