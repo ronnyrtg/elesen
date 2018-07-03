@@ -167,7 +167,7 @@
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                         }
-                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID >= (int)Enums.PAStausenum.LetterofnotificationApproved && Model.AppStatusID < (int)Enums.PAStausenum.Pendingpayment)
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
                         }
@@ -175,9 +175,8 @@
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
                         }
-                        @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
+                        @if (Model.AppStatusID >= (int)Enums.PAStausenum.LicenseGenerated)
                         {
-                            // Add a button for showing License print
                             <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
                         }
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
@@ -245,7 +244,7 @@
                     <h4 class="modal-title">Upload Document</h4>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="Appid" id="Appid">
                     <input type="hidden" name="reqDocid" id="reqDocid">
                     <input type="hidden" name="isReqDoc" id="isReqDoc">
 
@@ -275,7 +274,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">License Details</h4>
+                <h4 class="modal-title">Lesen</h4>
             </div>
             <div class="modal-body">
                 <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
@@ -361,21 +360,7 @@
         errorMessage(actionError);
     }
 
-    $(function () {
 
-        $('.form-control').keypress(function (e) {
-            if (e.which == 13) {
-                bindTable();
-                return false;
-            }
-        });
-
-        var success = '@(TempData["SuccessMessage"])';
-        if (success != null && success != "") {
-            successMessage(success);
-        }
-        bindTable();
-    });
 
     function back() {
         var link = '@Url.Action("BannerApplication", "BannerApplication")';
@@ -386,6 +371,8 @@
     $(function () {
 
         userRollTemplate = $("#UserRollTemplate").val();
+
+        $("#Appid").val(@Model.BannerApplicationID);
 
         var success = '@(TempData["SuccessMessage"])';
         if (success != null && success != "") {
@@ -502,8 +489,6 @@
                 event.preventDefault();
             }
         });
-
-
      }
 
      function bindTable() {
@@ -590,211 +575,22 @@
          });
      }
 
-    if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
 
-        var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
 
-        var arr = UploadRequiredDocumentlist.split(',');
-        $.each(arr, function (index, value) {
-            requiredDocList.push(value);
-        });
-    }
 
-    $("#preAppid").val(@Model.BannerApplicationID);
-
-    function RequiredDocument() {
-
-        var RequiredArray = [];
-        $('.chkreqdoc').each(function () {
-            if ($(this).is(":checked")) {
-                RequiredArray.push($(this).val());
-            }
-        });
-        $("#RequiredDocIds").val(RequiredArray);
-
-        checkButtonState();
-    }
-
-    function checkButtonState() {
-
-        var isDocument = false;
-        if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
-            isDocument = true;
-        }
-
-        if (isDocument) {
-            $('.btSubmit').show();
-        } else {
-            $('.btSubmit').hide();
-        }
-    }
-
-    function RequiredDocumentModel(Requiredid) {
-        $("#reqDocid").val(Requiredid);
-        $('#isReqDoc').val("1");
-        $('#uploadDocumentModal').modal('show');
-    }
-
-    if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
-
-        var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
-
-        var arr = UploadRequiredDocumentlist.split(',');
-        $.each(arr, function (index, value) {
-            requiredDocList.push(value);
-        });
-    }
-
-    function frmSubmit(isdraft) {
-        $("#IsDraft").val(isdraft);
-        if (validateBannerApplication(isdraft)) {
-            $("#frmBannerApplication").submit();
-        }
-    }
-
-    function validateBannerApplication(isdraft) {
-        $("#UploadRequiredDocids").val(requiredDocList);
-
-        RequiredDocument();
-
-        if (!$("#frmBannerApplication").valid()) {
-            return false;
-        } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
-            alert("Please Upload all Required Document");
-            return false;
-        } else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
-            alert("Please select all checkbox for Required Document");
-            return false;
-        } else {
-            var individuals = $("#individualList").select2('data');
-            if (individuals) {
-                var newIndividuals = [];
-                for (var i = 0; i < individuals.length; i++) {
-                    var ind = individuals[i];
-                    if (ind.isNew) {
-                        newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
-                    }
-                }
-                if (newIndividuals.length > 0) {
-                    $("#newIndividualsList").val(JSON.stringify(newIndividuals));
-                }
-            }
-        }
-        return true;
-    }
-
-    function bindDownload(attechmentID) {
-        if (attechmentID > 0) {
-            window.location.href = "@Url.Action("Download", "BannerApplication")" + "?attechmentID=" + attechmentID;
-        }
-    }
-
-    function SaveComment() {
-
-        if (!$("#frmsaveComment").valid()) {
-            return false;
-        } else {
-
-            var data = new FormData();
-            data.append("BannerApplicationID", @Model.BannerApplicationID);
-            data.append("comment", $("#txtComment").val());
-
-            if ($("#lblapprovedreject").html() == "Approve") {
-                data.append("approveRejectType", "Approve");
-            } else {
-                data.append("approveRejectType", "Reject");
-            }
-
-            var ajaxRequest = $.ajax({
-                type: "POST",
-                url: '@Url.Action("SaveComment", "BannerApplication")',
-                contentType: false,
-                processData: false,
-                data: data,
-                async: false,
-                success: function (result) {
-                    if (result != null) {
-                        $("#txtComment").val("");
-                        if (result.status == 1) {
-                            successMessage(result.message);
-                            back();
-                        }
-                        else {
-                            errorMessage(result.message);
-                        }
-                    }
-                    $("#approvedrejectModal").modal('hide');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    errorMessage(xhr.responseText);
-                }
-            });
-
-        }
-    }
-
-    function loadComments() {
-        $('#Comments').show();
-        if ($.fn.DataTable.isDataTable("#tblComments")) {
-            $('#tblComments').dataTable().fnDestroy();
-        }
-
-        var data = { "BannerApplicationID": @Model.BannerApplicationID };
-
-        table = $("#tblComments").dataTable({
-            "lengthChange": true,
-            "searching": false,
-            "pageLength": 50,
-            "processing": true,
-            "serverSide": true,
-            "responsive": true,
-            "bPaginate": true,
-            "bInfo": false,
-            "orderMulti": false,
-            "ajax": {
-                url: '@Url.Action("BannerComments", "BannerApplication")',
-                type: "POST",
-                data: data
-            },
-            "columns": [
-                {
-                    "targets": 0,
-                    "searchable": false,
-                    "orderable": false,
-                    "title": "No.",
-                    "data": null,
-                    "render": function (data, type, full, meta) {
-                        return meta.settings._iDisplayStart + meta.row + 1;
-                    }
-                },
-                {
-                    "title": "Ulasan",
-                    "orderable": false,
-                    "data": "Comment"
-                },
-                {
-                    "title": "Pengulas",
-                    "orderable": false,
-                    "data": "FullName"
-                },
-                { "title": "Ulasan dibuat pada", "data": "CommentDate", "width": "150px", render: renderDateTime },
-            ]
-        });
-    }
 
     // Generate license PDF
     $(document).ready(function () {
         $('#btnLicense').click(function () {
-            var AppId = $('#BannerApplicationID').val();
-            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLicense?AppId=" + AppId);
+            //alert("Cetak Lesen");
+            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLicense?AppId=" + '@Model.BannerApplicationID');
             $('#myModal').modal('show');
         });
     });
     // Generate Letter PDF
     $(document).ready(function () {
         $('#btnLetter').click(function () {
-            var AppId = $('#BannerApplicationID').val();
-            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + AppId);
+            $('.modal-body iframe').attr('src', "../BannerApplication/GenerateLetter?AppId=" + '@Model.BannerApplicationID');
             $('#myModal').modal('show');
         });
     });

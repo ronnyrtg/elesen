@@ -8,7 +8,7 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int BannerApplicationID { get; set; }
-        public int Mode { get; set; }
+        public int? Mode { get; set; }
         public int? CompanyID { get; set; }
         public int IndividualID { get; set; }
         public int AppStatusID { get; set; }
@@ -28,6 +28,8 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string ReferenceNo { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
         public string LicenseStatus { get; set; }
         public DateTime? ExpireDate { get; set; }
 
