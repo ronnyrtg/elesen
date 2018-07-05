@@ -70,8 +70,8 @@
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.NamaPemohon, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NamaPemohon)
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName)
                     </div>
                 </div>
             </div>
@@ -79,8 +79,7 @@
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">No. Kad Pengenalan / No. Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ICPaspot, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ICPaspot)
+                        @Html.TextBoxFor(m => m.MykadNo, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -88,8 +87,8 @@
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Perniagaan/Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.NamaSyarikat, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NamaSyarikat)
+                        @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CompanyName)
                     </div>
                 </div>
             </div>

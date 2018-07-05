@@ -31,7 +31,6 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string StateA { get; set; }
-        public string LicenseStatus { get; set; }
         public int AppStatusID { get; set; }
        
 
