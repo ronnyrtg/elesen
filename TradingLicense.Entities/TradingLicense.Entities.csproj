@@ -87,6 +87,7 @@
     <Compile Include="LALinkReqDoc.cs" />
     <Compile Include="LAReqDoc.cs" />
     <Compile Include="MLPremiseApplication.cs" />
+    <Compile Include="Mode.cs" />
     <Compile Include="PADepSupp.cs" />
     <Compile Include="PALinkInd.cs" />
     <Compile Include="Race.cs" />

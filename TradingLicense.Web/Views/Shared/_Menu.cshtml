@@ -21,7 +21,7 @@
                     <li><a href="#">Lesen Premis Pemberi Pinjam Wang</a></li>
                     <li><a href="#">Permit Iklan Pemberi Pinjam Wang</a></li>
                     <li><a href="#">Lesen Minuman Keras</a></li>
-                    <li><a href="#">Lesen Iklan</a></li>
+                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerApplication", "BannerApplication", new { Id = 15}, null)</li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
                 </ul>
@@ -45,7 +45,7 @@
                     <li>@Html.ActionLink("Lesen Premis Pemberi Pinjam Wang (Test)", "MLPremiseApplication", "MoneyLenderApplication")</li>
                     <li>@Html.ActionLink("Permit Iklan Pemberi Pinjam Wang (Test)", "MLPermitApplication", "MoneyLenderApplication")</li>
                     <li>@Html.ActionLink("Lesen Minuman Keras (Test)", "LiquorApplication", "LiquorApplication")</li>
-                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerApplication", "BannerApplication")</li>
+                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BannerApplication", "BannerApplication", new { Id = 0}, null)</li>
                 </ul>
             </li>
 }
@@ -99,6 +99,7 @@
                     <li>@Html.ActionLink("Lesen Pasar (Test)", "SAReqDoc", "StallApplication")</li>
                     <li>@Html.ActionLink("Lesen Penjaja (Test)", "HAReqDoc", "HawkerApplication")</li>
                     <li role="separator" class="divider"></li>
+                    <li>@Html.ActionLink("Jenis Kelulusan (Test)", "Mode", "Master")</li>
                     <li>@Html.ActionLink("Jenis Perniagaan (Test)", "BusinessType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
                     <li>@Html.ActionLink("Senarai Bangsa (Test)", "Race", "Master")</li>

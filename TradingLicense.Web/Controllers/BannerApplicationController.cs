@@ -232,18 +232,71 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BannerApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string bannerApplicationId, string individualMkNo)
+        public JsonResult BannerApplication([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string bannerApplicationId, string individualMkNo, int? Id)
         {
             List<BannerApplicationModel> bannerApplication;
             int totalRecord = 0;          
             using (var ctx = new LicenseApplicationContext())
             {
                 int? rollTemplateID = ProjectSession.User?.RoleTemplateID;
+                
                 IQueryable<BannerApplication> query = ctx.BannerApplications;
 
                 if (!string.IsNullOrWhiteSpace(bannerApplicationId))
                 {
                     query = query.Where(q => q.BannerApplicationID.ToString().Contains(bannerApplicationId));
+                }
+                if (Id.HasValue)
+                {
+                    if (Id == 0)
+                    {
+                        query = query.Where(q => q.AppStatusID > 0 && q.AppStatusID != 15);
+                    }
+                    else
+                    {
+                        query = query.Where(q => q.AppStatusID == Id);
+                    }
+                }
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                var result = Mapper.Map<List<BannerApplicationModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BannerApplicationID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion
+
+                //Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                bannerApplication = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, bannerApplication, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Get BannerApplication List Information for Datatable with AppStatus = Complete
+        /// <summary>
+        /// Get BannerApplication List Information for Datatable
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerApplicationProfile([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? Id)
+        {
+            List<BannerApplicationModel> bannerApplication;
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+
+                IQueryable<BannerApplication> query = ctx.BannerApplications;
+
+                if (Id.HasValue)
+                {
+                    query = query.Where(q => q.AppStatusID == Id.Value);
                 }
 
                 #region Sorting

@@ -556,6 +556,8 @@
     <Content Include="Views\LiquorApplication\ManageLAReqDoc.cshtml" />
     <Content Include="Views\LiquorApplication\LiquorApplication.cshtml" />
     <Content Include="Views\LiquorApplication\LAReqDoc.cshtml" />
+    <Content Include="Views\Master\Mode.cshtml" />
+    <Content Include="Views\Master\ManageMode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
