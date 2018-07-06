@@ -32,10 +32,10 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
         public float? ProcessingFee { get; set; }
+        public float? TotalFee { get; set; }
         public int AppStatusID { get; set; }
 
         public int UsersID { get; set; }
-        public int RoleTemplateID { get; set; }
         public DateTime DateSubmitted { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime DateApproved { get; set; }

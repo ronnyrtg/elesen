@@ -104,15 +104,20 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
+                                { "title": "No. Rujukan", "data": "ReferenceNo" },
                                 { 
-                                    "title": "No. Rujukan", 
-                                    "data": "PremiseApplicationID",
-                                    "render": function (data, type, row) {
-                                        var date = new Date();
-                                        return date.getFullYear() + '/PA/NEW/'+ data;
+                                    "title": "Kelulusan",
+                                    "data": "Mode",
+                                    "render" : function (data, type, row) {
+                                        switch(data) {
+                                            case 1 : return 'Ekspres'; break;
+                                            case 2 : return 'Pengarah'; break;
+                                            case 3 : return 'Biasa'; break;
+                                            case 4 : return 'Mesyuarat'; break;
+                                            default  : return 'N/A';
+                                        }
                                     }
                                 },
-                                { "title": "Pemohon", "data": "Individualids" },
                                 { "title": "Syarikat", "data": "CompanyName" },
                                 { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
                                 { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },

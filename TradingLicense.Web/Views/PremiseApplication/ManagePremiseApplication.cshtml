@@ -71,6 +71,7 @@
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
             @Html.HiddenFor(m => m.UploadAdditionalDocids)
+            
 
             <div class="row">
                 <div class="col-lg-3 col-md-6">
@@ -256,6 +257,14 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Yuran Pemprosesan (RM)</div>
+                        @Html.TextBoxFor(m => m.ProcessingFee, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
@@ -276,170 +285,183 @@
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
                     </div>
                 </div>
+            </div>               
+            <div class="row">
+                <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Senarai Catatan
+                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
+                    </div>
+                </div>
             </div>
-            if (Model.UserRollTemplate > 1)
-            {
-                <div class="row">
-                    <div class="col-lg-12 col-md-12">
-                        <div class="form-group">
-                            <div class="control-label">
-                                Masukkan Catatan baru
-                            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Ulasan Unit Teknikal/Jabatan Luar
                         </div>
-                    </div>
-                    <div class="col-lg-12 col-md-12">
-                        <div class="form-group">
-                            <div class="control">
-                                @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
-                            </div>
-                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
                     </div>
                 </div>
-                if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director)
-                {
-                    List<SelectListItem> supportList = new List<SelectListItem>();
-                    supportList.Add(new SelectListItem { Text = "Supported", Value = "1" });
-                    supportList.Add(new SelectListItem { Text = "Not Supported", Value = "0" });
-                <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <div class="control-label">Do you Support</div>
-                                @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                }
-                if (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
-                {
-                    List<SelectListItem> supportList = new List<SelectListItem>();
-                    supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-                    supportList.Add(new SelectListItem { Text = "Rejected", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <div class="control-label">Do you Support</div>
-                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                }
-                if (Model.AppStatusID == (int)Enums.PAStausenum.meeting) // Meeting
-                {
-                    List<SelectListItem> supportList = new List<SelectListItem>();
-                    supportList.Add(new SelectListItem { Text = "Approved", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-                    supportList.Add(new SelectListItem { Text = "Rejected", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <div class="control-label">Do you Support</div>
-                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                }
-                <div class="row">
-                    <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
-                        <div class="form-group">
-                            <div class="control-label">
-                                Senarai Catatan
-                            </div>
-                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
-                        </div>
+            </div>
+        if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
+        {
+            List<SelectListItem> supportList = new List<SelectListItem>();
+            supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
+            supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Keputusan Pengarah</div>
+                        @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
-                        <div class="form-group">
-                            <div class="control-label">
-                                Route Department Comments
-                            </div>
-                            <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
-                        </div>
+            </div>
+        }
+        if (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
+        {
+            List<SelectListItem> supportList = new List<SelectListItem>();
+            supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Keputusan KPE</div>
+                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
-            }
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
+            </div>
+        }
+        if (Model.AppStatusID == (int)Enums.PAStausenum.meeting) // Meeting
+        {
+            List<SelectListItem> supportList = new List<SelectListItem>();
+            supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div class="control-label">Keputusan Mesyuarat</div>
+                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        }
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @if (Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.AppStatusID <= (int)Enums.PAStausenum.submittedtoclerk) && (Model.Mode == 1) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                        }
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.Mode == 1 && Model.AppStatusID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Fi Yang Perlu Dibayar" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                        }
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
+                        {
+                            <input type="button" class="btn btn-primary btSubmit" value="Terima Bayaran" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
+                        }
+                        @if (Model.UserRollTemplate != (int)Enums.RollTemplate.Clerk && Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated && Model.Mode != 1)
+                        {
+                            // Add a button for showing License print
+                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                        }
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
+                        {
+                            if (Model.AppStatusID == 0 || Model.AppStatusID == (int)Enums.PAStausenum.draftcreated)
                             {
-                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-                            }
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1))
-                            {
-                                <input type="button" class="btn btn-primary btSubmit" value="Lulus Bersyarat" id="btnLetter" name="btnSubmit" />
-                            }
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
-                            {
-                                <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
-                            }
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
-                            {
-                                <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
-                            }
-                            @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
-                            {
-                                // Add a button for showing License print
-                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
-                            }
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
-                            {
-                                if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
-                                {
-                                    <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
-                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                }
-                            }
-
-                            @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                                {
-                                    <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                                }*@
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.PremiseApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
-                            {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
-                            {
-
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Director && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
-                            {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
-                            }
-
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
-                            {
+                                <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
+                        }
 
-                            @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
+                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                             {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                            }*@
 
-                            }
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute) || Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.Mode == 1))
+                        {
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                        }
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.PremiseApplicationID > 0)
+                        {
 
-                            <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                        }
 
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.PremiseApplicationID > 0)
+                        {
+
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
+                        {
+                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
+                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Kembali ke Supervisor</button>
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
+                        {
+                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                        }
+
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.PremiseApplicationID > 0)
+                        {
+
+                        }
+
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Notes in Letter-->
+<div id="showCatatan" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveCatatan", "PremiseApplication", FormMethod.Post, new { name = "frmsaveCatatan", id = "frmsaveCatatan" }))
+        {
+            @Html.HiddenFor(m => m.PremiseApplicationID)
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Catatan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Masukkan Catatan baru
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                }
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCatatan()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
             </div>
+        }
+    </div>
 </div>
-
-
 
 <!--Upload Doc-->
 <div id="uploadDocumentModal" class="modal fade" role="dialog">
@@ -488,23 +510,20 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Premise Application Route Confirmation</h4>
+                    <h4 class="modal-title">Senarai Unit Teknikal/Jabatan Luar</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-lg-12 col-md-12" id="RouteUnitTable" style="display:none;">
                             <div class="form-group">
-                                <div class="control-label">
-                                    Departments
-                                </div>
                                 <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteDepartments"></table>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="return RoutePremiseApplication()">Confirm</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="return RoutePremiseApplication()">Hantar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                 </div>
             </div>
         </div>
@@ -515,7 +534,6 @@
 <div id="approvedrejectModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
-
         @using (Html.BeginForm("SaveComment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
         {
             <div class="modal-content">
@@ -532,51 +550,44 @@
                 </div>
             </div>
         }
-
     </div>
 </div>
 
 <div id="myModalLicense" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
-
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">License Details</h4>
+                <h4 class="modal-title">Cetak Lesen</h4>
             </div>
             <div class="modal-body">
                 <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
-
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+                                                            
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Letter Details</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
-
     </div>
 </div>
-                                                            
-      <div id="myModal" class="modal fade" role="dialog">
-          <div class="modal-dialog modal-lg">
-
-              <!-- Modal content-->
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title">Letter Details</h4>
-                  </div>
-                  <div class="modal-body">
-                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
-
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-              </div>
-
-          </div>
-      </div>
 
 <div id="showPaymentsDue" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -587,21 +598,30 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Payments Due</h4>
+                <h4 class="modal-title">Jumlah Yang Perlu Dibayar</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-3 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
                         <div class="form-group">
-                            <div class="control-label">Amount Due<span class="cfont">*</span></div>
+                            <div class="control-label">Jumlah Fi Bagi Semua Kod Perniagaan</div>
                             @Html.TextBox("totalDue", new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            @Model.ProcessingFee
+                        </div>
+                    </div>
+                </div>
+               
             </div>
             <div class="modal-footer">
-                <input type="submit" class="btn btn-primary" value="Submit" onclick="return validatePaymentDue()"/>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Hantar" onclick="return validatePaymentDue()"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
             </div>
         </div>
     }
@@ -616,13 +636,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Confirm Received Payments</h4>
+                    <h4 class="modal-title">Penerimaan Bayaran</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3 col-sm-12">
                             <div class="form-group">
-                                <div class="control-label">Paid For<span class="cfont">*</span></div>
+                                <div class="control-label">Bayaran untuk:</div>
                                 @Model.ReferenceNo
                             </div>
                         </div>
@@ -630,15 +650,15 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-12">
                             <div class="form-group">
-                                <div class="control-label">Hingga<span class="cfont">*</span></div>
-                                @Model.AmountDue
+                                <div class="control-label">Jumlah bayaran</div>
+                                @Model.AmountDue + @Model.ProcessingFee = @(Model.AmountDue + Model.ProcessingFee)
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3 col-sm-12">
+                        <div class="col-md-6 col-sm-12">
                             <div class="form-group">
-                                <div class="control-label">Select Individual<span class="cfont">*</span></div>
+                                <div class="control-label">Bayaran dibuat oleh/untuk</div>
                                 @Html.DropDownList("individualID", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @class = "form-control" })
                             </div>
                         </div>
@@ -1136,7 +1156,7 @@
             },
             "columns": [
                 {
-                    "title": "Action",
+                    "title": "DIsertakan?",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
@@ -1149,9 +1169,9 @@
                     width: "7%",
                     "visible": visibleGridColume,
                 },
-                { "title": "Additional Document", "data": "DocDesc", "orderable": false },
+                { "title": "Jenis Dokumen", "data": "DocDesc", "orderable": false },
                 {
-                    "title": "Action",
+                    "title": "Muat Naik",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
@@ -1167,7 +1187,7 @@
                     "visible": visibleGridUploadColume,
                 },
                 {
-                    "title": "File Name",
+                    "title": "Nama Fail",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
@@ -1521,19 +1541,51 @@
                         return meta.settings._iDisplayStart + meta.row + 1;
                     }
                 },
+                { "title": "Ulasan", "orderable": false, "data": "Comment" },
+                { "title": "Pengulas", "orderable": false, "data": "FullName" },
+                { "title": "Ulasan dibuat pada", "data": "CommentDate", render: renderDateTime },
                 {
-                    "title": "Ulasan",
+                    "title": "Tindakan",
+                    "data": null,
+                    "render": function (data, type, row) {
+                        var appendstring = '';
+
+                        if (data['UsersID'] == '@(ProjectSession.User.UsersID)') {
+                                appendstring += '<a  href="@Url.Action("AddCatatan", "PremiseApplication")?Id=' + row["PremiseApplicationID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["PACommentID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        }
+                        return appendstring
+                    },
+                    "width": "100px",
                     "orderable": false,
-                    "data": "Comment"
-                },
-                {
-                    "title": "Pengulas",
-                    "orderable": false,
-                    "data": "FullName"
-                },
-                { "title": "Ulasan dibuat pada", "data": "CommentDate", "width": "150px", render: renderDateTime },
+                    "class": "action-icons"
+                }
             ]
         });
+    }
+
+    function bindDelete(item) {
+        var x = confirm("Are you sure you want to delete?");
+        if (x) {
+            $.ajax({
+                type: "POST",
+                url: encodeURI('@Url.Action("DeleteComment", "PremiseApplication")'),
+                data: { "Id": $(item).attr('data-id') },
+                cache: false,
+                dataType: 'json',
+                success: function (data, textStatus, XMLHttpRequest) {
+                    if (data.success) {
+                        bindTable();
+                        successMessage(data.message);
+                    }
+                    else {
+                        successMessage(data.message);
+                    }
+                },
+                error: function (jqXHR, exception, errMsg) {
+                }
+            });
+        }
     }
 
     function loadRouteComments() {
@@ -1570,26 +1622,34 @@
                     }
                 },
                 {
-                    "title": "Comment",
+                    "title": "Ulasan",
                     "orderable": false,
                     "data": "Comment"
                 },
                 {
-                    "title": "Department",
+                    "title": "Nama Unit Teknikal/Jabatan Luar",
                     "orderable": false,
                     "data": "Department"
                 },
                 {
-                    "title": "Is Supported",
+                    "title": "Keputusan",
                     "orderable": false,
-                    "data": "IsSupported"
+                    "data": "IsSupported",
+                    "render": function (data, type, row) {
+                        if (data) {
+                            return '<label class="label label-success">Tiada Halangan</label>';
+                        }
+                        else {
+                            return '<label class="label label-danger">Ada Halangan</label>';
+                        }
+                    }
                 },
                 {
-                    "title": "Submitted By",
+                    "title": "Diulas oleh",
                     "orderable": false,
                     "data": "Commentor"
                 },
-                { "title": "Submitted On", "data": "SubmittedDate", "width": "150px", render: renderDateTime },
+                { "title": "Tarikh", "data": "SubmittedDate", "width": "150px", render: renderDateTime },
             ]
         });
     }
@@ -1610,7 +1670,7 @@
                 "pageLength": 10,
                 "processing": true,
                 "serverSide": true,
-                "bPaginate": true,
+                "bPaginate": false,
                 "bInfo": false,
                 "orderMulti": false,
                 "ajax": {
@@ -1629,36 +1689,20 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Department Code", "orderable": true, "data": "DepartmentCode" },
-                    { "title": "Department Name", "orderable": true, "data": "DepartmentDesc" },
+                    { "title": "Nama Jabatan", "orderable": true, "data": "DepartmentDesc" },
                     {
-                        "title": "Dalam/Luar",
-                        "data": "Internal",
+                        "title": "Pilih",
+                        "data": null,
                         "render": function (data, type, row) {
-                            if (data==1) {
-                                return '<label class="label label-success">Dalam</label>';
-                            }
-                            else {
-                                return '<label class="label label-danger">Luar</label>';
-                            }
+                            var appendstring = '';
+                                appendstring += '<input type="checkbox" />';
+                            return appendstring
                         },
-                        "width": "10%",
-                        "orderable": true,
-                    },
-                    {
-                        "title": "Aktif",
-                        "data": "Active",
-                        "render": function (data, type, row) {
-                            if (data) {
-                                return '<label class="label label-success">Aktif</label>';
-                            }
-                            else {
-                                return '<label class="label label-danger">Tidak Aktif</label>';
-                            }
-                        },
-                        "width": "10%",
-                        "orderable": true,
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
                     }
+
                 ]
             });
         }
@@ -1670,6 +1714,7 @@
 
         var data = new FormData();
         data.append("PremiseApplicationID", @Model.PremiseApplicationID);
+        data.append("TotalFee", @Model.TotalFee);
 
         var ajaxRequest = $.ajax({
             type: "POST",
@@ -1680,8 +1725,10 @@
             async: false,
             success: function (result) {
                 $("#totalDue").val(0);
+                $("#totalfee").val(0);
                 if (result != null) {
                     $("#totalDue").val(result.totalDue);
+                    $("#totalfee").val(result.totalfee);
                 }
                 $("#showPaymentsDue").modal('show');
             },
@@ -1699,7 +1746,7 @@
     function validatePaymentDue() {
         var due = $('#totalDue').val();
         if(due === '' || isNaN(due)) {
-            alert('Please entere valid Amount of due');
+            alert('Please enter valid Amount of due');
             return false;
         }
         if(parseFloat(due) <= 0) {
@@ -1755,6 +1802,10 @@
                 $('#btnLetter').hide();
             }
         }
+    }
+
+    function AddCatatan() {
+        $("#showCatatan").modal('show');
     }
 
 </script>

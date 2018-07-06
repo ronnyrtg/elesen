@@ -15,7 +15,7 @@ namespace TradingLicense.Model
         public string Comment { get; set; }
         public int UserID { get; set; }
         public string SubmittedBy { get; set; }
-        public DateTime SubmittedDate { get; set; }
+        public DateTime? SubmittedDate { get; set; }
         public bool IsActive { get; set; }
         public string Department { get; set; }
         public string Commentor { get; set; }

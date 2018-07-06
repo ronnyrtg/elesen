@@ -200,7 +200,7 @@
 
                     @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit && Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.unitroute)
                     {
-                        <input type="button" class="btn btn-primary btSubmit" value="Submit Response" id="btnRouteUnitResponse" name="btnRouteUnitResponse" onclick="return Approvedreject()" />
+                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" id="btnRouteUnitResponse" name="btnRouteUnitResponse" onclick="return Approvedreject()" />
                     }
                     <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                 </div>
@@ -238,28 +238,28 @@
         @using (Html.BeginForm("SaveRouteUnitComment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
         {
             List<SelectListItem> supportList = new List<SelectListItem>();
-            supportList.Add(new SelectListItem { Text = "Supported", Value = "1" });
-            supportList.Add(new SelectListItem { Text = "Not Supported", Value = "0" });
+            supportList.Add(new SelectListItem { Text = "Tiada Halangan", Value = "1" });
+            supportList.Add(new SelectListItem { Text = "Ada Halangan", Value = "0" });
             @Html.HiddenFor(m => m.PremiseApplicationID)
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Route Unit Response</h4>
+                    <h4 class="modal-title">Ulasan Unit Teknikal/Jabatan Luar</h4>
                 </div>
                 <div class="modal-body">
-                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" name="comment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
+                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" name="comment" maxlength="255" autofocus="autofocus" placeholder="Ulasan..."></textarea>
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <div class="control-label">Do you Support</div>
-                                @Html.DropDownList("Supported", new SelectList(supportList, "Value", "Text"), "Select your response", new { @class = "form-control" })
+                                <div class="control-label">Keputusan</div>
+                                @Html.DropDownList("Supported", new SelectList(supportList, "Value", "Text"), "Sila pilih salah satu", new { @class = "form-control" })
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" onclick="return validateRouteUnitResponse()">Submit to Clerk</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="return validateRouteUnitResponse()">Hantar ke Unit Pelesenan</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                 </div>
             </div>
         }

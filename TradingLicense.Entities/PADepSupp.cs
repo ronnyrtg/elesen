@@ -19,7 +19,7 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string Comment { get; set; }
-        public DateTime SubmittedDate { get; set; }
+        public DateTime? SubmittedDate { get; set; }
         public bool IsActive { get; set; }
 
         public int Commentor

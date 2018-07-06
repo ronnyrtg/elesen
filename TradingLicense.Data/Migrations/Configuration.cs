@@ -443,8 +443,9 @@ namespace TradingLicense.Data.Migrations
                 new Users {FullName="Mazalan Bin Hassin",Username="mazalan",Password="rGWQ/rZGq74=",Email="mazalan.hassin@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
                 new Users {FullName="R. Norasliana Binti Ramlee",Username="norasliana",Password="rGWQ/rZGq74=",Email="ana.ramli@pl.gov.my", RoleTemplateID=8,DepartmentID=1},
                 new Users {FullName="Jabatan Bomba & Penyelamat Malaysia",Username="bomba",Password="rGWQ/rZGq74=",Email="jbpm_labuan.bomba@1govuc.gov.my", RoleTemplateID=5,DepartmentID=1},
-                new Users {FullName="Bahagian Perancangan",Username="bpp",Password="rGWQ/rZGq74=",Email="bpp@pl.gov.my", RoleTemplateID=5,DepartmentID=3},
-                new Users {FullName="Unit Kesihatan",Username="uks",Password="rGWQ/rZGq74=",Email="uks@pl.gov.my", RoleTemplateID=5,DepartmentID=5},
+                new Users {FullName="Wakil Bahagian Perancangan",Username="bpp",Password="rGWQ/rZGq74=",Email="bpp@pl.gov.my", RoleTemplateID=5,DepartmentID=3},
+                new Users {FullName="Wakil Unit Kesihatan",Username="uks",Password="rGWQ/rZGq74=",Email="uks@pl.gov.my", RoleTemplateID=5,DepartmentID=5},
+                new Users {FullName="Wakil Jabatan Penilaian",Username="jppph",Password="rGWQ/rZGq74=",Email="jppph@pl.gov.my", RoleTemplateID=5,DepartmentID=4},
                 new Users {FullName="Ronny Jimmy",Username="ronny",Password="rGWQ/rZGq74=",Email="ronnyrtg@yahoo.com", RoleTemplateID=8,DepartmentID=1},
             };
             users.ForEach(s => context.Users.Add(s));
