@@ -1,13 +1,21 @@
 ﻿@model TradingLicense.Model.CompanyModel
+@using AutoMapper;
 @{
-    ViewBag.Title = "ManageCompany";
+    ViewBag.Title = "Manage Company";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessType = ctx.BusinessTypes.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+    }
 }
 
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage Company</h4>
+        <h4 id="headerTitle">Kemaskini Maklumat Syarikat</h4>
     </div>
     <div class="body">
 
@@ -17,7 +25,15 @@
         @Html.HiddenFor(m => m.CompanyID)
 
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-lg-3 col-md-6">
+                <div class="form-group">
+                    <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                    @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-3">
                 <div class="form-group">
                     <div class="control-label">Nama Syarikat/Pertubuhan<span class="cfont">*</span></div>
                     @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", @maxlength = "100" })
@@ -25,168 +41,244 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-lg-12 col-md-12">
                 <div class="form-group">
-                    <div class="control-label">Alamat Syarikat/Pertubuhan<span class="cfont">*</span></div>
-                    @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", @maxlength = "255" })
-                    @Html.ValidationMessageFor(m => m.CompanyAddress)
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">No. Telefon Syarikat<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.CompanyPhone, new { @class = "form-control", @maxlength = "50" })
-                    @Html.ValidationMessageFor(m => m.CompanyPhone)
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">No. Pendaftaran Perniagaan/Syarikat<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.RegistrationNo, new { @class = "form-control", @maxlength = "50" })
+                    <div class="control-label">
+                        Butir-butir pemegang jawatan dalam organisasi
+                    </div>
+                    <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblmembers"></table>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4 col-sm-3">
+            <div class="col-sm-12 col-md-6 col-lg-3">
                 <div class="form-group">
-                    <div class="control-label">Tarikh Pendaftaran<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.SSMRegDate, new { @class = "date-picker" })
-                    @Html.ValidationMessageFor(m => m.SSMRegDate)
+                    <div class="control-label">Alamat Premis<span class="cfont">*</span></div>
+                    @Html.TextBoxFor(m => m.Addra1, new { @class = "form-control" })
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-4 col-sm-3">
-                <div class="form-group">
-                    <div class="control-label">Tarikh Habis Tempoh<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.SSMExpDate, new { @class = "date-picker" })
-                    @Html.ValidationMessageFor(m => m.SSMExpDate)
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Modal Dibenarkan</div>
-                    @Html.TextBoxFor(m => m.AuthorisedCapital, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Modal Terbitan</div>
-                    @Html.TextBoxFor(m => m.IssuedCapital, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Modal Berbayar</div>
-                    @Html.TextBoxFor(m => m.PaidUpCapital, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <hr />
-        <h3>Sumber kumpulan wang</h3>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Bank/Institusi kewangan</div>
-                    @Html.TextBoxFor(m => m.BankSource, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Simpanan</div>
-                    @Html.TextBoxFor(m => m.DepositSource, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Pinjaman</div>
-                    @Html.TextBoxFor(m => m.LoanSource, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">(daripada siapa)</div>
-                    @Html.TextBoxFor(m => m.LoanSourceName, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">Lain-lain</div>
-                    @Html.TextBoxFor(m => m.OtherSource, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="control-label">(sila nyatakan)</div>
-                    @Html.TextBoxFor(m => m.OtherSourceName, new { @class = "form-control", @maxlength = "10" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                            @Html.CheckBoxFor(model => model.Active)
-                            <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
-                        </label>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra2, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <input type="submit" class="btn btn-primary" value="Save" />
-                    <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra3, new { @class = "form-control" })
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Addra4, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Poskod<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.PcodeA, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Negeri<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.StateA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">No. Telefon Syarikat<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.CompanyPhone, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.CompanyPhone)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">No. Pendaftaran Perniagaan/Syarikat<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.RegistrationNo, new { @class = "form-control", @maxlength = "50" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Tarikh Pendaftaran<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.SSMRegDate, "{0:dd/MMM/yyyy}", new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.SSMRegDate)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Tarikh Habis Tempoh<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.SSMExpDate, "{0:dd/MMM/yyyy}", new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.SSMExpDate)
+                    </div>
+                </div>
+            </div>
+            <div id="capitalDetails" style="display:none;">       
+                <div class="header"><h4> Butir Butir Modal </h4></div><br />
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Modal Dibenarkan (RM)</div>
+                            @Html.TextBoxFor(m => m.AuthorisedCapital, new { @class = "form-control allownumericwithdecimal" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Modal Terbitan (RM)</div>
+                            @Html.TextBoxFor(m => m.IssuedCapital, new { @class = "form-control allownumericwithdecimal" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Modal Berbayar Tunai (RM)</div>
+                            @Html.TextBoxFor(m => m.PaidUpCapitalCash, new { @class = "form-control allownumericwithdecimal" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Modal Berbayar Selainnya (RM)</div>
+                            @Html.TextBoxFor(m => m.PaidUpCapitalOther, new { @class = "form-control allownumericwithdecimal" })
+                        </div>
+                    </div>
+                </div>           
+                <hr />
+            </div>
+            <div class="header"><h4> Sumber Kumpulan Wang </h4></div><br />
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Bank/Institusi kewangan (RM)</div>
+                        @Html.TextBoxFor(m => m.BankSource, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Simpanan (RM)</div>
+                        @Html.TextBoxFor(m => m.DepositSource, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Pinjaman (RM)</div>
+                        @Html.TextBoxFor(m => m.LoanSource, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Pinjaman daripada siapa (Nama)</div>
+                        @Html.TextBoxFor(m => m.LoanSourceName, new { @class = "form-control", @maxlength = "50" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Lain-lain (RM)</div>
+                        @Html.TextBoxFor(m => m.OtherSource, new { @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label">Jika ada sumber lain-lain, sila nyatakan</div>
+                        @Html.TextBoxFor(m => m.OtherSourceName, new { @class = "form-control", @maxlength = "50" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.Active)
+                                <span>Aktif?</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
 
-        }
+            }
 
         </div>
 </div>
 @section scripts{
     <script>
-         var actionError = '@(TempData["ErrorMessage"])';
-           if (actionError != null && actionError != "") {
-                errorMessage(actionError);
-            }
+    var actionError = '@(TempData["ErrorMessage"])';
+    
+
+    if (actionError != null && actionError != "") {
+        errorMessage(actionError);
+    }
+
+    if(@Model.BusinessTypeID > 1)
+    {
+        $("#BusinessTypeID").val(@Model.BusinessTypeID);
+    }
+
+    function businessTypeChange() {
+        if ($("#BusinessTypeID").val() > 1) {
+            $('#capitalDetails').show();
+        }
+    }
+
     function back() {
          var link = '@Url.Action("Company", "Master")';
         window.location.href = link;
     }
-    </script>
-    <script type="text/javascript">
-        $(function () {
-            // This will make every element with the class "date-picker" into a DatePicker element
-            $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
+    
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker({ dateFormat: 'dd/MM/yy' });
+        if ($("#BusinessTypeID").val() > 1) {
+            $('#capitalDetails').show();
+        }
+        $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                event.preventDefault();
+            }
         })
+    })
+
     </script>
 }

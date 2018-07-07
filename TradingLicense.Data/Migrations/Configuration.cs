@@ -589,20 +589,21 @@ namespace TradingLicense.Data.Migrations
 
             var companies = new List<Company>
             {
-                new Company {RegistrationNo="75278-T",CompanyName="Chin Recycle",CompanyPhone="087430010",SSMRegDate=DateTime.Parse("01-01-2018"),SSMExpDate=DateTime.Parse("31-12-2018"),CompanyAddress="Lot 12-F, Blok 20, Jalan Tenaga, Labuan"},
-                new Company {RegistrationNo="801234-V",CompanyName="Kejora Bersatu Sdn Bhd",CompanyPhone="087450690",SSMRegDate=DateTime.Parse("01-06-2017"),SSMExpDate=DateTime.Parse("30-06-2018"),CompanyAddress="No.7, 1st Floor, Financial Park, Jalan Merdeka, 87000 Labuan"},
-                new Company {RegistrationNo="991345-V",CompanyName="Kentucky Fried Chicken (KFC)",CompanyPhone="087421090",SSMRegDate=DateTime.Parse("11-Aug-2018"),SSMExpDate=DateTime.Parse("12-Aug-2019"),CompanyAddress="D002, Tingkat Bawah, Bangunan Financial Park, 87000 Wilayah Persekutuan, Labuan"},
-                new Company {RegistrationNo="129074-M",CompanyName="Marry Brown",CompanyPhone="087-411555",SSMRegDate=DateTime.Parse("13-Oct-2018"),SSMExpDate=DateTime.Parse("12-Oct-2019"),CompanyAddress="U0357, Jalan Tun Mustapha"},
-                new Company {RegistrationNo="203976-T",CompanyName="Borneo Combat Gym",CompanyPhone="011-3516 1698",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019"),CompanyAddress="U350-519, 5th Floor Time Square, F.T., 87000 Labuan, Wilayah Persekutuan Labuan"},
-                new Company {RegistrationNo="987264-H",CompanyName="Dorsett Grand Labuan",CompanyPhone="+608 7422 000",SSMRegDate=DateTime.Parse("01-Jan-2018"),SSMExpDate=DateTime.Parse("01-Jan-2019"),CompanyAddress="462 Jalan Merdeka,87029 Labuan F.T., Malaysia "},
-                new Company {RegistrationNo="987264-H",CompanyName="Red Tomato Hotel",CompanyPhone="087-412 963",SSMRegDate=DateTime.Parse("01-Nov-2018"),SSMExpDate=DateTime.Parse("01-Nov-2019"),CompanyAddress="Jalan Bunga Mawar, Bandar Labuan, 87000 Labuan, Wilayah Persekutuan Labuan"},
-                new Company {RegistrationNo="355817-T",CompanyName="Olympic Pool & Snooker",CompanyPhone="087-467522",SSMRegDate=DateTime.Parse("01-Mar-2018"),SSMExpDate=DateTime.Parse("01-Mar-2019"),CompanyAddress="Jalan Utama Jaya, Bandar Labuan, 87000 Labuan, Wilayah Persekutuan Labuan"},
-                new Company {RegistrationNo="188846-T",CompanyName="Kedai Gunting Rambut Wahab",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019"),CompanyAddress="Bandar Labuan, 87000 Labuan, Labuan Federal Territory"},
-                new Company {RegistrationNo="203433-V",CompanyName="Klinik Suria (Labuan) Sdn. Bhd.",CompanyPhone="087-504 969",SSMRegDate=DateTime.Parse("01-Apr-2018"),SSMExpDate=DateTime.Parse("01-Apr-2019"),CompanyAddress=" U0200, Jalan Tun Mustapha, Sabah, 87000 Labuan"},
-                new Company {RegistrationNo="203433-V",CompanyName="Wong Brothers Workshop & Service Sdn. Bhd.",CompanyPhone="087-414 784",SSMRegDate=DateTime.Parse("21-Jan-2018"),SSMExpDate=DateTime.Parse("21-Jan-2019"),CompanyAddress="U0112, Jalan Bunga Raya, P.O.Box 63,87008 Labuan"},
-                new Company {RegistrationNo="203433-V",CompanyName="Hobby Mix.",CompanyPhone="087-429 428",SSMRegDate=DateTime.Parse("31-Jan-2018"),SSMExpDate=DateTime.Parse("31-Jan-2019"),CompanyAddress="Mile 4 1/2, Jalan Rancha - Rancha, P.O.Box 80219, Wilayah Persekutuan, 87012 Labuan"},                new Company {CompanyName="Thirumurugan Temple",CompanyAddress="87000 Labuan, Labuan Federal Territory"},
-                new Company {CompanyName="Jabatan Kerja Raya",CompanyPhone="087-414 040",CompanyAddress="Jalan Kampung Jawa Peti Surat 2"},
-                new Company {CompanyName="Sekolah Menengah Sains Labuan",CompanyPhone="(+60) 87 461525",CompanyAddress="Jalan Sungai Pagar, 87032 Wilayah Persekutuan Labuan"},
+                new Company {RegistrationNo="75278-T",CompanyName="Chin Recycle",CompanyPhone="087430010",SSMRegDate=DateTime.Parse("01-01-2018"),SSMExpDate=DateTime.Parse("31-12-2018")},
+                new Company {RegistrationNo="801234-V",CompanyName="Kejora Bersatu Sdn Bhd",CompanyPhone="087450690",SSMRegDate=DateTime.Parse("01-06-2017"),SSMExpDate=DateTime.Parse("30-06-2018")},
+                new Company {RegistrationNo="991345-V",CompanyName="Kentucky Fried Chicken (KFC)",CompanyPhone="087421090",SSMRegDate=DateTime.Parse("11-Aug-2018"),SSMExpDate=DateTime.Parse("12-Aug-2019")},
+                new Company {RegistrationNo="129074-M",CompanyName="Marry Brown",CompanyPhone="087-411555",SSMRegDate=DateTime.Parse("13-Oct-2018"),SSMExpDate=DateTime.Parse("12-Oct-2019")},
+                new Company {RegistrationNo="203976-T",CompanyName="Borneo Combat Gym",CompanyPhone="011-3516 1698",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019")},
+                new Company {RegistrationNo="987264-H",CompanyName="Dorsett Grand Labuan",CompanyPhone="+608 7422 000",SSMRegDate=DateTime.Parse("01-Jan-2018"),SSMExpDate=DateTime.Parse("01-Jan-2019")},
+                new Company {RegistrationNo="987264-H",CompanyName="Red Tomato Hotel",CompanyPhone="087-412 963",SSMRegDate=DateTime.Parse("01-Nov-2018"),SSMExpDate=DateTime.Parse("01-Nov-2019")},
+                new Company {RegistrationNo="355817-T",CompanyName="Olympic Pool & Snooker",CompanyPhone="087-467522",SSMRegDate=DateTime.Parse("01-Mar-2018"),SSMExpDate=DateTime.Parse("01-Mar-2019")},
+                new Company {RegistrationNo="188846-T",CompanyName="Kedai Gunting Rambut Wahab",SSMRegDate=DateTime.Parse("01-Feb-2018"),SSMExpDate=DateTime.Parse("01-Feb-2019")},
+                new Company {RegistrationNo="203433-V",CompanyName="Klinik Suria (Labuan) Sdn. Bhd.",CompanyPhone="087-504 969",SSMRegDate=DateTime.Parse("01-Apr-2018"),SSMExpDate=DateTime.Parse("01-Apr-2019")},
+                new Company {RegistrationNo="203433-V",CompanyName="Wong Brothers Workshop & Service Sdn. Bhd.",CompanyPhone="087-414 784",SSMRegDate=DateTime.Parse("21-Jan-2018"),SSMExpDate=DateTime.Parse("21-Jan-2019")},
+                new Company {RegistrationNo="203433-V",CompanyName="Hobby Mix.",CompanyPhone="087-429 428",SSMRegDate=DateTime.Parse("31-Jan-2018"),SSMExpDate=DateTime.Parse("31-Jan-2019")},
+                new Company {CompanyName="Thirumurugan Temple"},
+                new Company {CompanyName="Jabatan Kerja Raya",CompanyPhone="087-414 040"},
+                new Company {CompanyName="Sekolah Menengah Sains Labuan",CompanyPhone="(+60) 87 461525"},
             };
             companies.ForEach(s => context.Companies.Add(s));
             context.SaveChanges();

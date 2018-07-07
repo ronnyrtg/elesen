@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Company";
+    ViewBag.Title = "Company List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +10,7 @@
         <li><a href="#" title="Add Company" onclick="addCompany();"><img src="@Url.Content("~/images/add.png")" alt="Add Company"></a></li>
     </ul>
     <div class="header">
-        <h4>Companies</h4>
+        <h4>Senarai Syarikat</h4>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
@@ -90,9 +90,9 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Company Name", "data": "CompanyName" },
-                    { "title": "Registration No", "data": "RegistrationNo" },
-                    { "title": "Company Address", "data": "CompanyAddress", "orderable": false },
+                    { "title": "Nama Syarikat", "data": "CompanyName" },
+                    { "title": "Nombor Pendaftaran", "data": "RegistrationNo" },
+                    { "title": "Tarikh Tamat", "data": "SSMExpDate", "render": renderDate },
                     {
                      "title": "Active",
                      "data": "Active",

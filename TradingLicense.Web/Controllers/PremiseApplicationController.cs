@@ -620,13 +620,13 @@ namespace TradingLicense.Web.Controllers
                             //    graph.DrawString(DateTime.Now.Year + "/PA/LB" + string.Format("{0:000000}",appId) , nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             //}
                             string compAdd = "";
-                            if (item.Company.CompanyAddress == null)
+                            if (item.Company.Addra1 == null)
                             {
                                 compAdd = "";
                             }
                             else
                             {
-                                compAdd = item.Company.CompanyAddress;
+                                compAdd = item.Company.Addra1;
                             }
                             XTextFormatter tf = new XTextFormatter(graph);
                             XRect rect = new XRect(30, lineheight, 250,30);
@@ -1446,13 +1446,13 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
 
                             string compAdd = "";
-                            if (item.Company.CompanyAddress == null)
+                            if (item.Company.Addra1 == null)
                             {
                                 compAdd = "";
                             }
                             else
                             {
-                                compAdd = item.Company.CompanyAddress;
+                                compAdd = item.Company.Addra1;
                             }
 
                             graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
