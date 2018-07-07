@@ -11,6 +11,7 @@
             </div>
             <div class="col-lg-2">
                 <button type="button" class="btn btn-primary" onclick="addMLPermitApplication();">Permohonan Baru</button>
+                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
             </div>
         </div>
     </div>
@@ -34,7 +35,24 @@
         <table cellspacing="0" class="table table-striped" id="tblBannerApplication"></table>
     </div>
 </div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">License Details</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
 @section scripts{
     <script type="text/javascript">
         $(function () {
@@ -196,6 +214,11 @@
                 });
             }
         }
-
+        $(document).ready(function () {
+            $('#btnLetter').click(function () {
+                $('.modal-body iframe').attr('src', "../MoneyLenderApplication/GeneratLicense_PermitApp?AppId=0");
+                $('#myModal').modal('show');
+            });
+        });
     </script>
 }
