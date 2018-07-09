@@ -249,7 +249,6 @@ namespace TradingLicense.Web.Controllers
         #region Generate License PDF
         public ActionResult GeneratLicense_PremiseApp(Int32? appId)
         {
-            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             try
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -374,7 +373,6 @@ namespace TradingLicense.Web.Controllers
 
         public ActionResult GeneratLicense_PermitApp(Int32? appId)
         {
-            PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             try
             {
                 using (var ctx = new LicenseApplicationContext())

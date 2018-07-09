@@ -183,6 +183,9 @@
 
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                             {
+                                <input type="button" class="btn btn-primary btSubmit" value="RetailShop License" id="btnLetter" name="btnSubmit" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Wholesale Dealer's License" id="btnLicDealer" name="btnSubmit" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Public House House License" id="btnLicPublic" name="btnSubmit" />
                                 <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                             }
                         }
@@ -194,6 +197,7 @@
 
                         @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk && Model.LiquorApplicationID > 0)
                         {
+                        
                             <button type="button" class="btn btn-primary" onclick='Approvedreject("approved"); return false;'>Submit</button>
                             <button type="button" class="btn btn-primary" onclick='Approvedreject("reject"); return false;'>Reject</button>
                         }
@@ -296,7 +300,24 @@
 
     </div>
 </div>
+  <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">License Details</h4>
+              </div>
+              <div class="modal-body">
+                  <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
 
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+          </div>
+
+      </div>
+  </div>
 <style type="text/css">
     label.error {
         color: red;
@@ -884,5 +905,21 @@
 
             }
         }
+        $(document).ready(function () {
+            $('#btnLetter').click(function () {
+                $('.modal-body iframe').attr('src', "../LiquorApplication/GeneratLicense_RetailShop?AppId=0");
+                $('#myModal').modal('show');
+            });
+            $('#btnLicDealer').click(function () {
+                $('.modal-body iframe').attr('src', "../LiquorApplication/GeneratLicense_Wholesale?AppId=0");
+                $('#myModal').modal('show');
+            });
+            $('#btnLicPublic').click(function () {
+                $('.modal-body iframe').attr('src', "../LiquorApplication/GeneratLicense_House?AppId=0");
+                $('#myModal').modal('show');
+            });
+
+        });
+
     </script>
 }
