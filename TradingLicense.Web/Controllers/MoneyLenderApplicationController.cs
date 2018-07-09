@@ -246,24 +246,15 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region Generate License PDF
-        public ActionResult GeneratLicense_PremiseApp(Int32? appId)
+        #region Generate Premise License PDF
+        public ActionResult GeneratLicense_PremiseApp(int? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    //var MLApp = ctx.MLPremiseApplications
-                    //                    .Where(x => x.MLPremiseApplicationID == appId).ToList();
-                    //if (MLApp.Count == 0)
-                    //{
-                    //    return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid MLPremise ApplicationID!');</script>");
-                    //}
-                    //else
-                    //{
-                    //    foreach (var item in MLApp)
-                    //    {
+                    
                             int lineheight = 30;
                             PdfDocument pdf = new PdfDocument();
                             pdf.Info.Title = "PDF License";
@@ -362,8 +353,7 @@ namespace TradingLicense.Web.Controllers
                             return File(strm, "application/pdf");
 
                         }
-                    //}
-                //}
+                   
             }
             catch (Exception)
             {
@@ -371,24 +361,17 @@ namespace TradingLicense.Web.Controllers
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }
+        #endregion
 
-        public ActionResult GeneratLicense_PermitApp(Int32? appId)
+        #region Generate Permit License PDF
+        public ActionResult GeneratLicense_PermitApp(int? appId)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
             try
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    //var MLApp = ctx.MLPremiseApplications
-                    //                    .Where(x => x.MLPremiseApplicationID == appId).ToList();
-                    //if (MLApp.Count == 0)
-                    //{
-                    //    return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid MLPremise ApplicationID!');</script>");
-                    //}
-                    //else
-                    //{
-                    //    foreach (var item in MLApp)
-                    //    {
+                    
                     int lineheight = 30;
                     PdfDocument pdf = new PdfDocument();
                     pdf.Info.Title = "PDF License";
@@ -563,8 +546,6 @@ namespace TradingLicense.Web.Controllers
                     return File(strm, "application/pdf");
 
                 }
-                //}
-                //}
             }
             catch (Exception)
             {

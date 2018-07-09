@@ -16,7 +16,6 @@
                 {
                     <button type="button" class="btn btn-primary" onclick="addMLPremiseApplication();">Permohonan Baru</button>
 
-                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLetter" name="btnSubmit" />
                 }
             </div>
         </div>
@@ -228,11 +227,5 @@
                             });
                         }
                     }
-                    $(document).ready(function () {
-                        $('#btnLetter').click(function () {
-                            $('.modal-body iframe').attr('src', "../MoneyLenderApplication/GeneratLicense_PremiseApp?AppId=0");
-                            $('#myModal').modal('show');
-                        });
-                    });
                 </script>
             }

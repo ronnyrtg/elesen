@@ -344,8 +344,8 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManagePremiseApplication(int? id)
         {
             PremiseApplicationModel premiseApplicationModel = new PremiseApplicationModel();
-            premiseApplicationModel.StartRent = DateTime.Today;
-            premiseApplicationModel.StopRent = DateTime.Today;
+            premiseApplicationModel.StartRent = DateTime.Today.AddMonths(-6);
+            premiseApplicationModel.StopRent = DateTime.Today.AddMonths(6);
             if (id != null && id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())

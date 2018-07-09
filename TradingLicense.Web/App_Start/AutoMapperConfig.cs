@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TradingLicense.Entities;
 using TradingLicense.Model;
+using System;
 
 namespace TradingLicense.Web.App_Start
 {

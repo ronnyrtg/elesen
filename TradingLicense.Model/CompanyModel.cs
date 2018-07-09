@@ -19,7 +19,9 @@ namespace TradingLicense.Model
         public string Addra4 { get; set; }        
         public string PcodeA { get; set; }        
         public string StateA { get; set; }
+        
         public DateTime? SSMRegDate { get; set; }
+        
         public DateTime? SSMExpDate { get; set; }
         public float? AuthorisedCapital { get; set; }
         public float? IssuedCapital { get; set; }

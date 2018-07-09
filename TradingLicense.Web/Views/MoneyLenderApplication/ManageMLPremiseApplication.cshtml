@@ -338,23 +338,19 @@
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                             }
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1))
-                            {
-                                <input type="button" class="btn btn-primary btSubmit" value="Lulus Bersyarat" id="btnLetter" name="btnSubmit" />
-                            }
                             @if ((Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
                             }
                             @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
-                                // Add a button for showing License print
-                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLicense" name="btnSubmit" />
                             }
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {
+                                    <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLicense" name="btnSubmit" />
                                     <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
                                     <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                                 }
@@ -562,12 +558,10 @@
 
 @section scripts{
 <script type="text/javascript">
-        $(function () {
-            // This will make every element with the class "date-picker" into a DatePicker element
-            $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
-        })
-</script>
-<script>
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
+    })
 
     var userRollTemplate = 0;
     var visibleGridColume = false;
@@ -580,6 +574,13 @@
     if (actionError != null && actionError != "") {
         errorMessage(actionError);
     }
+
+    $(document).ready(function () {
+        $('#btnLicense').click(function () {
+            $('.modal-body iframe').attr('src', "../MoneyLenderApplication/GeneratLicense_PremiseApp?AppId=0");
+            $('#myModal').modal('show');
+        });
+    });
 
     $(function () {
 

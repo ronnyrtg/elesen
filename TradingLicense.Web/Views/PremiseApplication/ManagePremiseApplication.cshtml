@@ -215,7 +215,7 @@
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.StartRent, new { @class = "date-picker" })
+                        @Html.TextBoxFor(m => m.StartRent, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                         @Html.ValidationMessageFor(m => m.StartRent)
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
                         <div class="control-label">Hingga<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.StopRent, new { @class = "date-picker" })
+                        @Html.TextBoxFor(m => m.StopRent, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                         @Html.ValidationMessageFor(m => m.StopRent)
                     </div>
                 </div>
@@ -356,7 +356,7 @@
                         }
                         @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.Mode == 1 && Model.AppStatusID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Fi Yang Perlu Dibayar" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                            <input type="button" class="btn btn-primary btSubmit" value="Fi Yang Perlu Dibayar" onclick="showPaymentsDuePopup();" />
                         }
                         @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
                         {
@@ -661,8 +661,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Submit" onclick="return validateSavePayments()" />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return validateSavePayments()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         }
@@ -679,7 +679,7 @@
 <script type="text/javascript">
         $(function () {
             // This will make every element with the class "date-picker" into a DatePicker element
-            $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
+            $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
         })
 </script>
 <script>
@@ -1710,7 +1710,7 @@
 
         var data = new FormData();
         data.append("PremiseApplicationID", @Model.PremiseApplicationID);
-        data.append("TotalFee", @Model.TotalFee);
+        
 
         var ajaxRequest = $.ajax({
             type: "POST",

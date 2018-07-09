@@ -117,7 +117,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Tarikh Pendaftaran<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.SSMRegDate, "{0:dd/MMM/yyyy}", new { @class = "date-picker" })
+                        @Html.TextBoxFor(m => m.SSMRegDate, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                         @Html.ValidationMessageFor(m => m.SSMRegDate)
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Tarikh Habis Tempoh<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.SSMExpDate, "{0:dd/MMM/yyyy}", new { @class = "date-picker" })
+                        @Html.TextBoxFor(m => m.SSMExpDate, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                         @Html.ValidationMessageFor(m => m.SSMExpDate)
                     </div>
                 </div>
@@ -268,7 +268,7 @@
     
     $(function () {
         // This will make every element with the class "date-picker" into a DatePicker element
-        $('.date-picker').datepicker({ dateFormat: 'dd/MM/yy' });
+        $('.date-picker').datepicker({ dateFormat: 'dd/M/yy' });
         if ($("#BusinessTypeID").val() > 1) {
             $('#capitalDetails').show();
         }

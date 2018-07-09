@@ -36,7 +36,7 @@
     </div>
     <div class="body">
 
-    @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBannerApplication", id = "frmBannerApplication" }))
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmMLPermitApplication", id = "frmMLPermitApplication" }))
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.MLPermitApplicationID)
@@ -149,7 +149,8 @@
                             @if (!(@ViewBag.UserRole == 2 && @Model.AppStatusID == 2))
                             {
                                 <input type="button" name="btnSubmit" class="btn btn-info submitbtn" id="btnDraft" value="Draft" />
-                                    <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Simpan" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLicense" name="btnSubmit" />
+                                <input type="button" name="btnSubmit" class="btn btn-primary submitbtn" id="btnSubmit" value="Simpan" />
                             }
                             <input type="button" class="btn btn-default" value="Batal" onclick="back()" />
                         </div>
@@ -158,221 +159,252 @@
                 }
             </div>
             </div>
-            @section scripts{
-                <script>
-                    var actionError = '@(TempData["ErrorMessage"])';
-                    if (actionError != null && actionError != "") {
-                        errorMessage(actionError);
-                    }
-                    function back() {
-                        var link = '@Url.Action("BannerApplication", "BannerApplication")';
-                        window.location.href = link;
-                    }
-                    $(document).ready(function () {
-                        $('#ddlIndividual').select2({ width: '100%' });
-                        $('#ddlCompany').select2({ width: '100%' });
-                        $('#BannerCode').select2({ width: '100%' });
-                        $('#ddlLocation').select2({ width: '100%' });
+
+<div id="myModalLicense" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Lesen</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+<script>
+        var actionError = '@(TempData["ErrorMessage"])';
+
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
+        function back() {
+            var link = '@Url.Action("BannerApplication", "BannerApplication")';
+            window.location.href = link;
+        }
+
+        $(document).ready(function () {
+            $('#btnLicense').click(function () {
+                $('.modal-body iframe').attr('src', "../MoneyLenderApplication/GeneratLicense_PermitApp?AppId=0");
+                $('#myModalLicense').modal('show');
+            });
+        });
+
+        $(document).ready(function () {
+            $('#ddlIndividual').select2({ width: '100%' });
+            $('#ddlCompany').select2({ width: '100%' });
+            $('#BannerCode').select2({ width: '100%' });
+            $('#ddlLocation').select2({ width: '100%' });
                         
 
-                        $('#addProductItem').click(function () {
-                            var isAllValid = validateModel();
+            $('#addProductItem').click(function () {
+                var isAllValid = validateModel();
 
-                            if (isAllValid) {
-                                var $newRow = $('#productItemRow').clone().removeAttr('id');
+                if (isAllValid) {
+                    var $newRow = $('#productItemRow').clone().removeAttr('id');
 
-                                $('.KodIklanId', $newRow).val($('#BannerCode').val());
-                                $('.KodIklan', $newRow).text($('#BannerCode option:selected').text());
-                                $('.LocationId', $newRow).val($('#ddlLocation').val());
-                                $('.LokasiDipohon', $newRow).text($('#ddlLocation option:selected').text());
-                                var num = parseFloat($('#SaizIklanDipohon').val());
-                                $('.SaizIklanDipohon', $newRow).text(num.toFixed(2));
-                                $('.BilanganIklan', $newRow).text($('#BilanganIklan').val());
-                                $('.itemEditRow', $newRow).append('<button type="button" class="btn btn-danger btn-xs remove" title="Delete" >Remove</button>');
-                                $('#gridItems').append($newRow);
-                                $('#BilanganIklan').val('');
-                                $('#SaizIklanDipohon').val('');
+                    $('.KodIklanId', $newRow).val($('#BannerCode').val());
+                    $('.KodIklan', $newRow).text($('#BannerCode option:selected').text());
+                    $('.LocationId', $newRow).val($('#ddlLocation').val());
+                    $('.LokasiDipohon', $newRow).text($('#ddlLocation option:selected').text());
+                    var num = parseFloat($('#SaizIklanDipohon').val());
+                    $('.SaizIklanDipohon', $newRow).text(num.toFixed(2));
+                    $('.BilanganIklan', $newRow).text($('#BilanganIklan').val());
+                    $('.itemEditRow', $newRow).append('<button type="button" class="btn btn-danger btn-xs remove" title="Delete" >Remove</button>');
+                    $('#gridItems').append($newRow);
+                    $('#BilanganIklan').val('');
+                    $('#SaizIklanDipohon').val('');
 
-                            }
-                        });
+                }
+            });
 
-                        $('#gridItems').on('click', '.remove', function () {
-                            $(this).parents('tr').remove();
-                        });
+            $('#gridItems').on('click', '.remove', function () {
+                $(this).parents('tr').remove();
+            });
 
-                        function validateModel() {
-                            var result = true;
+            function validateModel() {
+                var result = true;
 
-                            if ($('#BannerCode').val() == "") {
-                                $('#BannerCode').siblings('span.BannerCodeVal').text("Please Enter BannerCode.");
-                                result = false;
-                            }
+                if ($('#BannerCode').val() == "") {
+                    $('#BannerCode').siblings('span.BannerCodeVal').text("Please Enter BannerCode.");
+                    result = false;
+                }
 
-                            if ($('#ddlLocation').val() == "") {
-                                $('#ddlLocation').siblings('span.LocationVal').text("Please Enter Location.");
-                                result = false;
-                            }
+                if ($('#ddlLocation').val() == "") {
+                    $('#ddlLocation').siblings('span.LocationVal').text("Please Enter Location.");
+                    result = false;
+                }
 
-                            if ($('#SaizIklanDipohon').val() == "") {
-                                $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter Size.");
-                                result = false;
-                            }
-                            if (isNaN($('#SaizIklanDipohon').val())) {
-                                $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter number in size.");
-                                result = false;
-                            }
-
-
-                            if ($('#BilanganIklan').val() == "") {
-                                $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter Quantity.");
-                                result = false;
-                            }
-                            if (isNaN($('#BilanganIklan').val())) {
-                                $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter number in quantity.");
-                                result = false;
-                            }
-
-                            return result;
-                        }
-                        $('#BilanganIklan').change(function () {
-                            if ($('#BilanganIklan').val() != "" && !isNaN($('#BilanganIklan').val())) {
-                                $('#BilanganIklan').siblings('span.quantityVal').text("");
-                            }
-                        });
-
-                        $('#SaizIklanDipohon').change(function () {
-                            if ($('#SaizIklanDipohon').val() != "" && !isNaN($('#SaizIklanDipohon').val())) {
-                                $('#SaizIklanDipohon').siblings('span.SizeVal').text("");
-                            }
-                        });
-
-                        $('#BannerCode').change(function () {
-                            if ($('#BannerCode').val() != "" && !isNaN($('#BannerCode').val())) {
-                                $('#BannerCode').siblings('span.BannerCodeVal').text("");
-                            }
-                        });
-
-                        $('#ddlLocation').change(function () {
-                            if ($('#ddlLocation').val() != "" && !isNaN($('#ddlLocation').val())) {
-                                $('#ddlLocation').siblings('span.LocationVal').text("");
-                            }
-                        });
-
-                        $('.submitbtn').click(function () {
-
-                            // Checking whether FormData is available in browser
-                            if (window.FormData !== undefined) {
-                                var fileData = new FormData();
-                                var listImg = [];
-                                var list = [];
-                                var BannerApplist = [];
-                                if ('@ViewBag.UserRole' == '2') {
-                                    var chkCnt = $('input.chkClass').length;
-                                    var chkcntChecked = $('input.chkClass:checked').length
-                                    if (chkCnt != chkcntChecked) {
-                                        $('#chkReqDoc').fadeIn();
-                                        return false;
-                                    }
-                                }
-
-                                $('#Docs tbody tr').each(function (index, ele) {
-                                    if ('@ViewBag.UserRole' != '2') {
-                                        var fileUpload = $(".fileupload", this).get(0);
-                                        var files = fileUpload.files;
-
-                                        for (var i = 0; i < files.length; i++) {
-                                            var flname = files[i].name + '_' + $('.hdndocId', this).val();
-                                            fileData.append(flname, files[i]);
-                                        }
-
-                                        for (var i = 0; i < files.length; i++) {
-                                            var ImgModel = {
-                                                Id: $('.hdndocId', this).val(),
-                                                filename: files[i].name,
-                                                RequiredDocID: 0
-                                            }
-                                            listImg.push(ImgModel);
-                                        }
-                                    }
-                                })
-                                var today = new Date();
-                                var BannerApp = {
-                                    BannerApplicationID: '@Model.MLPermitApplicationID',
-                                    CompanyID: $('#ddlCompany').val(),
-                                    IndividualID: $('#ddlIndividual').val(),
-                                    AppStatusID: 0,
-                                    UsersID: 0,
-                                    DateSubmitted: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
-                                    UpdatedBy: ''
-                                }
-                                BannerApplist.push(BannerApp);
+                if ($('#SaizIklanDipohon').val() == "") {
+                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter Size.");
+                    result = false;
+                }
+                if (isNaN($('#SaizIklanDipohon').val())) {
+                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("Please Enter number in size.");
+                    result = false;
+                }
 
 
+                if ($('#BilanganIklan').val() == "") {
+                    $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter Quantity.");
+                    result = false;
+                }
+                if (isNaN($('#BilanganIklan').val())) {
+                    $('#BilanganIklan').siblings('span.quantityVal').text("Please Enter number in quantity.");
+                    result = false;
+                }
 
-                                $('#gridItems tbody tr').each(function (index, ele) {
-                                    if ($('.KodIklanId', this).val() != null && $('.KodIklanId', this).val() != "" && $('.KodIklanId', this).val() != "0") {
-                                        var GridItems = {
-                                            BannerCodeID: $('.KodIklanId', this).val(),
-                                            LocationID: $('.LocationId', this).val(),
-                                            BSize: $('.SaizIklanDipohon', this).text(),
-                                            BQuantity: $('.BilanganIklan', this).text(),
-                                            BannerObjectID: $('.BannerObjectId', this).val(),
-                                            BannerApplicationID: '@Model.MLPermitApplicationID'
-                                        }
-                                        list.push(GridItems);
-                                    }
-                                })
-
-                                fileData.append("ImgModel", JSON.stringify(listImg))
-                                fileData.append("IndividualId", $('#ddlIndividual').val())
-                                fileData.append("compId", $('#ddlCompany').val())
-                                fileData.append("gridItems", JSON.stringify(list))
-                                fileData.append("BannerApplist", JSON.stringify(BannerApplist))
-                                fileData.append("btnType", $(this).attr('id'))
-
-                                $.ajax({
-                                    url: '/BannerApplication/SaveManageBannerApplication',
-                                    type: "POST",
-                                    contentType: false,//'application/json',
-                                    processData: false,
-                                    data: fileData,
-                                    success: function (result) {
-                                        if (result == "0") {
-                                            errorMessage('Problem In Saving Data...Try Again.');
-                                        }
-                                        else {
-                                            window.location.href = '/BannerApplication/BannerApplication';
-                                        }
-                                    },
-                                    error: function (err) {
-                                        alert(err.statusText);
-                                    }
-                                });
-                            } else {
-                                errorMessage('Formatted Data Is Not Supported.');
-                            }
-                        });
-                        $('.deleteItem').click(function (e) {
-                            e.preventDefault();
-                            var $ctrl = $(this);
-                            if (confirm('Do you really want to delete this file?')) {
-                                $.ajax({
-                                    url: '@Url.Action("DeleteFile")',
-                                    type: 'POST',
-                                    data: { id: $(this).data('id'), FileName: $(this).parent().find('.fname').text(), BannerAppId: '@Model.MLPermitApplicationID' }
-                                }).done(function (data) {
-                                    if (data.Result == "1") {
-                                        $ctrl.closest('li').remove();
-                                    }
-                                    else {
-                                        errorMessage("There is something wrong. Please try again.");
-                                    }
-                                }).fail(function () {
-                                    errorMessage("There is something wrong. Please try again.");
-                                })
-                            }
-                        });
-
-                    });
-                </script>
+                return result;
             }
+            $('#BilanganIklan').change(function () {
+                if ($('#BilanganIklan').val() != "" && !isNaN($('#BilanganIklan').val())) {
+                    $('#BilanganIklan').siblings('span.quantityVal').text("");
+                }
+            });
+
+            $('#SaizIklanDipohon').change(function () {
+                if ($('#SaizIklanDipohon').val() != "" && !isNaN($('#SaizIklanDipohon').val())) {
+                    $('#SaizIklanDipohon').siblings('span.SizeVal').text("");
+                }
+            });
+
+            $('#BannerCode').change(function () {
+                if ($('#BannerCode').val() != "" && !isNaN($('#BannerCode').val())) {
+                    $('#BannerCode').siblings('span.BannerCodeVal').text("");
+                }
+            });
+
+            $('#ddlLocation').change(function () {
+                if ($('#ddlLocation').val() != "" && !isNaN($('#ddlLocation').val())) {
+                    $('#ddlLocation').siblings('span.LocationVal').text("");
+                }
+            });
+
+            $('.submitbtn').click(function () {
+
+                // Checking whether FormData is available in browser
+                if (window.FormData !== undefined) {
+                    var fileData = new FormData();
+                    var listImg = [];
+                    var list = [];
+                    var BannerApplist = [];
+                    if ('@ViewBag.UserRole' == '2') {
+                        var chkCnt = $('input.chkClass').length;
+                        var chkcntChecked = $('input.chkClass:checked').length
+                        if (chkCnt != chkcntChecked) {
+                            $('#chkReqDoc').fadeIn();
+                            return false;
+                        }
+                    }
+
+                    $('#Docs tbody tr').each(function (index, ele) {
+                        if ('@ViewBag.UserRole' != '2') {
+                            var fileUpload = $(".fileupload", this).get(0);
+                            var files = fileUpload.files;
+
+                            for (var i = 0; i < files.length; i++) {
+                                var flname = files[i].name + '_' + $('.hdndocId', this).val();
+                                fileData.append(flname, files[i]);
+                            }
+
+                            for (var i = 0; i < files.length; i++) {
+                                var ImgModel = {
+                                    Id: $('.hdndocId', this).val(),
+                                    filename: files[i].name,
+                                    RequiredDocID: 0
+                                }
+                                listImg.push(ImgModel);
+                            }
+                        }
+                    })
+                    var today = new Date();
+                    var BannerApp = {
+                        BannerApplicationID: '@Model.MLPermitApplicationID',
+                        CompanyID: $('#ddlCompany').val(),
+                        IndividualID: $('#ddlIndividual').val(),
+                        AppStatusID: 0,
+                        UsersID: 0,
+                        DateSubmitted: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
+                        UpdatedBy: ''
+                    }
+                    BannerApplist.push(BannerApp);
+
+
+
+                    $('#gridItems tbody tr').each(function (index, ele) {
+                        if ($('.KodIklanId', this).val() != null && $('.KodIklanId', this).val() != "" && $('.KodIklanId', this).val() != "0") {
+                            var GridItems = {
+                                BannerCodeID: $('.KodIklanId', this).val(),
+                                LocationID: $('.LocationId', this).val(),
+                                BSize: $('.SaizIklanDipohon', this).text(),
+                                BQuantity: $('.BilanganIklan', this).text(),
+                                BannerObjectID: $('.BannerObjectId', this).val(),
+                                BannerApplicationID: '@Model.MLPermitApplicationID'
+                            }
+                            list.push(GridItems);
+                        }
+                    })
+
+                    fileData.append("ImgModel", JSON.stringify(listImg))
+                    fileData.append("IndividualId", $('#ddlIndividual').val())
+                    fileData.append("compId", $('#ddlCompany').val())
+                    fileData.append("gridItems", JSON.stringify(list))
+                    fileData.append("BannerApplist", JSON.stringify(BannerApplist))
+                    fileData.append("btnType", $(this).attr('id'))
+
+                    $.ajax({
+                        url: '/BannerApplication/SaveManageBannerApplication',
+                        type: "POST",
+                        contentType: false,//'application/json',
+                        processData: false,
+                        data: fileData,
+                        success: function (result) {
+                            if (result == "0") {
+                                errorMessage('Problem In Saving Data...Try Again.');
+                            }
+                            else {
+                                window.location.href = '/BannerApplication/BannerApplication';
+                            }
+                        },
+                        error: function (err) {
+                            alert(err.statusText);
+                        }
+                    });
+                } else {
+                    errorMessage('Formatted Data Is Not Supported.');
+                }
+            });
+            $('.deleteItem').click(function (e) {
+                e.preventDefault();
+                var $ctrl = $(this);
+                if (confirm('Do you really want to delete this file?')) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteFile")',
+                        type: 'POST',
+                        data: { id: $(this).data('id'), FileName: $(this).parent().find('.fname').text(), BannerAppId: '@Model.MLPermitApplicationID' }
+                    }).done(function (data) {
+                        if (data.Result == "1") {
+                            $ctrl.closest('li').remove();
+                        }
+                        else {
+                            errorMessage("There is something wrong. Please try again.");
+                        }
+                    }).fail(function () {
+                        errorMessage("There is something wrong. Please try again.");
+                    })
+                }
+            });
+
+        });
+    </script>
+}
