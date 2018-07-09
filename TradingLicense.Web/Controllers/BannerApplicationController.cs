@@ -1261,13 +1261,13 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
 
                             string compAdd = "";
-                            if (item.Company.CompanyAddress == null)
+                            if (item.Company.Addra1 == null)
                             {
                                 compAdd = "";
                             }
                             else
                             {
-                                compAdd = item.Company.CompanyAddress;
+                                compAdd = item.Company.Addra1;
                             }
 
                             graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);

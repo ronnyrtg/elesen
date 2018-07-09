@@ -4,7 +4,7 @@
 @using System.Linq;
 @using TradingLicense.Infrastructure;
 @{
-    ViewBag.Title = "Manage Premise License Application";
+    ViewBag.Title = "Money Lender Premise License";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     List<TradingLicense.Model.BusinessTypeModel>
@@ -48,6 +48,7 @@
     ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
     ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
 
+
     List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
     PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "0" });
     PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "1" });
@@ -56,7 +57,7 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Kemaskini Permohonan Lesen Berniaga</h4>
+        <h4 id="headerTitle">Permohonan Baru Lesen Pemberi Pinjam Wang</h4>
     </div>
     <div class="body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPremiseApplication", id = "frmPremiseApplication" }))
@@ -79,7 +80,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
                         <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.Mode, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.Mode, new SelectList(ModeList, "Value", "Text"),new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Mode)
                     </div>
                  </div>
@@ -100,7 +101,7 @@
                             Nama Penuh (Mykad/Passport).   
                             @if (Model.UserRollTemplate > 2)
                             {<span class="cfont">*</span>} </div>
-                            @Html.DropDownListFor(m => m.CompanyID, new SelectList(individuList, "IndividualID", "FullName"), "Select Company", new { @id = "individuList", @class = "form-control" })
+                            @Html.DropDownListFor(m => m.CompanyID, new SelectList(individuList, "IndividualID", "FullName"), "Masukkan Nama atau nombor MyKad", new { @id = "individuList", @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -160,28 +161,11 @@
                 </div>
             </div>
             <hr />
-            <div class="row">
-                <div class="col-md-4 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Luas Premis<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PremiseArea, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Pemegang Jawatan Dalam Organisasi.<span class="cfont">*</span></div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)
-                    </div>
-                </div>
-            </div>
-            <h2> Butir Butir Modal </h2>
+            <div class="header"><h4> Butir Butir Modal </h4></div>
             <div class="row">
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
+                        <br />
                         <div class="control-label"> Modal Dibenarkan <span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.AuthorizedCapital, new { @class = "form-control" })
                     </div>
@@ -203,10 +187,11 @@
                     </div>
                 </div>
             </div>
-            <h2> Sumber Kumpulan Wang </h2>
+            <div class="header"><h4> Sumber Kumpulan Wang </h4></div>
             <div class="row">
                 <div class="col-md-4 col-sm-3">
                     <div class="form-group">
+                        <br />
                         <div class="control-label"> Bank / Institusi Kewangan <span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.BankSource, new { @class = "form-control" })
                     </div>
@@ -353,23 +338,19 @@
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                             }
-                            @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public && (Model.Mode == 1))
-                            {
-                                <input type="button" class="btn btn-primary btSubmit" value="Lulus Bersyarat" id="btnLetter" name="btnSubmit" />
-                            }
                             @if ((Model.Mode == 1 && Model.AppStatusID != (int)Enums.PAStausenum.Pendingpayment && Model.AppStatusID != (int)Enums.PAStausenum.LicenseGenerated) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
                                 <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
                             }
                             @if (Model.AppStatusID == (int)Enums.PAStausenum.LicenseGenerated)
                             {
-                                // Add a button for showing License print
-                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnGenrateLicense" onclick="alert('We need to Generate license');" />
+                                <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLicense" name="btnSubmit" />
                             }
                             @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public || Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
                             {
                                 if (Model.AppStatusID == 0 || Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.draftcreated)
                                 {
+                                    <input type="button" class="btn btn-primary btSubmit" value="Generate License" id="btnLicense" name="btnSubmit" />
                                     <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
                                     <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                                 }
@@ -420,41 +401,9 @@
                
            }
         }
-</div>
-
-<div id="editIndividual" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Individual Details</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="control-label">Full Name.<span class="cfont">*</span></div>
-                            <input id="newIndividualFullName" type="text" value="" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="control-label">Mykad/Passport No.<span class="cfont">*</span></div>
-                            <input id="newIndividualPassport" type="text" value="" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="modalUpdateIndividual" type="button" class="btn btn-primary">OK</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
         </div>
     </div>
-</div>
+
 
 <!--Upload Doc-->
 <div id="uploadDocumentModal" class="modal fade" role="dialog">
@@ -609,12 +558,10 @@
 
 @section scripts{
 <script type="text/javascript">
-        $(function () {
-            // This will make every element with the class "date-picker" into a DatePicker element
-            $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
-        })
-</script>
-<script>
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker({dateFormat: 'dd/MM/yy'});
+    })
 
     var userRollTemplate = 0;
     var visibleGridColume = false;
@@ -627,6 +574,13 @@
     if (actionError != null && actionError != "") {
         errorMessage(actionError);
     }
+
+    $(document).ready(function () {
+        $('#btnLicense').click(function () {
+            $('.modal-body iframe').attr('src', "../MoneyLenderApplication/GeneratLicense_PremiseApp?AppId=0");
+            $('#myModal').modal('show');
+        });
+    });
 
     $(function () {
 

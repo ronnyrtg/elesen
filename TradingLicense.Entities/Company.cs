@@ -18,14 +18,30 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string CompanyPhone { get; set; }
-        [StringLength(255)]
+        [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
-        public string CompanyAddress { get; set; }
+        public string Addra1 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra2 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra3 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string Addra4 { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PcodeA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string StateA { get; set; }
         public DateTime? SSMRegDate { get; set; }
         public DateTime? SSMExpDate { get; set; }
         public float? AuthorisedCapital { get; set; }
         public float? IssuedCapital { get; set; }
-        public float? PaidUpCapital { get; set; }
+        public float? PaidUpCapitalCash { get; set; }
+        public float? PaidUpCapitalOther { get; set; }
         public float? BankSource  { get; set; }
         public float? DepositSource { get; set; }
         public float? LoanSource { get; set; }

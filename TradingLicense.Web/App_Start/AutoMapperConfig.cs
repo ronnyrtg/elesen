@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TradingLicense.Entities;
 using TradingLicense.Model;
+using System;
 
 namespace TradingLicense.Web.App_Start
 {
@@ -20,7 +21,8 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<AccessPageModel, AccessPage>();
                 cfg.CreateMap<Department, DepartmentModel>();
                 cfg.CreateMap<RequiredDoc, RequiredDocModel>();
-                cfg.CreateMap<Company, CompanyModel>();
+                cfg.CreateMap<CompanyModel, Company>();
+                cfg.CreateMap<Company, CompanyModel>().ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BusinessType.BusinessTypeDesc));
                 cfg.CreateMap<Attachment, AttachmentModel>();
                 cfg.CreateMap<RoleTemplate, RoleTemplateModel>();
                 cfg.CreateMap<AppStatus, AppStatusModel>();
