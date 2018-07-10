@@ -14,6 +14,9 @@ using AutoMapper;
 using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
 using static TradingLicense.Infrastructure.Enums;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -867,8 +870,189 @@ namespace TradingLicense.Web.Controllers
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, Individual, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        } 
+        }
 
+        #endregion
+
+        #region Generate Permit License PDF
+        public ActionResult GeneratLicense_Entertainment(int? appId)
+        {
+            try
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+
+                    int lineheight = 30;
+                    PdfDocument pdf = new PdfDocument();
+                    pdf.Info.Title = "PDF License";
+                    PdfPage pdfPage = pdf.AddPage();
+                    XFont fontitalik = new XFont("Verdana", 8, XFontStyle.Italic);
+                    XFont smaaFont = new XFont("Verdana", 8, XFontStyle.Regular);
+                    XGraphics graph = XGraphics.FromPdfPage(pdfPage);
+                    XFont font = new XFont("Verdana", 9, XFontStyle.Bold);
+                    XFont lbfont = new XFont("Verdana", 11, XFontStyle.Bold);
+                    XFont fontN10 = new XFont("Verdana", 10, XFontStyle.Regular);
+                    XFont Italikfont = new XFont("Verdana", 11, XFontStyle.Italic);
+                    XFont nfont = new XFont("Verdana", 9, XFontStyle.Regular);
+                    XFont nUfont = new XFont("Verdana", 9, XFontStyle.Underline);
+                    XFont sfont = new XFont("Verdana", 8, XFontStyle.Regular);
+
+
+                    graph.DrawString("Borang B", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("(Kaedah 5)", fontN10, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("AKTA HIBURAN (WILAYAH PERSEKUTUAN KUALA LUMPUR) 1992", fontN10, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 22;
+                    graph.DrawString("KAEDAN-KAEDAN HIBURAN (WILAYAH PERSEKUTUAN KUALA LUMPUR)", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 12;
+                    graph.DrawString("1993", nfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("*LESEN UNTUK MEMBUKA TEMPAT HIBURAN/LESEN HIBURAN", lbfont, XBrushes.Black, new XRect(0, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopCenter);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    XPen lineRed1 = new XPen(XColors.Black, 0.5);
+                    System.Drawing.Point pt1;
+                    System.Drawing.Point pt2;
+                    lineheight = lineheight + 18;
+                    graph.DrawString("Dengan ini  lesen dikeluarkan kepada", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(261, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    pt1 = new System.Drawing.Point(90, lineheight + 13);
+                    pt2 = new System.Drawing.Point(310, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("yang tinggal di", nfont, XBrushes.Black, new XRect(312, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(380, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 17;
+                    pt1 = new System.Drawing.Point(90, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("*untuk membuka suatu tempat bagi maksud mengadakan suatu", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(382, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    pt1 = new System.Drawing.Point(90, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    pt1 = new System.Drawing.Point(90, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width)/2, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("(ayatakan jenis hiburan/untuk menjalankan)", nfont, XBrushes.Black, new XRect((Convert.ToInt32(pdfPage.Width) / 2) + 2, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("suatu", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(118, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) / 2, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("(nyatakan jenis hiburan) di ", nfont, XBrushes.Black, new XRect((Convert.ToInt32(pdfPage.Width) / 2) + 2, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point((Convert.ToInt32(pdfPage.Width) / 2) + 127, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    pt1 = new System.Drawing.Point(90, lineheight + 13);
+                    pt2 = new System.Drawing.Point(140, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("selama ", nfont, XBrushes.Black, new XRect(142, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(175, lineheight + 13);
+                    pt2 = new System.Drawing.Point(215, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("*hari/tahun mulai dari", nfont, XBrushes.Black, new XRect(217, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(318, lineheight + 13);
+                    pt2 = new System.Drawing.Point(370, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("hingga", nfont, XBrushes.Black, new XRect(372, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(405, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 25;
+                    graph.DrawString("Lesen ini tertakluk kepada syarat-syarat yang berikut:", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("(i)  Bahawa  tiada  pertunjukan boleh dimulakan sebelum", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(393, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+
+                    lineheight = lineheight + 20;
+                    graph.DrawString("(ii)  Bahawa  tiada  pertunjukan boleh diteruskan selepas", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(392, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+
+                    lineheight = lineheight + 20;
+                    graph.DrawString("(iii)  Bahawa  tidak lebih daripada", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(287, lineheight + 13);
+                    pt2 = new System.Drawing.Point(455, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("orang. boleh", nfont, XBrushes.Black, new XRect(457, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 15;
+                    graph.DrawString("       dibenarkan masuk pada bila-bila masa ke tempat hiburan.", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("(iv)  Bahawa ", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(185, lineheight + 13);
+                    pt2 = new System.Drawing.Point(245, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("pintu dan", nfont, XBrushes.Black, new XRect(247, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(293, lineheight + 13);
+                    pt2 = new System.Drawing.Point(465, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    graph.DrawString("jalan keluar", nfont, XBrushes.Black, new XRect(467, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 15;
+                    graph.DrawString("      disediakan.", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("(v)  Bahawa pengawasan-pengawasan berikut dipatuhi:", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("(a)", nfont, XBrushes.Black, new XRect(155, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(170, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("(b)", nfont, XBrushes.Black, new XRect(155, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(170, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 18;
+                    graph.DrawString("(vi)  +", nfont, XBrushes.Black, new XRect(130, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(159, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 27;
+                    graph.DrawString("Fee bagi *lesen untuk membuka tempat hiburan/lesen hiburan ialah RM", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(422, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 40;
+                    pt1 = new System.Drawing.Point(370, lineheight + 13);
+                    pt2 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 70, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("Dato Bandar Kuala Lumpur", nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("Bertarikh", nfont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    pt1 = new System.Drawing.Point(131, lineheight + 13);
+                    pt2 = new System.Drawing.Point(250, lineheight + 13);
+                    graph.DrawLine(lineRed1, pt1, pt2);
+                    lineheight = lineheight + 20;
+                    graph.DrawString("* Potong mana-mana yang tidak berkenaan", smaaFont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    lineheight = lineheight + 13;
+                    graph.DrawString("* Masukkan syarat-syarat lanjut, jika ada. ", smaaFont, XBrushes.Black, new XRect(90, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                    MemoryStream strm = new MemoryStream();
+                    pdf.Save(strm, false);
+                    return File(strm, "application/pdf");
+
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
+        }
         #endregion
 
     }
