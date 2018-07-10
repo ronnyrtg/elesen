@@ -323,7 +323,7 @@
                             {
 
                             }
-
+                            <input type="button" class="btn btn-primary btSubmit" value="Generate Letter" id="btnLetter" name="btnSubmit" />
                             <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
 
                         </div>
@@ -395,7 +395,26 @@
 
     </div>
 </div>
+ <div id="myModal" class="modal fade" role="dialog">
+     <div class="modal-dialog modal-lg">
 
+         <!-- Modal content-->
+         <div class="modal-content">
+             <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                 <h4 class="modal-title">Letter Details</h4>
+             </div>
+             <div class="modal-body">
+                 <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+
+     </div>
+ </div>
 <style type="text/css">
     label.error {
         color: red;
@@ -1130,5 +1149,11 @@
             ]
         });
     }
+    $(document).ready(function () {
+        $('#btnLetter').click(function () {
+            $('.modal-body iframe').attr('src', "../EntmtApplication/GeneratLicense_Entertainment?AppId=0");
+            $('#myModal').modal('show');
+        });
+    });
 </script>
 }
