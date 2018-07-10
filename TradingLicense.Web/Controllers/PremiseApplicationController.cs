@@ -408,7 +408,7 @@ namespace TradingLicense.Web.Controllers
                 premiseApplicationModel.UsersID = ProjectSession.User.UsersID;
             }
 
-            premiseApplicationModel.ProcessingFee = 25;
+            
             premiseApplicationModel.IsDraft = false;
             return View(premiseApplicationModel);
         }
@@ -723,7 +723,6 @@ namespace TradingLicense.Web.Controllers
                                             Amount = (float)Math.Round(Amount, 1);
                                         }
                                         graph.DrawString("RM " + string.Format("{0:0.00}",Amount) , nfont, XBrushes.Black, new XRect(510, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                        TotAmount = TotAmount + Amount + (float)item.ProcessingFee;
                                         lineheight = lineheight + 20;
                                         TotHeight = TotHeight + lineheight;
                                         XPen lineRed2 = new XPen(XColors.Black, 0.5);

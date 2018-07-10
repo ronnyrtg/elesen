@@ -31,7 +31,6 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }
         public DateTime? DateApproved { get; set; }
-        public float? ProcessingFee { get; set; }
         public float? TotalFee { get; set; }
         public DateTime? DatePaid { get; set; }
         [StringLength(50)]
