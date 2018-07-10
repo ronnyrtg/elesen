@@ -31,7 +31,6 @@ namespace TradingLicense.Model
         public string OtherPremiseType { get; set; }
         [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
-        public float? ProcessingFee { get; set; }
         public float? TotalFee { get; set; }
         public int AppStatusID { get; set; }
 
