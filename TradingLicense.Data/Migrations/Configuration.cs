@@ -465,9 +465,22 @@ namespace TradingLicense.Data.Migrations
                 new RequiredDoc {RequiredDocDesc="Surat Sokongan Bomba (jika berkaitan)"},
                 new RequiredDoc {RequiredDocDesc="Surat Wakil & IC wakil pemohon lesen (jika berkaitan)"},
                 new RequiredDoc {RequiredDocDesc="Tambahan dokumen dan pematuhan syarat & peraturan Pihak Berkuasa Melesen mengikut Aktiviti Perniagaan (Lampiran I & II) (jika berkaitan) "},
+                new RequiredDoc {RequiredDocDesc="Borang D (Akaun Pendaftaran Perniagaan) mengikut Akta Pendaftaran Perniagaan 1956"},
+                new RequiredDoc {RequiredDocDesc="Surat persetujuan/pengesahan daripada pemunya tanah atau bangunan"},
+                new RequiredDoc {RequiredDocDesc="Sampul surat berukuran 9 x 4 inci dan Setem 30sen"},
+                new RequiredDoc {RequiredDocDesc="Salinan lesen membuka tempat hiburan/lesen hiburan yang dahulu"},
+                new RequiredDoc {RequiredDocDesc="Memorandum dan Artikel Persatuan dan Borang 49 (penyata yang memberikan butir-butir dalam Daftar Pengarah, Pengurus, dan Perubahan Butiran) mengikut Akta Syarikat 1965"},
+                new RequiredDoc {RequiredDocDesc="Borang A (Pendaftaran Perniagaan) atau Borang B (Pendaftaran Penukaran Perniagaan)"},
+                new RequiredDoc {RequiredDocDesc="Salinan yang diperakui Borang J (borang cukai pendapatan) bagi tempoh dua tahun yang lalu dan suatu salinan yang diperakui penyata akaun bank"},
+                new RequiredDoc {RequiredDocDesc="Suatu salinan akuan berkanun seperti dalam Jadual C"},
+                new RequiredDoc {RequiredDocDesc="Suatu salinan yang diperakui surat daripada pegawai polis seperti yang dikehendaki di bawah subperaturan 4(2)"},
+                new RequiredDoc {RequiredDocDesc="Suatu salinan yang diperakui akaun beraudit atau akaun pengurusan yang terkini"},
+                new RequiredDoc {RequiredDocDesc="Suatu salinan yang diperakui butir-butir dalam Borang 13 (jika ada), 24, 49 dan borang keuntungan tahunan terkini di bawah Akta Syarikat 1965 (bagi syarikat sahaja)"},
+
             };
             requireddocs.ForEach(s => context.RequiredDocs.Add(s));
             context.SaveChanges();
+
 
             var additionaldocs = new List<AdditionalDoc>
             {

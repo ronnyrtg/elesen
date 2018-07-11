@@ -6,7 +6,6 @@ namespace TradingLicense.Model
     public class MLPermitApplicationModel
     {
         public int MLPermitApplicationID { get; set; }
-        public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int CompanyID { get; set; }
         public int LenderApplicationID { get; set; }

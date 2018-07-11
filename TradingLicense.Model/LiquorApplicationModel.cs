@@ -6,7 +6,6 @@ namespace TradingLicense.Model
     public class LiquorApplicationModel
     {
         public int LiquorApplicationID { get; set; }
-        public int Mode { get; set; }
         [Required(ErrorMessage = "Sila pilih jenis perniagaan")]
         public int BusinessTypeID { get; set; }
         public int LiquorCodeID { get; set; }

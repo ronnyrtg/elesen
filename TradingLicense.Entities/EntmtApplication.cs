@@ -8,7 +8,6 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int EntmtApplicationID { get; set; }
-        public int Mode { get; set; }
         public int BusinessTypeID { get; set; }
         public int CompanyID { get; set; }
         [StringLength(50)]

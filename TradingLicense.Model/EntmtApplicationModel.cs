@@ -7,7 +7,6 @@ namespace TradingLicense.Model
     public class EntmtApplicationModel
     {
         public int EntmtApplicationID { get; set; }
-        public int Mode { get; set; }
         [Required(ErrorMessage = "Please Select Business Type")]
         public int BusinessTypeID { get; set; }
         public int CompanyID { get; set; }

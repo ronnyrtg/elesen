@@ -9,7 +9,6 @@ namespace TradingLicense.Model
     public class MLPremiseApplicationModel
     {
         public int MLPremiseApplicationID { get; set; }
-        public int Mode { get; set; }
         public int BusinessTypeID { get; set; }
         public int CompanyID { get; set; }
         public string Addra1 { get; set; }

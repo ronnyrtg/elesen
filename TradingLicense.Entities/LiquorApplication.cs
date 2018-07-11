@@ -8,7 +8,6 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int LiquorApplicationID { get; set; }
-        public int Mode { get; set; }
         public int BusinessTypeID { get; set; }
         public int LiquorCodeID { get; set; }
         public int IndividualID { get; set; }

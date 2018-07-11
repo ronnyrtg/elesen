@@ -7,7 +7,6 @@ namespace TradingLicense.Model
     public class StallApplicationModel
     {
         public int StallApplicationID { get; set; }
-        public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int StallCodeID { get; set; }
         public DateTime ValidStart { get; set; }

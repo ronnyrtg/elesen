@@ -7,7 +7,6 @@ namespace TradingLicense.Model
     public class HawkerApplicationModel
     {
         public int HawkerApplicationID { get; set; }
-        public int Mode { get; set; }
         public int IndividualID { get; set; }
         public int HawkerCodeID { get; set; }
         public DateTime? ValidStart { get; set; }
