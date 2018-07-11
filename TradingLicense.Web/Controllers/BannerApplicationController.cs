@@ -397,6 +397,45 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Comments List Datatable
+        /// <summary>
+        /// Get Comments for the banner applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="bannerApplicationID">The banner application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? bannerApplicationID)
+        {
+            List<BACommentModel> bannerComments = new List<BACommentModel>();
+            int totalRecord = 0;
+            if (bannerApplicationID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<BAComment> query = ctx.BAComments.Include("Users").Where(pac => pac.BannerApplicationID == bannerApplicationID.Value);
+
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = sortedColumns.GetOrderByString();
+
+                    var result = Mapper.Map<List<BACommentModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "CommentDate desc" : orderByString).ToList();
+
+                    totalRecord = result.Count;
+
+                    #endregion Sorting
+
+                    // Disable below line if setting Paging to false
+                    //result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    bannerComments = result;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, bannerComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region Get BannerApplication Data By Individual for Datatable
         /// <summary>
         /// Get BannerApplication Data By Individual for Datatable
@@ -561,21 +600,66 @@ namespace TradingLicense.Web.Controllers
                 switch (roleTemplate)
                 {
                     case (int)RollTemplate.DeskOfficer:
-                        finalStatus = PAStausenum.submittedtoclerk;
+                        finalStatus = PAStausenum.draftcreated;
                         if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
                         {
                             if (bannerApplicationModel.SubmitType == OnSubmit)
                             {
-                                finalStatus = PAStausenum.LetterofnotificationApproved;
-                            }
-                            else if (bannerApplicationModel.SubmitType == OnRejected)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                                finalStatus = PAStausenum.submittedtoclerk;
                             }
                         }
                         break;
                     case (int)RollTemplate.Clerk:
-                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
+                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.documentIncomplete)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.directorcheck;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.documentIncomplete;
+                            }
+                        }
+                        else if (bannerApplicationModel.AppStatusID == (int)PAStausenum.submittedtoclerk)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.directorcheck;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.documentIncomplete;
+                            }
+                        }
+                        else if (bannerApplicationModel.AppStatusID == (int)PAStausenum.LetterofnotificationApproved)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.Paid;
+                            }
+                            else if (bannerApplicationModel.SubmitType == OnRejected)
+                            {
+                                finalStatus = PAStausenum.Pendingpayment;
+                            }
+                        }
+                        else if (bannerApplicationModel.AppStatusID == (int)PAStausenum.Paid)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.LicenseGenerated;
+                            }
+                        }
+                        else if (bannerApplicationModel.AppStatusID == (int)PAStausenum.LicenseGenerated)
+                        {
+                            if (bannerApplicationModel.SubmitType == OnSubmit)
+                            {
+                                finalStatus = PAStausenum.Complete;
+                            }
+                        }
+                        break;
+                    case (int)RollTemplate.Director:
+                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.directorcheck)
                         {
                             if (bannerApplicationModel.SubmitType == OnSubmit)
                             {
@@ -583,39 +667,8 @@ namespace TradingLicense.Web.Controllers
                             }
                             else if (bannerApplicationModel.SubmitType == OnRejected)
                             {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
+                                finalStatus = PAStausenum.submittedtoclerk;
                             }
-                        }
-                        else if (bannerApplicationModel.SubmitType == OnSubmit)
-                        {
-                            finalStatus = PAStausenum.directorcheck;
-                        }
-                        break;
-                        case (int)RollTemplate.Director:
-                        if (bannerApplicationModel.AppStatusID == (int)PAStausenum.meeting)
-                        {
-                            if (bannerApplicationModel.SubmitType == OnSubmit)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationApproved;
-                            }
-                            else if (bannerApplicationModel.SubmitType == OnRejected)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
-                            }
-                        }
-                        else if (bannerApplicationModel.SubmitType == OnRejected)
-                        {
-                            finalStatus = PAStausenum.LetterofnotificationRejected;
-                        }
-                        break;
-                    case (int)RollTemplate.CEO:
-                        if (bannerApplicationModel.SubmitType == OnSubmit)
-                        {
-                            finalStatus = PAStausenum.LetterofnotificationApproved;
-                        }
-                        else if (bannerApplicationModel.SubmitType == OnRejected)
-                        {
-                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
                         break;
                 }
@@ -661,8 +714,12 @@ namespace TradingLicense.Web.Controllers
             ctx.SaveChanges();
 
             
-            if (bannerApplicationModel.AppStatusID == 1)
+            if (bannerApplicationModel.AppStatusID == 0)
             {
+                if (bannerApplicationId == 0)
+                {
+                    bannerApplicationId = bannerApplicationId + 1;
+                }
                 bannerApplicationModel.BannerApplicationID = bannerApplicationId;
                 bannerApplication.ReferenceNo = BannerApplicationModel.GetReferenceNo(bannerApplicationId, bannerApplication.DateSubmitted);
                 ctx.BannerApplications.AddOrUpdate(bannerApplication);
@@ -715,9 +772,8 @@ namespace TradingLicense.Web.Controllers
                 }
             }
             
-            if (true)
-            {
-                BannerObject bannerOb = new BannerObject();
+            
+                var bannerOb = new BannerObject();
                 bannerOb.BannerApplicationID = bannerApplicationModel.BannerApplicationID;
                 bannerOb.BannerCodeID = bannerApplicationModel.BannerCodeID;
                 bannerOb.LocationID = bannerApplicationModel.LocationID;
@@ -732,21 +788,26 @@ namespace TradingLicense.Web.Controllers
                 else
                 {
                     bannerOb.Fee = bannerApplicationModel.BQuantity * totalFee;
-                }               
-                ctx.BannerObjects.Add(bannerOb);
-                ctx.SaveChanges();
+                }
+            using (var context = new LicenseApplicationContext())
+            {
+                context.Entry(bannerOb).State = bannerOb.BannerObjectID == 0? EntityState.Added : EntityState.Modified;
+                context.SaveChanges();
             }
            
 
-            if (!string.IsNullOrWhiteSpace(bannerApplicationModel.newComment))
+            if (bannerApplicationModel.newComment != null)
             {
-                BAComment comment = new BAComment();
+                var comment = new BAComment();
                 comment.Comment = bannerApplicationModel.newComment;
                 comment.CommentDate = DateTime.Now;
                 comment.BannerApplicationID = bannerApplicationId;
                 comment.UsersID = ProjectSession.UserID;
-                ctx.BAComments.Add(comment);
-                ctx.SaveChanges();
+                using (var context = new LicenseApplicationContext())
+                {
+                    context.Entry(comment).State = EntityState.Added;
+                    context.SaveChanges();
+                }
             }
             return true;
         }
@@ -828,7 +889,7 @@ namespace TradingLicense.Web.Controllers
                     ctx.Entry(bannerObject).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
-                return Json(new { success = true, message = " rekod telah dipadamkan" }, JsonRequestBehavior.AllowGet);
+                return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + id);
             }
             catch
             {
@@ -989,7 +1050,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var attechment = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == attechmentId);
-                var folder = Server.MapPath(ProjectConfiguration.AttachmentDocument);
+                var folder = Server.MapPath("~/Documents/Attachment/BannerApplication/" + attechmentId.ToString());
                 try
                 {
                     try
@@ -1144,7 +1205,7 @@ namespace TradingLicense.Web.Controllers
                         db.BALinkReqDocs.RemoveRange(db.BALinkReqDocs.Where(x => x.AttachmentID == id));
                         db.Attachments.RemoveRange(db.Attachments.Where(x => x.AttachmentID == id));
                         db.SaveChanges();
-                        string fPath = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/0000000" + BannerAppId), FileName);
+                        string fPath = Path.Combine(Server.MapPath("~/Documents/Attachment/BannerApplication/" + BannerAppId), FileName);
                         if (System.IO.File.Exists(fPath))
                         {
                             System.IO.File.Delete(fPath);
@@ -1249,38 +1310,41 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("Pengurus", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             string compName = "";
-                            if (item.Company.CompanyName == null)
+                            if (!string.IsNullOrEmpty(item.Company.CompanyName))
                             {
-                                compName = "";
+                                compName = item.Company.CompanyName;
+                                
                             }
                             else
                             {
-                                compName = item.Company.CompanyName;
+                                compName = "";
                             }
                             graph.DrawString(compName, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
 
                             string compAdd = "";
-                            if (item.Company.Addra1 == null)
+                            if (!string.IsNullOrEmpty(item.Company.Addra1))
                             {
-                                compAdd = "";
+                                compAdd = item.Company.Addra1;
                             }
                             else
                             {
-                                compAdd = item.Company.Addra1;
+                                
+                                compName = "";
                             }
 
                             graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
 
                             string compPhone = "";
-                            if (item.Company.CompanyPhone == null)
+                            if (!string.IsNullOrEmpty(item.Company.CompanyPhone))
                             {
-                                compPhone = "";
+                                compPhone = item.Company.CompanyPhone;
                             }
                             else
                             {
-                                compPhone = item.Company.CompanyPhone;
+                                
+                                compName = "";
                             }
 
                             graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -1307,7 +1371,7 @@ namespace TradingLicense.Web.Controllers
                             }
                             
                             lineheight = lineheight + 20;
-                            graph.DrawString("ACTIVITI", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("AKTIVITI", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             int cnt = 1;
                             foreach (var item1 in ctx.BannerObjects.Where(x => x.BannerApplicationID == appId))

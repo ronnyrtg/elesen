@@ -8,7 +8,6 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int BannerApplicationID { get; set; }
-        public int? Mode { get; set; }
         public int? CompanyID { get; set; }
         public int IndividualID { get; set; }
         public int AppStatusID { get; set; }

@@ -67,9 +67,11 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Individual.FullName))
                             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));
-                cfg.CreateMap<BAReqDoc, BAReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
-               
-                
+                cfg.CreateMap<BAReqDoc, BAReqDocModel>()
+                            .ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
+                cfg.CreateMap<BAComment, BACommentModel>().ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Users.FullName));
+
+
                 //Entertainment License related
                 cfg.CreateMap<EntmtCode, EntmtCodeModel>().ForMember(dest => dest.EntmtGroupDesc, opt => opt.MapFrom(s => s.EntmtGroup.EntmtGroupDesc));
                 cfg.CreateMap<EntmtApplication, EntmtApplicationModel>().ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.AppStatus.StatusDesc));

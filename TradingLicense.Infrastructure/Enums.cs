@@ -119,6 +119,11 @@
             LicenseGenerated = 14,
 
             /// <summary>
+            /// for set Complete Status
+            /// </summary>
+            Complete = 15,
+
+            /// <summary>
             /// for set supervisor check
             /// </summary>
             supervisorcheck = 24,

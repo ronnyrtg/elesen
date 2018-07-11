@@ -6,7 +6,7 @@
     ViewBag.Title = "ManageBannerApplication";
 }
 @{
-    int? userRollTemplate = TradingLicense.Infrastructure.ProjectSession.User?.RoleTemplateID;
+    int? userRoleSession= TradingLicense.Infrastructure.ProjectSession.User.RoleTemplateID;
 
     List<TradingLicense.Model.CompanyModel> companyList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.IndividualModel> individualList = new List<TradingLicense.Model.IndividualModel>();
@@ -55,6 +55,8 @@
             @Html.HiddenFor(m => m.IsDraft)
             @Html.HiddenFor(m => m.AppStatusID)
             @Html.HiddenFor(m => m.Fee)
+            @Html.HiddenFor(m => m.SubmitType)
+            
 
             <div class="row">
                 <div class="col-sm-12 col-lg-6">
@@ -138,13 +140,31 @@
                 </div>
             }
             <div class="row">
-                <div class="col-lg-12 col-md-12" id="RequiredDocument">
+                <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
                         <div class="header">
                             <h4 id="headerTitle">Senarai Dokumen Wajib</h4>
                         </div>
                         <br />
                         <table cellspacing="0" class="table table-hover table-bordered responsive" style="width:100%" id="tblBusinessType"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Yuran Pemprosesan (RM)</div>
+                        @Html.TextBoxFor(m => m.ProcessingFee, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Senarai Ulasan
+                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
                     </div>
                 </div>
             </div>
@@ -167,35 +187,25 @@
                     </div>
                 </div>
             }
-            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
-            {
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <div class="control-label">Keputusan</div>
-                            @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                        </div>
-                    </div>
-                </div>
-            }
+            
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected))
+                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions )
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                            <input type="button" class="btn btn-primary" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                         }
                         @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID >= (int)Enums.PAStausenum.LetterofnotificationApproved && Model.AppStatusID < (int)Enums.PAStausenum.Pendingpayment)
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
+                            <input type="button" class="btn btn-primary" value="Public Signed Letter" id="btnGetPaymentDue" onclick="showPaymentsDuePopup();" />
                         }
                         @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.AppStatusID == (int)Enums.PAStausenum.Pendingpayment)
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
+                            <input type="button" class="btn btn-primary" value="Submit Payment" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
                         }
-                        @if (Model.AppStatusID >= (int)Enums.PAStausenum.LicenseGenerated)
+                        @if (Model.AppStatusID >= (int)Enums.PAStausenum.Paid)
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                            <input type="button" class="btn btn-primary" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
                         }
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
                         {
@@ -215,10 +225,10 @@
                                 <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                             }*@
 
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && Model.BannerApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.submittedtoclerk && Model.AppStatusID <= (int)Enums.PAStausenum.unitroute))
+                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && Model.BannerApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.documentIncomplete && Model.AppStatusID <= (int)Enums.PAStausenum.directorcheck))
                         {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Route Application</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Submit to Director</button>
+                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.BannerApplicationID > 0)
@@ -228,13 +238,14 @@
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.BannerApplicationID > 0)
                         {
-
+                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
                         {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Approved</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Reject</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Hantar Ke Supervisor</button>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
@@ -388,11 +399,16 @@
         }
 
         var totalObject = @Model.totalObjects;
-        var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
+        var restrictSubmittedApps = @((userRoleSession.HasValue && (userRoleSession.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
 
         var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel3)';
         var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel4)';
         var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.PremiseApplication, SystemEnum.PageRight.CrudLevel)';
+
+        var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
+        var _validFileExtensions = [];
+        _validFileExtensions = strValidateFileFormate.split(",");
+
 
         if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
 
@@ -409,6 +425,18 @@
             if (validate(isdraft)) {
                 $("#frmBannerApplication").submit();
             }
+        }
+
+        function Approved() {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
+            $("#frmBannerApplication").submit();
+            return false;
+        }
+
+        function Rejected() {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected');
+            $("#frmBannerApplication").submit();
+            return false;
         }
 
         function SaveBannerObjects(){
@@ -430,15 +458,10 @@
         {
             var ddl = document.getElementById("individualList");
             var selectedValue = ddl.options[ddl.selectedIndex].value;
-            var ddl2 = document.getElementById("companiesList");
-            var selectedValue2 = ddl.options[ddl2.selectedIndex].value;
             var value3 = document.getElementById("bsize").value;
 
             if (selectedValue == ""){
                 alert("Sila masukkan nama pemohon");
-                return false;
-            }else if (selectedValue2 == ""){
-                alert("Sila masukkan nama syarikat");
                 return false;
             }else if (value3 == "" && totalObject == 0 || value3 == "0" && totalObject == 0){
                 alert("Sila masukkan saiz iklan");
@@ -502,6 +525,8 @@
         //Select2 for Individual & Company
         $(function () {
 
+
+
             userRollTemplate = $("#UserRollTemplate").val();
 
             $("#Appid").val(@Model.BannerApplicationID);
@@ -516,8 +541,10 @@
                 errorMessage(actionError);
             }
 
-            visibleGridUploadColume = true;
-            if (userRollTemplate > 1) {
+            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
+                visibleGridUploadColume = true;
+            }
+            if (userRollTemplate == 2) {
                 visibleGridColume = true;
             }
 
@@ -623,85 +650,11 @@
             });
         }
 
-        $(document).ready(function () {
-            $('.btSubmit').hide();
-            var data = { "bannerApplicationId": @Model.BannerApplicationID };
-
-            table = $("#tblBusinessType").dataTable({
-                "lengthChange": true,
-                "searching": false,
-                "pageLength": 50,
-                "processing": true,
-                "serverSide": true,
-                "bPaginate": false,
-                "bInfo": false,
-                "orderMulti": false,
-                "ajax": {
-                    url: '@Url.Action("RequiredDocument", "BannerApplication")',
-                    type: "POST",
-                    data: data
-                },
-                "columns": [
-                    {
-                        "title": "Disertakan?",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridColume,
-                    },
-                    { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
-                    {
-                        "title": "Muat Naik",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridUploadColume,
-                    },
-                    {
-                        "title": "Nama Fail",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-
-                            if (visibleGridUploadColume) {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
-                                }
-
-                            } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["BannerApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
-                            }
-                            return appendstring
-                        },
-                        "orderable": false,
-                    }
-                ]
-            });
-        });
+        function RequiredDocumentModel(Requiredid) {
+            $("#reqDocid").val(Requiredid);
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
 
         function UploadDocument(){
 
@@ -733,7 +686,7 @@
 
                                 if ($("#isReqDoc").val() > 0) {
                                     bindTable();
-                                } 
+                                }
                             }
                             else {
                                 errorMessage(result.message);
@@ -751,7 +704,87 @@
             }
         }
 
-        $(document).ready(function () {
+        $(document).ready(function loadReqDoc() {
+            $('#RequiredDocument').show();
+
+            var data = { "bannerApplicationId": @Model.BannerApplicationID };
+
+            table = $("#tblBusinessType").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("RequiredDocument", "BannerApplication")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    {
+                        "title": "Disertakan?",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                                appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
+                    {
+                        "title": "Muat Naik",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridUploadColume,
+                    },
+                    {
+                        "title": "Nama Fail",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (visibleGridUploadColume) {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="'+userRollTemplate+'" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+
+                                } else {
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
+                                }
+
+                            } else {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["BannerApplicationID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                } else {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                                }
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+                        "visible": visibleGridUploadColume
+                    }
+                ]
+            });
+        });
+
+
+
+        $(document).ready(function bannerObj() {
+            if ($.fn.DataTable.isDataTable("#BannerObject")) {
+                $('#BannerObject').dataTable().fnDestroy();
+            }
 
             var data = { "bannerApplicationId": @Model.BannerApplicationID };
 
@@ -783,7 +816,7 @@
                             var appendstring = '';
                             if (!restrictSubmittedApps || data['AppStatusID'] == 1) {
 
-                                if (IsDelete != "False") {
+                                if (IsDelete != "False" && '@Model.totalObjects' > 1) {
                                     appendstring += '<a href="javascript:void(0);" data-id="' + row["BannerObjectID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                                 }
                             }
@@ -797,6 +830,64 @@
             })
         });
 
+        $(document).ready(function loadComments() {
+            $('#Comments').show();
+            if ($.fn.DataTable.isDataTable("#tblComments")) {
+                $('#tblComments').dataTable().fnDestroy();
+            }
+
+            var data = { "BannerApplicationID": @Model.BannerApplicationID };
+
+            table = $("#tblComments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("BannerComments", "BannerApplication")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Ulasan", "orderable": false, "data": "Comment" },
+                    { "title": "Pengulas", "orderable": false, "data": "FullName" },
+                    { "title": "Ulasan dibuat pada", "data": "CommentDate", render: renderDateTime },
+                    {
+                        "title": "Tindakan",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (data['UsersID'] == '@(ProjectSession.User.UsersID)') {
+                                appendstring += '<a  href="@Url.Action("AddCatatan", "BannerApplication")?Id=' + row["BannerApplicationID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["BACommentID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            }
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ]
+            });
+        });
+
         function bindDelete(item) {
             var x = confirm("Anda benar-benar pasti?");
             if (x) {
@@ -808,7 +899,7 @@
                     dataType: 'json',
                     success: function (data, textStatus, XMLHttpRequest) {
                         if (data.success) {
-                            bindTable();
+                            bannerObj();
                             successMessage(data.message);
                         }
                         else {
