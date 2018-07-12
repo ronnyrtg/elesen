@@ -48,7 +48,7 @@ namespace TradingLicense.Model
 
         public static string GetReferenceNo(int bannerApplicationId, DateTime submittedDateTime)
         {
-            return $"{submittedDateTime.Year}/BA/NEW/{bannerApplicationId.ToString().PadLeft(6, '0')}";
+            return $"{DateTime.Now.Year}/BA/NEW/{bannerApplicationId.ToString().PadLeft(6, '0')}";
         }
     }
    

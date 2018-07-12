@@ -211,10 +211,8 @@
                         {
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)Enums.PAStausenum.draftcreated)
                             {
-                                if (Model.totalObjects == 0)
-                                {
+                                
                                 <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " name="btnSubmit" />
-                                }
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' name="btnSubmit" />
                                 //<input type="submit" class="btn btn-primary" value="Validate" onclick="validate(); return false;" />
                             }
@@ -227,8 +225,8 @@
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && Model.BannerApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.documentIncomplete && Model.AppStatusID <= (int)Enums.PAStausenum.directorcheck))
                         {
-                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Hantar Ke Pengarah</button>
-                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
+                            <input type="submit" class="btn btn-primary" onclick='return Approved();' value="Hantar Ke Pengarah" name="btnSubmit"/>
+                            <input type="submit" class="btn btn-primary" onclick='return Rejected();' value="Dokumen Tidak Lengkap" name="btnSubmit"/>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.BannerApplicationID > 0)
@@ -422,7 +420,8 @@
 
         function frmSubmit(isdraft) {
             $("#IsDraft").val(isdraft);
-            if (validate(isdraft)) {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
+            if (validate()) {
                 $("#frmBannerApplication").submit();
             }
         }
