@@ -17,7 +17,7 @@ namespace TradingLicense.Model
         public string MykadNo { get; set; }
 
         [Display(Name = "Kewarganegaraan")]
-        public int NationalityID { get; set; }
+        public int? NationalityID { get; set; }
 
         [Required(ErrorMessage = "Sila masukkan alamat mengikut IC")]
         [Display(Name = "Address")]
@@ -33,10 +33,10 @@ namespace TradingLicense.Model
         [StringLength(200)]
         public string IndividualEmail { get; set; }
         [Display(Name = "Gambar")]
-        public int AttachmentID { get; set; }
+        public int? AttachmentID { get; set; }
         public string FileName { get; set; }
         [Display(Name = "Gender")]
-        public int Gender { get; set; }
+        public int? Gender { get; set; }
 
         [Display(Name = "Active")]
         public bool Active { get; set; }

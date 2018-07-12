@@ -599,7 +599,7 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Save Company Infomration
+        /// Save Company Information
         /// </summary>
         /// <param name="companyModel"></param>
         /// <returns></returns>
@@ -695,6 +695,28 @@ namespace TradingLicense.Web.Controllers
                 var companyModel = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(company);
                 return Json(companyModel, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        /// <summary>
+        /// Add Company Name & Registration Number
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddCompany(int id, string appType, string Cname, string RegNo)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                Company com = new Company();
+                com.CompanyName = Cname;
+                com.RegistrationNo = RegNo;
+                ctx.Companies.Add(com);
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Syarikat berjaya ditambah.";
+
+            }
+
+            return Redirect(Url.Action("Manage" + appType, appType) + "?id=" + id);
         }
 
         #endregion
@@ -1610,176 +1632,6 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region Mode
-
-        /// <summary>
-        /// GET: Mode
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Mode()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Save Mode Data
-        /// </summary>
-        /// <param name="requestModel"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult Mode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string modeDesc)
-        {
-            List<TradingLicense.Model.ModeModel> mode = new List<Model.ModeModel>();
-            int totalRecord = 0;
-            int filteredRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<Mode> query = ctx.Modes;
-                totalRecord = query.Count();
-
-                #region Filtering
-                // Apply filters for searching
-
-                if (!string.IsNullOrWhiteSpace(modeDesc))
-                {
-                    query = query.Where(p =>
-                                        p.ModeDesc.Contains(modeDesc)
-                                    );
-                }
-
-                filteredRecord = query.Count();
-
-                #endregion Filtering
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                query = query.OrderBy(orderByString == string.Empty ? "ModeID asc" : orderByString);
-
-                #endregion Sorting
-
-                // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
-
-                mode = Mapper.Map<List<ModeModel>>(query.ToList());
-
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, mode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get Mode Data by ID
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        public ActionResult ManageMode(int? Id)
-        {
-            ModeModel modeModel = new ModeModel();
-            modeModel.Active = true;
-            if (Id != null && Id > 0)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    int modeID = Convert.ToInt32(Id);
-                    var mode = ctx.Modes.Where(a => a.ModeID == modeID).FirstOrDefault();
-                    modeModel = Mapper.Map<ModeModel>(mode);
-                }
-            }
-
-            return View(modeModel);
-        }
-
-        /// <summary>
-        /// Save Mode Infomration
-        /// </summary>
-        /// <param name="modeModel"></param>
-        /// <returns></returns>
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public ActionResult ManageMode(ModeModel modeModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    Mode mode;
-                    if (IsModeDuplicate(modeModel.ModeDesc, modeModel.ModeID))
-                    {
-                        TempData["ErrorMessage"] = "Mode is already exist in the database.";
-                        return View(modeModel);
-                    }
-
-                    mode = Mapper.Map<Mode>(modeModel);
-                    ctx.Modes.AddOrUpdate(mode);
-                    ctx.SaveChanges();
-                }
-
-                TempData["SuccessMessage"] = "Mode saved successfully.";
-
-                return RedirectToAction("Mode");
-            }
-            else
-            {
-                return View(modeModel);
-            }
-
-        }
-
-        /// <summary>
-        /// Delete Mode Information
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteMode(int id)
-        {
-            try
-            {
-                var mode = new TradingLicense.Entities.Mode() { ModeID = id };
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    ctx.Entry(mode).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
-                }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
-        /// Check Duplicate
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool IsModeDuplicate(string name, int? id = null)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                var existObj = id != null ?
-               ctx.Modes.FirstOrDefault(
-                   c => c.ModeID != id && c.ModeDesc.ToLower() == name.ToLower())
-               : ctx.Modes.FirstOrDefault(
-                   c => c.ModeDesc.ToLower() == name.ToLower());
-                return existObj != null;
-            }
-        }
-
-        #endregion
-
         #region Individual
 
         /// <summary>
@@ -2063,6 +1915,28 @@ namespace TradingLicense.Web.Controllers
                    c => c.IndividualEmail.ToLower() == email.ToLower());
                 return existObj != null;
             }
+        }
+
+        /// <summary>
+        /// Add Individual Name & MyKad
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddIndividual(int id, string appType, string Fname, string MykadNo)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                Individual ind = new Individual();
+                ind.FullName = Fname;
+                ind.MykadNo = MykadNo;
+                ctx.Individuals.Add(ind);
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Individu berjaya ditambah.";
+                
+            }
+
+            return Redirect(Url.Action("Manage"+appType, appType) + "?id=" + id);
         }
 
         #endregion

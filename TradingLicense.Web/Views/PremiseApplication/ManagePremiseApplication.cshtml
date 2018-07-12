@@ -1650,7 +1650,35 @@
         });
     }
 
+    function del(ob,param){
+        console.log($(ob).attr("data-id"));
+        console.log("#"+param+$(ob).attr("data-id"));
+        //$("#"+param+$(ob).attr("data-id")).remove();
+
+        $("#"+param+$(ob).attr("data-id")).remove();//hidden
+        $(ob).closest('tr').remove();//row
+        //$(this).remove();
+
+    }
+
     function showRouteUnitConfirmModal() {
+        //console.log("pop");
+        $("#AddDept").click( function(){
+            //console.log("clicked");
+            var dept_id = $("#department").val();
+            var dept = $("#department option:selected").text();
+            var ct = $("#tblRouteDepartments tbody").children().length + 1;
+
+            console.log($("#dept_"+dept_id).val());
+
+            if($("#dept_"+dept_id).length == 0){
+                //console.log("--> "+$("#tblRouteDepartments tbody").children().length);
+                $("#tblRouteDepartments").append('<input type="hidden" value="'+ dept_id + '" id="dept_'+dept_id+'" name="DeptId[]"/>');
+                $("#tblRouteDepartments").append('<tr role="row" class="odd"><td class="sorting_1">'+ct+'</td><td>'+dept+'</td><td class=" action-icons"><a href="#"  onclick="del(this,\'dept_\');"  data-id="'+dept_id+'" class="del" title="Padam"><img src="/images/delete.png" alt="Delete"></a></td></tr>');
+            }
+
+
+        });
         if(validatePremiseApplication()) {
             $('#routeUnitModal').modal('show');
             $('#RouteUnitTable').show();
@@ -1691,7 +1719,9 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<a href="javascript:void(0);" data-id="' + row["DepartmentID"] + '" onclick="deleteDep(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            appendstring += '<input type="hidden" id="dept_'+row["DepartmentID"]+'" value="'+ row["DepartmentID"] + '" name="DeptId[]"/>';
+                            // appendstring += '<a href="javascript:void(0);" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            appendstring += '<a href="#" onclick="del(this,\'dept_\');" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             return appendstring
                         },
                         "width": "100px",
@@ -1709,7 +1739,7 @@
 
         var data = new FormData();
         data.append("PremiseApplicationID", @Model.PremiseApplicationID);
-        
+
 
         var ajaxRequest = $.ajax({
             type: "POST",

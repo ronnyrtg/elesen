@@ -21,16 +21,6 @@ namespace TradingLicense.Data.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
 
-            var mode = new List<Mode>
-            {
-                new Mode {ModeID=1,ModeDesc="Ekspres"},
-                new Mode {ModeID=2,ModeDesc="Pengarah"},
-                new Mode {ModeID=3,ModeDesc="Biasa"},
-                new Mode {ModeID=4,ModeDesc="Mesyuarat"},
-             };
-            mode.ForEach(s => context.Modes.Add(s));
-            context.SaveChanges();
-
             var sector = new List<Sector>
             {
                 new Sector {SectorID=1,SectorDesc="Tred"},

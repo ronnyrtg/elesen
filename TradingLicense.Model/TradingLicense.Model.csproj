@@ -90,7 +90,6 @@
     <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="MLPremiseApplicationModel.cs" />
-    <Compile Include="ModeModel.cs" />
     <Compile Include="PACommentModel.cs" />
     <Compile Include="PADepSuppModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />

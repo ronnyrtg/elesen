@@ -24,7 +24,6 @@ namespace TradingLicense.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Road> Roads { get; set; }
         public DbSet<Race> Races { get; set; }
-        public DbSet<Mode> Modes { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }

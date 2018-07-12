@@ -16,7 +16,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string MykadNo { get; set; }
 
-        public int NationalityID { get; set; }
+        public int? NationalityID { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
@@ -33,7 +33,7 @@ namespace TradingLicense.Entities
         //Profile Picture
         public int? AttachmentID { get; set; }
 
-        public int Gender { get; set; }
+        public int? Gender { get; set; }
         public bool Active { get; set; }
         public Individual()
         {

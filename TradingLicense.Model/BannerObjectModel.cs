@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Model
 {
     public class BannerObjectModel
     {
         public int BannerObjectID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BannerApplicationID { get; set; }
         public int BQuantity { get; set; }
         public float BSize { get; set; }

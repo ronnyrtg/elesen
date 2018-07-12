@@ -579,20 +579,13 @@ namespace TradingLicense.Web.Controllers
                     }
                     return Redirect(Url.Action("ManageBannerApplication", "BannerApplication") + "?id=" + bannerApplicationModel.BannerApplicationID);
                 }
-                else
-                {
-                    var validationErrors = ModelState.Values.Where(E => E.Errors.Count > 0)
-                       .SelectMany(E => E.Errors)
-                       .Select(E => E.ErrorMessage)
-                       .ToList();
-                }
-
 
                 return View(bannerApplicationModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View(bannerApplicationModel);
+                throw ex;
+                //return View(bannerApplicationModel);
             }
         }
         #endregion
@@ -700,6 +693,7 @@ namespace TradingLicense.Web.Controllers
             int bannerApplicationId = bannerApplication.BannerApplicationID;
             var balist = ctx.BannerApplications.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
             var baObjlist = ctx.BannerObjects.Where(p => p.BannerApplicationID == bannerApplicationId).ToList();
+            var totalObj = baObjlist.Count;
 
             int userroleTemplate = 0;
             if (ProjectSession.User != null && ProjectSession.UserID > 0)
@@ -774,41 +768,39 @@ namespace TradingLicense.Web.Controllers
                 }
             }
             
-                if (bannerApplicationModel.BSize != 0)
+            if (totalObj == 0 && bannerApplicationModel.BSize != 0)
+            {
+                BannerObject bannerOb = new BannerObject();
+                bannerOb.BannerApplicationID = bannerApplicationId;
+                bannerOb.BannerCodeID = bannerApplicationModel.BannerCodeID;
+                bannerOb.LocationID = bannerApplicationModel.LocationID;
+                bannerOb.BSize = bannerApplicationModel.BSize;
+                bannerOb.BQuantity = bannerApplicationModel.BQuantity;
+                float totalFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.PeriodFee).Single();
+                float extFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.ExtraFee).Single();
+                if (bannerApplicationModel.BSize > 8)
                 {
-                    BannerObject bannerOb = new BannerObject();
-                    bannerOb.BannerApplicationID = bannerApplicationModel.BannerApplicationID;
-                    bannerOb.BannerCodeID = bannerApplicationModel.BannerCodeID;
-                    bannerOb.LocationID = bannerApplicationModel.LocationID;
-                    bannerOb.BSize = bannerApplicationModel.BSize;
-                    bannerOb.BQuantity = bannerApplicationModel.BQuantity;
-                    float totalFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.PeriodFee).Single();
-                    float extFee = ctx.BannerCodes.Where(ba => ba.BannerCodeID == bannerApplicationModel.BannerCodeID).Select(ba => ba.ExtraFee).Single();
-                    if (bannerApplicationModel.BSize > 8)
-                    {
-                        bannerOb.Fee = (((float)Math.Floor(bannerApplicationModel.BSize - 8)) * extFee) + bannerApplicationModel.BQuantity * totalFee;
-                    }
-                    else
-                    {
-                        bannerOb.Fee = bannerApplicationModel.BQuantity * totalFee;
-                    }                   
-                    ctx.BannerObjects.Add(bannerOb);
-                    ctx.SaveChanges();                       
+                    bannerOb.Fee = (((float)Math.Floor(bannerApplicationModel.BSize - 8)) * extFee) + bannerApplicationModel.BQuantity * totalFee;
                 }
+                else
+                {
+                    bannerOb.Fee = bannerApplicationModel.BQuantity * totalFee;
+                }
+                ctx.BannerObjects.Add(bannerOb);
+                ctx.SaveChanges();
+            }
             
             if (bannerApplicationModel.newComment != null)
                 {
-                    var comment = new BAComment();
+                    BAComment comment = new BAComment();
                     comment.Comment = bannerApplicationModel.newComment;
                     comment.CommentDate = DateTime.Now;
                     comment.BannerApplicationID = bannerApplicationId;
                     comment.UsersID = ProjectSession.UserID;
-                    using (var context = new LicenseApplicationContext())
-                    {
-                        context.Entry(comment).State = EntityState.Added;
-                        context.SaveChanges();
-                    }
+                    ctx.BAComments.Add(comment);
+                    ctx.SaveChanges();
                 }
+            
             return true;
         }
         #endregion

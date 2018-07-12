@@ -32,7 +32,6 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<UsersModel, Users>().ReverseMap();
                 cfg.CreateMap<RegistrationModel, Users>().ReverseMap();
                 cfg.CreateMap<Sector, SectorModel>();
-                cfg.CreateMap<Mode, ModeModel>();
                 cfg.CreateMap<BusinessType, BusinessTypeModel>().ForMember(dest => dest.RequiredDocs, opt => opt.Ignore());
                 cfg.CreateMap<BTLinkReqDoc, BTLinkReqDocModel>().ForMember(dest => dest.RequiredDocDesc, opt => opt.MapFrom(s => s.RequiredDoc.RequiredDocDesc));
                 cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();

@@ -57,28 +57,50 @@
             @Html.HiddenFor(m => m.Fee)
             @Html.HiddenFor(m => m.SubmitType)
             
-
             <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Nama Pemohon
-                            <span class="cfont">*</span>
-                        </div>
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
+                        <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">                
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
                         @Html.DropDownListFor(m => m.IndividualID, new SelectList(individualList, "IndividualID", "FullName"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.IndividualID)
                     </div>
+                    @if (Model.BannerApplicationID == 0)
+                    {
+                    <div class="col-sm-2 col-lg-6">
+                        <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();'/>
+                    </div>
+                    }
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <div class="form-group">
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
                         <div class="control-label">Nama Perniagaan (Jika ada)</div>
-                        @Html.DropDownListFor(m => m.CompanyID, new SelectList(companyList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companiesList", @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CompanyID)
                     </div>
                 </div>
             </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">                        
+                        @Html.DropDownListFor(m => m.CompanyID, new SelectList(companyList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companiesList", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CompanyID)
+                    </div>
+                    @if (Model.BannerApplicationID == 0)
+                    {
+                    <div class="col-sm-2 col-lg-6">
+                        <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='addCompany();' />
+                    </div>
+                    }
+                </div>
+            </div>
+            
             <div class="header">
                 <h4 id="headerTitle">Butir-Butir Iklan</h4>
             </div>
@@ -214,13 +236,12 @@
                                 
                                 <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " name="btnSubmit" />
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' name="btnSubmit" />
-                                //<input type="submit" class="btn btn-primary" value="Validate" onclick="validate(); return false;" />
                             }
                         }
 
                         @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
                             {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
+                                <input type="submit" class="btn btn-primary" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
                             }*@
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && Model.BannerApplicationID > 0 && (Model.AppStatusID >= (int)Enums.PAStausenum.documentIncomplete && Model.AppStatusID <= (int)Enums.PAStausenum.directorcheck))
@@ -242,13 +263,13 @@
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
                         {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Hantar Ke Supervisor</button>
+                            <button type="button" class="btn btn-primary" onclick='return Approved();'>Lulus</button>
+                            <button type="button" class="btn btn-primary" onclick='return Rejected();'>Hantar Ke Supervisor</button>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.BannerApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
                         {
-                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                            <input type="submit" class="btn btn-primary" value="Hantar" onclick='frmSubmit(false); return false;' />
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.BannerApplicationID > 0)
@@ -301,6 +322,7 @@
             </div>
         </div>
 
+        <!--Display License-->
         <div id="myModal" class="modal fade" role="dialog">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -320,6 +342,8 @@
                 </div>
             </div>
         </div>
+
+        <!--Add Banner Object-->
         <div id="showAddBannerObject" class="modal fade" role="dialog">
             <div class="modal-dialog modal-lg">
                 @using (Html.BeginForm("AddBannerObject", "BannerApplication", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
@@ -377,6 +401,93 @@
                 }
             </div>
         </div>
+        
+        <!-- Add Individual-->
+        <div id="showAddIndividual" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                @using (Html.BeginForm("AddIndividual", "Master", FormMethod.Post, new { name = "frmsaveIndividual", id = "frmsaveIndividual" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", Model.BannerApplicationID)
+                    @Html.Hidden("appType", "BannerApplication")
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Masukkan Maklumat Individu Baru</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Nama</div>
+                                        @Html.TextBox("Fname", null, new { @class = "form-control" })
+                                        <span class="text-danger BannerCodeVal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Nombor MyKad / Nombor Paspot</div>
+                                        @Html.TextBox("MykadNo", null, new {  @class = "form-control" })
+                                        <span class="text-danger LocationVal"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveIndividual()" />
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Add Company-->
+        <div id="showAddCompany" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                @using (Html.BeginForm("AddCompany", "Master", FormMethod.Post, new { name = "frmsaveCompany", id = "frmsaveCompany" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", Model.BannerApplicationID)
+                    @Html.Hidden("appType", "BannerApplication")
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Masukkan Maklumat Syarikat Baru</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Nama Syarikat</div>
+                                        @Html.TextBox("Cname", null, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Nombor Pendaftaran Syarikat</div>
+                                        @Html.TextBox("RegNo", null, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCompany()" />
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+
     </div>
 </div>
 @section scripts{
@@ -442,6 +553,14 @@
             $("frmsaveBannerObject").submit();
         }
 
+        function SaveIndividual(){
+            $("frmsaveIndividual").submit();
+        }
+
+        function SaveCompany(){
+            $("frmsaveCompany").submit();
+        }
+
         function bindDownload(attechmentID) {
             if (attechmentID > 0) {
                 window.location.href = "@Url.Action("Download", "BannerApplication")" + "?attechmentID=" + attechmentID;
@@ -455,6 +574,8 @@
 
         function validate()
         {
+            RequiredDocument();
+
             var ddl = document.getElementById("individualList");
             var selectedValue = ddl.options[ddl.selectedIndex].value;
             var value3 = document.getElementById("bsize").value;
@@ -584,7 +705,7 @@
             }
 
             $("#individualList").select2({
-                placeholder: "Select Full Name or Mykad/Passport No",
+                placeholder: "Masukkan Nama atau Nombor Mykad/Paspot",
                 minimumInputLength: 2,
                 width: '100%',
                 tags: true,
@@ -649,6 +770,8 @@
             });
         }
 
+        
+
         function RequiredDocumentModel(Requiredid) {
             $("#reqDocid").val(Requiredid);
             $('#isReqDoc').val("1");
@@ -705,7 +828,7 @@
 
         $(document).ready(function loadReqDoc() {
             $('#RequiredDocument').show();
-
+            $('.btSubmit').hide();
             var data = { "bannerApplicationId": @Model.BannerApplicationID };
 
             table = $("#tblBusinessType").dataTable({
@@ -927,5 +1050,12 @@
             });
         });
 
+        function AddIndividual() {
+            $("#showAddIndividual").modal('show');
+        }
+
+        function addCompany() {
+            $("#showAddCompany").modal('show');
+        }
     </script>
 }
