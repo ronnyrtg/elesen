@@ -226,15 +226,15 @@ namespace TradingLicense.Data.Migrations
 
             var departments = new List<Department>
             {
-                new Department {DepartmentCode="Pelesenan",DepartmentDesc="Bahagian Pelesenan",Internal=1},
-                new Department {DepartmentCode="ICT",DepartmentDesc="Jabatan Pengurusan Maklumat",Internal=1},
-                new Department {DepartmentCode="BPP",DepartmentDesc="Jabatan Perancangan & Kawalan Bangunan",Internal=1},
-                new Department {DepartmentCode="JPPPH",DepartmentDesc="Jabatan Penilaian, Pelaburan dan Pengurusan Harta",Internal=1},
-                new Department {DepartmentCode="UKS",DepartmentDesc="Unit Kesihatan",Internal=1},
-                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif",Internal=1},
-                new Department {DepartmentCode="JBPM",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia",Internal=2},
-                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia",Internal=2},
-                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia",Internal=2},
+                new Department {DepartmentCode="Pelesenan",DepartmentDesc="Bahagian Pelesenan",Internal=1, Routeable=0},
+                new Department {DepartmentCode="ICT",DepartmentDesc="Jabatan Pengurusan Maklumat",Internal=1, Routeable=0},
+                new Department {DepartmentCode="BPP",DepartmentDesc="Jabatan Perancangan & Kawalan Bangunan",Internal=1, Routeable=1},
+                new Department {DepartmentCode="JPPPH",DepartmentDesc="Jabatan Penilaian, Pelaburan dan Pengurusan Harta",Internal=1, Routeable=1},
+                new Department {DepartmentCode="UKS",DepartmentDesc="Unit Kesihatan",Internal=1, Routeable=1},
+                new Department {DepartmentCode="PKPE",DepartmentDesc="Pejabat Ketua Pegawai Eksekutif",Internal=1, Routeable=0},
+                new Department {DepartmentCode="JBPM",DepartmentDesc="Jabatan Bomba & Penyelamat Malaysia",Internal=2, Routeable=1},
+                new Department {DepartmentCode="PDRM",DepartmentDesc="Polis Diraja Malaysia",Internal=2, Routeable=1},
+                new Department {DepartmentCode="JKDM",DepartmentDesc="Jabatan Kastam Diraja Malaysia",Internal=2, Routeable=1},
             };
             departments.ForEach(s => context.Departments.Add(s));
             context.SaveChanges();
@@ -246,7 +246,6 @@ namespace TradingLicense.Data.Migrations
                 new PremiseType {PremiseDesc="Rumah Kedai"},
                 new PremiseType {PremiseDesc="Kedai Pejabat"},
                 new PremiseType {PremiseDesc="Bangunan Kerajaan"},
-                new PremiseType {PremiseDesc="Lain-lain - Sila nyatakan dalam ruang di bawah"},
             };
             premisetypes.ForEach(s => context.PremiseTypes.Add(s));
             context.SaveChanges();

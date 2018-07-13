@@ -182,5 +182,65 @@
             Administrator = 8,
         }
 
+        public enum ApplicationID
+        {
+            /// <summary>
+            /// for PremiseApplication
+            /// </summary>
+            PremiseApplication = 1,
+
+            /// <summary>
+            /// for BannerApplication
+            /// </summary>
+            BannerApplication = 2,
+
+            /// <summary>
+            /// for HawkerApplication
+            /// </summary>
+            HawkerApplication = 3,
+
+            /// <summary>
+            /// for StallApplication
+            /// </summary>
+            StallApplication = 4,
+
+            /// <summary>
+            /// for LiquorApplication
+            /// </summary>
+            LiquorApplication = 5,
+
+            /// <summary>
+            /// for MoneyLenderApplication
+            /// </summary>
+            MLApplication = 6,
+
+            /// <summary>
+            /// for EntertainmentApplication
+            /// </summary>
+            EntmtApplication = 7,
+        }
+
+        public enum Mode
+        {
+            /// <summary>
+            /// for Express approval
+            /// </summary>
+            Express = 1,
+
+            /// <summary>
+            /// for Director approval
+            /// </summary>
+            Director = 2,
+
+            /// <summary>
+            /// for CEO approval
+            /// </summary>
+            CEO = 3,
+
+            /// <summary>
+            /// for Meeting approval
+            /// </summary>
+            Meeting = 4,
+        }
     }
 }

@@ -51,8 +51,15 @@
         });
 
         function addDepartment() {
-            var link = '@Url.Action("ManageDepartment", "Master")?Type=@ViewBag.DepartmentType';
-             window.location.href = link;
+            if(@ViewBag.DepartmentType != null)
+            {
+                var link = '@Url.Action("ManageDepartment", "Master")?Type=@ViewBag.DepartmentType';
+            }
+            else
+            {
+                var link = '@Url.Action("ManageDepartment", "Master")';
+            }
+            window.location.href = link;
         }
 
         function bindTable() {
@@ -128,7 +135,15 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + '&Type=@ViewBag.DepartmentType" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        if(@ViewBag.DepartmentType != null)
+                        {
+                            appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + '&Type=@ViewBag.DepartmentType" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        }
+                        else
+                        {
+                            appendstring += '<a  href="@Url.Action("ManageDepartment", "Master")?Id=' + row["DepartmentID"] + ' title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        }
+
                         appendstring += '<a href="javascript:void(0);" data-id="' + row["DepartmentID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
@@ -163,10 +178,19 @@
 
         function bindSearch() {
             var param = {};
-            param["departmentCode"] = $('#txtDepartmentCode').val();
-            param["departmentDesc"] = $('#txtDepartmentDesc').val();
-            param["departmentType"] = @ViewBag.DepartmentType;
-            return param;
+            if(@ViewBag.DepartmentType != null)
+            {
+                param["departmentCode"] = $('#txtDepartmentCode').val();
+                param["departmentDesc"] = $('#txtDepartmentDesc').val();
+                param["departmentType"] = @ViewBag.DepartmentType;
+                return param;
+            }
+            else
+            {
+                param["departmentCode"] = $('#txtDepartmentCode').val();
+                param["departmentDesc"] = $('#txtDepartmentDesc').val();
+                return param;
+            }
         }
 
         function isValidSearchCriteria(formName) {

@@ -6,17 +6,19 @@ namespace TradingLicense.Model
     {
         public int DepartmentID { get; set; }
 
-        [Display(Name = "Department Code")]
-        [Required(ErrorMessage = "Please Enter Department Code")]
+        [Display(Name = "Kod Jabatan/Unit")]
+        [Required(ErrorMessage = "Masukkan kod jabatan")]
         [StringLength(10)]
         public string DepartmentCode { get; set; }
 
-        [Display(Name = "Department Description")]
-        [Required(ErrorMessage = "Please Enter Department Description")]
+        [Display(Name = "Nama Jabatan/Unit")]
+        [Required(ErrorMessage = "Masukkan nama penuh Jabatan/Unit")]
         [StringLength(255)]
         public string DepartmentDesc { get; set; }
-        [Display(Name = "Internal?")]
+        [Display(Name = "Dalam atau Luar PL?")]
         public int Internal { get; set; }
+        [Display(Name = "Boleh Route?")]
+        public int Routeable { get; set; }
         [Display(Name = "Active")]
         public bool Active { get; set; }
     }

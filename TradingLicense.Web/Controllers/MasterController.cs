@@ -1630,6 +1630,27 @@ namespace TradingLicense.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Add New Premise Type
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddPremiseType(int id, string appType, string PTypeDesc)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                PremiseType pre = new PremiseType();
+                pre.PremiseDesc = PTypeDesc;
+                ctx.PremiseTypes.Add(pre);
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Jenis Premis berjaya ditambah.";
+
+            }
+
+            return Redirect(Url.Action("Manage" + appType, appType) + "?id=" + id);
+        }
+
         #endregion
 
         #region Individual

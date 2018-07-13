@@ -18,6 +18,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string DepartmentDesc { get; set; }
         public int Internal { get; set; }
+        public int Routeable { get; set; }
         public bool Active { get; set; }
         public Department()
         {

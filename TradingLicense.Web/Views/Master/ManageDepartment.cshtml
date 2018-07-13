@@ -2,11 +2,14 @@
 @{
     ViewBag.Title = "ManageDepartment";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
-@{
+
     List<SelectListItem> internalList = new List<SelectListItem>();
     internalList.Add(new SelectListItem { Text = "Dalaman", Value = "1" });
     internalList.Add(new SelectListItem { Text = "Luaran", Value = "2" });
+
+    List<SelectListItem> routeList = new List<SelectListItem>();
+    routeList.Add(new SelectListItem { Text = "Tidak Boleh Route", Value = "0" });
+    routeList.Add(new SelectListItem { Text = "Boleh Route", Value = "1" });
 }
 
 <div id="divMessage"></div>
@@ -46,6 +49,15 @@
                     <div class="form-group">
                         <div class="control-label">Dalam atau Luar PL?<span class="cfont">*</span></div>
                         @Html.DropDownListFor(model => model.Internal, new SelectList(internalList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Boleh Routing?<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(model => model.Route, new SelectList(routeList, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>

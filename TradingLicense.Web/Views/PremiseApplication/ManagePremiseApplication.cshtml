@@ -44,8 +44,8 @@
     ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
 
     List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
-    PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "0" });
-    PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "1" });
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "0" });
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "1" });
 
 }
 <div id="divMessage"></div>
@@ -64,14 +64,23 @@
             @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
             @Html.HiddenFor(m => m.AppStatusID)
+            @Html.HiddenFor(m => m.LicenseStatus)
+            @Html.HiddenFor(m => m.ReferenceNo)
+            @Html.HiddenFor(m => m.DateSubmitted)
+            @Html.HiddenFor(m => m.DateApproved)
+            @Html.HiddenFor(m => m.DatePaid)
+            @Html.HiddenFor(m => m.ExpireDate)
+            @Html.HiddenFor(m => m.UpdatedBy)
+            @Html.HiddenFor(m => m.TotalFee)
+
             if (Model.AppStatusID != (int)Enums.PAStausenum.CEOcheck && Model.AppStatusID != (int)Enums.PAStausenum.meeting)
             {
-                    @Html.HiddenFor(m => m.SubmitType)
+                @Html.HiddenFor(m => m.SubmitType)
             }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
             @Html.HiddenFor(m => m.UploadAdditionalDocids)
-            
+
 
             <div class="row">
                 <div class="col-lg-3 col-md-6">
@@ -109,15 +118,6 @@
                         @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
                     </div>
                 </div>
-
-                <div class="col-md-offset-3 col-lg-3 col-md-3">
-                    <div class="form-group">
-                        @if (Model.AppStatusID == (int)TradingLicense.Infrastructure.Enums.PAStausenum.submittedtoclerk && Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                        {
-                            <div class="control-label" style="color:green;">Submitted to Clerk</div>
-                        }
-                    </div>
-                </div>
             </div>
 
             <div class="row">
@@ -129,25 +129,48 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Nama Penuh (Mykad/Paspot).   @if (Model.UserRollTemplate > 2)
-                            {<span class="cfont">*</span>}
-                        </div>
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
+                        <div class="control-label">Nama Penuh (Mykad/Paspot)<span class="cfont">*</span></div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">Nama Syarikat<span class="cfont">*</span></div>
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
+                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                        @Html.HiddenFor(model => model.Individualids)
+                        @Html.HiddenFor(model => model.newIndividualsList)
+                    </div>
+                    @if (Model.PremiseApplicationID == 0)
+                    {
+                        <div class="col-sm-2 col-lg-6">
+                            <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
+                        <div class="control-label">Nama Syarikat</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-10 col-lg-6">
                         @Html.DropDownListFor(m => m.CompanyID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control" })
                     </div>
+                    @if (Model.PremiseApplicationID == 0)
+                    {
+                        <div class="col-sm-2 col-lg-6">
+                            <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='addCompany();' />
+                        </div>
+                    }
                 </div>
             </div>
             <hr />
@@ -234,19 +257,23 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-12">
-                    <div class="form-group">
+                <div class="form-group">
+                    <div class="col-md-10 col-lg-6">
                         <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-12">
-                    <div class="form-group">
-                        <div class="control-label">Nyatakan Jenis Premis (Jika tiada dalam senarai)</div>
-                        @Html.TextBoxFor(m => m.OtherPremiseType, new { @class = "form-control" })
+                <div class="form-group">
+                    <div class="col-md-10 col-lg-3">
+                        @Html.DropDownListFor(m => m.PremiseTypeID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
                     </div>
+                    @if (Model.PremiseApplicationID == 0)
+                    {
+                        <div class="col-md-2 col-lg-2">
+                            <input type="button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                        </div>
+                    }
                 </div>
             </div>
             <div class="row">
@@ -277,16 +304,6 @@
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
                     </div>
                 </div>
-            </div>               
-            <div class="row">
-                <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Senarai Catatan
-                        </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
-                    </div>
-                </div>
             </div>
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
@@ -298,54 +315,64 @@
                     </div>
                 </div>
             </div>
-        if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
-        {
-            List<SelectListItem> supportList = new List<SelectListItem>();
-            supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
-            supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
                     <div class="form-group">
-                        <div class="control-label">Keputusan Pengarah</div>
-                        @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        <div class="control-label">
+                            Senarai Catatan
+                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
                     </div>
                 </div>
             </div>
-        }
-        if (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
-        {
-            List<SelectListItem> supportList = new List<SelectListItem>();
-            supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">Keputusan KPE</div>
-                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
+                supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Pengarah</div>
+                            @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-        if (Model.AppStatusID == (int)Enums.PAStausenum.meeting) // Meeting
-        {
-            List<SelectListItem> supportList = new List<SelectListItem>();
-            supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <div class="control-label">Keputusan Mesyuarat</div>
-                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+            }
+            if (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan KPE</div>
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+            if (Model.AppStatusID == (int)Enums.PAStausenum.meeting) // Meeting
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Mesyuarat</div>
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @if (Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.AppStatusID <= (int)Enums.PAStausenum.submittedtoclerk) && (Model.Mode == 1) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected)
+                        @if (Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.AppStatusID <= (int)Enums.PAStausenum.Pendingpayment) && (Model.Mode == 1) || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationRejected)
                         {
                             <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                             <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
@@ -367,7 +394,7 @@
                         {
                             if (Model.AppStatusID == 0 || Model.AppStatusID == (int)Enums.PAStausenum.draftcreated)
                             {
-                                <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " /> 
+                                <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                             }
                         }
@@ -394,8 +421,8 @@
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.AppStatusID == (int)Enums.PAStausenum.meeting || Model.AppStatusID == (int)Enums.PAStausenum.directorcheck))
                         {
-                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
-                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Kembali ke Supervisor</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
+                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Kembali ke Supervisor</button>
                         }
 
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.PremiseApplicationID > 0 && (Model.AppStatusID == (int)Enums.PAStausenum.CEOcheck))
@@ -409,6 +436,90 @@
                         }
 
                         <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Individual-->
+<div id="showAddIndividual" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddIndividual", "Master", FormMethod.Post, new { name = "frmsaveIndividual", id = "frmsaveIndividual" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.PremiseApplicationID)
+            @Html.Hidden("appType", "PremiseApplication")
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Masukkan Maklumat Individu Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nama</div>
+                                @Html.TextBox("Fname", null, new { @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nombor MyKad / Nombor Paspot</div>
+                                @Html.TextBox("MykadNo", null, new { @class = "form-control" })
+                                <span class="text-danger LocationVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveIndividual()" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Company-->
+<div id="showAddCompany" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddCompany", "Master", FormMethod.Post, new { name = "frmsaveCompany", id = "frmsaveCompany" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.PremiseApplicationID)
+            @Html.Hidden("appType", "PremiseApplication")
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Masukkan Maklumat Syarikat Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nama Syarikat</div>
+                                @Html.TextBox("Cname", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nombor Pendaftaran Syarikat</div>
+                                @Html.TextBox("RegNo", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCompany()" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                     </div>
                 </div>
             </div>
@@ -498,7 +609,13 @@
     <!--Route Unit modal-->
     <div id="routeUnitModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
-            <!-- Modal content-->
+            @using (Html.BeginForm("AddRoute", "PremiseApplication", FormMethod.Post, new { name = "frmsaveRoute", id = "frmsaveRoute" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", Model.PremiseApplicationID)
+                @Html.Hidden("appType", "PremiseApplication")
+                @Html.Hidden("appID", (int)Enums.ApplicationID.PremiseApplication)
+
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -509,10 +626,10 @@
                         <div class="form-group">
                             
                                 <div class="col-lg-8 col-md-8">
-                                    @Html.DropDownList("department", new SelectList(departmentList, "DepartmentID", "DepartmentDesc"), "Pilih Unit/Jabatan", new { @class = "form-control" })
+                                    @Html.DropDownList("department", new SelectList(departmentList, "DepartmentID", "DepartmentDesc"), new { @class = "form-control" })
                                 </div>
                                 <div class="col-lg-2 col-md-2">
-                                    <button type="button" class="btn btn-primary">Tambah</button>
+                                    <button type="button" id="AddDept" class="btn btn-primary">Tambah</button>
                                 </div>
                            
                         </div>
@@ -530,6 +647,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                 </div>
             </div>
+            }
         </div>
     </div>
 }
@@ -623,6 +741,7 @@
     }
     </div>
 </div>
+
 <div id="showPaymentsReceived" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         @using (Html.BeginForm("SaveReceivedPayment", "PremiseApplication", FormMethod.Post, new { name = "frmsaveReceivedPayment", id = "frmsaveReceivedPayment" }))
@@ -668,7 +787,40 @@
         }
     </div>
 </div>
-                                                            
+<!-- Add Premise Type-->
+<div id="showAddPremiseType" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddPremiseType", "Master", FormMethod.Post, new { name = "frmsavePremiseType", id = "frmsavePremiseType" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.PremiseApplicationID)
+            @Html.Hidden("appType", "PremiseApplication")
+        
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Daftar Jenis Premis Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Jenis Premis</div>
+                                @Html.TextBox("PTypeDesc", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return savePremiseType()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+                                                        
 <style type="text/css">
     label.error {
         color: red;
@@ -676,13 +828,11 @@
 </style>
 
 @section scripts{
-<script type="text/javascript">
-        $(function () {
-            // This will make every element with the class "date-picker" into a DatePicker element
-            $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
-        })
-</script>
 <script>
+    $(function () {
+        // This will make every element with the class "date-picker" into a DatePicker element
+        $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
+    })
 
     $(document).ready(function () {
         $('#btnLicense').click(function () {
@@ -718,8 +868,10 @@
             errorMessage(actionError);
         }
 
-        visibleGridUploadColume = true;
-        if (userRollTemplate > 1) {
+        if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
+            visibleGridUploadColume = true;
+        }
+        if (userRollTemplate == 2) {
             visibleGridColume = true;
         }
 
@@ -778,18 +930,6 @@
             }
         });
 
-        function showIndividualModal(data) {
-            $('#modalUpdateIndividual').off('click');
-            $('#modalUpdateIndividual').on('click', function() {
-                data.fullName = $('#newIndividualFullName').val();
-                data.passportNo = $('#newIndividualPassport').val();
-                $("#individualList").trigger('change');
-                $('#editIndividual').modal('hide');
-            });
-            $('#newIndividualFullName').val(data.fullName);
-            $('#newIndividualPassport').val(data.passportNo);
-            $('#editIndividual').modal('show');
-        }
 
         function individualFormating(state) {
             if (!state.isNew) {
@@ -1015,7 +1155,7 @@
 
     function bindDownload(attechmentID) {
         if (attechmentID > 0) {
-            window.location.href = "@Url.Action("Download", "PremiseApplication")" + "?attechmentID=" + attechmentID;
+            window.location.href = "@Url.Action("Download", "PremiseApplication")" + "?attechmentID=" + attechmentID + "&premiseId=" + @Model.PremiseApplicationID;
         }
     }
 
@@ -1060,9 +1200,7 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        if (userRollTemplate > 1) {
                             appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
-                        }
                         return appendstring
                     },
                     width: "7%",
@@ -1514,7 +1652,7 @@
         table = $("#tblComments").dataTable({
             "lengthChange": true,
             "searching": false,
-            "pageLength": 50,
+            "pageLength": 10,
             "processing": true,
             "serverSide": true,
             "responsive": true,
@@ -1598,7 +1736,7 @@
             "pageLength": 50,
             "processing": true,
             "serverSide": true,
-            "bPaginate": true,
+            "bPaginate": false,
             "bInfo": false,
             "orderMulti": false,
             "ajax": {
@@ -1625,7 +1763,7 @@
                 {
                     "title": "Nama Unit Teknikal/Jabatan Luar",
                     "orderable": false,
-                    "data": "Department"
+                    "data": "DepartmentDesc"
                 },
                 {
                     "title": "Keputusan",
@@ -1643,7 +1781,7 @@
                 {
                     "title": "Diulas oleh",
                     "orderable": false,
-                    "data": "Commentor"
+                    "data": "FullName"
                 },
                 { "title": "Tarikh", "data": "SubmittedDate", "width": "150px", render: renderDateTime },
             ]
@@ -1674,7 +1812,7 @@
             if($("#dept_"+dept_id).length == 0){
                 //console.log("--> "+$("#tblRouteDepartments tbody").children().length);
                 $("#tblRouteDepartments").append('<input type="hidden" value="'+ dept_id + '" id="dept_'+dept_id+'" name="DeptId[]"/>');
-                $("#tblRouteDepartments").append('<tr role="row" class="odd"><td class="sorting_1">'+ct+'</td><td>'+dept+'</td><td class=" action-icons"><a href="#"  onclick="del(this,\'dept_\');"  data-id="'+dept_id+'" class="del" title="Padam"><img src="/images/delete.png" alt="Delete"></a></td></tr>');
+                $("#tblRouteDepartments").append('<tr role="row" class="odd"><td>'+dept+'</td><td class=" action-icons"><a href="#"  onclick="del(this,\'dept_\');"  data-id="'+dept_id+'" class="del" title="Padam"><img src="/images/delete.png" alt="Delete"></a></td></tr>');
             }
 
 
@@ -1703,16 +1841,6 @@
                     data: data
                 },
                 "columns": [
-                    {
-                        "targets": 0,
-                        "searchable": false,
-                        "orderable": false,
-                        "title": "No.",
-                        "data": null,
-                        "render": function (data, type, full, meta) {
-                            return meta.settings._iDisplayStart + meta.row + 1;
-                        }
-                    },
                     { "title": "Nama Jabatan", "orderable": true, "data": "DepartmentDesc" },
                     {
                         "title": "Padam",
@@ -1791,6 +1919,7 @@
 
     function RoutePremiseApplication() {
         $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
+        $("#frmsaveRoute").submit();
         $("#frmPremiseApplication").submit();
         return false;
     }
@@ -1829,10 +1958,33 @@
         }
     }
 
+    function AddIndividual() {
+        $("#showAddIndividual").modal('show');
+    }
+
+    function addCompany() {
+        $("#showAddCompany").modal('show');
+    }
+
+    function SaveIndividual(){
+        $("frmsaveIndividual").submit();
+    }
+
+    function SaveCompany(){
+        $("frmsaveCompany").submit();
+    }
+
     function AddCatatan() {
         $("#showCatatan").modal('show');
     }
 
+    function addPremiseType() {
+        $("#showAddPremiseType").modal('show');
+    }
+
+    function savePremiseType(){
+        $("frmsavePremiseType").submit();
+    }
 </script>
 
 

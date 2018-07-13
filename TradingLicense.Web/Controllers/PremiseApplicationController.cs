@@ -72,16 +72,28 @@ namespace TradingLicense.Web.Controllers
                                 query = query.Where(q => q.UsersID == ProjectSession.UserID);
                             }
                             break;
+                        case (int)RollTemplate.DeskOfficer:
+                            {
+                                query = query.Where(q => q.AppStatusID <= 3);
+                            }
+                            break;
                         case (int)RollTemplate.RouteUnit:
                             if (string.IsNullOrEmpty(premiseApplicationId))
                             {
                                 var departmentID = ProjectSession.User?.DepartmentID;
                                 if (departmentID.HasValue)
                                 {
-                                    var paIDs = ctx.PADepSupps.Where(pa => pa.DepartmentID == departmentID.Value && string.IsNullOrEmpty(pa.SubmittedBy) && pa.IsActive)
-                                                                .Select(d => d.PremiseApplicationID).Distinct().ToList();
+                                    var paIDs = ctx.RouteUnits
+                                            .Where(pa => pa.DepartmentID == departmentID.Value && pa.ApplicationType == (int)Enums.ApplicationID.PremiseApplication && pa.Active)
+                                            .Select(d => d.ApplicationID).Distinct()
+                                            .ToList();
                                     query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);
                                 }
+                            }
+                            break;
+                        case (int)RollTemplate.CEO:
+                            {
+                                query = query.Where(q => q.AppStatusID == 8);
                             }
                             break;
                     }
@@ -263,22 +275,22 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult PremiseRouteComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? premiseApplicationID)
         {
-            List<PADepSuppModel> premiseRouteComments = new List<PADepSuppModel>();
+            List<RouteUnitModel> premiseRouteComments = new List<RouteUnitModel>();
             int totalRecord = 0;
             if (premiseApplicationID.HasValue)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    IQueryable<PADepSupp> query = ctx.PADepSupps
+                    IQueryable<RouteUnit> query = ctx.RouteUnits
                                                         .Include("Department")
-                                                        .Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+                                                        .Where(pac => pac.ApplicationID == premiseApplicationID.Value);
 
                     #region Sorting
                     // Sorting
                     var sortedColumns = requestModel.Columns.GetSortedColumns();
                     var orderByString = sortedColumns.GetOrderByString();
 
-                    var result = Mapper.Map<List<PADepSuppModel>>(query.ToList());
+                    var result = Mapper.Map<List<RouteUnitModel>>(query.ToList());
                     result = result.OrderBy(orderByString == string.Empty ? "SubmittedDate desc" : orderByString).ToList();
 
                     totalRecord = result.Count;
@@ -286,7 +298,7 @@ namespace TradingLicense.Web.Controllers
                     #endregion Sorting
 
                     // Paging
-                    result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    //result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
                     premiseRouteComments = result;
                 }
             }
@@ -306,7 +318,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var attechment = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == attechmentId);
-                var folder = Server.MapPath(ProjectConfiguration.AttachmentDocument);
+                var folder = Server.MapPath("~/Documents/Attachment/PremiseApplication/" + premiseId.ToString());
                 try
                 {
                     try
@@ -366,7 +378,7 @@ namespace TradingLicense.Web.Controllers
                         .ToList();
 
                     premiseApplicationModel.selectedbusinessCodeList = businessCodesList;
-                    premiseApplicationModel.HasPADepSupp = ctx.PADepSupps.Any(pa => pa.PremiseApplicationID == id.Value);
+                    premiseApplicationModel.HasPADepSupp = ctx.RouteUnits.Any(pa => pa.ApplicationID == id.Value);
 
                     var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
                     premiseApplicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
@@ -506,16 +518,15 @@ namespace TradingLicense.Web.Controllers
                 var departmentID = ProjectSession.User?.DepartmentID;
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var paDepSupp = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationID && pa.DepartmentID == departmentID && pa.IsActive).FirstOrDefault();
+                    var paDepSupp = ctx.RouteUnits.Where(pa => pa.ApplicationID == premiseApplicationID && pa.DepartmentID == departmentID && pa.Active).FirstOrDefault();
                     if (paDepSupp != null)
                     {
                         paDepSupp.IsSupported = supported == 1;
                         paDepSupp.Comment = comment;
-                        paDepSupp.UserId = ProjectSession.UserID;
-                        paDepSupp.SubmittedBy = ProjectSession.User?.FullName ?? ProjectSession.UserName;
+                        paDepSupp.UsersID = ProjectSession.UserID;                       
                         paDepSupp.SubmittedDate = DateTime.Now;
-                        paDepSupp.IsActive = false;
-                        ctx.PADepSupps.AddOrUpdate(paDepSupp);
+                        paDepSupp.Active = false;
+                        ctx.RouteUnits.AddOrUpdate(paDepSupp);
                         ctx.SaveChanges();
 
                         TempData["SuccessMessage"] = "Premise License Application draft saved successfully.";
@@ -524,7 +535,7 @@ namespace TradingLicense.Web.Controllers
                     {
                         TempData["ErrorMessage"] = paDepSupp == null ?
                             "Unable to Find Route unit request" :
-                            $"Other user: {paDepSupp.SubmittedBy} from your department already submitted response";
+                            $"Other user from your department already submitted response";
                     }
                 }
             }
@@ -886,11 +897,11 @@ namespace TradingLicense.Web.Controllers
                         paModel.AmountDue = duePayment.AmountDue;
                     }
                     PaymentsService.AddPaymentReceived(paModel, ctx, individualID, ProjectSession.User?.FullName ?? ProjectSession.UserName);
-                    if (pa.Mode == 0)
+                    if (pa.Mode != 1)
                     {
-                        pa.LicenseStatus = "Lulus Bersyarat";
+                        pa.AppStatusID = (int)PAStausenum.Paid;
                     }
-                    pa.AppStatusID = (int)PAStausenum.LicenseGenerated;
+                    pa.TotalFee = duePayment.AmountDue;
                     pa.DatePaid = DateTime.Now;
                     ctx.PremiseApplications.AddOrUpdate(pa);
                     ctx.SaveChanges();
@@ -953,7 +964,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     premiseApplication.AppStatusID = finalStatus;
                 }
-                premiseApplication.DateSubmitted = DateTime.Now;
+                
                 if (premiseApplicationModel.AppStatusID <= (int)Enums.PAStausenum.draftcreated && premiseApplicationModel.Mode == 1 || premiseApplicationModel.AppStatusID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions && premiseApplicationModel.Mode > 1)
                 {
                 premiseApplication.DateApproved = DateTime.Now;
@@ -979,6 +990,7 @@ namespace TradingLicense.Web.Controllers
                 int premiseApplicationId = premiseApplication.PremiseApplicationID;
                 if (premiseApplicationModel.PremiseApplicationID == 0)
                 {
+                    premiseApplication.DateSubmitted = DateTime.Now;
                     premiseApplicationModel.PremiseApplicationID = premiseApplicationId;
                     premiseApplication.ReferenceNo = PremiseApplicationModel.GetReferenceNo(premiseApplicationId, premiseApplication.DateSubmitted);
                     ctx.PremiseApplications.AddOrUpdate(premiseApplication);
@@ -1196,58 +1208,45 @@ namespace TradingLicense.Web.Controllers
             {
                 switch (roleTemplate)
                 {
-                    case (int)RollTemplate.DeskOfficer:
-                        finalStatus = PAStausenum.submittedtoclerk;
-                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
-                        {
-                            if (premiseApplicationModel.SubmitType == OnSubmit)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationApproved;
-                            }
-                            else if (premiseApplicationModel.SubmitType == OnRejected)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
-                            }
-                        }
+                    case (int)RollTemplate.DeskOfficer:                                                    
+                        finalStatus = PAStausenum.submittedtoclerk;                                                        
                         break;
                     case (int)RollTemplate.Clerk:
-                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
-                        {
-                            if (premiseApplicationModel.SubmitType == OnSubmit)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationApproved;
-                            }
-                            else if (premiseApplicationModel.SubmitType == OnRejected)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
-                            }
-                        }
-                        else if (premiseApplicationModel.SubmitType == OnRouteSubmit)
-                        {
-                            RouteApplication(premiseApplicationModel, ctx);
-                            finalStatus = PAStausenum.unitroute;
-                        }
-                        else if (premiseApplicationModel.SubmitType == OnSubmit)
-                        {
-                            finalStatus = PAStausenum.directorcheck;
-                        }
-                        break;
-                    case (int)RollTemplate.Director:
-                        if (premiseApplicationModel.AppStatusID == (int)PAStausenum.meeting)
-                        {
-                            if (premiseApplicationModel.SubmitType == OnSubmit)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationApproved;
-                            }
-                            else if (premiseApplicationModel.SubmitType == OnRejected)
-                            {
-                                finalStatus = PAStausenum.LetterofnotificationRejected;
-                            }
-                        }
-                        else if (premiseApplicationModel.SubmitType == OnSubmit)
+                        if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
                             switch (premiseApplicationModel.Mode)
                             {
+                                case 1:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                                case 2:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                                case 4:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                            }
+                        }
+                        else if (premiseApplicationModel.SubmitType == OnRejected)
+                        {                            
+                            finalStatus = PAStausenum.documentIncomplete;                                  
+                        }
+                        else
+                        {
+                            finalStatus = PAStausenum.unitroute;
+                        }
+                        break;
+                    case (int)RollTemplate.Director:
+                        if (premiseApplicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (premiseApplicationModel.Mode)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.CEOcheck;
+                                    break;
                                 case 2:
                                     finalStatus = PAStausenum.LetterofnotificationApproved;
                                     break;
@@ -1261,17 +1260,47 @@ namespace TradingLicense.Web.Controllers
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = PAStausenum.LetterofnotificationRejected;
+                            switch (premiseApplicationModel.Mode)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                                case 2:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                                case 4:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                            }
                         }
                         break;
                     case (int)RollTemplate.CEO:
                         if (premiseApplicationModel.SubmitType == OnSubmit)
                         {
-                            finalStatus = PAStausenum.LetterofnotificationApproved;
+                            switch (premiseApplicationModel.Mode)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.Complete;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
+                                    break;
+                            }
                         }
                         else if (premiseApplicationModel.SubmitType == OnRejected)
                         {
-                            finalStatus = PAStausenum.LetterofnotificationRejected;
+                            switch (premiseApplicationModel.Mode)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.LetterofnotificationRejected;
+                                    break;
+                            }
                         }
                         break;
                 }
@@ -1315,41 +1344,35 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save Departments data linked to Selected BusinessCode in PADepSupp table
-        private bool RouteApplication(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
+        #region Save Route Departments to PADepSupp table
+        /// <summary>
+        /// Add Departments to Route
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddRoute(int id, int appID, string appType, int []DeptId, string comment)
         {
-            if (!string.IsNullOrWhiteSpace(premiseApplicationModel.BusinessCodeids))
+            using (var ctx = new LicenseApplicationContext())
             {
-                var businessCodelist = premiseApplicationModel.BusinessCodeids.ToIntList();
-                var departmentIds = ctx.BCLinkDeps.Where(bc => businessCodelist.Contains(bc.BusinessCodeID)).Select(bc => bc.DepartmentID).Distinct().ToList();
-
-                var oldPADepSupps = ctx.PADepSupps.Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID && pa.IsActive).ToList();
-                if (oldPADepSupps != null && oldPADepSupps.Count > 0)
+                int i = 0; 
+                foreach (var item in DeptId)
                 {
-                    foreach (var oldDepSupp in oldPADepSupps)
-                    {
-                        oldDepSupp.IsActive = false;
-                        ctx.PADepSupps.AddOrUpdate(oldDepSupp);
-                    }
+                    
+                    RouteUnit pad = new RouteUnit();
+                    pad.ApplicationType = appID;
+                    pad.ApplicationID = id;
+                    pad.DepartmentID = DeptId[i];
+                    pad.IsSupported = false;
+                    ctx.RouteUnits.Add(pad);
+                    i++;
                 }
-
-                foreach (var depId in departmentIds)
-                {
-                    var paDepSupp = new PADepSupp();
-                    paDepSupp.DepartmentID = depId;
-                    paDepSupp.PremiseApplicationID = premiseApplicationModel.PremiseApplicationID;
-                    paDepSupp.IsActive = true;
-                    ctx.PADepSupps.Add(paDepSupp);
-                }
-
                 ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Routing ke unit berjaya ditambah.";
+
             }
-            else
-            {
-                TempData["ErrorMessage"] = "No Business codes attached to this application unable to route";
-                return false;
-            }
-            return true;
+
+            return Redirect(Url.Action("Manage" + appType, appType) + "?id=" + id);
         }
         #endregion
 

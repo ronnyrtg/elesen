@@ -38,9 +38,6 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string WhichFloor { get; set; }
         public int PremiseTypeID { get; set; }
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
-        public string OtherPremiseType { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string UpdatedBy { get; set; }

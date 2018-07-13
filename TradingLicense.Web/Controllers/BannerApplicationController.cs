@@ -1042,7 +1042,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var attechment = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == attechmentId);
-                var folder = Server.MapPath("~/Documents/Attachment/BannerApplication/" + attechmentId.ToString());
+                var folder = Server.MapPath("~/Documents/Attachment/BannerApplication/" + bannerId.ToString());
                 try
                 {
                     try

@@ -4,33 +4,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class PADepSupp
+    public class RouteUnit
     {
         [Key]
-        public int PADepSuppID { get; set; }
-        public int PremiseApplicationID { get; set; }
+        public int RouteUnitID { get; set; }
+        public int ApplicationType { get; set; }
+        public int ApplicationID { get; set; }
         public int DepartmentID { get; set; }
         public bool IsSupported { get; set; }
-        public int UserId { get; set; }
-        [StringLength(50)]
-        [Column(TypeName = "VARCHAR2")]
-        public string SubmittedBy { get; set; }
-
+        public int? UsersID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string Comment { get; set; }
         public DateTime? SubmittedDate { get; set; }
-        public bool IsActive { get; set; }
-
-        public int Commentor
+        public bool Active { get; set; }
+        public RouteUnit()
         {
-            get
-            {
-                return UserId;
-            }
+            Active = true;
         }
 
-        public virtual PremiseApplication PremiseApplication { get; set; }
         public virtual Users Users { get; set; }
         public virtual Department Department { get; set; }
     }

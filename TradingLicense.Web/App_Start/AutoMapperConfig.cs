@@ -37,6 +37,9 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BTLinkReqDocModel, BTLinkReqDoc>();
                 cfg.CreateMap<Individual, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.Attachment.FileName));
                 cfg.CreateMap<IndividualModel, Individual>().ForMember(dest => dest.Attachment, options => options.Ignore());
+                cfg.CreateMap<RouteUnit, RouteUnitModel>()
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Users.FullName))
+                            .ForMember(dest => dest.DepartmentDesc, opt => opt.MapFrom(s => $"{s.Department.DepartmentDesc} ({ s.Department.DepartmentCode})"));
 
                 //PremiseApplication related
                 cfg.CreateMap<BusinessCode, BusinessCodeModel>().ForMember(dest =>dest.SectorDesc,opt =>opt.MapFrom(s =>s.Sector.SectorDesc));
@@ -52,9 +55,6 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.Company.CompanyName))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PremiseType.PremiseDesc));
                 cfg.CreateMap<PAComment, PACommentModel>().ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.Users.FullName));
-                cfg.CreateMap<PADepSupp, PADepSuppModel>()
-                            .ForMember(dest => dest.Commentor, opt => opt.MapFrom(s => s.UserId))
-                            .ForMember(dest => dest.Department, opt => opt.MapFrom(s => $"{s.Department.DepartmentDesc} ({ s.Department.DepartmentCode})"));
                 cfg.CreateMap<PaymentReceivedModel, PaymentReceived>().ForMember(dest => dest.Individual, opt => opt.Ignore());
 
                 //Banner application related               

@@ -28,7 +28,6 @@ namespace TradingLicense.Model
         public DateTime StopRent { get; set; }
         public string WhichFloor { get; set; }       
         public int PremiseTypeID { get; set; }
-        public string OtherPremiseType { get; set; }
         [Required(ErrorMessage = "Sila masukkan luas premis dalam meter persegi")]
         public float PremiseArea { get; set; }
         public float? TotalFee { get; set; }
@@ -79,7 +78,7 @@ namespace TradingLicense.Model
 
         public static string GetReferenceNo(int premiseApplicationId, DateTime submittedDateTime)
         {
-            return $"{submittedDateTime.Year}/PA/{premiseApplicationId.ToString().PadLeft(6, '0')}";
+            return $"{submittedDateTime.Year}/PA/NEW/{premiseApplicationId.ToString().PadLeft(6, '0')}";
         }
 
         public override string ToString()
