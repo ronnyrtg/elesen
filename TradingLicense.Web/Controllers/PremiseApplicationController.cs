@@ -236,20 +236,20 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult PremiseComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? premiseApplicationID)
         {
-            List<PACommentModel> premiseComments = new List<PACommentModel>();
+            List<CommentModel> premiseComments = new List<CommentModel>();
             int totalRecord = 0;
             if (premiseApplicationID.HasValue)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    IQueryable<PAComment> query = ctx.PAComments.Include("Users").Where(pac => pac.PremiseApplicationID == premiseApplicationID.Value);
+                    IQueryable<Comment> query = ctx.Comments.Include("Users").Where(pac => pac.ApplicationID == premiseApplicationID.Value);
 
                     #region Sorting
                     // Sorting
                     var sortedColumns = requestModel.Columns.GetSortedColumns();
                     var orderByString = sortedColumns.GetOrderByString();
 
-                    var result = Mapper.Map<List<PACommentModel>>(query.ToList());
+                    var result = Mapper.Map<List<CommentModel>>(query.ToList());
                     result = result.OrderBy(orderByString == string.Empty ? "CommentDate desc" : orderByString).ToList();
 
                     totalRecord = result.Count;
@@ -1185,12 +1185,12 @@ namespace TradingLicense.Web.Controllers
 
                 if (!string.IsNullOrWhiteSpace(premiseApplicationModel.newComment))
                 {
-                    PAComment comment = new PAComment();
-                    comment.Comment = premiseApplicationModel.newComment;
+                    Comment comment = new Comment();
+                    comment.Content = premiseApplicationModel.newComment;
                     comment.CommentDate = DateTime.Now;
-                    comment.PremiseApplicationID = premiseApplicationId;
+                    comment.ApplicationID = premiseApplicationId;
                     comment.UsersID = ProjectSession.UserID;
-                    ctx.PAComments.Add(comment);
+                    ctx.Comments.Add(comment);
                     ctx.SaveChanges();
                 }
                 
@@ -1630,12 +1630,12 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             cnt = 1;
                             
-                            foreach (var item4 in ctx.PAComments.Where(x => x.PremiseApplicationID == appId))
+                            foreach (var item4 in ctx.Comments.Where(x => x.ApplicationID == appId))
                             {
                                 {
-                                    if (item4.Comment != null)
+                                    if (item4.Content != null)
                                     {
-                                        string itm = cnt.ToString() + ") " + item4.Comment;
+                                        string itm = cnt.ToString() + ") " + item4.Content;
                                         XTextFormatter tf = new XTextFormatter(graph);
                                         XRect rect = new XRect(300, lineheight, 290, 50);
                                         graph.DrawRectangle(XBrushes.White, rect);
@@ -2310,15 +2310,15 @@ namespace TradingLicense.Web.Controllers
 
                     if (premiseApplicationId > 0 && usersId > 0 && userroleTemplate > 0)
                     {
-                        PAComment paComment = new PAComment();
-                        paComment.Comment = comment;
-                        paComment.PremiseApplicationID = premiseApplicationId;
+                        Comment paComment = new Comment();
+                        paComment.Content = comment;
+                        paComment.ApplicationID = premiseApplicationId;
                         paComment.UsersID = usersId;
                         paComment.CommentDate = DateTime.Now;
-                        ctx.PAComments.AddOrUpdate(paComment);
+                        ctx.Comments.AddOrUpdate(paComment);
                         ctx.SaveChanges();
 
-                        if (paComment.PACommentID > 0)
+                        if (paComment.CommentID > 0)
                         {
                             var premiseApplication = ctx.PremiseApplications.FirstOrDefault(p => p.PremiseApplicationID == premiseApplicationId);
                             var paLinkBc = ctx.PALinkBC.Where(t => t.PremiseApplicationID == premiseApplicationId).ToList();
@@ -2407,7 +2407,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var paComment = new PAComment() { PACommentID = id };
+                var paComment = new Comment() { CommentID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(paComment).State = System.Data.Entity.EntityState.Deleted;

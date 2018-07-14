@@ -407,20 +407,20 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult BannerComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? bannerApplicationID)
         {
-            List<BACommentModel> bannerComments = new List<BACommentModel>();
+            List<CommentModel> bannerComments = new List<CommentModel>();
             int totalRecord = 0;
             if (bannerApplicationID.HasValue)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    IQueryable<BAComment> query = ctx.BAComments.Include("Users").Where(pac => pac.BannerApplicationID == bannerApplicationID.Value);
+                    IQueryable<Comment> query = ctx.Comments.Include("Users").Where(pac => pac.ApplicationID == bannerApplicationID.Value);
 
                     #region Sorting
                     // Sorting
                     var sortedColumns = requestModel.Columns.GetSortedColumns();
                     var orderByString = sortedColumns.GetOrderByString();
 
-                    var result = Mapper.Map<List<BACommentModel>>(query.ToList());
+                    var result = Mapper.Map<List<CommentModel>>(query.ToList());
                     result = result.OrderBy(orderByString == string.Empty ? "CommentDate desc" : orderByString).ToList();
 
                     totalRecord = result.Count;
@@ -792,12 +792,12 @@ namespace TradingLicense.Web.Controllers
             
             if (bannerApplicationModel.newComment != null)
                 {
-                    BAComment comment = new BAComment();
-                    comment.Comment = bannerApplicationModel.newComment;
+                    Comment comment = new Comment();
+                    comment.Content = bannerApplicationModel.newComment;
                     comment.CommentDate = DateTime.Now;
-                    comment.BannerApplicationID = bannerApplicationId;
+                    comment.ApplicationID = bannerApplicationId;
                     comment.UsersID = ProjectSession.UserID;
-                    ctx.BAComments.Add(comment);
+                    ctx.Comments.Add(comment);
                     ctx.SaveChanges();
                 }
             
@@ -1437,11 +1437,11 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             cnt = 1;
 
-                            foreach (var item5 in ctx.BAComments.Where(x => x.BannerApplicationID == appId))
+                            foreach (var item5 in ctx.Comments.Where(x => x.ApplicationID == appId))
                             {                                
-                                    if (item5.Comment != null)
+                                    if (item5.Content != null)
                                     {
-                                        string itm = cnt.ToString() + ") " + item5.Comment;
+                                        string itm = cnt.ToString() + ") " + item5.Content;
                                         XTextFormatter tf = new XTextFormatter(graph);
                                         XRect rect = new XRect(300, lineheight, 290, 50);
                                         graph.DrawRectangle(XBrushes.White, rect);
@@ -1831,9 +1831,9 @@ namespace TradingLicense.Web.Controllers
                             //graph.DrawLine(lineRed1, pt13, pt14);
                             graph.DrawString("tertakluk kepada syarat-syarat berikut:", nfont, XBrushes.Black, new XRect(335, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             cnt = 1;
-                            foreach (var item3 in ctx.BAComments.Where(x=> x.BannerApplicationID ==item.BannerApplicationID ) )
+                            foreach (var item3 in ctx.Comments.Where(x=> x.ApplicationID ==item.BannerApplicationID ) )
                             {
-                                if(item3.Comment != null)
+                                if(item3.Content != null)
                                 {
                                     if(lineheight >= 785)
                                     {
@@ -1842,7 +1842,7 @@ namespace TradingLicense.Web.Controllers
                                         graph = XGraphics.FromPdfPage(pdfPage);
                                     }
                                     lineheight = lineheight + 25;
-                                    graph.DrawString(("(" + cnt.ToString() + ") ") + item3.Comment, nfont, XBrushes.Black, new XRect(27, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    graph.DrawString(("(" + cnt.ToString() + ") ") + item3.Content, nfont, XBrushes.Black, new XRect(27, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                     pt13 = new System.Drawing.Point(43, lineheight + 13);
                                     pt14 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width)-30, lineheight + 13);
                                     graph.DrawLine(lineRed1, pt13, pt14);

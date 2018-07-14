@@ -37,7 +37,7 @@ namespace TradingLicense.Data
         public DbSet<PALinkAddDoc> PALinkAddDocs { get; set; }
         public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
         public DbSet<PALinkReqDoc> PALinkReqDoc { get; set; }
-        public DbSet<PAComment> PAComments { get; set; }
+        
         
 
         //Hawker Application
@@ -45,7 +45,7 @@ namespace TradingLicense.Data
         public DbSet<HawkerCode> HawkerCodes { get; set; }
         public DbSet<HAReqDoc> HAReqDocs { get; set; }
         public DbSet<HALinkReqDoc> HALinkReqDoc { get; set; }
-        public DbSet<HAComment> HAComments { get; set; }
+ 
 
         //Stall Application
         public DbSet<StallApplication> StallApplications { get; set; }
@@ -62,12 +62,12 @@ namespace TradingLicense.Data
         public DbSet<EALinkEC> EALinkEC { get; set; }
         public DbSet<EALinkInd> EALinkInds { get; set; }
         public DbSet<ECLinkDep> ECLinkDeps { get; set; }
-        public DbSet<EAComment> EAComments { get; set; }
+
 
         //Liquor Application
         public DbSet<LiquorApplication> LiquorApplications { get; set; }
         public DbSet<LiquorCode> LiquorCodes { get; set; }
-        public DbSet<LAComment> LAComments { get; set; }
+
 
         //Banner Application
         public DbSet<BannerApplication> BannerApplications { get; set; }
@@ -75,7 +75,7 @@ namespace TradingLicense.Data
         public DbSet<BannerObject> BannerObjects { get; set; }
         public DbSet<BAReqDoc> BAReqDocs { get; set; }
         public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
-        public DbSet<BAComment> BAComments { get; set; }
+
 
         //Money Lender Application
         public DbSet<MLPremiseApplication> MLPremiseApplications { get; set; }
@@ -90,6 +90,7 @@ namespace TradingLicense.Data
         public DbSet<PaymentDue> PaymentDues { get; set; }
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
         public DbSet<RouteUnit> RouteUnits { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
 
         //User related

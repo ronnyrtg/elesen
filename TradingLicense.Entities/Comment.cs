@@ -4,22 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class EAComment
+    public class Comment
     {
         [Key]
-        public int EACommentID { get; set; }
-
-        public int EntmtApplicationID { get; set; }
-
+        public int CommentID { get; set; }
+        public int ApplicationType { get; set; }
+        public int ApplicationID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string Comment { get; set; }
-
+        public string Content { get; set; }
         public int UsersID { get; set; }
-
         public DateTime CommentDate { get; set; }
-
-        public virtual EntmtApplication EntmtApplication { get; set; }
 
         public virtual Users Users { get; set; }
     }
