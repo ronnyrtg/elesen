@@ -25,6 +25,9 @@ namespace TradingLicense.Data
         public DbSet<Road> Roads { get; set; }
         public DbSet<Race> Races { get; set; }
 
+        //Combined Applications
+        public DbSet<APPLICATION> Applications { get; set; }
+
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
         public DbSet<PremiseType> PremiseTypes { get; set; }
@@ -91,6 +94,7 @@ namespace TradingLicense.Data
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
         public DbSet<RouteUnit> RouteUnits { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Address> Address { get; set; }
 
 
         //User related

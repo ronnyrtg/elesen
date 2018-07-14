@@ -182,7 +182,7 @@
             Administrator = 8,
         }
 
-        public enum ApplicationID
+        public enum ApplicationTypeID
         {
             /// <summary>
             /// for PremiseApplication
@@ -218,6 +218,11 @@
             /// for EntertainmentApplication
             /// </summary>
             EntmtApplication = 7,
+
+            /// <summary>
+            /// for Combined Application
+            /// </summary>
+            Application = 8,
         }
 
         public enum Mode

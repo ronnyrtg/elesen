@@ -188,6 +188,7 @@
     <Compile Include="Classes\BaseController.cs" />
     <Compile Include="Classes\TradingLicenseCommon.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApplicationController.cs" />
     <Compile Include="Controllers\BannerApplicationController.cs" />
     <Compile Include="Controllers\EntmtApplicationController.cs" />
     <Compile Include="Controllers\HawkerApplicationController.cs" />
@@ -556,6 +557,8 @@
     <Content Include="Views\LiquorApplication\ManageLAReqDoc.cshtml" />
     <Content Include="Views\LiquorApplication\LiquorApplication.cshtml" />
     <Content Include="Views\LiquorApplication\LAReqDoc.cshtml" />
+    <Content Include="Views\Application\Application.cshtml" />
+    <Content Include="Views\Application\ManageApplication.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

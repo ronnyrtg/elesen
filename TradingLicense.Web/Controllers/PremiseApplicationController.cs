@@ -84,7 +84,7 @@ namespace TradingLicense.Web.Controllers
                                 if (departmentID.HasValue)
                                 {
                                     var paIDs = ctx.RouteUnits
-                                            .Where(pa => pa.DepartmentID == departmentID.Value && pa.ApplicationType == (int)Enums.ApplicationID.PremiseApplication && pa.Active)
+                                            .Where(pa => pa.DepartmentID == departmentID.Value && pa.ApplicationType == (int)Enums.ApplicationTypeID.PremiseApplication && pa.Active)
                                             .Select(d => d.ApplicationID).Distinct()
                                             .ToList();
                                     query = query.Where(q => paIDs.Contains(q.PremiseApplicationID) && q.AppStatusID == 5);

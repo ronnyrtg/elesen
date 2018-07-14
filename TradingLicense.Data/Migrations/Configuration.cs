@@ -29,9 +29,6 @@ namespace TradingLicense.Data.Migrations
                 new Sector {SectorID=4,SectorDesc="Bengkel"},
                 new Sector {SectorID=5,SectorDesc="Pertanian/Penternakan"},
                 new Sector {SectorID=6,SectorDesc="Lain-lain"},
-                new Sector {SectorID=7,SectorDesc="Petempatan Makanan"},
-                new Sector {SectorID=8,SectorDesc="Hotel dan Rumah Tumpangan"},
-                new Sector {SectorID=9,SectorDesc="Pengurusan Skrap"},
             };
             sector.ForEach(s => context.Sectors.Add(s));
             context.SaveChanges();
@@ -210,16 +207,6 @@ namespace TradingLicense.Data.Migrations
                 new BusinessCode {CodeNumber="E005",SectorID=5,CodeDesc="Kolam pancing",DefaultRate=1.5f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
                 new BusinessCode {CodeNumber="E006",SectorID=5,CodeDesc="Semaian tumbuhan",DefaultRate=1.5f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
                 new BusinessCode {CodeNumber="F001",SectorID=6,CodeDesc="Mana-mana aktiviti perniagaan yang tidak termasuk dalam Jadual",DefaultRate=1.5f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="G001",SectorID=7,CodeDesc="Restoran/kedai makan/gerai makan/kios makanan",DefaultRate=10.0f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="G002",SectorID=7,CodeDesc="Menjual makanan/minuman (tanpa tempat makan)",DefaultRate=10.0f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="G003",SectorID=7,CodeDesc="Katering makanan",DefaultRate=10.0f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="G004",SectorID=7,CodeDesc="Kantin sekolah",DefaultRate=10.0f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="G005",SectorID=7,CodeDesc="Kantin pejabat",DefaultRate=10.0f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="H001",SectorID=8,CodeDesc="Hotel (Kelas Pertama)",DefaultRate=0.0f,BaseFee=150.0f,Period=2,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="H002",SectorID=8,CodeDesc="Hotel (Kelas Kedua)",DefaultRate=0.0f,BaseFee=100.0f,Period=2,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="H003",SectorID=8,CodeDesc="Hotel (Kelas Ketiga)",DefaultRate=0.0f,BaseFee=30.0f,Period=2,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="H004",SectorID=8,CodeDesc="Lodging House/Rumah Tumpangan",DefaultRate=0.0f,BaseFee=30.0f,Period=2,PeriodQuantity=1},
-                new BusinessCode {CodeNumber="I001",SectorID=9,CodeDesc="Pengurusan Skrap/Dealing in Scrap",DefaultRate=0.0f,BaseFee=25.0f,Period=2,PeriodQuantity=3},
             };
             businesscode.ForEach(s => context.BusinessCodes.Add(s));
             context.SaveChanges();
@@ -412,6 +399,15 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=6,ScreenId=13},
                 new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
                 new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
+
+                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=1,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=2,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=3,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=4,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=5,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=6,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
             };
             accesspages.ForEach(s => context.AccessPages.Add(s));
             context.SaveChanges();
