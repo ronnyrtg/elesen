@@ -189,18 +189,12 @@
     <Compile Include="Classes\TradingLicenseCommon.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ApplicationController.cs" />
-    <Compile Include="Controllers\BannerApplicationController.cs" />
-    <Compile Include="Controllers\EntmtApplicationController.cs" />
-    <Compile Include="Controllers\HawkerApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LiquorApplicationController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
-    <Compile Include="Controllers\MoneyLenderApplicationController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PremiseApplicationController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
-    <Compile Include="Controllers\StallApplicationController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

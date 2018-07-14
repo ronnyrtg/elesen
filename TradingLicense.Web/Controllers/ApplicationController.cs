@@ -196,5 +196,39 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Required Doc List Datatable
+        /// <summary>
+        /// Get Required Document Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="businessTypeId">The business type identifier.</param>
+        /// <param name="ApplicationId">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessTypeId)
+        {
+            List<BT_L_RDModel> requiredDocument;
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BT_L_RD> query = ctx.BT_L_RD.Where(p => p.BT_ID.ToString().Contains(businessTypeId));
+
+                #region Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                string orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<BT_L_RDModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BT_L_RDID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                requiredDocument = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
     }
 }

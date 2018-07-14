@@ -43,48 +43,17 @@ namespace TradingLicense.Data
         
         
 
-        //Hawker Application
-        public DbSet<HawkerApplication> HawkerApplications { get; set; }
-        public DbSet<HawkerCode> HawkerCodes { get; set; }
-        public DbSet<HAReqDoc> HAReqDocs { get; set; }
-        public DbSet<HALinkReqDoc> HALinkReqDoc { get; set; }
- 
-
-        //Stall Application
-        public DbSet<StallApplication> StallApplications { get; set; }
-        public DbSet<StallCode> StallCodes { get; set; }
-        public DbSet<SAReqDoc> SAReqDocs { get; set; }
-        public DbSet<SALinkReqDoc> LAReqDocs { get; set; }
-
-        //Entertainment Application
-        public DbSet<EntmtApplication> EntmtApplications { get; set; }
+        
+        public DbSet<HawkerCode> HawkerCodes { get; set; }        
+        public DbSet<StallCode> StallCodes { get; set; }        
         public DbSet<EntmtGroup> EntmtGroups { get; set; }
         public DbSet<EntmtObject> EntmtObjects { get; set; }
         public DbSet<EntmtCode> EntmtCodes { get; set; }
-        public DbSet<EALinkReqDoc> EALinkReqDocs { get; set; }
-        public DbSet<EALinkEC> EALinkEC { get; set; }
-        public DbSet<EALinkInd> EALinkInds { get; set; }
-        public DbSet<ECLinkDep> ECLinkDeps { get; set; }
-
-
-        //Liquor Application
-        public DbSet<LiquorApplication> LiquorApplications { get; set; }
         public DbSet<LiquorCode> LiquorCodes { get; set; }
-
-
-        //Banner Application
-        public DbSet<BannerApplication> BannerApplications { get; set; }
         public DbSet<BannerCode> BannerCodes { get; set; }
         public DbSet<BannerObject> BannerObjects { get; set; }
-        public DbSet<BAReqDoc> BAReqDocs { get; set; }
-        public DbSet<BALinkReqDoc> BALinkReqDocs { get; set; }
-
-
-        //Money Lender Application
-        public DbSet<MLPremiseApplication> MLPremiseApplications { get; set; }
         public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
-        public DbSet<MLLinkInd> MLLinkInds { get; set; }
-        public DbSet<MLLinkReqDoc> MLLinkReqDocs { get; set; }
+        
 
         //Common fields for all applications
         public DbSet<BusinessType> BusinessTypes { get; set; }
@@ -94,7 +63,10 @@ namespace TradingLicense.Data
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
         public DbSet<RouteUnit> RouteUnits { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<Address> Address { get; set; }
+        public DbSet<ADDRESS> ADDRESS { get; set; }
+        public DbSet<BT> BT { get; set; }
+        public DbSet<RD> RD { get; set; }
+        public DbSet<BT_L_RD> BT_L_RD { get; set; }
 
 
         //User related

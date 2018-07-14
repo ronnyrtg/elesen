@@ -106,7 +106,7 @@
                 <div class="col-lg-3 col-md-6" id="approvalType" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>                       
-                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control", onchange = "hideLetterDropDown()" })
+                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.MODE)
                     </div>
                 </div>
@@ -1249,7 +1249,7 @@
         }
 
         function businessTypeChange() {
-            if ($("#BusinessTypeID").val() > 0) {
+            if ($("#BUSINESSTYPEID").val() > 0) {
                 bindTable();
             }
             checkButtonState();

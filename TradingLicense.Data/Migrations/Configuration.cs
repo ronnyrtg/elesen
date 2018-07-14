@@ -400,14 +400,14 @@ namespace TradingLicense.Data.Migrations
                 new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
                 new AccessPage {PageDesc="PremiseApplication",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
 
-                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=1,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=2,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=3,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=4,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=5,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=6,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=7,ScreenId=13},
-                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=8,ScreenId=13},
+                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=1,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=2,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=3,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=4,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=1,RoleTemplateID=5,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=6,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=7,ScreenId=14},
+                new AccessPage {PageDesc="Application",CrudLevel=4,RoleTemplateID=8,ScreenId=14},
             };
             accesspages.ForEach(s => context.AccessPages.Add(s));
             context.SaveChanges();
@@ -825,44 +825,9 @@ namespace TradingLicense.Data.Migrations
             bclinkads.ForEach(s => context.BCLinkAD.Add(s));
             context.SaveChanges();
 
-            var bclinkdeps = new List<BCLinkDep>
-            {
-                new BCLinkDep {BusinessCodeID=132,DepartmentID=5},
-                new BCLinkDep {BusinessCodeID=1,DepartmentID=3},
-                new BCLinkDep {BusinessCodeID=1,DepartmentID=4},
-                new BCLinkDep {BusinessCodeID=1,DepartmentID=5},
-                new BCLinkDep {BusinessCodeID=2,DepartmentID=3},
-                new BCLinkDep {BusinessCodeID=2,DepartmentID=4},
-            };
-            bclinkdeps.ForEach(s => context.BCLinkDeps.Add(s));
-            context.SaveChanges();
+            
 
-            var hareqdocs = new List<HAReqDoc>
-            {
-                new HAReqDoc {RequiredDocID=1},
-                new HAReqDoc {RequiredDocID=2},
-                new HAReqDoc {RequiredDocID=3},
-            };
-            hareqdocs.ForEach(s => context.HAReqDocs.Add(s));
-            context.SaveChanges();
-
-            var bareqdocs = new List<BAReqDoc>
-            {
-                new BAReqDoc {RequiredDocID=1},
-                new BAReqDoc {RequiredDocID=2},
-                new BAReqDoc {RequiredDocID=3},
-            };
-            bareqdocs.ForEach(s => context.BAReqDocs.Add(s));
-            context.SaveChanges();
-
-            var sareqdocs = new List<SAReqDoc>
-            {
-                new SAReqDoc {RequiredDocID=1},
-                new SAReqDoc {RequiredDocID=2},
-                new SAReqDoc {RequiredDocID=3},
-            };
-            sareqdocs.ForEach(s => context.SAReqDocs.Add(s));
-            context.SaveChanges();
+            
         }
     }
 }

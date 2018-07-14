@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Address
+    public class ADDRESS
     {
         [Key]
         public int ADDRESS_ID { get; set; }
