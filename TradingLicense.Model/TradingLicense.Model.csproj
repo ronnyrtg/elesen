@@ -57,8 +57,11 @@
     <Compile Include="AdditionalDocModel.cs" />
     <Compile Include="AddressModel.cs" />
     <Compile Include="ApplicationModel.cs" />
+    <Compile Include="BCModel.cs" />
     <Compile Include="BTModel.cs" />
     <Compile Include="BT_L_RDModel.cs" />
+    <Compile Include="LIC_TYPEModel.cs" />
+    <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="MLPermitApplicationModel.cs" />
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="BannerObjectModel.cs" />
@@ -69,9 +72,8 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
-    <Compile Include="EntmtCodeModel.cs" />
-    <Compile Include="EntmtGroupModel.cs" />
-    <Compile Include="HawkerCodeModel.cs" />
+    <Compile Include="E_CODEModel.cs" />
+    <Compile Include="E_GROUPModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="IndLinkAttModel.cs" />
     <Compile Include="IndLinkComModel.cs" />
@@ -80,8 +82,6 @@
     <Compile Include="LoginModel.cs" />
     <Compile Include="HolidayModel.cs" />
     <Compile Include="AppStatusModel.cs" />
-    <Compile Include="BannerCodeModel.cs" />
-    <Compile Include="LiquorCodeModel.cs" />
     <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="CommentModel.cs" />
     <Compile Include="RDModel.cs" />
@@ -100,7 +100,6 @@
     <Compile Include="RoadModel.cs" />
     <Compile Include="RoleTemplateModel.cs" />
     <Compile Include="SectorModel.cs" />
-    <Compile Include="StallCodeModel.cs" />
     <Compile Include="UsersModel.cs" />
     <Compile Include="ZoneModel.cs" />
   </ItemGroup>

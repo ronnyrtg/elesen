@@ -553,6 +553,10 @@
     <Content Include="Views\LiquorApplication\LAReqDoc.cshtml" />
     <Content Include="Views\Application\Application.cshtml" />
     <Content Include="Views\Application\ManageApplication.cshtml" />
+    <Content Include="Views\Application\BC.cshtml" />
+    <Content Include="Views\Application\ManageBC.cshtml" />
+    <Content Include="Views\Master\LIC_TYPE.cshtml" />
+    <Content Include="Views\Master\ManageLIC_TYPE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

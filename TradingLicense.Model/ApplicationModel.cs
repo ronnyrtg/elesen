@@ -22,6 +22,14 @@ namespace TradingLicense.Model
         public float? TOTAL_FEE { get; set; }
         public int APPSTATUSID { get; set; }
 
+        //Premise Application
+        [Required(ErrorMessage = "Sila pilih Kumpulan Kod")]
+        public int SectorID { get; set; }
+        public string BusinessCodeids { get; set; }
+        public string BusinessCodeDesc { get; set; }
+        public string SectorDesc { get; set; }
+        public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
+
         //Banner Application has Processing Fee
         public float? PRO_FEE { get; set; }
 
@@ -34,6 +42,18 @@ namespace TradingLicense.Model
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
         public int? HELPERC { get; set; }
+
+        //Entertainment Application
+        public int E_GROUPID { get; set; }
+        public string E_G_DESC { get; set; }
+        public int E_CODEID { get; set; }
+        public string E_C_DESC { get; set; }
+        public float? E_FEE { get; set; }
+        public float? E_BASE_FEE { get; set; }
+        public float? E_OBJECT_FEE { get; set; }
+        public string E_OBJECT_NAME { get; set; }
+        public int E_PERIOD { get; set; }
+        public int E_PERIOD_Q { get; set; }
 
         //Save to Address Table
         public string ADDRA1 { get; set; }
@@ -52,15 +72,13 @@ namespace TradingLicense.Model
         public string L_STATUS { get; set; }
         public DateTime? EXPIRE { get; set; }
 
-        public string BusinessCodeids { get; set; }
+        
         public string Individualids { get; set; }
         public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
 
         public int UserRollTemplate { get; set; }
         public string BusinessTypeDesc { get; set; }
-        public string BusinessCodeDesc { get; set; }
-        public string SectorDesc { get; set; }
         public string FullName { get; set; }
         public string CompanyName { get; set; }
         public string StatusDesc { get; set; }
@@ -77,7 +95,8 @@ namespace TradingLicense.Model
 
         public float AmountDue { get; set; }
 
+        
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
-        public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
+        
     }
 }

@@ -27,6 +27,7 @@ namespace TradingLicense.Data
 
         //Combined Applications
         public DbSet<APPLICATION> Applications { get; set; }
+        public DbSet<BC> BCs { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
@@ -44,13 +45,10 @@ namespace TradingLicense.Data
         
 
         
-        public DbSet<HawkerCode> HawkerCodes { get; set; }        
-        public DbSet<StallCode> StallCodes { get; set; }        
-        public DbSet<EntmtGroup> EntmtGroups { get; set; }
+               
+        public DbSet<E_GROUP> E_GROUPs { get; set; }
         public DbSet<EntmtObject> EntmtObjects { get; set; }
-        public DbSet<EntmtCode> EntmtCodes { get; set; }
-        public DbSet<LiquorCode> LiquorCodes { get; set; }
-        public DbSet<BannerCode> BannerCodes { get; set; }
+        public DbSet<E_CODE> E_CODEs { get; set; }
         public DbSet<BannerObject> BannerObjects { get; set; }
         public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
         
@@ -67,6 +65,7 @@ namespace TradingLicense.Data
         public DbSet<BT> BT { get; set; }
         public DbSet<RD> RD { get; set; }
         public DbSet<BT_L_RD> BT_L_RD { get; set; }
+        public DbSet<LIC_TYPE> LIC_TYPEs { get; set; }
 
 
         //User related

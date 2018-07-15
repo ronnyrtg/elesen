@@ -3,21 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class EntmtGroup
+    public class E_GROUP
     {
+        //Entertainment Group Code
         [Key]
-        public int EntmtGroupID { get; set; }
+        public int E_GROUPID { get; set; }
         [Column(TypeName = "VARCHAR2")]
         [StringLength(10)]
-        public string EntmtGroupCode { get; set; }
+        public string E_G_CODE { get; set; }
         [Column(TypeName = "VARCHAR2")]
         [StringLength(255)]
-        public string EntmtGroupDesc { get; set; }
+        public string E_G_DESC { get; set; }
 
-        public bool Active { get; set; }
-        public EntmtGroup()
+        public bool ACTIVE { get; set; }
+        public E_GROUP()
         {
-            Active = true;
+            ACTIVE = true;
         }
     }
 }

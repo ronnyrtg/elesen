@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TradingLicense.Entities
+namespace TradingLicense.Model
 {
     //Business Type
-    public class BT
+    public class BTModel
     {
         public int BT_ID { get; set; }
         [Required(ErrorMessage = "Sila masukkan kod perniagaan")]

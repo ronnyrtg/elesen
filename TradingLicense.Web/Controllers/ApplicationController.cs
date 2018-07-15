@@ -25,6 +25,11 @@ namespace TradingLicense.Web.Controllers
     public class ApplicationController : BaseController
     {
 
+        public const string OnSubmit = "Submitted";
+        public const string OnRouteSubmit = "SubmittedToRoute";
+        public const string OnRejected = "Rejected";
+        public const string OnKIV = "KIV";
+
         private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
         private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
 
@@ -202,7 +207,6 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="requestModel">The request model.</param>
         /// <param name="businessTypeId">The business type identifier.</param>
-        /// <param name="ApplicationId">The premise application identifier.</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessTypeId)
@@ -228,6 +232,376 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
+        #endregion
+
+        #region Get Business Code data for Datatable
+        /// <summary>
+        /// Get Business Code
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="selectedMode">The selected mode.</param>
+        /// <param name="selectedSector">The selected sector.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillBusinessCode(string query, int selectedMode, int selectedSector)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BusinessCode> primaryQuery = ctx.BusinessCodes;
+
+                if (selectedSector > 0)
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.SectorID == selectedSector);
+                }
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
+                }
+                var businessCode = primaryQuery.Select(fnSelectBusinessCode).ToList();
+                return Json(businessCode, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region Get Additional Doc data for Datatable
+        /// <summary>
+        /// get Additional Document Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="businessCodeids"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult AdditionalDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeids, string premiseApplicationId)
+        {
+            List<BCLinkADModel> requiredDocument = new List<BCLinkADModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                string[] ids = null;
+
+                if (!string.IsNullOrWhiteSpace(businessCodeids))
+                {
+                    ids = businessCodeids.Split(',');
+                }
+
+                List<int> businessCodelist = new List<int>();
+
+                if (ids != null)
+                {
+                    foreach (string id in ids)
+                    {
+                        int businessCodeId = Convert.ToInt32(id);
+                        businessCodelist.Add(businessCodeId);
+                    }
+                }
+
+                IQueryable<BCLinkAD> query = ctx.BCLinkAD.Where(p => businessCodelist.Contains(p.BusinessCodeID));
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<BCLinkADModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BCLinkADID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                requiredDocument = result;
+
+                #region IsChecked
+
+                if (!string.IsNullOrWhiteSpace(premiseApplicationId))
+                {
+                    int premiseAppId;
+                    int.TryParse(premiseApplicationId, out premiseAppId);
+
+                    var palinkAdd = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseAppId).ToList();
+                    foreach (var item in requiredDocument)
+                    {
+                        if (palinkAdd.Count > 0)
+                        {
+                            var resultpalinkReq = palinkAdd.FirstOrDefault(p => p.AdditionalDocID == item.AdditionalDocID && p.PremiseApplicationID == premiseAppId);
+                            if (resultpalinkReq != null)
+                            {
+                                item.IsChecked = "checked";
+                                var attechmentdetails = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == resultpalinkReq.AttachmentID);
+                                if (attechmentdetails != null)
+                                {
+                                    item.AttachmentFileName = attechmentdetails.FileName;
+                                    item.AttachmentId = attechmentdetails.AttachmentID;
+                                    item.PremiseApplicationID = premiseAppId;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region BC
+
+        /// <summary>
+        /// GET: BusinessCode
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult BC()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save BusinessCode Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="codeNumber">The code number.</param>
+        /// <param name="codeDesc">The code desc.</param>
+        /// <param name="sectorId">The sector identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BC([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
+        {
+            List<BCModel> businessCode;
+            int totalRecord = 0;
+            // int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<BC> query = ctx.BCs;
+
+                #region Filtering
+
+                // Apply filters for comman Grid searching
+                if (requestModel.Search.Value != string.Empty)
+                {
+                    var value = requestModel.Search.Value.ToLower().Trim();
+                    query = query.Where(p => p.C_R_DESC.ToLower().Contains(value) ||
+                                             p.SECTORID.ToString().Contains(value) ||
+                                             p.DEF_RATE.ToString().Contains(value) ||
+                                             p.Sector.SectorDesc.ToLower().Contains(value)
+                                       );
+                }
+
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(codeDesc))
+                {
+                    query = query.Where(p => p.C_R_DESC.ToLower().Contains(codeDesc.ToLower()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(sectorId))
+                {
+                    query = query.Where(p => p.SECTORID.ToString().Contains(sectorId));
+                }
+
+                // Filter End
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<BCModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "BC_ID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+
+                businessCode = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, businessCode, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get BusinessCode Data by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult ManageBC(int? id)
+        {
+            BCModel businessCodeModel = new BCModel
+            {
+                ACTIVE = true
+            };
+            if (id != null && id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int businessCodeId = Convert.ToInt32(id);
+                    var businessCode = ctx.BCs.FirstOrDefault(a => a.BC_ID == businessCodeId);
+                    businessCodeModel = Mapper.Map<BCModel>(businessCode);
+
+                    var additionalDocs = ctx.BCLinkAD.Where(blAd => blAd.BusinessCodeID == businessCodeId);
+                    businessCodeModel.AdditionalDocs = additionalDocs.Any()
+                        ? additionalDocs.Select(blAd => blAd.AdditionalDocID).ToList()
+                        : new List<int>();
+
+                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeId);
+                    if (departments.Any())
+                    {
+                        foreach (var dep in departments)
+                        {
+                            if (dep.Department != null)
+                            {
+                                businessCodeModel.selectedDepartments.Add(new Select2ListItem() { id = dep.DepartmentID, text = $"{dep.Department.DepartmentCode} - {dep.Department.DepartmentDesc }" });
+                            }
+                        }
+                        businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DepartmentID).ToArray());
+                    }
+
+                }
+            }
+
+            return View(businessCodeModel);
+        }
+
+        /// <summary>
+        /// Save BusinessCode Infomration
+        /// </summary>
+        /// <param name="businessCodeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageBC(BCModel businessCodeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    BC businessCode;
+                    if (IsBusinessCodeDuplicate(businessCodeModel.C_R_DESC, businessCodeModel.BC_ID))
+                    {
+                        TempData["ErrorMessage"] = "Business Code is already exist in the database.";
+                        return View(businessCodeModel);
+                    }
+                    businessCode = Mapper.Map<BC>(businessCodeModel);
+                    ctx.BCs.AddOrUpdate(businessCode);
+                    ctx.SaveChanges();
+
+                    if (!string.IsNullOrEmpty(businessCodeModel.DepartmentIDs))
+                    {
+                        List<BCLinkDep> selectedDepartments = new List<BCLinkDep>();
+                        var selectedDeps = ctx.BCLinkDeps.Where(bd => bd.BusinessCodeID == businessCode.BC_ID).ToList();
+                        var deptIds = businessCodeModel.DepartmentIDs.Split(',');
+                        foreach (var dep in deptIds)
+                        {
+                            var depId = Convert.ToInt32(dep);
+                            if (selectedDeps.All(sd => sd.DepartmentID != depId))
+                            {
+                                selectedDepartments.Add(new BCLinkDep { BusinessCodeID = businessCode.BC_ID, DepartmentID = depId });
+                            }
+                        }
+                        if (selectedDeps.Count > 0)
+                        {
+                            foreach (var bcDep in selectedDeps)
+                            {
+                                if (deptIds.All(rd => rd != bcDep.DepartmentID.ToString()))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedDepartments.Count > 0)
+                        {
+                            ctx.BCLinkDeps.AddOrUpdate(selectedDepartments.ToArray());
+                        }
+                    }
+
+                    if (businessCodeModel.AdditionalDocs.Count > 0)
+                    {
+                        List<BCLinkAD> selectedAdditionalDocs = new List<BCLinkAD>();
+                        var selectedADocs = ctx.BCLinkAD.Where(bd => bd.BusinessCodeID == businessCode.BC_ID).ToList();
+                        var addDocIds = businessCodeModel.AdditionalDocs;
+                        foreach (var addDocId in addDocIds)
+                        {
+                            if (selectedADocs.All(sd => sd.AdditionalDocID != addDocId))
+                            {
+                                selectedAdditionalDocs.Add(new BCLinkAD { BusinessCodeID = businessCode.BC_ID, AdditionalDocID = addDocId });
+                            }
+                        }
+                        if (selectedADocs.Count > 0)
+                        {
+                            foreach (var bcDep in selectedADocs)
+                            {
+                                if (addDocIds.All(rd => rd != bcDep.AdditionalDocID))
+                                {
+                                    ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
+                                }
+                            }
+                        }
+                        if (selectedAdditionalDocs.Count > 0)
+                        {
+                            ctx.BCLinkAD.AddOrUpdate(selectedAdditionalDocs.ToArray());
+                        }
+
+                    }
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Business Code saved successfully.";
+
+                return RedirectToAction("BusinessCode");
+            }
+            else
+            {
+                return View(businessCodeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete BusinessCode Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteBC(int id)
+        {
+            try
+            {
+                var businessCode = new BC() { BC_ID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(businessCode).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsBusinessCodeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.BCs.FirstOrDefault(
+                   c => c.BC_ID != id && c.C_R_DESC.ToLower() == name.ToLower())
+               : ctx.BCs.FirstOrDefault(
+                   c => c.C_R_DESC.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
         #endregion
 
     }

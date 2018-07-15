@@ -68,39 +68,6 @@ namespace TradingLicense.Web.Controllers
                             dt.Rows.Add(rw);
                         }
                     }
-                    else if(tblId == "2")
-                    {
-                        foreach (var item in ctx.BannerCodes)
-                        {
-                            DataRow rw = dt.NewRow();
-                            rw["No"] = item.BannerCodeID.ToString();
-                            rw["Code"] = item.BCodeNumber.ToString();
-                            rw["Description"] = item.BannerCodeDesc.ToString();
-                            dt.Rows.Add(rw);
-                        }
-                    }
-                    else if (tblId == "3")
-                    {
-                        foreach (var item in ctx.HawkerCodes)
-                        {
-                            DataRow rw = dt.NewRow();
-                            rw["No"] = item.HawkerCodeID.ToString();
-                            rw["Code"] = item.HCodeNumber.ToString();
-                            rw["Description"] = item.HawkerCodeDesc.ToString();
-                            dt.Rows.Add(rw);
-                        }
-                    }
-                    else if (tblId == "4")
-                    {
-                        foreach (var item in ctx.LiquorCodes)
-                        {
-                            DataRow rw = dt.NewRow();
-                            rw["No"] = item.LiquorCodeID.ToString();
-                            rw["Code"] = item.LCodeNumber.ToString();
-                            rw["Description"] = item.LiquorCodeDesc.ToString();
-                            dt.Rows.Add(rw);
-                        }
-                    }
                 }
                 Session["dtPrint"] = dt;
                 ViewBag.Items = GetDropDown();

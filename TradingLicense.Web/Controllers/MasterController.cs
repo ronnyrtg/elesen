@@ -3695,5 +3695,175 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region License Type
+
+        /// <summary>
+        /// GET: LIC_TYPE
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LIC_TYPE()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save LIC_TYPE Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult LIC_TYPE([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string lic_TYPEDESC)
+        {
+            List<TradingLicense.Model.LIC_TYPEModel> licType = new List<Model.LIC_TYPEModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<LIC_TYPE> query = ctx.LIC_TYPEs;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(lic_TYPEDESC))
+                {
+                    query = query.Where(p =>
+                                        p.LIC_TYPEDESC.Contains(lic_TYPEDESC)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "LIC_TYPEID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                licType = Mapper.Map<List<LIC_TYPEModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, licType, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get LIC_TYPE Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageLIC_TYPE(int? Id)
+        {
+            LIC_TYPEModel licTypeModel = new LIC_TYPEModel();
+            licTypeModel.ACTIVE = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int licTypeID = Convert.ToInt32(Id);
+                    var licType = ctx.LIC_TYPEs.Where(a => a.LIC_TYPEID == licTypeID).FirstOrDefault();
+                    licTypeModel = Mapper.Map<LIC_TYPEModel>(licType);
+                }
+            }
+
+            return View(licTypeModel);
+        }
+
+        /// <summary>
+        /// Save LIC_TYPE Type Infomration
+        /// </summary>
+        /// <param name="licTypeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageLIC_TYPE(LIC_TYPEModel licTypeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    LIC_TYPE licType;
+                    if (IsLIC_TYPEDuplicate(licTypeModel.LIC_TYPEDESC, licTypeModel.LIC_TYPEID))
+                    {
+                        TempData["ErrorMessage"] = "LIC_TYPE already exists in the database.";
+                        return View(licTypeModel);
+                    }
+
+                    licType = Mapper.Map<LIC_TYPE>(licTypeModel);
+                    ctx.LIC_TYPEs.AddOrUpdate(licType);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "LIC_TYPE saved successfully.";
+
+                return RedirectToAction("LIC_TYPE");
+            }
+            else
+            {
+                return View(licTypeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete LIC_TYPE Type Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteLIC_TYPE(int id)
+        {
+            try
+            {
+                var licType = new TradingLicense.Entities.LIC_TYPE() { LIC_TYPEID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(licType).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsLIC_TYPEDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.LIC_TYPEs.FirstOrDefault(
+                   c => c.LIC_TYPEID != id && c.LIC_TYPEDESC.ToLower() == name.ToLower())
+               : ctx.LIC_TYPEs.FirstOrDefault(
+                   c => c.LIC_TYPEDESC.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
     }
 }

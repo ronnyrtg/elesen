@@ -17,11 +17,14 @@
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var businessType = ctx.BusinessTypes.ToList();
-        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+        var businessType = ctx.BT.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BTModel>>(businessType);
 
         var sectors = ctx.Sectors.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
+
+        var entmtGroup = ctx.E_GROUPs.ToList();
+        entmtGroupList = Mapper.Map<List<TradingLicense.Model.E_GROUPModel>>(entmtGroup);
 
         var companies = ctx.Companies.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
@@ -132,28 +135,24 @@
                     </div>
                 </div>
             </div>
+            
             <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.BUSINESSTYPEID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownList("sectorList", new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
 
+            
+
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-6" id="businessCode">
                     <div class="form-group">
                         <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
-                       
+                        @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
+                        @Html.HiddenFor(model => model.BusinessCodeids)
                     </div>
                 </div>
             </div>
@@ -201,7 +200,25 @@
                     }
                 </div>
             </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.BUSINESSTYPEID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                    </div>
+                </div>
+            </div>
             <hr />
+
+            <div class="row">
+                <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.E_GROUPID, new SelectList(entmtGroupList.OrderBy(x => x.E_GROUPID), "E_GROUPID", "E_G_DESC"), "Pilih Kategori", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-3 col-sm-12">
                     <div class="form-group">
@@ -944,7 +961,7 @@
                         //console.log(query)
                         return {
                             query: query.term,
-                            selectedMode: $('#Mode').val(),
+                            selectedMode: $('#MODE').val(),
                             selectedSector:  $("#SectorID").val()
                         }
                     },
@@ -1182,6 +1199,9 @@
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').hide();
+                $('#sector').show();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 2){
                 $('#approvalType').hide();
@@ -1189,6 +1209,9 @@
                 $('#approvalCEO').show();
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 3){
                 $('#approvalType').hide();
@@ -1196,6 +1219,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 4){
                 $('#approvalType').hide();
@@ -1203,6 +1229,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 5){
                 $('#approvalType').hide();
@@ -1210,6 +1239,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').hide();
                 $("#MODE").val(2);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 6){
                 $('#approvalType').hide();
@@ -1217,6 +1249,9 @@
                 $('#approvalCEO').show();
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 7){
                 $('#approvalType').hide();
@@ -1224,6 +1259,9 @@
                 $('#approvalCEO').show();
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 8){
                 $('#approvalType').hide();
@@ -1231,6 +1269,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 9){
                 $('#approvalType').hide();
@@ -1238,6 +1279,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 10){
                 $('#approvalType').hide();
@@ -1245,6 +1289,9 @@
                 $('#approvalCEO').hide();
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').show();
             }
         }
 
@@ -1264,7 +1311,7 @@
 
         function bindSearch() {
             var param = {};
-            param["businessTypeID"] = $("#BusinessTypeID").val();
+            param["businessTypeID"] = $("#BUSINESSTYPEID").val();
 
             if ($("#APP_ID").val() > 0) {
                 param["ApplicationID"] = $("#APP_ID").val();
@@ -1302,24 +1349,24 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RequiredDocID"] + '"> <input id="chkdoc_' + row["RequiredDocID"] + '"  value="' + row["RequiredDocID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             return appendstring
                         },
                         width: "7%",
                         "orderable": false,
                         "visible": visibleGridColume,
                     },
-                    { "title": "Jenis Dokumen", "data": "RequiredDocDesc", "orderable": false },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
                     {
                         "title": "Muat Naik",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RequiredDocID"] + '" onclick="RequiredDocumentModel(' + row["RequiredDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1335,10 +1382,10 @@
 
                             if (visibleGridUploadColume) {
                                 if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RequiredDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
 
                                 } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RequiredDocID"] + '"> </label> </a>';
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
                                 }
 
                             } else {
@@ -1351,6 +1398,7 @@
                             return appendstring
                         },
                         "orderable": false,
+                        "visible": visibleGridUploadColume,
                     }
                 ]
             });
@@ -1392,7 +1440,7 @@
                 },
                 "columns": [
                     {
-                        "title": "DIsertakan?",
+                        "title": "Disertakan?",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';

@@ -21,6 +21,23 @@ namespace TradingLicense.Data.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
 
+            var licType = new List<LIC_TYPE>
+            {
+                new LIC_TYPE {LIC_TYPECODE="TPP", LIC_TYPEDESC="Lesen Tred, Perniagaan & Perindustrian"},
+                new LIC_TYPE {LIC_TYPECODE="PM", LIC_TYPEDESC="Lesen Petempatan Makanan"},
+                new LIC_TYPE {LIC_TYPECODE="HRT", LIC_TYPEDESC="Lesen Hotel dan Rumah Tumpangan"},
+                new LIC_TYPE {LIC_TYPECODE="PS", LIC_TYPEDESC="Lesen Pengurusan Skrap"},
+                new LIC_TYPE {LIC_TYPECODE="IK", LIC_TYPEDESC="Lesen Iklan"},
+                new LIC_TYPE {LIC_TYPECODE="PJ", LIC_TYPEDESC="Lesen Penjaja"},
+                new LIC_TYPE {LIC_TYPECODE="PA", LIC_TYPEDESC="Lesen Pasar"},
+                new LIC_TYPE {LIC_TYPECODE="MK", LIC_TYPEDESC="Lesen Minuman Keras"},
+                new LIC_TYPE {LIC_TYPECODE="PPW", LIC_TYPEDESC="Lesen Pemberi Pinjam Wang"},
+                new LIC_TYPE {LIC_TYPECODE="HI", LIC_TYPEDESC="Lesen Hiburan"},
+
+            };
+            licType.ForEach(s => context.LIC_TYPEs.Add(s));
+            context.SaveChanges();
+
             var sector = new List<Sector>
             {
                 new Sector {SectorID=1,SectorDesc="Tred"},
@@ -47,6 +64,20 @@ namespace TradingLicense.Data.Migrations
             businesstypes.ForEach(s => context.BusinessTypes.Add(s));
             context.SaveChanges();
 
+            var bts = new List<BT>
+            {
+                new BT {BT_CODE="I",BT_DESC="Hak Milik Perseorangan" },
+                new BT {BT_CODE="O",BT_DESC="Lain-lain" },
+                new BT {BT_CODE="P",BT_DESC="Perkongsian" },
+                new BT {BT_CODE="U",BT_DESC="Syarikat Awam Berhad" },
+                new BT {BT_CODE="C",BT_DESC="Syarikat Kerjasama" },
+                new BT {BT_CODE="R",BT_DESC="Syarikat Sendirian Berhad" },
+                new BT {BT_CODE="G",BT_DESC="Jabatan Kerajaan" },
+                new BT {BT_CODE="E",BT_DESC="Sekolah/Institusi Pendidikan" },
+            };
+            bts.ForEach(s => context.BT.Add(s));
+            context.SaveChanges();
+
             var race = new List<Race>
             {
                 new Race {RaceDesc="Melayu"},
@@ -59,21 +90,21 @@ namespace TradingLicense.Data.Migrations
             race.ForEach(s => context.Races.Add(s));
             context.SaveChanges();
 
-            var entmtGroup = new List<EntmtGroup>
+            var entmtGroup = new List<E_GROUP>
             {
-                new EntmtGroup {EntmtGroupID=1,EntmtGroupCode="L001",EntmtGroupDesc="Oditorium/Dewan"},
-                new EntmtGroup {EntmtGroupID=2,EntmtGroupCode="L002",EntmtGroupDesc="Panggung Wayang/Panggung"},
-                new EntmtGroup {EntmtGroupID=3,EntmtGroupCode="L003",EntmtGroupDesc="Pusat Hiburan (Dalam Bangunan)"},
-                new EntmtGroup {EntmtGroupID=4,EntmtGroupCode="L004",EntmtGroupDesc="Pusat Hiburan/Taman Hiburan (Luar Bangunan)"},
-                new EntmtGroup {EntmtGroupID=5,EntmtGroupCode="L005",EntmtGroupDesc="Lorong Boling"},
-                new EntmtGroup {EntmtGroupID=6,EntmtGroupCode="L006",EntmtGroupDesc="Gelanggang Luncur"},
-                new EntmtGroup {EntmtGroupID=7,EntmtGroupCode="L007",EntmtGroupDesc="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan"},
-                new EntmtGroup {EntmtGroupID=8,EntmtGroupCode="L008",EntmtGroupDesc="Dewan Tarian/Disko/Kabaret"},
-                new EntmtGroup {EntmtGroupID=9,EntmtGroupCode="L009",EntmtGroupDesc="Dewan Biliard/Snuker"},
-                new EntmtGroup {EntmtGroupID=10,EntmtGroupCode="L010",EntmtGroupDesc="Stadium"},
-                new EntmtGroup {EntmtGroupID=11,EntmtGroupCode="L011",EntmtGroupDesc="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran"},
+                new E_GROUP {E_GROUPID=1,E_G_CODE="L001",E_G_DESC="Oditorium/Dewan"},
+                new E_GROUP {E_GROUPID=2,E_G_CODE="L002",E_G_DESC="Panggung Wayang/Panggung"},
+                new E_GROUP {E_GROUPID=3,E_G_CODE="L003",E_G_DESC="Pusat Hiburan (Dalam Bangunan)"},
+                new E_GROUP {E_GROUPID=4,E_G_CODE="L004",E_G_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)"},
+                new E_GROUP {E_GROUPID=5,E_G_CODE="L005",E_G_DESC="Lorong Boling"},
+                new E_GROUP {E_GROUPID=6,E_G_CODE="L006",E_G_DESC="Gelanggang Luncur"},
+                new E_GROUP {E_GROUPID=7,E_G_CODE="L007",E_G_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan"},
+                new E_GROUP {E_GROUPID=8,E_G_CODE="L008",E_G_DESC="Dewan Tarian/Disko/Kabaret"},
+                new E_GROUP {E_GROUPID=9,E_G_CODE="L009",E_G_DESC="Dewan Biliard/Snuker"},
+                new E_GROUP {E_GROUPID=10,E_G_CODE="L010",E_G_DESC="Stadium"},
+                new E_GROUP {E_GROUPID=11,E_G_CODE="L011",E_G_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran"},
             };
-            entmtGroup.ForEach(s => context.EntmtGroups.Add(s));
+            entmtGroup.ForEach(s => context.E_GROUPs.Add(s));
             context.SaveChanges();
 
             var businesscode = new List<BusinessCode>
@@ -209,6 +240,198 @@ namespace TradingLicense.Data.Migrations
                 new BusinessCode {CodeNumber="F001",SectorID=6,CodeDesc="Mana-mana aktiviti perniagaan yang tidak termasuk dalam Jadual",DefaultRate=1.5f,BaseFee=0.0f,Period=1,PeriodQuantity=1},
             };
             businesscode.ForEach(s => context.BusinessCodes.Add(s));
+            context.SaveChanges();
+
+            var bcode = new List<BC>
+            {
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pejabat urusan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kemudahan dan perkhidmatan jagaan kesihatan swasta",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Bank dan institusi kewangan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kedai buku dan alat tulis",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Institusi pendidikan tinggi swasta, sekolah swasta atau institusi pendidikan swasta",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Barangan elektrik atau elektronik atau komputer",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Perabot",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Hiasan dalaman/barangan hiasan dalaman",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan dan perkakasan rumah/pejabat",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan dan kelengkapan dapur",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Perkhidmatan menjahit",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pakaian, tekstil dan alat jahitan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kosmetik dan kelengkapan dandanan diri",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan makmal, saintifik dan perubatan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Ubat, farmasi dan produk kesihatan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Barang kemas, hiasan diri dan persendirian",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Jam",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Bagasi",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Cenderamata",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Barangan optik",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan, aksesori dan perkhidmatan fotografi",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Bunga dan tumbuhan tiruan/hidup",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Perkhidmatan andaman dan pakaian pengantin",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Telefon dan aksesori",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Barangan antik",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Menjilid buku atau membuat fotokopi",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Tukang kunci",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pusat/studio rakaman audio",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Stesen minyak/gas/elektrik",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Media digital/elektronik dan aksesori berkaitan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Barangan logam (untuk sektor pembinaan dan pembuatan)",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Alat-alat muzik atau kelengkapan muzik",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kelas kesenian/kebudayaan/kemahiran",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan, bahan dan hiasan landskap",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kenderaan berat",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kereta, motosikal, bot dan jet ski",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Mesin dan jentera",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Basikal dan aksesori",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Peralatan kesihatan, kecergasan dan sukan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Produk berasaskan tembakau (seperti rokok/curut dan produk seumpamanya)",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kemasan bangunan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Alat permainan dan barangan hobi",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Percetakan digital",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kedai barangan runcit/kedai serbaneka (seperti pasar raya dan gedung)",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Sewaan kereta",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Haiwan peliharaan, dandanan binatang, peralatan dan makanan haiwan dan/atau rumah tumpangan haiwan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Agensi teman sosial",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Kedai bebas cukai",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pengurusan mayat dan pengebumian",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Baja, racun atau kimia-kimia lain yang serupa",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Bahan berbahaya yang mudah terbakar tidak termasuk petroleum dan gas",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Dobi",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Stor kayu",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Agensi pelancongan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Agensi pekerjaan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Jualan tiket pengangkutan awam",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pusat kecantikan dan penjagaan kesihatan",DEF_RATE=25f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Joki kereta",DEF_RATE=0.0f,BASE_FEE=1.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=1,C_R_DESC="Pemberi Pinjam Wang",DEF_RATE=0.0f,PERIOD=1,PERIOD_Q=2},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Gudang/stor makanan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Gudang/stor barang-barang lain",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Gudang/stor bahan merbahaya",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Barang-barang berasaskan logam",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Media digital dan elektronik",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Makanan dan perkakasan haiwan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Baja",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Kenderaan, jentera dan mesin",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Alat-alat ganti dan aksesori kenderaan bermotor",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Basikal",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Tayar dan tiub",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Bahan binaan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Bateri",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Kabel dan wayar",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Permaidani dan hamparan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Keranda dan batu nisan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Kosmetik dan kelengkapan dandanan diri",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Bahan pencuci, alat-alat mencuci bahan-bahan lain yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Bahan pengilap",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Mengisi gas ke dalam botol atau silinder",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Dadah/ubat-ubatan dan keluaran-keluaran farmasi",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Fabrik/kulit atau pakaian",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Menjahit dan menyulam",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Barang-barang elektrik dan elektronik",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Barang-barang komputer",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Membuat barang-barang perubatan, saintifik dan makmal",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Kaca dan cermin",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Anggota badan palsu",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Produk dibuat daripada gelas serabut, gentian sintetik, kapas tali dan produk seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Mercun dan bahan letupan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=2,C_R_DESC="Gas mudah terbakar",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Keluaran petroleum termasuk minyak pelincir dan lain-lain minyak yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Produk berasaskan emas, perak, tembaga dan bahan-bahan yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Peralatan sembahyang dan barang-barang lain yang berkaitan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Batu kapur",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Cat",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Kertas dan hasil-hasil kertas",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Plastik, barang-barang daripada bahan plastik atau bahan lain yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Kaca, barang-barang daripada bahan kaca atau bahan lain yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Logam, barang-barang daripada bahan logam atau bahan lain yang seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Papan dan kayu",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Perabot",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Barang-barang tembikar",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Percetakan (berskala besar)",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Pam dan penapis air",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Keluaran getah",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Tirai dan bidai",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Alat tulis/buku/majalah",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Barang-barang mainan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Barangan pertanian dan kimia industri",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Blok ais",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Visual iklan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Makanan dan seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=3,C_R_DESC="Minuman dan seumpamanya",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Alat ganti dan aksesori",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Pemasangan penyaman udara di kenderaan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Kenderaan bermotor dan kenderaan marin",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Tayar",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Mencuci dan/atau mengilap kereta",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Menyembur cat, selulosa dan bahan-bahan kimia lain",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Kerja-kerja kejuruteraan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Kerja-kerja kimpalan",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=4,C_R_DESC="Pertukangan batu, kayu, kaca dan logam (termasuk papan iklan) ",DEF_RATE=2.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Menternak burung walit",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Menternak lebah, lintah, cacing dan seumpamanya",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Tempat pembiakan haiwan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Rumah sembelihan binatang",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Kolam pancing",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=5,C_R_DESC="Semaian tumbuhan",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=1,SECTORID=6,C_R_DESC="Mana-mana aktiviti perniagaan yang tidak termasuk dalam Jadual",DEF_RATE=1.5f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=2,C_R_DESC="Restoran/kedai makan/gerai makan/kios makanan",DEF_RATE=10.0f,BASE_FEE=0.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=2,C_R_DESC="Menjual makanan/minuman (tanpa tempat makan)",DEF_RATE=10.0f,BASE_FEE=0.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=2,C_R_DESC="Katering makanan",DEF_RATE=10.0f,BASE_FEE=0.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=2,C_R_DESC="Kantin sekolah",DEF_RATE=10.0f,BASE_FEE=0.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=2,C_R_DESC="Kantin pejabat",DEF_RATE=10.0f,BASE_FEE=0.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=3,C_R_DESC="Hotel (Kelas Pertama)",DEF_RATE=0.0f,BASE_FEE=150.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=3,C_R_DESC="Hotel (Kelas Kedua)",DEF_RATE=0.0f,BASE_FEE=1.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=3,C_R_DESC="Hotel (Kelas Ketiga)",DEF_RATE=0.0f,BASE_FEE=30.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=3,C_R_DESC="Lodging House/Rumah Tumpangan",DEF_RATE=0.0f,BASE_FEE=30.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=4,C_R_DESC="Pengurusan Skrap/Dealing in Scrap",DEF_RATE=0.0f,BASE_FEE=25.0f,PERIOD=2,PERIOD_Q=3},
+                new BC {LIC_TYPEID=5,C_R_DESC="Iklan Tidak Bercahaya",EX_FEE=25.0f,PERIOD=1,PERIOD_Q=1,P_FEE=50.0f},
+                new BC {LIC_TYPEID=5,C_R_DESC="Iklan Bercahaya",EX_FEE=25.0f,PERIOD=1,PERIOD_Q=1,P_FEE=1.0f},
+                new BC {LIC_TYPEID=5,C_R_DESC="Iklan Kecil",EX_FEE=25.0f,PERIOD=1,PERIOD_Q=1,P_FEE=50.0f},
+                new BC {LIC_TYPEID=5,C_R_DESC="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – tidak bercahaya",EX_FEE=25.0f,PERIOD=1,PERIOD_Q=1,P_FEE=1.0f},
+                new BC {LIC_TYPEID=5,C_R_DESC="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – bercahaya",EX_FEE=25.0f,PERIOD=1,PERIOD_Q=1,P_FEE=2.0f},
+                new BC {LIC_TYPEID=5,C_R_DESC="Tanda Langit",PERIOD=1,PERIOD_Q=1,P_FEE=1.0f},
+                new BC {LIC_TYPEID=6,C_R_DESC="Penjaja Bergerak",P_FEE=48.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=6,C_R_DESC="Penjaja Statik: Makanan",P_FEE=10.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=6,C_R_DESC="Penjaja Statik: Selain daripada makanan",P_FEE=15.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=6,C_R_DESC="Penjaja Sementara Bulanan",P_FEE=15.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=6,C_R_DESC="Penjaja Sementara Harian",P_FEE=0.5f,PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Pasar Malam",P_FEE=1.0f,PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Ikan",P_FEE=30.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Ayam",P_FEE=30.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Daging",P_FEE=30.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Sayur-sayuran/buah-buahan/telur",P_FEE=20.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Barang-barang lain",P_FEE=20.0f,PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Pasar Persendirian - Luas lantai 70 meter persegi atau lebih",P_FEE=225.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=7,C_R_DESC="Pasar Persendirian - Luas lantai kurang daripada 70 meter persegi",P_FEE=175.0f,PERIOD=1,PERIOD_Q=1},
+                new BC {LIC_TYPEID=8,C_R_DESC="Runcit",DEF_HOUR="7.pg. hingga 9.mlm",EX_HOUR_FEE=0.0f,PERIOD=2,PERIOD_Q=1,P_FEE=35.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Borong",DEF_HOUR="7.pg. hingga 9.mlm",EX_HOUR_FEE=0.0f,PERIOD=2,PERIOD_Q=1,P_FEE=45.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Rumah Awam (Kelas 1)",DEF_HOUR="10.pg. hingga 12.mlm",EX_HOUR_FEE=30.0f,PERIOD=2,PERIOD_Q=1,P_FEE=110.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Rumah Awam (Kelas 2)",DEF_HOUR="10.pg. hingga 10.mlm",EX_HOUR_FEE=30.0f,PERIOD=2,PERIOD_Q=1,P_FEE=80.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Rumah Awam (Kelas 3)",DEF_HOUR="10.pg. hingga 9.mlm",EX_HOUR_FEE=30.0f,PERIOD=2,PERIOD_Q=1,P_FEE=55.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Rumah Bir (Kelas 1)",DEF_HOUR="10.pg. hingga 12.mlm",EX_HOUR_FEE=15.0f,PERIOD=2,PERIOD_Q=1,P_FEE=55.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Rumah Bir (Kelas 2)",DEF_HOUR="10.pg. hingga 10.mlm",EX_HOUR_FEE=15.0f,PERIOD=2,PERIOD_Q=1,P_FEE=35.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Lesen Sementara",DEF_HOUR="Tidak Berkenaan",EX_HOUR_FEE=0.0f,PERIOD=4,PERIOD_Q=1,P_FEE=30.0f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Lesen Kedai Todi (Estet/Swasta)",DEF_HOUR="Tidak Berkenaan",EX_HOUR_FEE=0.0f,PERIOD=2,PERIOD_Q=1,P_FEE=4.5f},
+                new BC {LIC_TYPEID=8,C_R_DESC="Lesen Sadapan Todi",DEF_HOUR="Tidak Berkenaan",EX_HOUR_FEE=0.0f,PERIOD=2,PERIOD_Q=1,P_FEE=15.0f},
+                new BC {LIC_TYPEID=10,C_R_DESC="Billiard/Snuker",O_FEE=10.0f,O_NAME="meja",PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Boling",O_FEE=5.0f,O_NAME="lorong",PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pameran Filem Sinematograf - Dalam penggung/panggung wayang",O_FEE=5.0f,O_NAME="pertunjukan",PERIOD=0,PERIOD_Q=0},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pameran Filem Sinematograf - Di tempat terbuka",O_FEE=5.0f,PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Sarkas",BASE_FEE=5.0f,O_FEE=2.5f,O_NAME="pertunjukan",PERIOD=0,PERIOD_Q=0},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan dengan Mesin Hiburan - Kiddy Rides",O_FEE=2.0f,O_NAME="mesin",PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan dengan Mesin Hiburan - Mesin video",O_FEE=5.0f,O_NAME="mesin",PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",O_FEE=8.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",O_FEE=14.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pameran",O_FEE=5.0f,O_NAME="gerai",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pertunjukan Fesyen oleh Artis Profesional/Pertandingan Ratu Cantik",O_FEE=10.0f,O_NAME="artis/peserta",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pesta ria",O_FEE=2.0f,O_NAME="gerai",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Hiburan Juke Box",O_FEE=10.0f,O_NAME="mesin",PERIOD=2,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Pertunjukan Patung",O_FEE=5.0f,PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Apa-apa hiburan di luar kuil",O_FEE=5.0f,PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R_DESC="Apa-apa hiburan lain",O_FEE=10.0f,PERIOD=4,PERIOD_Q=1},
+            };
+            bcode.ForEach(s => context.BCs.Add(s));
             context.SaveChanges();
 
             var departments = new List<Department>
@@ -466,6 +689,36 @@ namespace TradingLicense.Data.Migrations
             requireddocs.ForEach(s => context.RequiredDocs.Add(s));
             context.SaveChanges();
 
+            var rds = new List<RD>
+            {
+                new RD {RD_DESC="Borang Komposit bagi Permohonan Lesen Premis Perniagaan dan Iklan"},
+                new RD {RD_DESC="Satu (1) Salinan Kad Pengenalan ATAU Pasport (depan dan belakang)"},
+                new RD {RD_DESC="*Salinan Perakuan Pemerbadanan Syarikat/Perakuan Pendaftaran Syarikat/Perakuan Pendaftaran Perniagaan/Perakuan Pendaftaran Perkongsian Liabiliti Terhad (Borang 9, Borang 24 dan Borang 49) ATAU Sijil Pendaftaran Pertubuhan/Persatuan/Kelab/Badan Profesional"},
+                new RD {RD_DESC="Lakaran Pelan Lokasi Perniagaan & 1 Gambar Premis (1 keping Pandangan hadapan/dalam premis)"},
+                new RD {RD_DESC="Salinan Sijil Kelayakan Menduduki Bangunan (CF) ATAU Sijil Pematuhan (CCC/CFO) (Untuk bangunan baru siap/jika berkaitan)"},
+                new RD {RD_DESC="Salinan hak milik/Perjanjian sewaan/Surat Kebenaran Pemilik/Geran Tanah@TOL (*mana yang berkaitan)"},
+                new RD {RD_DESC="Salinan cukai taksiran terkini/Slip Bayaran Sewa Premis Majlis"},
+                new RD {RD_DESC="Pengesahan Ejaan Penggunaan Bahasa pada Visual Iklan Premis oleh Dewan Bahasa dan Pustaka"},
+                new RD {RD_DESC="Kelulusan Ubahsuai Bangunan/Permit Bangunan Sementara (jika berkaitan)"},
+                new RD {RD_DESC="Surat Sokongan Bomba (jika berkaitan)"},
+                new RD {RD_DESC="Surat Wakil & IC wakil pemohon lesen (jika berkaitan)"},
+                new RD {RD_DESC="Tambahan dokumen dan pematuhan syarat & peraturan Pihak Berkuasa Melesen mengikut Aktiviti Perniagaan (Lampiran I & II) (jika berkaitan) "},
+                new RD {RD_DESC="Borang D (Akaun Pendaftaran Perniagaan) mengikut Akta Pendaftaran Perniagaan 1956"},
+                new RD {RD_DESC="Surat persetujuan/pengesahan daripada pemunya tanah atau bangunan"},
+                new RD {RD_DESC="Sampul surat berukuran 9 x 4 inci dan Setem 30sen"},
+                new RD {RD_DESC="Salinan lesen membuka tempat hiburan/lesen hiburan yang dahulu"},
+                new RD {RD_DESC="Memorandum dan Artikel Persatuan dan Borang 49 (penyata yang memberikan butir-butir dalam Daftar Pengarah, Pengurus, dan Perubahan Butiran) mengikut Akta Syarikat 1965"},
+                new RD {RD_DESC="Borang A (Pendaftaran Perniagaan) atau Borang B (Pendaftaran Penukaran Perniagaan)"},
+                new RD {RD_DESC="Salinan yang diperakui Borang J (borang cukai pendapatan) bagi tempoh dua tahun yang lalu dan suatu salinan yang diperakui penyata akaun bank"},
+                new RD {RD_DESC="Suatu salinan akuan berkanun seperti dalam Jadual C"},
+                new RD {RD_DESC="Suatu salinan yang diperakui surat daripada pegawai polis seperti yang dikehendaki di bawah subperaturan 4(2)"},
+                new RD {RD_DESC="Suatu salinan yang diperakui akaun beraudit atau akaun pengurusan yang terkini"},
+                new RD {RD_DESC="Suatu salinan yang diperakui butir-butir dalam Borang 13 (jika ada), 24, 49 dan borang keuntungan tahunan terkini di bawah Akta Syarikat 1965 (bagi syarikat sahaja)"},
+
+            };
+            rds.ForEach(s => context.RD.Add(s));
+            context.SaveChanges();
+
 
             var additionaldocs = new List<AdditionalDoc>
             {
@@ -615,44 +868,6 @@ namespace TradingLicense.Data.Migrations
             indlinkcoms.ForEach(s => context.IndLinkComs.Add(s));
             context.SaveChanges();
 
-
-            var hawkerCodes = new List<HawkerCode>
-            {
-                new HawkerCode {HCodeNumber="J001",HawkerCodeDesc="Penjaja Bergerak",Fee=48.0f,Period=1,PeriodQuantity=1},
-                new HawkerCode {HCodeNumber="J002",HawkerCodeDesc="Penjaja Statik: Makanan",Fee=10.0f,Period=2,PeriodQuantity=1},
-                new HawkerCode {HCodeNumber="J003",HawkerCodeDesc="Penjaja Statik: Selain daripada makanan",Fee=15.0f,Period=2,PeriodQuantity=1},
-                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Bulanan",Fee=15.0f,Period=2,PeriodQuantity=1},
-                new HawkerCode {HCodeNumber="J004",HawkerCodeDesc="Penjaja Sementara Harian",Fee=0.5f,Period=4,PeriodQuantity=1},
-                new HawkerCode {HCodeNumber="J005",HawkerCodeDesc="Pasar Malam",Fee=1.0f,Period=4,PeriodQuantity=1},
-            };
-            hawkerCodes.ForEach(s => context.HawkerCodes.Add(s));
-            context.SaveChanges();
-
-            var stallCodes = new List<StallCode>
-            {
-                new StallCode {SCodeNumber="K001",StallCodeDesc="Ikan",Fee=30.0f,Period=2,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K002",StallCodeDesc="Ayam",Fee=30.0f,Period=2,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K003",StallCodeDesc="Daging",Fee=30.0f,Period=2,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K004",StallCodeDesc="Sayur-sayuran/buah-buahan/telur",Fee=20.0f,Period=2,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K005",StallCodeDesc="Barang-barang lain",Fee=20.0f,Period=2,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K006",StallCodeDesc="Pasar Persendirian - Luas lantai 70 meter persegi atau lebih",Fee=225.0f,Period=1,PeriodQuantity=1},
-                new StallCode {SCodeNumber="K007",StallCodeDesc="Pasar Persendirian - Luas lantai kurang daripada 70 meter persegi",Fee=175.0f,Period=1,PeriodQuantity=1},
-            };
-            stallCodes.ForEach(s => context.StallCodes.Add(s));
-            context.SaveChanges();
-
-            var bannerCodes = new List<BannerCode>
-            {
-                new BannerCode {BCodeNumber="O001",BannerCodeDesc="Iklan Tidak Bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
-                new BannerCode {BCodeNumber="O002",BannerCodeDesc="Iklan Bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
-                new BannerCode {BCodeNumber="O003",BannerCodeDesc="Iklan Kecil",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=50.0f},
-                new BannerCode {BCodeNumber="O004",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – tidak bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=100.0f},
-                new BannerCode {BCodeNumber="O005",BannerCodeDesc="Iklan yang mengunjur lebih daripada 15 sentimeter melebihi bangunan – bercahaya",ExtraFee=25.0f,Period=1,PeriodQuantity=1,PeriodFee=200.0f},
-                new BannerCode {BCodeNumber="O006",BannerCodeDesc="Tanda Langit",Period=1,PeriodQuantity=1,PeriodFee=100.0f},
-            };
-            bannerCodes.ForEach(s => context.BannerCodes.Add(s));
-            context.SaveChanges();
-
             var zones = new List<Zone>
             {
                 new Zone {ZoneCode="11",ZoneDesc="Bandar-Perdagangan"},
@@ -701,94 +916,55 @@ namespace TradingLicense.Data.Migrations
             roads.ForEach(s => context.Roads.Add(s));
             context.SaveChanges();
 
-            var liquorCodes = new List<LiquorCode>
-            {
-                new LiquorCode {LCodeNumber="N001",LiquorCodeDesc="Runcit",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f},
-                new LiquorCode {LCodeNumber="N002",LiquorCodeDesc="Borong",DefaultHours="7.00pg. hingga 9.00mlm",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=45.0f},
-                new LiquorCode {LCodeNumber="N003",LiquorCodeDesc="Rumah Awam (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=110.0f},
-                new LiquorCode {LCodeNumber="N004",LiquorCodeDesc="Rumah Awam (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=80.0f},
-                new LiquorCode {LCodeNumber="N005",LiquorCodeDesc="Rumah Awam (Kelas 3)",DefaultHours="10.00pg. hingga 9.00mlm",ExtraHourFee=30.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f},
-                new LiquorCode {LCodeNumber="N006",LiquorCodeDesc="Rumah Bir (Kelas 1)",DefaultHours="10.00pg. hingga 12.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=55.0f},
-                new LiquorCode {LCodeNumber="N007",LiquorCodeDesc="Rumah Bir (Kelas 2)",DefaultHours="10.00pg. hingga 10.00mlm",ExtraHourFee=15.0f,Period=2,PeriodQuantity=1,PeriodFee=35.0f},
-                new LiquorCode {LCodeNumber="N008",LiquorCodeDesc="Lesen Sementara",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=4,PeriodQuantity=1,PeriodFee=30.0f},
-                new LiquorCode {LCodeNumber="N009",LiquorCodeDesc="Lesen Kedai Todi (Estet/Swasta)",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=4.5f},
-                new LiquorCode {LCodeNumber="N010",LiquorCodeDesc="Lesen Sadapan Todi",DefaultHours="Tidak Berkenaan",ExtraHourFee=0.0f,Period=2,PeriodQuantity=1,PeriodFee=15.0f},
-            };
-            liquorCodes.ForEach(s => context.LiquorCodes.Add(s));
-            context.SaveChanges();
 
-            var entmtObjects = new List<EntmtObject>
+            var entmtCodes = new List<E_CODE>
             {
-                new EntmtObject {EntmtObjectDesc="Billiard/Snuker",ObjectFee=10.0f,ObjectName="meja",Period=2,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Boling",ObjectFee=5.0f,ObjectName="lorong",Period=2,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Pameran Filem Sinematograf - Dalam penggung/panggung wayang",ObjectFee=5.0f,ObjectName="pertunjukan",Period=0,PeriodQuantity=0},
-                new EntmtObject {EntmtObjectDesc="Pameran Filem Sinematograf - Di tempat terbuka",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Sarkas",BaseFee=5.0f,ObjectFee=2.5f,ObjectName="pertunjukan",Period=0,PeriodQuantity=0},
-                new EntmtObject {EntmtObjectDesc="Hiburan dengan Mesin Hiburan - Kiddy Rides",ObjectFee=2.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan dengan Mesin Hiburan - Mesin video",ObjectFee=5.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",ObjectFee=4.0f,ObjectName="sehingga 12 malam",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",ObjectFee=8.0f,ObjectName="selepas 12 malam",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",ObjectFee=4.0f,ObjectName="sehingga 12 malam",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",ObjectFee=14.0f,ObjectName="selepas 12 malam",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Pameran",ObjectFee=5.0f,ObjectName="gerai",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Pertunjukan Fesyen oleh Artis Profesional/Pertandingan Ratu Cantik",ObjectFee=10.0f,ObjectName="artis/peserta",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Pesta ria",ObjectFee=2.0f,ObjectName="gerai",Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Hiburan Juke Box",ObjectFee=10.0f,ObjectName="mesin",Period=2,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Pertunjukan Patung",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Apa-apa hiburan di luar kuil",ObjectFee=5.0f,Period=4,PeriodQuantity=1},
-                new EntmtObject {EntmtObjectDesc="Apa-apa hiburan lain",ObjectFee=10.0f,Period=4,PeriodQuantity=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="Tidak melebihi 200 kerusi",E_C_FEE=400.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="200 hingga 400 kerusi",E_C_FEE=800.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="400 hingga 600 kerusi",E_C_FEE=1000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="600 hingga 800 kerusi",E_C_FEE=1400.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="800 hingga 1,000 kerusi",E_C_FEE=1600.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="1,000 hingga 1,200 kerusi",E_C_FEE=1800.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="Lebih 1,200 kerusi",E_C_FEE=2000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=1,E_C_DESC="Lesen Sementara",E_C_FEE=10.0f,E_C_PERIOD=4,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Tidak melebihi 200 kerusi",E_C_FEE=400.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Melebihi 200 kerusi tetapi tidak melebihi 400 kerusi",E_C_FEE=900.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Melebihi 400 kerusi tetapi tidak melebihi 600 kerusi",E_C_FEE=1100.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Melebihi 600 kerusi tetapi tidak melebihi 800 kerusi",E_C_FEE=1550.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Melebihi 800 kerusi tetapi tidak melebihi 1,000 kerusi",E_C_FEE=1800.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Melebihi 1,000 kerusi tetapi tidak melebihi 1,200 kerusi",E_C_FEE=2000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Lebih 1,200 kerusi",E_C_FEE=2200.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=2,E_C_DESC="Lesen Sementara",E_C_FEE=20.0f,E_C_PERIOD=4,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=3,E_C_DESC="Luas lantai tidak melebihi 30 meter persegi",E_C_FEE=300.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=3,E_C_DESC="Luas lantai melebihi 30 meter persegi tetapi tidak melebihi 60 meter persegi",E_C_FEE=500.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=3,E_C_DESC="Luas lantai melebihi 60 meter persegi tetapi tidak melebihi 90 meter persegi",E_C_FEE=800.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=3,E_C_DESC="Lebih 90 meter persegi",E_C_FEE=1100.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=4,E_C_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",E_C_FEE=10.0f,E_C_PERIOD=4,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=5,E_C_DESC="Lorong Boling",E_C_FEE=1100.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=6,E_C_DESC="Gelanggang Luncur",E_C_FEE=1000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=7,E_C_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",E_C_O_FEE=20.0f,E_C_O_NAME="mesin",E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=8,E_C_DESC="Luas lantai tidak melebihi 30 meter persegi",E_C_FEE=400.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=8,E_C_DESC="30 hingga 60 meter persegi",E_C_FEE=600.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=8,E_C_DESC="60 hingga 90 meter persegi",E_C_FEE=900.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=8,E_C_DESC="Lebih 90 meter persegi",E_C_FEE=1200.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=8,E_C_DESC="Kabaret - Lebih 90 meter persegi",E_C_FEE=2200.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Tidak melebihi 5 meja",E_C_FEE=500.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 5 meja tetapi tidak melebihi 10 meja",E_C_FEE=1000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 10 meja tetapi tidak melebihi 20 meja",E_C_FEE=1500.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 20 meja tetapi tidak melebihi 30 meja",E_C_FEE=2000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 30 meja tetapi tidak melebihi 40 meja",E_C_FEE=2500.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 40 meja tetapi tidak melebihi 50 meja",E_C_FEE=3000.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=9,E_C_DESC="Melebihi 50 meja",E_C_B_FEE=3000.0f,E_C_O_FEE=50.0f,E_C_O_NAME="meja",E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=10,E_C_DESC="Tidak melebihi 1000 kerusi",E_C_FEE=400.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=10,E_C_DESC="Melebihi 1000 kerusi",E_C_FEE=800.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=10,E_C_DESC="Lesen sementara",E_C_FEE=50.0f,E_C_PERIOD=4,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=11,E_C_DESC="Luas lantai tidak melebihi 100 meter persegi",E_C_FEE=100.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=11,E_C_DESC="Luas lantai melebihi 100 meter persegi tetapi tidak melebihi 150 meter persegi",E_C_FEE=200.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=11,E_C_DESC="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",E_C_FEE=300.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=11,E_C_DESC="Luas lantai melebihi 200 meter persegi",E_C_FEE=500.0f,E_C_PERIOD=1,E_C_PERIOD_Q=1},
+                new E_CODE {E_GROUPID=11,E_C_DESC="Lesen sementara",E_C_FEE=10.0f,E_C_PERIOD=4,E_C_PERIOD_Q=1},
             };
-            entmtObjects.ForEach(s => context.EntmtObjects.Add(s));
-            context.SaveChanges();
-
-            var entmtCodes = new List<EntmtCode>
-            {
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Tidak melebihi 200 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="200 hingga 400 kerusi",Fee=800.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="400 hingga 600 kerusi",Fee=1000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="600 hingga 800 kerusi",Fee=1400.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="800 hingga 1,000 kerusi",Fee=1600.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="1,000 hingga 1,200 kerusi",Fee=1800.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Lebih 1,200 kerusi",Fee=2000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=1,EntmtCodeDesc="Lesen Sementara",Fee=10.0f,Period=4,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Tidak melebihi 200 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 200 kerusi tetapi tidak melebihi 400 kerusi",Fee=900.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 400 kerusi tetapi tidak melebihi 600 kerusi",Fee=1100.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 600 kerusi tetapi tidak melebihi 800 kerusi",Fee=1550.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 800 kerusi tetapi tidak melebihi 1,000 kerusi",Fee=1800.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Melebihi 1,000 kerusi tetapi tidak melebihi 1,200 kerusi",Fee=2000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Lebih 1,200 kerusi",Fee=2200.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=2,EntmtCodeDesc="Lesen Sementara",Fee=20.0f,Period=4,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai tidak melebihi 30 meter persegi",Fee=300.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai melebihi 30 meter persegi tetapi tidak melebihi 60 meter persegi",Fee=500.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Luas lantai melebihi 60 meter persegi tetapi tidak melebihi 90 meter persegi",Fee=800.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=3,EntmtCodeDesc="Lebih 90 meter persegi",Fee=1100.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=4,EntmtCodeDesc="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",Fee=10.0f,Period=4,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=5,EntmtCodeDesc="Lorong Boling",Fee=1100.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=6,EntmtCodeDesc="Gelanggang Luncur",Fee=1000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=7,EntmtCodeDesc="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",ObjectFee=20.0f,ObjectName="mesin",Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Luas lantai tidak melebihi 30 meter persegi",Fee=400.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="30 hingga 60 meter persegi",Fee=600.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="60 hingga 90 meter persegi",Fee=900.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Lebih 90 meter persegi",Fee=1200.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=8,EntmtCodeDesc="Kabaret - Lebih 90 meter persegi",Fee=2200.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Tidak melebihi 5 meja",Fee=500.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 5 meja tetapi tidak melebihi 10 meja",Fee=1000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 10 meja tetapi tidak melebihi 20 meja",Fee=1500.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 20 meja tetapi tidak melebihi 30 meja",Fee=2000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 30 meja tetapi tidak melebihi 40 meja",Fee=2500.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 40 meja tetapi tidak melebihi 50 meja",Fee=3000.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=9,EntmtCodeDesc="Melebihi 50 meja",BaseFee=3000.0f,ObjectFee=50.0f,ObjectName="meja",Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Tidak melebihi 1000 kerusi",Fee=400.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Melebihi 1000 kerusi",Fee=800.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=10,EntmtCodeDesc="Lesen sementara",Fee=50.0f,Period=4,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai tidak melebihi 100 meter persegi",Fee=100.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 100 meter persegi tetapi tidak melebihi 150 meter persegi",Fee=200.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",Fee=300.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Luas lantai melebihi 200 meter persegi",Fee=500.0f,Period=1,PeriodQuantity=1},
-                new EntmtCode {EntmtGroupID=11,EntmtCodeDesc="Lesen sementara",Fee=10.0f,Period=4,PeriodQuantity=1},
-            };
-            entmtCodes.ForEach(s => context.EntmtCodes.Add(s));
+            entmtCodes.ForEach(s => context.E_CODEs.Add(s));
             context.SaveChanges();
 
             var btlinkreqdocs = new List<BTLinkReqDoc>
@@ -813,6 +989,30 @@ namespace TradingLicense.Data.Migrations
                 new BTLinkReqDoc {BusinessTypeID=6,RequiredDocID=3},
             };
             btlinkreqdocs.ForEach(s => context.PALinkReqDocs.Add(s));
+            context.SaveChanges();
+
+            var btls = new List<BT_L_RD>
+            {
+                new BT_L_RD {BT_ID=1,RD_ID=1},
+                new BT_L_RD {BT_ID=1,RD_ID=2},
+                new BT_L_RD {BT_ID=1,RD_ID=3},
+                new BT_L_RD {BT_ID=2,RD_ID=1},
+                new BT_L_RD {BT_ID=2,RD_ID=2},
+                new BT_L_RD {BT_ID=2,RD_ID=3},
+                new BT_L_RD {BT_ID=3,RD_ID=1},
+                new BT_L_RD {BT_ID=3,RD_ID=2},
+                new BT_L_RD {BT_ID=3,RD_ID=3},
+                new BT_L_RD {BT_ID=4,RD_ID=1},
+                new BT_L_RD {BT_ID=4,RD_ID=2},
+                new BT_L_RD {BT_ID=4,RD_ID=3},
+                new BT_L_RD {BT_ID=5,RD_ID=1},
+                new BT_L_RD {BT_ID=5,RD_ID=2},
+                new BT_L_RD {BT_ID=5,RD_ID=3},
+                new BT_L_RD {BT_ID=6,RD_ID=1},
+                new BT_L_RD {BT_ID=6,RD_ID=2},
+                new BT_L_RD {BT_ID=6,RD_ID=3},
+            };
+            btls.ForEach(s => context.BT_L_RD.Add(s));
             context.SaveChanges();
 
             var bclinkads = new List<BCLinkAD>
