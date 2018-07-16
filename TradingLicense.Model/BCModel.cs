@@ -33,6 +33,7 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
 
+        public string LIC_TYPEDESC { get; set; }
         public string SectorDesc { get; set; }
         public string DepartmentIDs { get; set; }
         public List<int> AdditionalDocs { get; set; }

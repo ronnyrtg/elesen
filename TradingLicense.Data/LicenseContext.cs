@@ -27,7 +27,12 @@ namespace TradingLicense.Data
 
         //Combined Applications
         public DbSet<APPLICATION> Applications { get; set; }
+        public DbSet<ADDRESS> ADDRESS { get; set; }
         public DbSet<BC> BCs { get; set; }
+        public DbSet<BT> BT { get; set; }
+        public DbSet<RD> RD { get; set; }
+        public DbSet<BT_L_RD> BT_L_RD { get; set; }
+        public DbSet<LIC_TYPE> LIC_TYPEs { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
@@ -61,11 +66,7 @@ namespace TradingLicense.Data
         public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
         public DbSet<RouteUnit> RouteUnits { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<ADDRESS> ADDRESS { get; set; }
-        public DbSet<BT> BT { get; set; }
-        public DbSet<RD> RD { get; set; }
-        public DbSet<BT_L_RD> BT_L_RD { get; set; }
-        public DbSet<LIC_TYPE> LIC_TYPEs { get; set; }
+        
 
 
         //User related

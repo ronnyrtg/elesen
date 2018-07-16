@@ -46,6 +46,6 @@ namespace TradingLicense.Entities
         }
 
         public virtual Sector Sector { get; set; }
-
+        public virtual LIC_TYPE LIC_TYPE { get; set; }
     }
 }

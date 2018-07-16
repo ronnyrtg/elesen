@@ -33,14 +33,14 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBC", id = "frmBC" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.BCID)
+            @Html.HiddenFor(m => m.BC_ID)
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SECTOR_ID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.SECTOR_ID)
+                        @Html.DropDownListFor(m => m.SECTORID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SECTORID)
                     </div>
                 </div>
             </div>
