@@ -9,6 +9,10 @@ namespace TradingLicense.Entities
         public int BC_ID { get; set; }
         //Type of License
         public int LIC_TYPEID { get; set; }
+        //Code Reference
+        [StringLength(20)]
+        [Column(TypeName = "VARCHAR2")]
+        public string C_R { get; set; }
         //Code Reference Description
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
@@ -26,6 +30,8 @@ namespace TradingLicense.Entities
         //Rate per Object
         public float? O_FEE { get; set; }
         //Start and stop time
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
         public string DEF_HOUR { get; set; }
         //Extra fee if exceed default stop time
         public float? EX_HOUR_FEE { get; set; }

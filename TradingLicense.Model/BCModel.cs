@@ -8,7 +8,9 @@ namespace TradingLicense.Model
 
         public int BC_ID { get; set; }
         public int LIC_TYPEID { get; set; }
-
+        [Required(ErrorMessage = "Please Enter Code Reference")]
+        [Display(Name = "Code Reference")]
+        public string C_R { get; set; }
         [Required(ErrorMessage = "Please Enter Code Description")]
         [Display(Name = "Code Description")]
         public string C_R_DESC { get; set; }

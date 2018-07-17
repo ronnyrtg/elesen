@@ -30,7 +30,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnRejected = "Rejected";
         public const string OnKIV = "KIV";
 
-        private Func<BusinessCode, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BusinessCodeID, text = $"{bc.CodeDesc}~{bc.CodeNumber}" };
+        private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R_DESC}~{bc.C_R}" };
         private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
 
         /// <summary>
@@ -147,8 +147,8 @@ namespace TradingLicense.Web.Controllers
                     // TODO: Select2ListItem is just the same as build-in KeyValuePair class
                     List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
                     var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
-                    businessCodesList = ctx.BusinessCodes
-                        .Where(b => ids.Contains(b.BusinessCodeID))
+                    businessCodesList = ctx.BCs
+                        .Where(b => ids.Contains(b.BC_ID))
                         .Select(fnSelectBusinessCode)
                         .ToList();
 
@@ -243,22 +243,52 @@ namespace TradingLicense.Web.Controllers
         /// <param name="selectedSector">The selected sector.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult FillBusinessCode(string query, int selectedMode, int selectedSector)
+        public JsonResult FillBusinessCode(string query, int selectedLic, int? selectedSector)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<BusinessCode> primaryQuery = ctx.BusinessCodes;
+                IQueryable<BC> primaryQuery = ctx.BCs;
 
-                if (selectedSector > 0)
+                if (selectedLic == 1)
                 {
-                    primaryQuery = primaryQuery.Where(bc => bc.SectorID == selectedSector);
+                    if (selectedSector > 0) {
+                        primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic && bc.SECTORID == selectedSector);
+                    }
+                    else
+                    {
+                        primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic);
+                    }
                 }
+                else
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic);
+                }
+
                 if (!String.IsNullOrWhiteSpace(query))
                 {
-                    primaryQuery = primaryQuery.Where(bc => bc.CodeDesc.ToLower().Contains(query.ToLower()) || bc.CodeNumber.ToLower().Contains(query.ToLower()));
+                    primaryQuery = primaryQuery.Where(bc => bc.C_R_DESC.ToLower().Contains(query.ToLower()) || bc.C_R_DESC.ToLower().Contains(query.ToLower()));
                 }
                 var businessCode = primaryQuery.Select(fnSelectBusinessCode).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region Get Individual Name (MyKad) for Datatable
+        /// <summary>
+        /// Get Individual Code
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillIndividual(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var individual = ctx.Individuals
+                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectIndividualFormat).ToList();
+                return Json(individual, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion

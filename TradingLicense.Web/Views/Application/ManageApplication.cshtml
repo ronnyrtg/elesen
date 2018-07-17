@@ -101,7 +101,7 @@
                 <div class="col-lg-3 col-md-6" id="licenseType">
                     <div class="form-group">
                         <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.APP_TYPE_ID, new SelectList(LicenseList, "Value", "Text"), new { @class = "form-control", onchange = "changeLicense()" })
+                        @Html.DropDownListFor(m => m.APP_TYPE_ID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
                         @Html.ValidationMessageFor(m => m.APP_TYPE_ID)
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                 <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Pilih Kumpulan Kod Perniagaan", new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
@@ -229,28 +229,28 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Poskod<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
@@ -258,7 +258,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Negeri<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
@@ -267,7 +267,7 @@
             </div>
             <hr />
             <div class="row">
-                <div class="col-md-4 col-sm-12">
+                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Luas Premis<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.P_AREA, new { @class = "form-control allownumericwithdecimal" })
@@ -276,7 +276,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-12">
+                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
                         @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
@@ -285,7 +285,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-3">
+                <div class="col-md-4 col-sm-3 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
@@ -294,7 +294,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-3">
+                <div class="col-md-4 col-sm-3 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Hingga<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
@@ -304,26 +304,26 @@
             </div>
             <div class="row">
                 <div class="form-group">
-                    <div class="col-md-10 col-lg-6">
+                    <div class="col-md-10 col-lg-6 premise" style="display:normal;">
                         <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group">
-                    <div class="col-md-10 col-lg-3">
+                    <div class="col-md-10 col-lg-3 premise" style="display:normal;">
                         @Html.DropDownListFor(m => m.PREMISETYPEID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
                     </div>
-                    @if (Model.APP_ID == 0)
-                    {
-                        <div class="col-md-2 col-lg-2">
-                            <input type="button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
-                        </div>
-                    }
+                        @if (Model.APP_ID == 0)
+                        {
+                            <div class="col-md-2 col-lg-2 premise">
+                                <input type="button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                            </div>
+                        }                    
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-sm-12">
+                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Tingkat</div>
                         @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
@@ -900,32 +900,7 @@
             errorMessage(actionError);
         }
 
-        $(function () {
-
-            userRollTemplate = $("#UserRollTemplate").val();
-
-            var success = '@(TempData["SuccessMessage"])';
-            if (success != null && success != "") {
-                successMessage(success);
-            }
-
-            var actionError = '@(TempData["ErrorMessage"])';
-            if (actionError != null && actionError != "") {
-                errorMessage(actionError);
-            }
-
-            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
-                visibleGridUploadColume = true;
-            }
-            if (userRollTemplate == 2) {
-                visibleGridColume = true;
-            }
-
-            $("#businessCodeList").select2({ width: '100%' });
-            $("#individualList").select2({ width: '100%' });
-            $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
-
-            AddRules();
+        function bindCode(){
 
             function formatBusinessCodes(data) {
                 var r = data.text.split('~');
@@ -962,7 +937,7 @@
                         //console.log(query)
                         return {
                             query: query.term,
-                            selectedMode: $('#MODE').val(),
+                            selectedLic: $('#APP_TYPE_ID').val(),
                             selectedSector:  $("#SectorID").val()
                         }
                     },
@@ -975,6 +950,37 @@
                     }
                 }
             });
+        };
+
+        $(function () {
+
+
+            userRollTemplate = $("#UserRollTemplate").val();
+
+            var success = '@(TempData["SuccessMessage"])';
+            if (success != null && success != "") {
+                successMessage(success);
+            }
+
+            var actionError = '@(TempData["ErrorMessage"])';
+            if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+
+            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
+                visibleGridUploadColume = true;
+            }
+            if (userRollTemplate == 2) {
+                visibleGridColume = true;
+            }
+
+            $("#businessCodeList").select2({ width: '100%' });
+            $("#individualList").select2({ width: '100%' });
+            $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
+
+            AddRules();
+
+
 
 
             function individualFormating(state) {
@@ -1192,9 +1198,13 @@
             window.location.href = link;
         }
 
-        
+        function changeSector(){
+            bindCode();
+        }
 
         function changeLicense() {
+
+            bindCode();
             if ($("#APP_TYPE_ID").val() == 1) {
                 $('#approvalType').show();
                 $('#approvalDirector').hide();
@@ -1203,6 +1213,7 @@
                 $('#sector').show();
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 2){
                 $('#approvalType').hide();
@@ -1211,8 +1222,9 @@
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 3){
                 $('#approvalType').hide();
@@ -1221,8 +1233,9 @@
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 4){
                 $('#approvalType').hide();
@@ -1231,8 +1244,9 @@
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 5){
                 $('#approvalType').hide();
@@ -1241,8 +1255,9 @@
                 $('#approvalMeeting').hide();
                 $("#MODE").val(2);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 6){
                 $('#approvalType').hide();
@@ -1251,8 +1266,9 @@
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 7){
                 $('#approvalType').hide();
@@ -1261,8 +1277,9 @@
                 $('#approvalMeeting').hide();
                 $("#MODE").val(3);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 8){
                 $('#approvalType').hide();
@@ -1271,8 +1288,9 @@
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 9){
                 $('#approvalType').hide();
@@ -1281,8 +1299,9 @@
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').hide();
+                $('.premise').show();
             }
             else if ($("#APP_TYPE_ID").val() == 10){
                 $('#approvalType').hide();
@@ -1291,8 +1310,9 @@
                 $('#approvalMeeting').show();
                 $("#MODE").val(4);
                 $('#sector').hide();
-                $('#businessCode').hide();
+                $('#businessCode').show();
                 $('#entmtGroup').show();
+                $('.premise').show();
             }
         }
 
