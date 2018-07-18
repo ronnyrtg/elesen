@@ -33,7 +33,7 @@ namespace TradingLicense.Entities
             Active = true;
         }
 
-        public virtual RoleTemplate RoleTemplate { get; set; }
+        public virtual ROLE RoleTemplate { get; set; }
         public virtual Department Department { get; set; }
 
     }

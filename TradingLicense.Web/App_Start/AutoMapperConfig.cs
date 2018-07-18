@@ -17,14 +17,14 @@ namespace TradingLicense.Web.App_Start
                 // The following changes that behavior to all null values!
 
                 cfg.AllowNullCollections = true;
-                cfg.CreateMap<AccessPage, AccessPageModel>().ForMember(dest => dest.RoleTemplateDesc, opt => opt.MapFrom(s => s.RoleTemplate.RoleTemplateDesc));
+                cfg.CreateMap<AccessPage, AccessPageModel>().ForMember(dest => dest.RoleTemplateDesc, opt => opt.MapFrom(s => s.ROLEs.ROLE_DESC));
                 cfg.CreateMap<AccessPageModel, AccessPage>();
                 cfg.CreateMap<Department, DepartmentModel>();
                 cfg.CreateMap<RequiredDoc, RequiredDocModel>();
                 cfg.CreateMap<CompanyModel, Company>();
                 cfg.CreateMap<Company, CompanyModel>().ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BusinessType.BusinessTypeDesc));
                 cfg.CreateMap<Attachment, AttachmentModel>();
-                cfg.CreateMap<RoleTemplate, RoleTemplateModel>();
+                cfg.CreateMap<ROLE, ROLEModel>();
                 cfg.CreateMap<AppStatus, AppStatusModel>();
                 cfg.CreateMap<PremiseType, PremiseTypeModel>();
                 cfg.CreateMap<LoginLog, LoginLogModel>();

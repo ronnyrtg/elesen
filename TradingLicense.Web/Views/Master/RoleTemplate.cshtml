@@ -86,17 +86,19 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Role Template Description", "data": "RoleTemplateDesc" },
+                        { "title": "Nama Peranan", "data": "ROLE_DESC" },
+                        { "title": "Tempoh", "data": "DURATION" },
                         {
-                    "title": "Action",
-                    "data": null,
-                    "render": function (data, type, row) {
-                        var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageRoleTemplate", "Master")?Id=' + row["RoleTemplateID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["RoleTemplateID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                        return appendstring
-                    },
-                            "width": "80px",
+                            "title": "Action",
+                            "data": null,
+                            "render": function (data, type, row) {
+                                var appendstring = '';
+                                appendstring += '<a  href="@Url.Action("ManageRoleTemplate", "Master")?Id=' + row["ROLEID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["ROLEID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                return appendstring
+                    
+                        },
+                    "width": "80px",
                     "orderable": false,
                     "class": "action-icons"
                 }

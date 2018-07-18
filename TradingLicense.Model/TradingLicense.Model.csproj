@@ -98,7 +98,7 @@
     <Compile Include="RequiredDocModel.cs" />
     <Compile Include="ResetPasswordModel.cs" />
     <Compile Include="RoadModel.cs" />
-    <Compile Include="RoleTemplateModel.cs" />
+    <Compile Include="ROLEModel.cs" />
     <Compile Include="SectorModel.cs" />
     <Compile Include="UsersModel.cs" />
     <Compile Include="ZoneModel.cs" />

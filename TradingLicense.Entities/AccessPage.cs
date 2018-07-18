@@ -21,6 +21,6 @@ namespace TradingLicense.Entities
 
         public int RoleTemplateID { get; set; }
 
-        public virtual RoleTemplate RoleTemplate { get; set; }
+        public virtual ROLE ROLEs { get; set; }
     }
 }

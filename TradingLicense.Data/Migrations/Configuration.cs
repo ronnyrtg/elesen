@@ -479,18 +479,18 @@ namespace TradingLicense.Data.Migrations
             context.SaveChanges();
 
 
-            var roletemplates = new List<RoleTemplate>
+            var roletemplates = new List<ROLE>
             {
-                new RoleTemplate {RoleTemplateDesc="Public" },
-                new RoleTemplate {RoleTemplateDesc="Desk Officer"},
-                new RoleTemplate {RoleTemplateDesc="Clerk"},
-                new RoleTemplate {RoleTemplateDesc="Supervisor"},
-                new RoleTemplate {RoleTemplateDesc="Route Unit" },
-                new RoleTemplate {RoleTemplateDesc="Director"},
-                new RoleTemplate {RoleTemplateDesc="CEO" },
-                new RoleTemplate {RoleTemplateDesc="Administrator"},
+                new ROLE {ROLE_DESC="Public",DURATION=60 },
+                new ROLE {ROLE_DESC="Desk Officer",DURATION=3 },
+                new ROLE {ROLE_DESC="Clerk",DURATION=3 },
+                new ROLE {ROLE_DESC="Supervisor",DURATION=3 },
+                new ROLE {ROLE_DESC="Route Unit",DURATION=3 },
+                new ROLE {ROLE_DESC="Director",DURATION=3 },
+                new ROLE {ROLE_DESC="CEO",DURATION=3 },
+                new ROLE {ROLE_DESC="Administrator",DURATION=3 },
             };
-            roletemplates.ForEach(s => context.RoleTemplates.Add(s));
+            roletemplates.ForEach(s => context.ROLEs.Add(s));
             context.SaveChanges();
 
             var AppStatus = new List<AppStatus>

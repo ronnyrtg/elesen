@@ -1147,12 +1147,12 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult RoleTemplate([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string roleTemplateDesc)
         {
-            List<TradingLicense.Model.RoleTemplateModel> roleTemplate = new List<Model.RoleTemplateModel>();
+            List<TradingLicense.Model.ROLEModel> roleTemplate = new List<Model.ROLEModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<RoleTemplate> query = ctx.RoleTemplates;
+                IQueryable<ROLE> query = ctx.ROLEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1161,7 +1161,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(roleTemplateDesc))
                 {
                     query = query.Where(p =>
-                                       p.RoleTemplateDesc.Contains(roleTemplateDesc)
+                                       p.ROLE_DESC.Contains(roleTemplateDesc)
                                    );
                 }
 
@@ -1189,7 +1189,7 @@ namespace TradingLicense.Web.Controllers
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                roleTemplate = Mapper.Map<List<RoleTemplateModel>>(query.ToList());
+                roleTemplate = Mapper.Map<List<ROLEModel>>(query.ToList());
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, roleTemplate, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -1202,14 +1202,14 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageRoleTemplate(int? Id)
         {
-            RoleTemplateModel roleTemplateModel = new RoleTemplateModel();
+            ROLEModel roleTemplateModel = new ROLEModel();
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int roleTemplateID = Convert.ToInt32(Id);
-                    var roleTemplate = ctx.RoleTemplates.Where(a => a.RoleTemplateID == roleTemplateID).FirstOrDefault();
-                    roleTemplateModel = Mapper.Map<RoleTemplateModel>(roleTemplate);
+                    var roleTemplate = ctx.ROLEs.Where(a => a.ROLEID == roleTemplateID).FirstOrDefault();
+                    roleTemplateModel = Mapper.Map<ROLEModel>(roleTemplate);
                 }
             }
 
@@ -1223,20 +1223,20 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageRoleTemplate(RoleTemplateModel roleTemplateModel)
+        public ActionResult ManageRoleTemplate(ROLEModel roleTemplateModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    RoleTemplate roleTemplate;
-                    if (IsRoleTemplateDuplicate(roleTemplateModel.RoleTemplateDesc, roleTemplateModel.RoleTemplateID))
+                    ROLE roleTemplate;
+                    if (IsRoleTemplateDuplicate(roleTemplateModel.ROLE_DESC, roleTemplateModel.ROLEID))
                     {
                         TempData["ErrorMessage"] = "Role Template is already exist in the database.";
                         return View(roleTemplateModel);
                     }
-                    roleTemplate = Mapper.Map<RoleTemplate>(roleTemplateModel);
-                    ctx.RoleTemplates.AddOrUpdate(roleTemplate);
+                    roleTemplate = Mapper.Map<ROLE>(roleTemplateModel);
+                    ctx.ROLEs.AddOrUpdate(roleTemplate);
                     ctx.SaveChanges();
                 }
 
@@ -1260,7 +1260,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var roleTemplate = new TradingLicense.Entities.RoleTemplate() { RoleTemplateID = id };
+                var roleTemplate = new TradingLicense.Entities.ROLE() { ROLEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(roleTemplate).State = System.Data.Entity.EntityState.Deleted;
@@ -1285,10 +1285,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.RoleTemplates.FirstOrDefault(
-                   c => c.RoleTemplateID != id && c.RoleTemplateDesc.ToLower() == name.ToLower())
-               : ctx.RoleTemplates.FirstOrDefault(
-                   c => c.RoleTemplateDesc.ToLower() == name.ToLower());
+               ctx.ROLEs.FirstOrDefault(
+                   c => c.ROLEID != id && c.ROLE_DESC.ToLower() == name.ToLower())
+               : ctx.ROLEs.FirstOrDefault(
+                   c => c.ROLE_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }

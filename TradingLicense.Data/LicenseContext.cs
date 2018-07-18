@@ -71,7 +71,7 @@ namespace TradingLicense.Data
 
         //User related
         public DbSet<Users> Users { get; set; }
-        public DbSet<RoleTemplate> RoleTemplates { get; set; }
+        public DbSet<ROLE> ROLEs { get; set; }
         public DbSet<AccessPage> AccessPages { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }       
 
