@@ -33,6 +33,7 @@ namespace TradingLicense.Data
         public DbSet<RD> RD { get; set; }
         public DbSet<BT_L_RD> BT_L_RD { get; set; }
         public DbSet<LIC_TYPE> LIC_TYPEs { get; set; }
+        public DbSet<B_O> B_Os { get; set; }
 
         //Premise Application
         public DbSet<PremiseApplication> PremiseApplications { get; set; }
@@ -54,7 +55,6 @@ namespace TradingLicense.Data
         public DbSet<E_GROUP> E_GROUPs { get; set; }
         public DbSet<EntmtObject> EntmtObjects { get; set; }
         public DbSet<E_CODE> E_CODEs { get; set; }
-        public DbSet<BannerObject> BannerObjects { get; set; }
         public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
         
 

@@ -32,6 +32,10 @@ namespace TradingLicense.Model
 
         //Banner Application has Processing Fee
         public float? PRO_FEE { get; set; }
+        public int? BC_ID { get; set; }
+        public float? B_SIZE { get; set; }
+        public float? B_QTY { get; set; }
+        public int? B_O_TOTAL { get; set; }
 
         //Hawker Application & Stall Application
         public DateTime? V_START { get; set; }
