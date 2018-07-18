@@ -60,7 +60,7 @@
     <Compile Include="LIC_TYPE.cs" />
     <Compile Include="MLPermitApplication.cs" />
     <Compile Include="Attachment.cs" />
-    <Compile Include="BannerObject.cs" />
+    <Compile Include="B_O.cs" />
     <Compile Include="BusinessCode.cs" />
     <Compile Include="BCLinkDep.cs" />
     <Compile Include="BusinessType.cs" />

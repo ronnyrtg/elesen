@@ -49,6 +49,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BC, BCModel>()
                             .ForMember(dest => dest.LIC_TYPEDESC, opt => opt.MapFrom(s => s.LIC_TYPE.LIC_TYPEDESC))
                             .ForMember(dest => dest.SectorDesc, opt => opt.MapFrom(s => s.Sector.SectorDesc));
+                cfg.CreateMap<B_O, B_O_Model>();
 
 
                 //PremiseApplication related

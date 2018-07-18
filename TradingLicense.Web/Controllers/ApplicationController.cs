@@ -634,5 +634,71 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
+        #region Save Banner Objects
+        [HttpPost]
+        public ActionResult AddBannerObject(int APP_ID, int BC_ID, string ADDRA1, string ADDRA2, string ADDRA3, string ADDRA4, float B_SIZE, int B_QTY)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var ba = ctx.B_Os.Where(p => p.APP_ID == APP_ID).FirstOrDefault();
+                var Fee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.P_FEE).FirstOrDefault();
+                var eFee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.EX_FEE).FirstOrDefault();
+                float? TotalFee = 0;
+
+                if (ba != null)
+                {
+                    ba.APP_ID = APP_ID;
+                    ba.BC_ID = BC_ID;
+                    ba.B_SIZE = B_SIZE;
+                    ba.B_QTY = B_QTY;
+                    if (B_SIZE <= 8)
+                    {
+                        TotalFee = Fee * B_QTY;
+                    }
+                    else
+                    {
+                        TotalFee = (((float)Math.Floor(B_SIZE - 8) * eFee) + Fee) * B_QTY;
+                    }
+                    ba.FEE = TotalFee;
+
+                    ctx.B_Os.Add(ba);
+                    ctx.SaveChanges();
+                    TempData["SuccessMessage"] = "Iklan berjaya ditambah.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Iklan tidak berjaya ditambah";
+                }
+            }
+
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + APP_ID);
+        }
+        #endregion
+
+        #region Banner Object List Datatable
+        /// <summary>
+        /// Get Banner Object Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="bannerApplicationId">The banner application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult BannerObject([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? bannerApplicationId)
+        {
+            List<B_O_Model> bannerObject = new List<B_O_Model>();
+            int totalRecord = 0;
+            if (bannerApplicationId.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var bannerObj = ctx.B_Os.Where(bo => bo.APP_ID == bannerApplicationId).ToList();
+                    bannerObject = Mapper.Map<List<B_O_Model>>(bannerObj);
+                    totalRecord = bannerObject.Count;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, bannerObject, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
     }
 }

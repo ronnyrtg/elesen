@@ -64,7 +64,7 @@
     <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="MLPermitApplicationModel.cs" />
     <Compile Include="AttachmentModel.cs" />
-    <Compile Include="BannerObjectModel.cs" />
+    <Compile Include="B_O_Model.cs" />
     <Compile Include="BCLinkADModel.cs" />
     <Compile Include="BTLinkReqDocModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />

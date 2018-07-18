@@ -15,6 +15,7 @@
     List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
     List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
     List<TradingLicense.Model.DepartmentModel> departmentList = new List<TradingLicense.Model.DepartmentModel>();
+    List<TradingLicense.Model.BCModel> bannerCodeList = new List<TradingLicense.Model.BCModel>();
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
@@ -38,6 +39,9 @@
 
         var dept = ctx.Departments.ToList();
         departmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(dept);
+
+        var banner = ctx.BCs.Where(ba => ba.LIC_TYPEID == 5).ToList();
+        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BCModel>>(banner);
     }
 
     List<SelectListItem> LicenseList = new List<SelectListItem>();
@@ -265,6 +269,29 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">Butir-butir Iklan<span class="cfont">*</span></div>                        
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-12 banner" style="display:none;">
+                    <div class="form-group">
+                        <table cellspacing="0" class="table table-hover table-bordered responsive" style="width:100%" id="BannerObject"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
+                    </div>
+                </div>
+            </div>
+
             <hr />
             <div class="row">
                 <div class="col-md-4 col-sm-12 premise" style="display:normal;">
@@ -330,6 +357,8 @@
                     </div>
                 </div>
             </div>
+
+            
 
             <div class="row">
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
@@ -867,11 +896,86 @@
     </div>
 </div>
 
-<style type="text/css">
-    label.error {
-        color: red;
-    }
-</style>
+<!--Add Banner Object-->
+<div id="showAddBannerObject" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddBannerObject", "Application", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Iklan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Kod Iklan</div>
+                                @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                                <span class="text-danger SizeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Bilangan Iklan</div>
+                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                                <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveBannerObjects()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
 
 @section scripts{
     <script>
@@ -1214,6 +1318,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 2){
                 $('#approvalType').hide();
@@ -1225,6 +1330,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 3){
                 $('#approvalType').hide();
@@ -1236,6 +1342,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 4){
                 $('#approvalType').hide();
@@ -1247,6 +1354,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 5){
                 $('#approvalType').hide();
@@ -1255,9 +1363,10 @@
                 $('#approvalMeeting').hide();
                 $("#MODE").val(2);
                 $('#sector').hide();
-                $('#businessCode').show();
+                $('#businessCode').hide();
                 $('#entmtGroup').hide();
                 $('.premise').hide();
+                $('.banner').show();
             }
             else if ($("#APP_TYPE_ID").val() == 6){
                 $('#approvalType').hide();
@@ -1269,6 +1378,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 7){
                 $('#approvalType').hide();
@@ -1280,6 +1390,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 8){
                 $('#approvalType').hide();
@@ -1291,6 +1402,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 9){
                 $('#approvalType').hide();
@@ -1302,6 +1414,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
+                $('.banner').hide();
             }
             else if ($("#APP_TYPE_ID").val() == 10){
                 $('#approvalType').hide();
@@ -1313,6 +1426,7 @@
                 $('#businessCode').show();
                 $('#entmtGroup').show();
                 $('.premise').show();
+                $('.banner').hide();
             }
         }
 
@@ -2080,6 +2194,55 @@
             return true;
         }
 
+        $(document).ready(function bannerObj() {
+            if ($.fn.DataTable.isDataTable("#BannerObject")) {
+                $('#BannerObject').dataTable().fnDestroy();
+            }
+
+            var data = { "ApplicationId": @Model.APP_ID };
+
+            table = $("#BannerObject").DataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("BannerObject", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    { "title": "No. Siri Iklan", "data": "B_O_ID", "orderable": false },
+                    { "title": "Kod Iklan", "data": "BC_ID", "orderable": false },
+                    { "title": "Lokasi", "data": "ADDRESS_ID", "orderable": false },
+                    { "title": "Saiz", "data": "B_SIZE", "orderable": false },
+                    { "title": "Bilangan", "data": "B_QTY", "orderable": false },
+                    { "title": "Fi (RM)", "data": "FEE", "orderable": false },
+                    {
+                        "title": "Padam",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (!restrictSubmittedApps || data['APPSTATUSID'] == 1) {
+
+                                if (IsDelete != "False" && '@Model.B_O_TOTAL' > 1) {
+                                    appendstring += '<a href="javascript:void(0);" data-id="' + row["BannerObjectID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                }
+                            }
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ]
+            })
+        });
+
         function validateSavePayments() {
             if($('#individualID').val() === '') {
                 alert('Please select individual who has paid for this application');
@@ -2155,6 +2318,29 @@
 
         function savePremiseType(){
             $("frmsavePremiseType").submit();
+        }
+
+        function AddBannerObject() {
+            $("#showAddBannerObject").modal('show');
+
+            //Form input control modes
+            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                    event.preventDefault();
+                }
+            });
+
+            $(".allowinteger").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9]/g, ''));
+                if ((event.which != 46) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                    event.preventDefault();
+                }
+            });
+        }
+
+        function SaveBannerObjects(){
+            $("frmsaveBannerObject").submit();
         }
     </script>
 
