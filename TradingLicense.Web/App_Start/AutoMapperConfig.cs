@@ -17,7 +17,7 @@ namespace TradingLicense.Web.App_Start
                 // The following changes that behavior to all null values!
 
                 cfg.AllowNullCollections = true;
-                cfg.CreateMap<AccessPage, AccessPageModel>().ForMember(dest => dest.RoleTemplateDesc, opt => opt.MapFrom(s => s.ROLEs.ROLE_DESC));
+                cfg.CreateMap<AccessPage, AccessPageModel>().ForMember(dest => dest.ROLE_DESC, opt => opt.MapFrom(s => s.ROLEs.ROLE_DESC));
                 cfg.CreateMap<AccessPageModel, AccessPage>();
                 cfg.CreateMap<Department, DepartmentModel>();
                 cfg.CreateMap<RequiredDoc, RequiredDocModel>();

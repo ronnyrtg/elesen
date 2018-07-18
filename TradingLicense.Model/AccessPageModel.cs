@@ -17,8 +17,8 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Please enter Crud Level")]
         public int CrudLevel { get; set; }
 
-        public int RoleTemplateID { get; set; }
+        public int ROLEID { get; set; }
 
-        public string RoleTemplateDesc { get; set; }
+        public string ROLE_DESC { get; set; }
     }
 }

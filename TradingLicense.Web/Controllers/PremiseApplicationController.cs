@@ -60,7 +60,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                int? rollTemplateID = ProjectSession.User?.RoleTemplateID;
+                int? rollTemplateID = ProjectSession.User?.ROLEID;
                 IQueryable<PremiseApplication> query = ctx.PremiseApplications;
 
                 if (rollTemplateID.HasValue)
@@ -138,7 +138,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseApplication> query = ProjectSession.User != null && ProjectSession.User.RoleTemplateID == (int)RollTemplate.Public
+                IQueryable<PremiseApplication> query = ProjectSession.User != null && ProjectSession.User.ROLEID == (int)RollTemplate.Public
                     ? ctx.PremiseApplications.Where(p => p.UsersID == ProjectSession.User.UsersID)
                     : ctx.PremiseApplications;
 
@@ -414,9 +414,9 @@ namespace TradingLicense.Web.Controllers
                 }
             }
 
-            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
-                premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+                premiseApplicationModel.UserRollTemplate = ProjectSession.User.ROLEID.Value;
                 premiseApplicationModel.UsersID = ProjectSession.User.UsersID;
             }
 
@@ -499,9 +499,9 @@ namespace TradingLicense.Web.Controllers
                 }
             }
 
-            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
-                premiseApplicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+                premiseApplicationModel.UserRollTemplate = ProjectSession.User.ROLEID.Value;
             }
             return View(premiseApplicationModel);
         }
@@ -998,9 +998,9 @@ namespace TradingLicense.Web.Controllers
                 }
 
                 int roleTemplate = 0;
-                if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+                if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
                 {
-                    roleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                    roleTemplate = ProjectSession.User.ROLEID.Value;
                 }
 
                 if (userroleTemplate == (int)RollTemplate.Public)
@@ -1384,9 +1384,9 @@ namespace TradingLicense.Web.Controllers
             int userroleTemplate = 0;
             premiseApplication.UpdatedBy = ProjectSession.User.Username;
 
-            if (ProjectSession.User.RoleTemplateID != null)
+            if (ProjectSession.User.ROLEID != null)
             {
-                userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                userroleTemplate = ProjectSession.User.ROLEID.Value;
             }
 
             return userroleTemplate;
@@ -2302,10 +2302,10 @@ namespace TradingLicense.Web.Controllers
 
                     int usersId = 0;
                     int userroleTemplate = 0;
-                    if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+                    if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
                     {
                         usersId = ProjectSession.User.UsersID;
-                        userroleTemplate = ProjectSession.User.RoleTemplateID.Value;
+                        userroleTemplate = ProjectSession.User.ROLEID.Value;
                     }
 
                     if (premiseApplicationId > 0 && usersId > 0 && userroleTemplate > 0)

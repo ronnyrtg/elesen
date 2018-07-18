@@ -15,8 +15,8 @@ namespace TradingLicense.Model
         [RegularExpression(TradingLicense.Model.RegularExpressions.Email, ErrorMessage = "Please enter valid Email")]
         public string Email { get; set; }
 
-        [Display(Name = "RoleTemplate")]
-        public int? RoleTemplateID { get; set; }
+        [Display(Name = "Peranan Pengguna")]
+        public int? ROLEID { get; set; }
 
         [Display(Name = "Department Code")]
         public int? DepartmentID { get; set; }

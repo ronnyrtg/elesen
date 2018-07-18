@@ -19,7 +19,7 @@ namespace TradingLicense.Entities
         [Required]
         public int CrudLevel { get; set; }
 
-        public int RoleTemplateID { get; set; }
+        public int ROLEID { get; set; }
 
         public virtual ROLE ROLEs { get; set; }
     }

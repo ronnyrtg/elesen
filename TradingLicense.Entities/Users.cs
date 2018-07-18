@@ -23,7 +23,7 @@ namespace TradingLicense.Entities
         [StringLength(32)]
         [Column(TypeName = "VARCHAR2")]
         public string Password { get; set; }
-        public int? RoleTemplateID { get; set; }
+        public int? ROLEID { get; set; }
         public int? DepartmentID { get; set; }
 
         public int Locked { get; set; }
@@ -33,7 +33,7 @@ namespace TradingLicense.Entities
             Active = true;
         }
 
-        public virtual ROLE RoleTemplate { get; set; }
+        public virtual ROLE ROLE { get; set; }
         public virtual Department Department { get; set; }
 
     }

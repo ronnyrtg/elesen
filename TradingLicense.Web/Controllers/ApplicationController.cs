@@ -58,7 +58,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                int? rollTemplateID = ProjectSession.User?.RoleTemplateID;
+                int? rollTemplateID = ProjectSession.User?.ROLEID;
                 IQueryable<APPLICATION> query = ctx.Applications;
 
                 if (rollTemplateID.HasValue)
@@ -189,9 +189,9 @@ namespace TradingLicense.Web.Controllers
                 }
             }
 
-            if (ProjectSession.User != null && ProjectSession.User.RoleTemplateID > 0)
+            if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
-                applicationModel.UserRollTemplate = ProjectSession.User.RoleTemplateID.Value;
+                applicationModel.UserRollTemplate = ProjectSession.User.ROLEID.Value;
                 applicationModel.USERSID = ProjectSession.User.UsersID;
             }
 
@@ -634,13 +634,13 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region Save Banner Objects
+        #region Save Banner Objects to Model
         [HttpPost]
         public ActionResult AddBannerObject(int APP_ID, int BC_ID, string ADDRA1, string ADDRA2, string ADDRA3, string ADDRA4, float B_SIZE, int B_QTY)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                B_O ba = new B_O();
+                B_O_Model ba = new B_O_Model();
                 var Fee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.P_FEE).FirstOrDefault();
                 var eFee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.EX_FEE).FirstOrDefault();
                 float? TotalFee = 0;
@@ -665,8 +665,7 @@ namespace TradingLicense.Web.Controllers
                     }
                     ba.FEE = TotalFee;
 
-                    ctx.B_Os.Add(ba);
-                    ctx.SaveChanges();
+                    
                     TempData["SuccessMessage"] = "Iklan berjaya ditambah.";
                 }
                 else

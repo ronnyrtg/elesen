@@ -29,7 +29,7 @@ namespace TradingLicense.Web.Classes
                     {
                         int screenId = page.GetHashCode();
                         int crudLevel = pageRight.GetHashCode();
-                        result = ctx.AccessPages.Where(o => o.RoleTemplateID == ProjectSession.User.RoleTemplateID && o.ScreenId == screenId && o.CrudLevel >= crudLevel).Count() > 0 ? true : false;
+                        result = ctx.AccessPages.Where(o => o.ROLEID == ProjectSession.User.ROLEID && o.ScreenId == screenId && o.CrudLevel >= crudLevel).Count() > 0 ? true : false;
                     }
                 }
             }
@@ -79,9 +79,9 @@ namespace TradingLicense.Web.Classes
                     var accessPages = ctx.AccessPages.Where(o => o.ScreenId == screenId).ToList();
                     foreach (var role in roles)
                     {
-                        if (accessPages.Any(ap => ap.RoleTemplateID == role.ROLEID))
+                        if (accessPages.Any(ap => ap.ROLEID == role.ROLEID))
                         {
-                            var accessPage = accessPages.First(ap => ap.RoleTemplateID == role.ROLEID);
+                            var accessPage = accessPages.First(ap => ap.ROLEID == role.ROLEID);
                             result.Add(AutoMapper.Mapper.Map<AccessPageModel>(accessPage));
                         }
                         else
@@ -91,7 +91,7 @@ namespace TradingLicense.Web.Classes
                                 RoleTemplateID = role.ROLEID,
                                 PageDesc = page.ToString(),
                                 ScreenId = page.GetHashCode(),
-                                RoleTemplateDesc = role.ROLE_DESC
+                                ROLE_DESC = role.ROLE_DESC
                             });
                         }
                     }
