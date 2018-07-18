@@ -1,4 +1,4 @@
-﻿@model TradingLicense.Model.RoleTemplateModel
+﻿@model TradingLicense.Model.ROLEModel
 @{
     ViewBag.Title = "ManageRoleTemplate";
 }
@@ -6,29 +6,38 @@
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
-        <h4 id="headerTitle">Manage Role Template</h4>
+        <h4 id="headerTitle">Kemaskini Peranan Pengguna</h4>
     </div>
     <div class="body">
 
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmRoleTemplate", id = "frmRoleTemplate" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.RoleTemplateID)
+            @Html.HiddenFor(m => m.ROLEID)
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.RoleTemplateDesc, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.RoleTemplateDesc, new { @class = "form-control", @maxlength = "100" })
-                        @Html.ValidationMessageFor(m => m.RoleTemplateDesc)
+                        @Html.LabelFor(m => m.ROLE_DESC, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.ROLE_DESC, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(m => m.ROLE_DESC)
                     </div>
                 </div>
             </div>
-            
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DURATION, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.DURATION, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(m => m.DURATION)
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-primary" value="Save" />
-                        <input type="button" class="btn btn-default" value="Cancel" onclick="back()" />
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                     </div>
                 </div>
             </div>

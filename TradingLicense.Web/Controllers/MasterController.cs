@@ -1182,7 +1182,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "RoleTemplateID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "ROLEID asc" : orderByString);
 
                 #endregion Sorting
 

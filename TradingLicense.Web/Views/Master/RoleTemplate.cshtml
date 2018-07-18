@@ -9,20 +9,7 @@
         <li><a href="#" title="Add Role Template" onclick="addRoleTemplate();"><img src="@Url.Content("~/images/add.png")" alt="Add Role Template"></a></li>
     </ul>
     <div class="header">
-        <h4>Role Templates</h4>
-    </div>
-    <div class="filter-block">
-        <div class="row small-gutter">
-            <form>
-                <div class="col-xs-4">
-                    <input type="text" name="txtroleTemplateDesc" id="txtroleTemplateDesc" class="form-control" placeholder="Role Template" maxlength="100" />
-                </div>
-                <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary" onclick="return bindTable();">Search</button>
-                    <button type="button" class="btn btn-default" onclick="return clearControls();">Clear</button>
-                </div>
-            </form>
-        </div>
+        <h4>Peranan Pengguna</h4>
     </div>
     <div class="grid" id="divtblRoleTemplate">
         <table cellspacing="0" class="table table-striped" id="tblRoleTemplate"></table>
@@ -89,7 +76,7 @@
                         { "title": "Nama Peranan", "data": "ROLE_DESC" },
                         { "title": "Tempoh", "data": "DURATION" },
                         {
-                            "title": "Action",
+                            "title": "Tindakan",
                             "data": null,
                             "render": function (data, type, row) {
                                 var appendstring = '';

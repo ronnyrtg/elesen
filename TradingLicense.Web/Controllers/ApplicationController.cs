@@ -640,7 +640,7 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var ba = ctx.B_Os.Where(p => p.APP_ID == APP_ID).FirstOrDefault();
+                B_O ba = new B_O();
                 var Fee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.P_FEE).FirstOrDefault();
                 var eFee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.EX_FEE).FirstOrDefault();
                 float? TotalFee = 0;
@@ -649,6 +649,10 @@ namespace TradingLicense.Web.Controllers
                 {
                     ba.APP_ID = APP_ID;
                     ba.BC_ID = BC_ID;
+                    ba.ADDRA1 = ADDRA1;
+                    ba.ADDRA2 = ADDRA2;
+                    ba.ADDRA3 = ADDRA3;
+                    ba.ADDRA4 = ADDRA4;
                     ba.B_SIZE = B_SIZE;
                     ba.B_QTY = B_QTY;
                     if (B_SIZE <= 8)

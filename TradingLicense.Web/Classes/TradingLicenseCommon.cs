@@ -74,24 +74,24 @@ namespace TradingLicense.Web.Classes
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var roles = ctx.RoleTemplates.ToList();
+                    var roles = ctx.ROLEs.ToList();
                     int screenId = page.GetHashCode();
                     var accessPages = ctx.AccessPages.Where(o => o.ScreenId == screenId).ToList();
                     foreach (var role in roles)
                     {
-                        if (accessPages.Any(ap => ap.RoleTemplateID == role.RoleTemplateID))
+                        if (accessPages.Any(ap => ap.RoleTemplateID == role.ROLEID))
                         {
-                            var accessPage = accessPages.First(ap => ap.RoleTemplateID == role.RoleTemplateID);
+                            var accessPage = accessPages.First(ap => ap.RoleTemplateID == role.ROLEID);
                             result.Add(AutoMapper.Mapper.Map<AccessPageModel>(accessPage));
                         }
                         else
                         {
                             result.Add(new AccessPageModel()
                             {
-                                RoleTemplateID = role.RoleTemplateID,
+                                RoleTemplateID = role.ROLEID,
                                 PageDesc = page.ToString(),
                                 ScreenId = page.GetHashCode(),
-                                RoleTemplateDesc = role.RoleTemplateDesc
+                                RoleTemplateDesc = role.ROLE_DESC
                             });
                         }
                     }
