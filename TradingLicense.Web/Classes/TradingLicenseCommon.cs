@@ -88,7 +88,7 @@ namespace TradingLicense.Web.Classes
                         {
                             result.Add(new AccessPageModel()
                             {
-                                RoleTemplateID = role.ROLEID,
+                                ROLEID = role.ROLEID,
                                 PageDesc = page.ToString(),
                                 ScreenId = page.GetHashCode(),
                                 ROLE_DESC = role.ROLE_DESC
