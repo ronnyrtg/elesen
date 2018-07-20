@@ -64,8 +64,7 @@
     <Compile Include="BannerObjectModel.cs" />
     <Compile Include="CompanyModel.cs" />
     <Compile Include="DepartmentModel.cs" />
-    <Compile Include="EntmtPremiseSizeModel.cs" />
-    <Compile Include="EntmtPremiseModel.cs" />
+    <Compile Include="EntmtPremiseFeeModel.cs" />
     <Compile Include="IndividualModel.cs" />
     <Compile Include="IndLinkAttModel.cs" />
     <Compile Include="IndLinkComModel.cs" />
@@ -74,7 +73,6 @@
     <Compile Include="LoginModel.cs" />
     <Compile Include="HolidayModel.cs" />
     <Compile Include="AppStatusModel.cs" />
-    <Compile Include="EntmtObjectModel.cs" />
     <Compile Include="CommentModel.cs" />
     <Compile Include="RD_L_LTModel.cs" />
     <Compile Include="RD_L_BTModel.cs" />

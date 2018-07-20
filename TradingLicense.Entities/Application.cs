@@ -9,7 +9,7 @@ namespace TradingLicense.Entities
         [Key]
         public int APP_ID { get; set; }
         //License Type
-        public int APP_TYPEID { get; set; }
+        public int LIC_TYPEID { get; set; }
         //Approval Type
         public int MODE { get; set; }
         //Sole Proprietorship or Sdn Bhd
@@ -73,6 +73,7 @@ namespace TradingLicense.Entities
         public string L_STATUS { get; set; }
         public DateTime? EXPIRE { get; set; }
 
+        public virtual LIC_TYPE LIC_TYPE { get; set; }
         public virtual BT BT { get; set; }
         public virtual COMPANY COMPANY { get; set; }
         public virtual APPSTATUS APPSTATUS { get; set; }

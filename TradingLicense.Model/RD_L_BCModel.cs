@@ -6,6 +6,8 @@ namespace TradingLicense.Model
         public int RD_ID { get; set; }
         public int BC_ID { get; set; }
 
+        public string RD_DESC { get; set; }
+        public string C_R_DESC { get; set; }
         public string IsChecked { get; set; }
         public string AttachmentFileName { get; set; }
         public int AttachmentId { get; set; }

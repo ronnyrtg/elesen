@@ -32,8 +32,6 @@
                     <li>@Html.ActionLink("Daftar Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Daftar Syarikat (Test)", "Company", "Master")</li>
                     <li>@Html.ActionLink("Permohonan Baru (Test)", "Application", "Application")</li>
-                    <li>@Html.ActionLink("Lesen Berniaga (Test)", "PremiseApplication", "PremiseApplication")</li>
-                    
                 </ul>
             </li>
 }
@@ -70,26 +68,23 @@
                     <li>@Html.ActionLink("Jalan (Test)", "Road", "Master")</li>
                     <li role="separator" class="divider"></li>
                     <li><a href="#">Senarai Kumpulan</a></li>
-                    <li>@Html.ActionLink("Jenis Lesen (Test)", "LIC_TYPE", "Master")</li>
+                    <li>@Html.ActionLink("Jenis Lesen (Test)", "LicenseType", "Master")</li>
                     <li>@Html.ActionLink("Jenis-Jenis Lesen Tred, Perniagaan dan Perindustrian (Test)", "Sector", "Master")</li>
-                    <li>@Html.ActionLink("Jenis-Jenis Tempat Hiburan (Test)", "EntmtGroup", "EntmtApplication")</li>
+                    <li>@Html.ActionLink("Jenis-Jenis Tempat Hiburan (Test)", "EntmtPremiseType", "Application")</li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("Lesen Berniaga (Test)", "BusinessCode", "PremiseApplication")</li>
-                    <li>@Html.ActionLink("Kod Perniagaan (Test)", "BC", "Application")</li>
+                    <li>@Html.ActionLink("Kod Perniagaan (Test)", "BusinessCode", "Application")</li>
                    
                     <li role="separator" class="divider"></li>
                     <li><a href="#">Dokumen Wajib</a></li>
-                    <li>@Html.ActionLink("Lesen Iklan (Test)", "BAReqDoc", "BannerApplication")</li>
-                    <li>@Html.ActionLink("Lesen Pasar (Test)", "SAReqDoc", "StallApplication")</li>
-                    <li>@Html.ActionLink("Lesen Penjaja (Test)", "HAReqDoc", "HawkerApplication")</li>
+                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Jenis Lesen (Test)", "RDLinkLT", "Application")</li>
+                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Jenis Perniagaan (Test)", "RDLinkBT", "Application")</li>
+                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Kod Perniagaan (Test)", "RDLinkBC", "Application")</li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("Jenis Kelulusan (Test)", "Mode", "Master")</li>
                     <li>@Html.ActionLink("Jenis Perniagaan (Test)", "BusinessType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
                     <li>@Html.ActionLink("Senarai Bangsa (Test)", "Race", "Master")</li>
                     <li>@Html.ActionLink("Jenis Premis (Test)", "PremiseType", "Master")</li>
-                    <li>@Html.ActionLink("Senarai Status Permohonan (Test)", "AppStatus", "Master")</li>
-                    <li>@Html.ActionLink("Dokumen Tambahan (Test)", "AdditionalDoc", "Master")</li>
+                    <li>@Html.ActionLink("Jenis Status Permohonan (Test)", "AppStatus", "Master")</li>
                     <li>@Html.ActionLink("Dokumen Wajib (Test)", "RequiredDoc", "Master")</li>
                     <li>@Html.ActionLink("Unit Dalaman (Test)", "Department", "Master", new { Type = 1 }, null)</li>
                     <li>@Html.ActionLink("Unit Luaran (Test)", "Department", "Master", new { Type = 2 }, null)</li>
@@ -160,7 +155,7 @@
         <div class="navbar-right">
         @if (ProjectSession.User != null && ProjectSession.UserID > 0)
         {
-            var fullName = ProjectSession.User.FullName;
+            var fullName = ProjectSession.User.FULLNAME;
             <div class="navbar-text">
                 Anda telah log masuk sebagai @fullName.
                 <!--You are logged in as-->

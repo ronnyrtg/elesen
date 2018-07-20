@@ -56,8 +56,6 @@
     <Compile Include="BC.cs" />
     <Compile Include="BT.cs" />
     <Compile Include="CATATAN.cs" />
-    <Compile Include="E_O.cs" />
-    <Compile Include="E_P_SIZE.cs" />
     <Compile Include="RD_L_BT.cs" />
     <Compile Include="LIC_TYPE.cs" />
     <Compile Include="ATTACHMENT.cs" />
@@ -65,7 +63,7 @@
     <Compile Include="BC_L_DEP.cs" />
     <Compile Include="COMPANY.cs" />
     <Compile Include="DEPARTMENT.cs" />
-    <Compile Include="E_PREMISE.cs" />
+    <Compile Include="E_P_FEE.cs" />
     <Compile Include="HOLIDAY.cs" />
     <Compile Include="INDIVIDUAL.cs" />
     <Compile Include="IND_L_ATT.cs" />

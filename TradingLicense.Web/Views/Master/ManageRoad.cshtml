@@ -13,14 +13,14 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmRoad", id = "frmRoad" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.RoadID)
+            @Html.HiddenFor(m => m.ROADID)
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.RoadCode, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.RoadCode, new { @class = "form-control", @maxlength = "30" })
-                        @Html.ValidationMessageFor(m => m.RoadCode)
+                        @Html.LabelFor(m => m.ROADCODE, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.ROADCODE, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.ROADCODE)
                     </div>
                 </div>
             </div>
@@ -28,9 +28,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.RoadDesc, new { @class = "control-label" })<span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.RoadDesc, new { @class = "form-control", @maxlength = "30" })
-                        @Html.ValidationMessageFor(m => m.RoadDesc)
+                        @Html.LabelFor(m => m.ROADDESC, new { @class = "control-label" })<span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.ROADDESC, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.ROADDESC)
                     </div>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                @Html.CheckBoxFor(model => model.Active)
+                                @Html.CheckBoxFor(model => model.ACTIVE)
                                 <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>

@@ -10,6 +10,6 @@ namespace TradingLicense.Entities
         public int BC_ID { get; set; }
 
         public virtual BC BC { get; set; }
-        public virtual APPLICATION APPLICATION { get; set; }
+        public virtual RD RD { get; set; }
     }
 }

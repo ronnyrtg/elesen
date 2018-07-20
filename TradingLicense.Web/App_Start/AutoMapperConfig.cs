@@ -30,11 +30,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<LOGINLOG, LoginLogModel>();
                 cfg.CreateMap<USERS, UsersModel>();
                 cfg.CreateMap<UsersModel, USERS>().ReverseMap();
-                cfg.CreateMap<RegistrationModel, USERS>().ReverseMap();
-                cfg.CreateMap<SECTOR, SectorModel>();
-                cfg.CreateMap<BT, BusinessTypeModel>();
-                cfg.CreateMap<RD_L_BT, RD_L_BTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
-                cfg.CreateMap<RD_L_BTModel, RD_L_BT>();
+                cfg.CreateMap<RegistrationModel, USERS>().ReverseMap();                
                 cfg.CreateMap<INDIVIDUAL, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.ATTACHMENT.FILENAME));
                 cfg.CreateMap<IndividualModel, INDIVIDUAL>().ForMember(dest => dest.ATTACHMENT, options => options.Ignore());
                 cfg.CreateMap<ROUTEUNIT, RouteUnitModel>()
@@ -44,16 +40,22 @@ namespace TradingLicense.Web.App_Start
                 //Combined Application
                 cfg.CreateMap<APPLICATION, ApplicationModel>();
                 cfg.CreateMap<LIC_TYPE, LicenseTypeModel>();
+                cfg.CreateMap<SECTOR, SectorModel>();
+                cfg.CreateMap<BT, BusinessTypeModel>();
                 cfg.CreateMap<BC, BusinessCodeModel>()
                             .ForMember(dest => dest.Lic_TypeDesc, opt => opt.MapFrom(s => s.LIC_TYPE.LIC_TYPEDESC))
                             .ForMember(dest => dest.SectorDesc, opt => opt.MapFrom(s => s.SECTOR.SECTORDESC));
                 cfg.CreateMap<B_O, BannerObjectModel>();
+                cfg.CreateMap<RD_L_BT, RD_L_BTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
+                cfg.CreateMap<RD_L_BTModel, RD_L_BT>();
+                cfg.CreateMap<RD_L_BC, RD_L_BCModel>()
+                            .ForMember(dest => dest.C_R_DESC, opt => opt.MapFrom(s => s.BC.C_R_DESC))
+                            .ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<COMMENT, CommentModel>().ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
                 cfg.CreateMap<PaymentReceivedModel, PAY_REC>().ForMember(dest => dest.INDIVIDUAL, opt => opt.Ignore());
                 
                 //Entertainment License related
-                cfg.CreateMap<E_P_SIZE, EntmtPremiseSizeModel>().ForMember(dest => dest.E_P_DESC, opt => opt.MapFrom(s => s.E_PREMISE.E_P_DESC));
-                cfg.CreateMap<E_PREMISE, EntmtPremiseModel>();
+                cfg.CreateMap<E_P_FEE, EntmtPremiseFeeModel>();
        
             });
         }

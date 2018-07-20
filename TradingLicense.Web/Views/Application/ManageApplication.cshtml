@@ -7,41 +7,41 @@
     ViewBag.Title = "Manage License Application";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    List<TradingLicense.Model.BTModel> businessTypeList = new List<TradingLicense.Model.BTModel>();
+    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
     List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
-    List<TradingLicense.Model.E_GROUPModel> entmtGroupList = new List<TradingLicense.Model.E_GROUPModel>();
+    List<TradingLicense.Model.EntmtPremiseFeeModel> entmtGroupList = new List<TradingLicense.Model.EntmtPremiseFeeModel>();
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
     List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
     List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
     List<TradingLicense.Model.DepartmentModel> departmentList = new List<TradingLicense.Model.DepartmentModel>();
-    List<TradingLicense.Model.BCModel> bannerCodeList = new List<TradingLicense.Model.BCModel>();
+    List<TradingLicense.Model.BusinessCodeModel> bannerCodeList = new List<TradingLicense.Model.BusinessCodeModel>();
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
         var businessType = ctx.BTs.ToList();
-        businessTypeList = Mapper.Map<List<TradingLicense.Model.BTModel>>(businessType);
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
 
-        var sectors = ctx.Sectors.ToList();
+        var sectors = ctx.SECTORs.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
 
-        var entmtGroup = ctx.E_GROUPs.ToList();
-        entmtGroupList = Mapper.Map<List<TradingLicense.Model.E_GROUPModel>>(entmtGroup);
+        var entmtGroup = ctx.E_P_FEEs.ToList();
+        entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtPremiseFeeModel>>(entmtGroup);
 
-        var companies = ctx.Companies.ToList();
+        var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
 
-        var premiseType = ctx.PremiseTypes.ToList();
+        var premiseType = ctx.PREMISETYPEs.ToList();
         PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
 
-        var appStatus = ctx.AppStatus.ToList();
+        var appStatus = ctx.APPSTATUS.ToList();
         appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
 
-        var dept = ctx.Departments.ToList();
+        var dept = ctx.DEPARTMENTs.ToList();
         departmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(dept);
 
         var banner = ctx.BCs.Where(ba => ba.LIC_TYPEID == 5).ToList();
-        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BCModel>>(banner);
+        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BusinessCodeModel>>(banner);
     }
 
     List<SelectListItem> LicenseList = new List<SelectListItem>();
@@ -105,8 +105,8 @@
                 <div class="col-lg-3 col-md-6" id="licenseType">
                     <div class="form-group">
                         <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.APP_TYPE_ID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
-                        @Html.ValidationMessageFor(m => m.APP_TYPE_ID)
+                        @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
+                        @Html.ValidationMessageFor(m => m.LIC_TYPEID)
                     </div>
                 </div>
             </div>
@@ -145,7 +145,7 @@
                 <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SectorID), "SectorID", "SectorDesc"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
+                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SECTORID), "SECTORID", "SECTORDESC"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
             <div class="row">
                 <div class="form-group">
                     <div class="col-sm-10 col-lg-6">
-                        @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control" })
+                        @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
                     </div>
                     @if (Model.APP_ID == 0)
                     {
@@ -209,7 +209,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="form-group">
                         <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.BUSINESSTYPEID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                        @Html.DropDownListFor(m => m.BT_ID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
                     </div>
                 </div>
             </div>
@@ -219,7 +219,7 @@
                 <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.E_GROUPID, new SelectList(entmtGroupList.OrderBy(x => x.E_GROUPID), "E_GROUPID", "E_G_DESC"), "Pilih Kategori", new { @class = "form-control" })
+                        @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.text), "id", "text"), "Pilih Kategori", new { @id = "premiseFeeList", @class = "form-control", @onchange = "changePremiseFee()" })
                     </div>
                 </div>
             </div>
@@ -400,7 +400,7 @@
             <div class="row">
                 <div class="form-group">
                     <div class="col-md-10 col-lg-3 premise" style="display:normal;">
-                        @Html.DropDownListFor(m => m.PREMISETYPEID, new SelectList(PremiseTypeList.OrderBy(x => x.PremiseTypeID), "PremiseTypeID", "PremiseDesc"), "Pilih jenis premis", new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
                     </div>
                         @if (Model.APP_ID == 0)
                         {
@@ -487,9 +487,9 @@
             if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
             {
                 List<SelectListItem> supportList = new List<SelectListItem>();
-                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -502,9 +502,9 @@
             if (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting) // Meeting
             {
                 List<SelectListItem> supportList = new List<SelectListItem>();
-                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit });
-                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected });
-                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.PremiseApplicationController.OnKIV });
+                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -759,7 +759,6 @@
                 @Html.AntiForgeryToken()
                 @Html.Hidden("id", Model.APP_ID)
                 @Html.Hidden("appType", "Application")
-                @Html.Hidden("appID", (int)Enums.ApplicationTypeID.Application)
 
                 <div class="modal-content">
                     <div class="modal-header">
@@ -771,7 +770,7 @@
                             <div class="form-group">
 
                                 <div class="col-lg-8 col-md-8">
-                                    @Html.DropDownList("department", new SelectList(departmentList, "DepartmentID", "DepartmentDesc"), new { @class = "form-control" })
+                                    @Html.DropDownList("department", new SelectList(departmentList, "DEP_ID", "DEP_DESC"), new { @class = "form-control" })
                                 </div>
                                 <div class="col-lg-2 col-md-2">
                                     <button type="button" id="AddDept" class="btn btn-primary">Tambah</button>
@@ -1111,8 +1110,8 @@
                         //console.log(query)
                         return {
                             query: query.term,
-                            selectedLic: $('#APP_TYPE_ID').val(),
-                            selectedSector:  $("#SectorID").val()
+                            selectedLic: $('#LIC_TYPEID').val(),
+                            selectedSector:  $("#SECTORID").val()
                         }
                     },
                     //processes the results from the JSON method and gives us the select list
@@ -1126,7 +1125,57 @@
             });
         };
 
+
+
         $(function () {
+
+            function formatPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-2">' + r[1] + '</div>' +
+                        '<div class="col-md-10">' + r[0] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatSelectionPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[1] + ' | '  + r[0] +
+                    '</span>'
+                );
+                return $result;
+            }
+
+            $("#premiseFeeList").select2({
+                placeholder: "Cari Jenis Tempat Hiburan",
+                minimumInputLength: 0,
+                width: '100%',
+                templateResult: formatPremiseFees,
+                templateSelection: formatSelectionPremiseFees,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillPremiseFee", "Application")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return {
+                            query: query.term,
+                            selectedPFID: $('#E_P_FEEID').val()
+                        }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
 
 
             userRollTemplate = $("#UserRollTemplate").val();
@@ -1236,6 +1285,20 @@
                 businessSelecteId = [];
             }
 
+            var premiseSelecteId = [];
+            if ('@Model.PremiseFeeids' != null && '@Model.PremiseFeeids' != '') {
+                var PremiseFeeIds = '@Model.PremiseFeeids';
+
+                var arr = PremiseFeeIds.split(',');
+                $.each(arr, function (index, value) {
+                    premiseSelecteId.push(value);
+                });
+                $('#premiseFeeList').val(premiseSelecteId);
+                $('#premiseFeeList').trigger('change');
+            } else {
+                premiseSelecteId = [];
+            }
+
             var individualSelecteId = [];
             if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
                 var individualIds = '@Model.Individualids';
@@ -1250,9 +1313,9 @@
                 individualSelecteId = [];
             }
 
-            if(@Model.BUSINESSTYPEID > 0)
+            if(@Model.BT_ID > 0)
             {
-                $("#BusinessTypeID").val(@Model.BUSINESSTYPEID);
+                $("#BusinessTypeID").val(@Model.BT_ID);
                 bindTable();
             }
 
@@ -1355,6 +1418,12 @@
             checkButtonState();
         }
 
+        function changePremiseFee() {
+            $('#PremiseFeeids').val($('#premiseFeeList').val());
+            bindAdditionalTable();
+            checkButtonState();
+        }
+
         function changeIndindividual() {
             var individuals = $("#individualList").select2('data');
             var newIndividuals = [];
@@ -1379,7 +1448,7 @@
         function changeLicense() {
             bindLicense();
             bindCode();
-            if ($("#APP_TYPE_ID").val() == 1) {
+            if ($("#LIC_TYPEID").val() == 1) {
                 $('#approvalType').show();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1390,7 +1459,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 2){
+            else if ($("#LIC_TYPEID").val() == 2){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1402,7 +1471,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 3){
+            else if ($("#LIC_TYPEID").val() == 3){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1414,7 +1483,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 4){
+            else if ($("#LIC_TYPEID").val() == 4){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1426,7 +1495,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 5){
+            else if ($("#LIC_TYPEID").val() == 5){
                 $('#approvalType').hide();
                 $('#approvalDirector').show();
                 $('#approvalCEO').hide();
@@ -1438,7 +1507,7 @@
                 $('.premise').hide();
                 $('.banner').show();
             }
-            else if ($("#APP_TYPE_ID").val() == 6){
+            else if ($("#LIC_TYPEID").val() == 6){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1450,7 +1519,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 7){
+            else if ($("#LIC_TYPEID").val() == 7){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1462,7 +1531,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 8){
+            else if ($("#LIC_TYPEID").val() == 8){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1474,7 +1543,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 9){
+            else if ($("#LIC_TYPEID").val() == 9){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1486,7 +1555,7 @@
                 $('.premise').show();
                 $('.banner').hide();
             }
-            else if ($("#APP_TYPE_ID").val() == 10){
+            else if ($("#LIC_TYPEID").val() == 10){
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1502,6 +1571,13 @@
 
         function businessTypeChange() {
             if ($("#BUSINESSTYPEID").val() > 0) {
+                bindTable();
+            }
+            checkButtonState();
+        }
+
+        function premiseFeeChange() {
+            if ($("#E_P_FEEID").val() > 0) {
                 bindTable();
             }
             checkButtonState();
@@ -1650,7 +1726,7 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["AdditionalDocID"] + '"> <input id="chkAdddoc_' + row["AdditionalDocID"] + '" value="' + row["AdditionalDocID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             }
                             return appendstring
                         },
@@ -1658,16 +1734,16 @@
                         width: "7%",
                         "visible": visibleGridColume,
                     },
-                    { "title": "Jenis Dokumen", "data": "DocDesc", "orderable": false },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
                     {
                         "title": "Muat Naik",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             } else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["AdditionalDocID"] + '" onclick="AdditionalModel(' + row["AdditionalDocID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1684,10 +1760,10 @@
                             if (visibleGridUploadColume) {
 
                                 if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
 
                                 } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["AdditionalDocID"] + '"> </label> </a>';
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
                                 }
 
                             } else {
@@ -1747,10 +1823,10 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -2121,7 +2197,7 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
 
-                            if (data['UsersID'] == '@(ProjectSession.User.UsersID)') {
+                            if (data['UsersID'] == '@(ProjectSession.User.USERSID)') {
                                 appendstring += '<a  href="@Url.Action("AddCatatan", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                 appendstring += '<a href="javascript:void(0);" data-id="' + row["PACommentID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             }
@@ -2404,20 +2480,20 @@
         }
 
         function RoutePremiseApplication() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRouteSubmit');
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRouteSubmit');
             $("#frmsaveRoute").submit();
             $("#frmPremiseApplication").submit();
             return false;
         }
 
         function Approved() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnSubmit');
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnSubmit');
             $("#frmPremiseApplication").submit();
             return false;
         }
 
         function Rejected() {
-            $('#SubmitType').val('@TradingLicense.Web.Controllers.PremiseApplicationController.OnRejected');
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRejected');
             $("#frmPremiseApplication").submit();
             return false;
         }

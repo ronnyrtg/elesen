@@ -1,0 +1,60 @@
+﻿@model TradingLicense.Model.LicenseTypeModel
+@{
+    ViewBag.Title = "ManageLicenseType";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Kemaskini Nama atau Kod Lesen</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmLicenseType", id = "frmLicenseType" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.LIC_TYPEID)
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LIC_TYPECODE, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.LIC_TYPECODE, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LIC_TYPECODE)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LIC_TYPEDESC, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.LIC_TYPEDESC, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LIC_TYPEDESC)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+           var actionError = '@(TempData["ErrorMessage"])';
+           if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+    function back() {
+         var link = '@Url.Action("LicenseType", "Master")';
+        window.location.href = link;
+    }
+    </script>
+}

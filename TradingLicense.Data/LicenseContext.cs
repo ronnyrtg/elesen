@@ -45,9 +45,9 @@ namespace TradingLicense.Data
 
         public DbSet<PREMISETYPE> PREMISETYPEs { get; set; }
         public DbSet<SECTOR> SECTORs { get; set; }               
-               
-        public DbSet<E_PREMISE> E_PREMISEs { get; set; }
-        public DbSet<E_P_SIZE> E_P_SIZEs { get; set; }
+        
+        //Entertainment Premise Fee       
+        public DbSet<E_P_FEE> E_P_FEEs { get; set; }
 
         //Common fields for all applications
         public DbSet<APPSTATUS> APPSTATUS { get; set; }

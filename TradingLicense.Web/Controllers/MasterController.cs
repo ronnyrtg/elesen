@@ -2422,7 +2422,7 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-        #region BT
+        #region Business Type
 
         /// <summary>
         /// GET: BT
@@ -2797,7 +2797,6 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
-
         #region Zone
 
         /// <summary>
@@ -2877,8 +2876,8 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int ZONEID = Convert.ToInt32(Id);
-                    var Zone = ctx.ZONEs.Where(a => a.ZONEID == ZONEID).FirstOrDefault();
+                    int zoneID = Convert.ToInt32(Id);
+                    var Zone = ctx.ZONEs.Where(a => a.ZONEID == zoneID).FirstOrDefault();
                     ZoneModel = Mapper.Map<ZoneModel>(Zone);
                 }
             }
@@ -3532,18 +3531,18 @@ namespace TradingLicense.Web.Controllers
         /// GET: LIC_TYPE
         /// </summary>
         /// <returns></returns>
-        public ActionResult LIC_TYPE()
+        public ActionResult LicenseType()
         {
             return View();
         }
 
         /// <summary>
-        /// Save LIC_TYPE Data
+        /// Get LIC_TYPE Data for Datatable
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult LIC_TYPE([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string lic_TYPEDESC)
+        public JsonResult LicenseType([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string licTypeDesc)
         {
             List<TradingLicense.Model.LicenseTypeModel> licType = new List<Model.LicenseTypeModel>();
             int totalRecord = 0;
@@ -3556,10 +3555,10 @@ namespace TradingLicense.Web.Controllers
                 #region Filtering
                 // Apply filters for searching
 
-                if (!string.IsNullOrWhiteSpace(lic_TYPEDESC))
+                if (!string.IsNullOrWhiteSpace(licTypeDesc))
                 {
                     query = query.Where(p =>
-                                        p.LIC_TYPEDESC.Contains(lic_TYPEDESC)
+                                        p.LIC_TYPEDESC.Contains(licTypeDesc)
                                     );
                 }
 
@@ -3598,10 +3597,10 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageLIC_TYPE(int? Id)
+        public ActionResult ManageLicenseType(int? Id)
         {
             LicenseTypeModel licTypeModel = new LicenseTypeModel();
-            licTypeModel.ACTIVE = true;
+            
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -3622,16 +3621,16 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageLIC_TYPE(LicenseTypeModel licTypeModel)
+        public ActionResult ManageLicenseType(LicenseTypeModel licTypeModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     LIC_TYPE licType;
-                    if (IsLIC_TYPEDuplicate(licTypeModel.LIC_TYPEDESC, licTypeModel.LIC_TYPEID))
+                    if (IsLicenseTypeDuplicate(licTypeModel.LIC_TYPEDESC, licTypeModel.LIC_TYPEID))
                     {
-                        TempData["ErrorMessage"] = "LIC_TYPE already exists in the database.";
+                        TempData["ErrorMessage"] = "License Type already exists in the database.";
                         return View(licTypeModel);
                     }
 
@@ -3640,9 +3639,9 @@ namespace TradingLicense.Web.Controllers
                     ctx.SaveChanges();
                 }
 
-                TempData["SuccessMessage"] = "LIC_TYPE saved successfully.";
+                TempData["SuccessMessage"] = "License Type saved successfully.";
 
-                return RedirectToAction("LIC_TYPE");
+                return RedirectToAction("LicenseType");
             }
             else
             {
@@ -3652,36 +3651,12 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Delete LIC_TYPE Type Information
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteLIC_TYPE(int id)
-        {
-            try
-            {
-                var licType = new TradingLicense.Entities.LIC_TYPE() { LIC_TYPEID = id };
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    ctx.Entry(licType).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
-                }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
         /// Check Duplicate
         /// </summary>
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsLIC_TYPEDuplicate(string name, int? id = null)
+        private bool IsLicenseTypeDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {

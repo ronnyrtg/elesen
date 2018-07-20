@@ -32,6 +32,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnKIV = "KIV";
 
         private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R_DESC}~{bc.C_R}" };
+        private Func<E_P_FEE, Select2ListItem> fnSelectPremiseFee = ep => new Select2ListItem { id = ep.E_P_FEEID, text = $"{ep.E_P_DESC}~{ep.E_S_DESC}" };
         private Func<INDIVIDUAL, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IND_ID, text = $"{ind.FULLNAME} ({ind.MYKADNO})" };
 
         /// <summary>
@@ -157,6 +158,14 @@ namespace TradingLicense.Web.Controllers
                         .ToList();
 
                     applicationModel.selectedbusinessCodeList = businessCodesList;
+
+                    List<Select2ListItem> premiseFeeList = new List<Select2ListItem>();
+                    premiseFeeList = ctx.E_P_FEEs
+                        .Select(fnSelectPremiseFee)
+                        .ToList();
+
+                    applicationModel.selectedPremiseFeeList = premiseFeeList;
+
                     applicationModel.HasPADepSupp = ctx.ROUTEUNITs.Any(pa => pa.APP_ID == id.Value);
 
                     var paLinkInd = ctx.APP_L_INDs.Where(a => a.APP_ID == id).ToList();
@@ -238,7 +247,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Get Business Code data for Datatable
+        #region Get Business Code data for Datatable (FillBusinessCode)
         /// <summary>
         /// Get Business Code
         /// </summary>
@@ -274,6 +283,32 @@ namespace TradingLicense.Web.Controllers
                 }
                 var businessCode = primaryQuery.Select(fnSelectBusinessCode).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
+        #region Get Premise Fee data for Select2 dropdown (FillPremiseFee)
+        /// <summary>
+        /// Get Premise Fee
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="selectedPFee">The selected Fee ID</param>
+        /// <param name="selectedPDesc">The selected Premise Group Description</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillPremiseFee(string query, int selectedPFID)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<E_P_FEE> primaryQuery = ctx.E_P_FEEs;
+                primaryQuery = primaryQuery.Where(ep => ep.E_P_FEEID == selectedPFID);                  
+
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(ep => ep.E_P_DESC.ToLower().Contains(query.ToLower()) || ep.E_P_DESC.ToLower().Contains(query.ToLower()));
+                }
+                var premiseFee = primaryQuery.Select(fnSelectPremiseFee).ToList();
+                return Json(premiseFee, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion
@@ -389,19 +424,19 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult LicenseDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string APP_TYPE_ID)
         {
-            List<RD_L_BCModel> requiredDocument = new List<RD_L_BCModel>();
+            List<RD_L_LTModel> requiredDocument = new List<RD_L_LTModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<RD_L_BC> query = ctx.RD_L_BCs;
+                IQueryable<RD_L_LT> query = ctx.RD_L_LTs;
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
                 var orderByString = sortedColumns.GetOrderByString();
 
-                var result = Mapper.Map<List<RD_L_BCModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "RD_L_BCID asc" : orderByString).ToList();
+                var result = Mapper.Map<List<RD_L_LTModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "RD_L_LTID asc" : orderByString).ToList();
 
                 totalRecord = result.Count;
 

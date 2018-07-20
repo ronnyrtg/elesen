@@ -13,13 +13,13 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmPremiseType", id = "frmPremiseType" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.PremiseTypeID)
+            @Html.HiddenFor(m => m.PT_ID)
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.PremiseDesc, new { @class = "control-label" }) <span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.PremiseDesc, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PremiseDesc)
+                        @Html.LabelFor(m => m.PT_DESC, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.PT_DESC, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PT_DESC)
                     </div>
                 </div>
             </div>

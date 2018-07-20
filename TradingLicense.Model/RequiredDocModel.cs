@@ -15,7 +15,7 @@ namespace TradingLicense.Model
     public class RequiredDocList
     {
         public int RequiredDocID { get; set; }
-
+        
         public int AttachmentID { get; set; }
     }
 }

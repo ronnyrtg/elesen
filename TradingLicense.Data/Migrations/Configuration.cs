@@ -77,23 +77,6 @@ namespace TradingLicense.Data.Migrations
             race.ForEach(s => context.RACEs.Add(s));
             context.SaveChanges();
 
-            var entmtGroup = new List<E_PREMISE>
-            {
-                new E_PREMISE {E_PREMISEID=1,E_P_CODE="L001",E_P_DESC="Oditorium/Dewan"},
-                new E_PREMISE {E_PREMISEID=2,E_P_CODE="L002",E_P_DESC="Panggung Wayang/Panggung"},
-                new E_PREMISE {E_PREMISEID=3,E_P_CODE="L003",E_P_DESC="Pusat Hiburan (Dalam Bangunan)"},
-                new E_PREMISE {E_PREMISEID=4,E_P_CODE="L004",E_P_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)"},
-                new E_PREMISE {E_PREMISEID=5,E_P_CODE="L005",E_P_DESC="Lorong Boling"},
-                new E_PREMISE {E_PREMISEID=6,E_P_CODE="L006",E_P_DESC="Gelanggang Luncur"},
-                new E_PREMISE {E_PREMISEID=7,E_P_CODE="L007",E_P_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan"},
-                new E_PREMISE {E_PREMISEID=8,E_P_CODE="L008",E_P_DESC="Dewan Tarian/Disko/Kabaret"},
-                new E_PREMISE {E_PREMISEID=9,E_P_CODE="L009",E_P_DESC="Dewan Biliard/Snuker"},
-                new E_PREMISE {E_PREMISEID=10,E_P_CODE="L010",E_P_DESC="Stadium"},
-                new E_PREMISE {E_PREMISEID=11,E_P_CODE="L011",E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran"},
-            };
-            entmtGroup.ForEach(s => context.E_PREMISEs.Add(s));
-            context.SaveChanges();
-
             
 
             var bcode = new List<BC>
@@ -274,10 +257,10 @@ namespace TradingLicense.Data.Migrations
                 new BC {LIC_TYPEID=10,C_R="P05",C_R_DESC="Sarkas",BASE_FEE=5.0f,O_FEE=2.5f,O_NAME="pertunjukan",PERIOD=0,PERIOD_Q=0},
                 new BC {LIC_TYPEID=10,C_R="P06",C_R_DESC="Hiburan dengan Mesin Hiburan - Kiddy Rides",O_FEE=2.0f,O_NAME="mesin",PERIOD=2,PERIOD_Q=1},
                 new BC {LIC_TYPEID=10,C_R="P07",C_R_DESC="Hiburan dengan Mesin Hiburan - Mesin video",O_FEE=5.0f,O_NAME="mesin",PERIOD=2,PERIOD_Q=1},
-                new BC {LIC_TYPEID=10,C_R="P08",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
-                new BC {LIC_TYPEID=10,C_R="P09",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian",O_FEE=8.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
-                new BC {LIC_TYPEID=10,C_R="P10",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
-                new BC {LIC_TYPEID=10,C_R="P11",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian",O_FEE=14.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R="P08",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian sehingga 12 malam",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R="P09",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Muzik dan nyanyian selepas 12 malam",O_FEE=8.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R="P10",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian sehingga 12 malam",O_FEE=4.0f,O_NAME="sehingga 12 malam",PERIOD=4,PERIOD_Q=1},
+                new BC {LIC_TYPEID=10,C_R="P11",C_R_DESC="Hiburan di Pub/Coffee House/Lounge/Disko/Dewan Tarian - Tarian selepas 12 malam",O_FEE=14.0f,O_NAME="selepas 12 malam",PERIOD=4,PERIOD_Q=1},
                 new BC {LIC_TYPEID=10,C_R="P12",C_R_DESC="Pameran",O_FEE=5.0f,O_NAME="gerai",PERIOD=4,PERIOD_Q=1},
                 new BC {LIC_TYPEID=10,C_R="P13",C_R_DESC="Pertunjukan Fesyen oleh Artis Profesional/Pertandingan Ratu Cantik",O_FEE=10.0f,O_NAME="artis/peserta",PERIOD=4,PERIOD_Q=1},
                 new BC {LIC_TYPEID=10,C_R="P14",C_R_DESC="Pesta ria",O_FEE=2.0f,O_NAME="gerai",PERIOD=4,PERIOD_Q=1},
@@ -287,6 +270,56 @@ namespace TradingLicense.Data.Migrations
                 new BC {LIC_TYPEID=10,C_R="P18",C_R_DESC="Apa-apa hiburan lain",O_FEE=10.0f,PERIOD=4,PERIOD_Q=1},
             };
             bcode.ForEach(s => context.BCs.Add(s));
+            context.SaveChanges();
+
+            var entmtCodes = new List<E_P_FEE>
+            {
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="Tidak melebihi 200 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="200 hingga 400 kerusi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="400 hingga 600 kerusi",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="600 hingga 800 kerusi",E_S_FEE=1400.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="800 hingga 1,000 kerusi",E_S_FEE=1600.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="1,000 hingga 1,200 kerusi",E_S_FEE=1800.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="Lebih 1,200 kerusi",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Oditorium/Dewan",E_S_DESC="Lesen Sementara",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Tidak melebihi 200 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Melebihi 200 kerusi tetapi tidak melebihi 400 kerusi",E_S_FEE=900.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Melebihi 400 kerusi tetapi tidak melebihi 600 kerusi",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Melebihi 600 kerusi tetapi tidak melebihi 800 kerusi",E_S_FEE=1550.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Melebihi 800 kerusi tetapi tidak melebihi 1,000 kerusi",E_S_FEE=1800.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Melebihi 1,000 kerusi tetapi tidak melebihi 1,200 kerusi",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Lebih 1,200 kerusi",E_S_FEE=2200.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Panggung Wayang/Panggung",E_S_DESC="Lesen Sementara",E_S_FEE=20.0f,E_S_PERIOD=4,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Pusat Hiburan (Dalam Bangunan)",E_S_DESC="Luas lantai tidak melebihi 30 meter persegi",E_S_FEE=300.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Pusat Hiburan (Dalam Bangunan)",E_S_DESC="Luas lantai melebihi 30 meter persegi tetapi tidak melebihi 60 meter persegi",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Pusat Hiburan (Dalam Bangunan)",E_S_DESC="Luas lantai melebihi 60 meter persegi tetapi tidak melebihi 90 meter persegi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Pusat Hiburan (Dalam Bangunan)",E_S_DESC="Lebih 90 meter persegi",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",E_S_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Lorong Boling",E_S_DESC="Lorong Boling",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Gelanggang Luncur",E_S_DESC="Gelanggang Luncur",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",E_S_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",E_S_O_FEE=20.0f,E_S_O_NAME="mesin",E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Tarian/Disko/Kabaret",E_S_DESC="Luas lantai tidak melebihi 30 meter persegi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Tarian/Disko/Kabaret",E_S_DESC="30 hingga 60 meter persegi",E_S_FEE=600.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Tarian/Disko/Kabaret",E_S_DESC="60 hingga 90 meter persegi",E_S_FEE=900.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Tarian/Disko/Kabaret",E_S_DESC="Lebih 90 meter persegi",E_S_FEE=1200.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Tarian/Disko/Kabaret",E_S_DESC="Kabaret - Lebih 90 meter persegi",E_S_FEE=2200.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Tidak melebihi 5 meja",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 5 meja tetapi tidak melebihi 10 meja",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 10 meja tetapi tidak melebihi 20 meja",E_S_FEE=1500.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 20 meja tetapi tidak melebihi 30 meja",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 30 meja tetapi tidak melebihi 40 meja",E_S_FEE=2500.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 40 meja tetapi tidak melebihi 50 meja",E_S_FEE=3000.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Dewan Biliard/Snuker",E_S_DESC="Melebihi 50 meja",E_S_B_FEE=3000.0f,E_S_O_FEE=50.0f,E_S_O_NAME="meja",E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Stadium",E_S_DESC="Tidak melebihi 1000 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Stadium",E_S_DESC="Melebihi 1000 kerusi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Stadium",E_S_DESC="Lesen sementara",E_S_FEE=50.0f,E_S_PERIOD=4,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran",E_S_DESC="Luas lantai tidak melebihi 100 meter persegi",E_S_FEE=100.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran",E_S_DESC="Luas lantai melebihi 100 meter persegi tetapi tidak melebihi 150 meter persegi",E_S_FEE=200.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran",E_S_DESC="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",E_S_FEE=300.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran",E_S_DESC="Luas lantai melebihi 200 meter persegi",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_P_QTY=1},
+                new E_P_FEE {E_P_DESC="Ruang Legar/Dewan/Tempat Terbuka yang digunakan bagi pameran",E_S_DESC="Lesen sementara",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_P_QTY=1},
+            };
+            entmtCodes.ForEach(s => context.E_P_FEEs.Add(s));
             context.SaveChanges();
 
             var departments = new List<DEPARTMENT>
@@ -469,14 +502,23 @@ namespace TradingLicense.Data.Migrations
                 new ACCESSPAGE {PAGEDESC="Process",CRUDLEVEL=4,ROLEID=7,SCREENID=11},
                 new ACCESSPAGE {PAGEDESC="Process",CRUDLEVEL=4,ROLEID=8,SCREENID=11},
 
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=1,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=2,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=3,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=4,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=5,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=6,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=7,SCREENID=14},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=8,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=1,ROLEID=1,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=2,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=3,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=4,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=1,ROLEID=5,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=6,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=7,SCREENID=12},
+                new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=8,SCREENID=12},
+
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=1,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=2,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=3,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=4,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=5,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=6,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=7,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=8,SCREENID=13},
             };
             accesspages.ForEach(s => context.ACCESSPAGEs.Add(s));
             context.SaveChanges();
@@ -724,57 +766,6 @@ namespace TradingLicense.Data.Migrations
                 new ROAD {ROADCODE="010",ROADDESC="Jalan Tanjung Pasir"},
             };
             roads.ForEach(s => context.ROADs.Add(s));
-            context.SaveChanges();
-
-
-            var entmtCodes = new List<E_P_SIZE>
-            {
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="Tidak melebihi 200 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="200 hingga 400 kerusi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="400 hingga 600 kerusi",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="600 hingga 800 kerusi",E_S_FEE=1400.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="800 hingga 1,000 kerusi",E_S_FEE=1600.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="1,000 hingga 1,200 kerusi",E_S_FEE=1800.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="Lebih 1,200 kerusi",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=1,E_S_DESC="Lesen Sementara",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Tidak melebihi 200 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Melebihi 200 kerusi tetapi tidak melebihi 400 kerusi",E_S_FEE=900.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Melebihi 400 kerusi tetapi tidak melebihi 600 kerusi",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Melebihi 600 kerusi tetapi tidak melebihi 800 kerusi",E_S_FEE=1550.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Melebihi 800 kerusi tetapi tidak melebihi 1,000 kerusi",E_S_FEE=1800.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Melebihi 1,000 kerusi tetapi tidak melebihi 1,200 kerusi",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Lebih 1,200 kerusi",E_S_FEE=2200.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=2,E_S_DESC="Lesen Sementara",E_S_FEE=20.0f,E_S_PERIOD=4,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=3,E_S_DESC="Luas lantai tidak melebihi 30 meter persegi",E_S_FEE=300.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=3,E_S_DESC="Luas lantai melebihi 30 meter persegi tetapi tidak melebihi 60 meter persegi",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=3,E_S_DESC="Luas lantai melebihi 60 meter persegi tetapi tidak melebihi 90 meter persegi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=3,E_S_DESC="Lebih 90 meter persegi",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=4,E_S_DESC="Pusat Hiburan/Taman Hiburan (Luar Bangunan)",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=5,E_S_DESC="Lorong Boling",E_S_FEE=1100.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=6,E_S_DESC="Gelanggang Luncur",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=7,E_S_DESC="Mesin Hiburan (Kiddy Rides/Juke Box) di tempat selain daripada Pusat Hiburan",E_S_O_FEE=20.0f,E_S_O_NAME="mesin",E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=8,E_S_DESC="Luas lantai tidak melebihi 30 meter persegi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=8,E_S_DESC="30 hingga 60 meter persegi",E_S_FEE=600.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=8,E_S_DESC="60 hingga 90 meter persegi",E_S_FEE=900.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=8,E_S_DESC="Lebih 90 meter persegi",E_S_FEE=1200.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=8,E_S_DESC="Kabaret - Lebih 90 meter persegi",E_S_FEE=2200.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Tidak melebihi 5 meja",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 5 meja tetapi tidak melebihi 10 meja",E_S_FEE=1000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 10 meja tetapi tidak melebihi 20 meja",E_S_FEE=1500.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 20 meja tetapi tidak melebihi 30 meja",E_S_FEE=2000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 30 meja tetapi tidak melebihi 40 meja",E_S_FEE=2500.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 40 meja tetapi tidak melebihi 50 meja",E_S_FEE=3000.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=9,E_S_DESC="Melebihi 50 meja",E_S_B_FEE=3000.0f,E_S_O_FEE=50.0f,E_S_O_NAME="meja",E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=10,E_S_DESC="Tidak melebihi 1000 kerusi",E_S_FEE=400.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=10,E_S_DESC="Melebihi 1000 kerusi",E_S_FEE=800.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=10,E_S_DESC="Lesen sementara",E_S_FEE=50.0f,E_S_PERIOD=4,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=11,E_S_DESC="Luas lantai tidak melebihi 100 meter persegi",E_S_FEE=100.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=11,E_S_DESC="Luas lantai melebihi 100 meter persegi tetapi tidak melebihi 150 meter persegi",E_S_FEE=200.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=11,E_S_DESC="Luas lantai melebihi 150 meter persegi tetapi tidak melebihi 200 meter persegi",E_S_FEE=300.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=11,E_S_DESC="Luas lantai melebihi 200 meter persegi",E_S_FEE=500.0f,E_S_PERIOD=1,E_S_PERIOD_Q=1},
-                new E_P_SIZE {E_PREMISEID=11,E_S_DESC="Lesen sementara",E_S_FEE=10.0f,E_S_PERIOD=4,E_S_PERIOD_Q=1},
-            };
-            entmtCodes.ForEach(s => context.E_P_SIZEs.Add(s));
             context.SaveChanges();
 
             var btls = new List<RD_L_BT>
