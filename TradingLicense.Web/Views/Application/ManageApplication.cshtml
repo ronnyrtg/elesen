@@ -9,7 +9,7 @@
 
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
     List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
-    List<TradingLicense.Model.EntmtPremiseFeeModel> entmtGroupList = new List<TradingLicense.Model.EntmtPremiseFeeModel>();
+    List<TradingLicense.Model.EntmtPremiseFeeModel> premiseFeeList = new List<TradingLicense.Model.EntmtPremiseFeeModel>();
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
     List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
@@ -26,7 +26,7 @@
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
 
         var entmtGroup = ctx.E_P_FEEs.ToList();
-        entmtGroupList = Mapper.Map<List<TradingLicense.Model.EntmtPremiseFeeModel>>(entmtGroup);
+        premiseFeeList = Mapper.Map<List<TradingLicense.Model.EntmtPremiseFeeModel>>(entmtGroup);
 
         var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
