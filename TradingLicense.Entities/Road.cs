@@ -4,26 +4,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Road
+    public class ROAD
     {
         [Key]
-        public int RoadID { get; set; }
+        public int ROADID { get; set; }
         [Required]
         [StringLength(4)]
         [Column(TypeName = "VARCHAR2")]
-        public string RoadCode { get; set; }
+        public string ROADCODE { get; set; }
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string RoadDesc { get; set; }
-        public int? UsersID { get; set; }
-        public DateTime? LastUpdated { get; set; }
-        public bool Active { get; set; }
-        public Road()
+        public string ROADDESC { get; set; }
+        public bool ACTIVE { get; set; }
+        public ROAD()
         {
-            Active = true;
+            ACTIVE = true;
         }
-
-        public virtual Users Users { get; set; }
     }
 }

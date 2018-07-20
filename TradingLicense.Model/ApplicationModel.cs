@@ -4,14 +4,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
+    public class Select2ListItem
+    {
+        public int id { get; set; }
+        public string text { get; set; }
+    }
+
     public class ApplicationModel
     {
         public int APP_ID { get; set; }
-        public int APP_TYPE_ID { get; set; }
+        public int APP_TYPEID { get; set; }
         public int MODE { get; set; }
-        public int BUSINESSTYPEID { get; set; }
+        public int BT_ID { get; set; }
         public int COMPANYID { get; set; }
-        public int ADDRESS_ID { get; set; }
+        public int ADDRESSID { get; set; }
         public string P_OWN { get; set; }
         public float P_AREA { get; set; }
         public DateTime? START_RENT { get; set; }
@@ -36,6 +42,7 @@ namespace TradingLicense.Model
         public float? B_SIZE { get; set; }
         public float? B_QTY { get; set; }
         public int? B_O_TOTAL { get; set; }
+        public int totalBannerObjects { get; set; }
 
         //Hawker Application & Stall Application
         public DateTime? V_START { get; set; }

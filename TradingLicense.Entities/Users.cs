@@ -3,38 +3,38 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Users
+    public class USERS
     {
 
-        public int UsersID { get; set; }
+        public int USERSID { get; set; }
 
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
-        public string FullName { get; set; }
+        public string FULLNAME { get; set; }
 
         [StringLength(30)]
         [Column(TypeName = "VARCHAR2")]
-        public string Username { get; set; }
+        public string USERNAME { get; set; }
 
         [StringLength(200)]
         [Column(TypeName = "VARCHAR2")]
-        public string Email { get; set; }
+        public string EMAIL { get; set; }
 
         [StringLength(32)]
         [Column(TypeName = "VARCHAR2")]
-        public string Password { get; set; }
+        public string PASSWORD { get; set; }
         public int? ROLEID { get; set; }
-        public int? DepartmentID { get; set; }
+        public int? DEP_ID { get; set; }
 
-        public int Locked { get; set; }
-        public bool Active { get; set; }
-        public Users()
+        public int LOCKED { get; set; }
+        public bool ACTIVE { get; set; }
+        public USERS()
         {
-            Active = true;
+            ACTIVE = true;
         }
 
         public virtual ROLE ROLE { get; set; }
-        public virtual Department Department { get; set; }
+        public virtual DEPARTMENT DEPARTMENT { get; set; }
 
     }
 }

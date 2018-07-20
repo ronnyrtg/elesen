@@ -1,25 +1,18 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
 {
+    //Business Type
     public class BusinessTypeModel
     {
-        public int BusinessTypeID { get; set; }
+        public int BT_ID { get; set; }
+        [Required(ErrorMessage = "Sila masukkan kod perniagaan")]
+        public string BT_CODE { get; set; }
+        [Required(ErrorMessage = "Sila masukkan jenis perniagaan")]
+        public string BT_DESC { get; set; }
+        public bool ACTIVE { get; set; }
 
-        [Display(Name = "Business Type Code")]
-        [Required(ErrorMessage = "Please enter Business Type Code")]
-        [StringLength(1)]
-        public string BusinessTypeCode { get; set; }
-
-        [Display(Name = "Business Description")]
-        [Required(ErrorMessage = "Please enter Business Description")]
-        [StringLength(255)]
-        public string BusinessTypeDesc { get; set; }
-
-        public List<int> RequiredDocs { get; set; }
-
-        [Display(Name = "Is Active")]
-        public bool Active { get; set; }
+        public string RequiredDocs { get; set; }
+        
     }
 }

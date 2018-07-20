@@ -5,16 +5,16 @@ namespace TradingLicense.Model
 {
     public class RouteUnitModel
     {
-        public int RouteUnitID { get; set; }
-        public int ApplicationType { get; set; }
-        public int ApplicationID { get; set; }
-        public int DepartmentID { get; set; }
-        public bool IsSupported { get; set; }
-        public string Comment { get; set; }
+        public int ROUTEUNITID { get; set; }
+        public int APP_TYPE { get; set; }
+        public int APP_ID { get; set; }
+        public int DEP_ID { get; set; }
+        public bool SUPPORT { get; set; }
+        public string COMMENT { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UsersID { get; set; }
-        public DateTime? SubmittedDate { get; set; }
-        public bool Active { get; set; }
+        public int USERSID { get; set; }
+        public DateTime? SUBMITTED { get; set; }
+        public bool ACTIVE { get; set; }
 
         public string DepartmentDesc { get; set; }
         public string FullName { get; set; }

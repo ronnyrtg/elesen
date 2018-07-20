@@ -2,7 +2,7 @@
 
 namespace TradingLicense.Model
 {
-    public class ROLEModel
+    public class RoleModel
     {
         public int ROLEID { get; set; }        
         [Required(ErrorMessage = "Sila masukkan nama peranan")]

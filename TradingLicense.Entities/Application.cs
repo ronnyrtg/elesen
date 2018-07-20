@@ -9,15 +9,15 @@ namespace TradingLicense.Entities
         [Key]
         public int APP_ID { get; set; }
         //License Type
-        public int APP_TYPE_ID { get; set; }
+        public int APP_TYPEID { get; set; }
         //Approval Type
         public int MODE { get; set; }
         //Sole Proprietorship or Sdn Bhd
-        public int BUSINESSTYPEID { get; set; }
+        public int BT_ID { get; set; }
         //Foreign Key to Company Table
         public int COMPANYID { get; set; }
         //Foreign Key to Address Table
-        public int ADDRESS_ID { get; set; }
+        public int ADDRESSID { get; set; }
         //Rent or Own
         [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]
@@ -73,9 +73,9 @@ namespace TradingLicense.Entities
         public string L_STATUS { get; set; }
         public DateTime? EXPIRE { get; set; }
 
-        public virtual BusinessType BusinessTypes { get; set; }
-        public virtual Company Company { get; set; }
-        public virtual AppStatus AppStatus { get; set; }
-        public virtual Users Users { get; set; }
+        public virtual BT BT { get; set; }
+        public virtual COMPANY COMPANY { get; set; }
+        public virtual APPSTATUS APPSTATUS { get; set; }
+        public virtual USERS USERS { get; set; }
     }
 }

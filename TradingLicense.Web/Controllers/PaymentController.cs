@@ -41,7 +41,7 @@ namespace TradingLicense.Web.Controllers
                 try
                 {
                     //IQueryable<PaymentDue> query = ctx.PaymentDues.Where(pd => pd.IndividualIDs.Contains($"~{individualId}~"));
-                    IQueryable<PaymentDue> query = ctx.PaymentDues.ToList().AsQueryable().Where(pd => pd.IndividualIDs.Contains(individualId.ToString()));
+                    IQueryable<PAY_DUE> query = ctx.PAY_DUEs.ToList().AsQueryable().Where(pd => pd.IND_IDS.Contains(individualId.ToString()));
                     #region Sorting
                     // Sorting
                     var orderByString = String.Empty;
@@ -85,7 +85,7 @@ namespace TradingLicense.Web.Controllers
             List<TradingLicense.Model.PaymentReceivedModel> PaymentReceived = new List<Model.PaymentReceivedModel>();
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PaymentReceived> query = ctx.PaymentReceiveds.Where(pr => pr.IndividualID == individualId).OrderByDescending(o => o.DatePaid).Take(20);
+                IQueryable<PAY_REC> query = ctx.PAY_RECs.Where(pr => pr.IND_ID == individualId).OrderByDescending(o => o.DATE_PAID).Take(20);
 
                 #region Sorting
                 // Sorting

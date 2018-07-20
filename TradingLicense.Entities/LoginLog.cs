@@ -4,29 +4,29 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class LoginLog
+    public class LOGINLOG
     {
         [Key]
-        public int LoginLogID { get; set; }
+        public int LOGINLOGID { get; set; }
 
         [Required]
-        public DateTime LogDate { get; set; }
+        public DateTime LOGDATE { get; set; }
 
         [Required]
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
-        public string LogDesc { get; set; }
+        public string LOGDESC { get; set; }
 
         [Required]
         [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]
-        public string IpAddress { get; set; }
+        public string IPADDRESS { get; set; }
 
         [Required]
-        public bool LoginStatus { get; set; }
+        public bool LOGINSTATUS { get; set; }
 
-        public int UsersID { get; set; }
+        public int USERSID { get; set; }
 
-        public virtual Users Users { get; set; }
+        public virtual USERS USERS { get; set; }
     }
 }

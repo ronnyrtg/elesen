@@ -3,24 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public  class AccessPage
+    public  class ACCESSPAGE
     {
         [Key]
-        public int AccessPageID { get; set; }
-
+        public int ACCESSPAGEID { get; set; }
         [Required]
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
-        public string PageDesc { get; set; }
-
+        public string PAGEDESC { get; set; }
         [Required]
-        public int ScreenId { get; set; }
-
+        public int SCREENID { get; set; }
         [Required]
-        public int CrudLevel { get; set; }
-
+        public int CRUDLEVEL { get; set; }
         public int ROLEID { get; set; }
 
-        public virtual ROLE ROLEs { get; set; }
+        public virtual ROLE ROLE { get; set; }
     }
 }

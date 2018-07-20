@@ -187,7 +187,7 @@
             /// <summary>
             /// for PremiseApplication
             /// </summary>
-            PremiseApplication = 1,
+            TradeApplication = 1,
 
             /// <summary>
             /// for BannerApplication
@@ -218,11 +218,6 @@
             /// for EntertainmentApplication
             /// </summary>
             EntmtApplication = 7,
-
-            /// <summary>
-            /// for Combined Application
-            /// </summary>
-            Application = 8,
         }
 
         public enum Mode

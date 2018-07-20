@@ -59,12 +59,12 @@ namespace TradingLicense.Web.Controllers
                 {
                     if (tblId == "1")
                     {
-                        foreach (var item in ctx.BusinessCodes )
+                        foreach (var item in ctx.BCs )
                         {
                             DataRow rw = dt.NewRow();
-                            rw["No"] = item.BusinessCodeID.ToString();
-                            rw["Code"] = item.CodeNumber.ToString();
-                            rw["Description"] = item.CodeDesc.ToString();
+                            rw["No"] = item.BC_ID.ToString();
+                            rw["Code"] = item.C_R.ToString();
+                            rw["Description"] = item.C_R_DESC.ToString();
                             dt.Rows.Add(rw);
                         }
                     }

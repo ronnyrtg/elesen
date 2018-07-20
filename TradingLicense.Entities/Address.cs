@@ -6,7 +6,7 @@ namespace TradingLicense.Entities
     public class ADDRESS
     {
         [Key]
-        public int ADDRESS_ID { get; set; }
+        public int ADDRESSID { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string ADDRA1 { get; set; }

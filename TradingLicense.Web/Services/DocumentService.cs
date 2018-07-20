@@ -14,57 +14,8 @@ namespace TradingLicense.Web.Services
     // then remove static
     public class DocumentService
     {
-        public static void UploadAdditionalDocs(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx,
-            int premiseApplicationId, int roleTemplate)
-        {
-            string[] ids = premiseApplicationModel.UploadAdditionalDocids.Split(',');
-            var additionalDoclistlist = ids.Select(x =>
-            {
-                var splitted = x.Split(':');
-                return new AdditionalDocList
-                {
-                    AdditionalDocID = Convert.ToInt32(splitted[0]),
-                    AttachmentID = Convert.ToInt32(splitted[1])
-                };
-            }).ToList();
 
-            var existingRecord = new List<int>();
-            var dbEntryPaLinkAddDoc = ctx.PALinkAddDocs.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
-            if (dbEntryPaLinkAddDoc.Count > 0)
-            {
-                foreach (var item in dbEntryPaLinkAddDoc)
-                {
-                    if (!additionalDoclistlist.Any(q => q.AdditionalDocID == item.AdditionalDocID && q.AttachmentID == item.AttachmentID))
-                    {
-                        if (roleTemplate == (int)Enums.RollTemplate.Public)
-                        {
-                            ctx.PALinkAddDocs.Remove(item);
-                        }
-                    }
-                    else
-                    {
-                        existingRecord.Add(item.AdditionalDocID);
-                    }
-                }
-
-                ctx.SaveChanges();
-            }
-
-            foreach (var additionalDoc in additionalDoclistlist)
-            {
-                if (existingRecord.All(q => q != additionalDoc.AdditionalDocID))
-                {
-                    PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                    paLinkAddDoc.PremiseApplicationID = premiseApplicationId;
-                    paLinkAddDoc.AdditionalDocID = additionalDoc.AdditionalDocID;
-                    paLinkAddDoc.AttachmentID = additionalDoc.AttachmentID;
-                    ctx.PALinkAddDocs.Add(paLinkAddDoc);
-                }
-            }
-            ctx.SaveChanges();
-        }
-
-        public static void UpdateDocs(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int premiseApplicationId, int roleTemplate)
+        public static void UpdateDocs(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int premiseApplicationId, int roleTemplate)
         {
             string[] ids = premiseApplicationModel.UploadRequiredDocids.Split(',');
             var requiredDoclist = ids.Select(x =>
@@ -78,21 +29,21 @@ namespace TradingLicense.Web.Services
             }).ToList();
 
             var existingRecords = new List<int>();
-            var dbEntryRequiredDoc = ctx.PALinkReqDoc.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+            var dbEntryRequiredDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId).ToList();
             if (dbEntryRequiredDoc.Count > 0)
             {
                 foreach (var item in dbEntryRequiredDoc)
                 {
-                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RequiredDocID && q.AttachmentID == item.AttachmentID))
+                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RD_ID && q.AttachmentID == item.ATTACHMENTID))
                     {
                         if (roleTemplate == (int)Enums.RollTemplate.Public)
                         {
-                            ctx.PALinkReqDoc.Remove(item);
+                            ctx.APP_L_RDs.Remove(item);
                         }
                     }
                     else
                     {
-                        existingRecords.Add(item.RequiredDocID);
+                        existingRecords.Add(item.RD_ID);
                     }
                 }
                 ctx.SaveChanges();
@@ -102,38 +53,38 @@ namespace TradingLicense.Web.Services
             {
                 if (existingRecords.All(q => q != requiredDoc.RequiredDocID))
                 {
-                    PALinkReqDoc pALinkReqDoc = new PALinkReqDoc();
-                    pALinkReqDoc.PremiseApplicationID = premiseApplicationId;
-                    pALinkReqDoc.RequiredDocID = requiredDoc.RequiredDocID;
-                    pALinkReqDoc.AttachmentID = requiredDoc.AttachmentID;
-                    ctx.PALinkReqDoc.AddOrUpdate(pALinkReqDoc);
+                    APP_L_RD pALinkReqDoc = new APP_L_RD();
+                    pALinkReqDoc.APP_ID = premiseApplicationId;
+                    pALinkReqDoc.RD_ID = requiredDoc.RequiredDocID;
+                    pALinkReqDoc.ATTACHMENTID = requiredDoc.AttachmentID;
+                    ctx.APP_L_RDs.AddOrUpdate(pALinkReqDoc);
 
                 }
             }
             ctx.SaveChanges();
         }
 
-        public static void UpdateRequiredDocs(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx,
+        public static void UpdateRequiredDocs(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx,
             int premiseApplicationId, int roleTemplate)
         {
             var requiredDoclist = premiseApplicationModel.RequiredDocIds.ToIntList();
 
             List<int> existingRecord = new List<int>();
-            var dbEntryRequiredDoc = ctx.PALinkReqDoc.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+            var dbEntryRequiredDoc = ctx.APP_L_RDs.Where(q => q.RD_ID == premiseApplicationId).ToList();
             if (dbEntryRequiredDoc.Count > 0)
             {
                 foreach (var item in dbEntryRequiredDoc)
                 {
-                    if (requiredDoclist.Any(q => q == item.RequiredDocID))
+                    if (requiredDoclist.Any(q => q == item.RD_ID))
                     {
                         if (roleTemplate == (int)Enums.RollTemplate.Public || roleTemplate == (int)Enums.RollTemplate.DeskOfficer)
                         {
-                            ctx.PALinkReqDoc.Remove(item);
+                            ctx.APP_L_RDs.Remove(item);
                         }
                     }
                     else
                     {
-                        existingRecord.Add(item.RequiredDocID);
+                        existingRecord.Add(item.RD_ID);
                     }
                 }
 
@@ -144,36 +95,36 @@ namespace TradingLicense.Web.Services
             {
                 if (existingRecord.All(q => q != requiredDoc))
                 {
-                    PALinkReqDoc pALinkReqDoc = new PALinkReqDoc();
-                    pALinkReqDoc.PremiseApplicationID = premiseApplicationId;
-                    pALinkReqDoc.RequiredDocID = requiredDoc;
-                    ctx.PALinkReqDoc.AddOrUpdate(pALinkReqDoc);
+                    APP_L_RD pALinkReqDoc = new APP_L_RD();
+                    pALinkReqDoc.APP_ID = premiseApplicationId;
+                    pALinkReqDoc.RD_ID = requiredDoc;
+                    ctx.APP_L_RDs.AddOrUpdate(pALinkReqDoc);
                 }
             }
             ctx.SaveChanges();
         }
 
-        public static void SaveAdditionalDocInfo(PremiseApplicationModel premiseApplicationModel,
+        public static void SaveAdditionalDocInfo(ApplicationModel premiseApplicationModel,
            LicenseApplicationContext ctx, int premiseApplicationId, int roleTemplate)
         {
             List<int> additionalDoclistlist = premiseApplicationModel.AdditionalDocIds.ToIntList();
 
             List<int> existingRecord = new List<int>();
-            var dbEntryPaLinkAddDoc = ctx.PALinkAddDocs.Where(q => q.PremiseApplicationID == premiseApplicationId).ToList();
+            var dbEntryPaLinkAddDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId).ToList();
             if (dbEntryPaLinkAddDoc.Count > 0)
             {
                 foreach (var item in dbEntryPaLinkAddDoc)
                 {
-                    if (additionalDoclistlist.All(q => q != item.AdditionalDocID))
+                    if (additionalDoclistlist.All(q => q != item.RD_ID))
                     {
                         if (roleTemplate == (int)Enums.RollTemplate.Public || roleTemplate == (int)Enums.RollTemplate.DeskOfficer)
                         {
-                            ctx.PALinkAddDocs.Remove(item);
+                            ctx.APP_L_RDs.Remove(item);
                         }
                     }
                     else
                     {
-                        existingRecord.Add(item.AdditionalDocID);
+                        existingRecord.Add(item.RD_ID);
                     }
                 }
 
@@ -184,10 +135,10 @@ namespace TradingLicense.Web.Services
             {
                 if (existingRecord.All(q => q != additionalDoc))
                 {
-                    PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                    paLinkAddDoc.PremiseApplicationID = premiseApplicationId;
-                    paLinkAddDoc.AdditionalDocID = additionalDoc;
-                    ctx.PALinkAddDocs.Add(paLinkAddDoc);
+                    APP_L_RD paLinkAddDoc = new APP_L_RD();
+                    paLinkAddDoc.APP_ID = premiseApplicationId;
+                    paLinkAddDoc.RD_ID = additionalDoc;
+                    ctx.APP_L_RDs.Add(paLinkAddDoc);
 
                 }
             }

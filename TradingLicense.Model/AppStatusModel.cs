@@ -4,15 +4,14 @@ namespace TradingLicense.Model
 {
     public class AppStatusModel
     {
-        public int AppStatusID { get; set; }
+        public int APPSTATUSID { get; set; }
 
         [Required(ErrorMessage = "Please Enter Status Description")]
         [Display(Name = "Status Description")]
         [StringLength(100)]
-        public string StatusDesc { get; set; }
-
+        public string STATUSDESC { get; set; }
         [Required(ErrorMessage = "Please Enter Percent Progress")]
         [Display(Name = "Percent Progress")]
-        public float PercentProgress { get; set; }
+        public float PROGRESS { get; set; }
     }
 }

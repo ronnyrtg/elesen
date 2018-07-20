@@ -6,6 +6,6 @@
         public const string Master = "Master";
         public const string Registration = "Registration";
         public const string Home = "Home";
-        public const string PremiseApplication = "PremiseApplication";
+        public const string Application = "Application";
     }
 }

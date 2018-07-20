@@ -4,14 +4,14 @@ namespace TradingLicense.Model
 {
     public class RaceModel
     {
-        public int RaceID { get; set; }
+        public int RACEID { get; set; }
 
         [Display(Name = "Race Description")]
         [Required(ErrorMessage = "Sila masukkan nama bangsa/etnik/sukukaum")]
         [StringLength(255)]
-        public string RaceDesc { get; set; }
+        public string RACEDESC { get; set; }
 
         [Display(Name = "Is Active")]
-        public bool Active { get; set; }
+        public bool ACTIVE { get; set; }
     }
 }

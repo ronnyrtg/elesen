@@ -4,7 +4,7 @@ namespace TradingLicense.Model
 {
     public class AddressModel
     {
-        public int ADDRESS_ID { get; set; }
+        public int ADDRESSID { get; set; }
         [Required(ErrorMessage = "Sila masukkan alamat")]
         public string ADDRA1 { get; set; }
         public string ADDRA2 { get; set; }

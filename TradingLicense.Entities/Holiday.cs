@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Holiday
+    public class HOLIDAY
     {
         [Key]
-        public int HolidayID { get; set; }
+        public int HOLIDAYID { get; set; }
 
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
-        public string HolidayDesc { get; set; }
-        public DateTime HolidayDate { get; set; }
+        public string H_DESC { get; set; }
+        public DateTime H_DATE { get; set; }
     }
 }

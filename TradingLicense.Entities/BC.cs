@@ -51,7 +51,7 @@ namespace TradingLicense.Entities
             ACTIVE = true;
         }
 
-        public virtual Sector Sector { get; set; }
+        public virtual SECTOR SECTOR { get; set; }
         public virtual LIC_TYPE LIC_TYPE { get; set; }
     }
 }

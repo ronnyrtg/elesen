@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Comment
+    public class COMMENT
     {
         [Key]
-        public int CommentID { get; set; }
-        public int ApplicationType { get; set; }
-        public int ApplicationID { get; set; }
+        public int COMMENTID { get; set; }
+        public int LIC_TYPEID { get; set; }
+        public int APP_ID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string Content { get; set; }
-        public int UsersID { get; set; }
-        public DateTime CommentDate { get; set; }
+        public string CONTENT { get; set; }
+        public int USERSID { get; set; }
+        public DateTime COMMENTDATE { get; set; }
 
-        public virtual Users Users { get; set; }
+        public virtual USERS USERS { get; set; }
     }
 }

@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class PremiseType
+    public class PREMISETYPE
     {
         [Key]
-        public int PremiseTypeID { get; set; }
+        public int PT_ID { get; set; }
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string PremiseDesc { get; set; }
-        public bool Active { get; set; }
-        public PremiseType()
+        public string PT_DESC { get; set; }
+        public bool ACTIVE { get; set; }
+        public PREMISETYPE()
         {
-            Active = true;
+            ACTIVE = true;
         }
     }
 }

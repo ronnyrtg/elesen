@@ -12,68 +12,55 @@ namespace TradingLicense.Data
         { }
 
         //Master Setup
-        public DbSet<Holiday> Holidays { get; set; }
-        public DbSet<AdditionalDoc> AdditionalDocs { get; set; }
-        public DbSet<Attachment> Attachments { get; set; }
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Individual> Individuals { get; set; }
-        public DbSet<IndLinkCom> IndLinkComs { get; set; }  // Individual Link Company
-        public DbSet<IndLinkAtt> IndLinkAtts { get; set; }  // Individual Link Attachments
-        public DbSet<Zone> Zones { get; set; }
-        public DbSet<Location> Locations { get; set; }
-        public DbSet<Road> Roads { get; set; }
-        public DbSet<Race> Races { get; set; }
+        public DbSet<HOLIDAY> HOLIDAYs { get; set; }
+        public DbSet<ATTACHMENT> ATTACHMENTs { get; set; }
+        public DbSet<COMPANY> COMPANIES { get; set; }
+        public DbSet<DEPARTMENT> DEPARTMENTs { get; set; }
+        public DbSet<INDIVIDUAL> INDIVIDUALs { get; set; }
+        public DbSet<IND_L_COM> IND_L_COMs { get; set; }  // Individual Link Company
+        public DbSet<IND_L_ATT> IND_L_ATTs { get; set; }  // Individual Link Attachments
+        public DbSet<ZONE> ZONEs { get; set; }
+        public DbSet<LOCATION> LOCATIONs { get; set; }
+        public DbSet<ROAD> ROADs { get; set; }
+        public DbSet<RACE> RACEs { get; set; }
 
         //Combined Applications
-        public DbSet<APPLICATION> Applications { get; set; }
+        public DbSet<APPLICATION> APPLICATIONs { get; set; }
         public DbSet<ADDRESS> ADDRESS { get; set; }
         public DbSet<BC> BCs { get; set; }
-        public DbSet<BT> BT { get; set; }
-        public DbSet<RD> RD { get; set; }
-        public DbSet<BT_L_RD> BT_L_RD { get; set; }
+        public DbSet<BT> BTs { get; set; }
+        public DbSet<RD> RDs { get; set; }
+        public DbSet<RD_L_BT> RD_L_BTs { get; set; }
+        public DbSet<RD_L_BC> RD_L_BCs { get; set; }
+        public DbSet<RD_L_LT> RD_L_LTs { get; set; }
         public DbSet<LIC_TYPE> LIC_TYPEs { get; set; }
         public DbSet<B_O> B_Os { get; set; }
+        public DbSet<BC_L_DEP> BC_L_DEPs { get; set; }
+        public DbSet<APP_L_IND> APP_L_INDs { get; set; }
+        public DbSet<APP_L_RD> APP_L_RDs { get; set; }
+        public DbSet<APP_L_BC> APP_L_BCs { get; set; }
+        
 
         //Premise Application
-        public DbSet<PremiseApplication> PremiseApplications { get; set; }
-        public DbSet<PremiseType> PremiseTypes { get; set; }
-        public DbSet<Sector> Sectors { get; set; }
-        public DbSet<BusinessCode> BusinessCodes { get; set; }
-        public DbSet<BCLinkDep> BCLinkDeps { get; set; }
-        public DbSet<BCLinkAD> BCLinkAD { get; set; }
-        public DbSet<PALinkBC> PALinkBC { get; set; }
-        public DbSet<PALinkInd> PALinkInd { get; set; }
-        public DbSet<PALinkAddDoc> PALinkAddDocs { get; set; }
-        public DbSet<BTLinkReqDoc> PALinkReqDocs { get; set; }
-        public DbSet<PALinkReqDoc> PALinkReqDoc { get; set; }
-        
-        
 
-        
+        public DbSet<PREMISETYPE> PREMISETYPEs { get; set; }
+        public DbSet<SECTOR> SECTORs { get; set; }               
                
-        public DbSet<E_GROUP> E_GROUPs { get; set; }
-        public DbSet<EntmtObject> EntmtObjects { get; set; }
-        public DbSet<E_CODE> E_CODEs { get; set; }
-        public DbSet<MLPermitApplication> MLPermitApplications { get; set; }
-        
+        public DbSet<E_PREMISE> E_PREMISEs { get; set; }
+        public DbSet<E_P_SIZE> E_P_SIZEs { get; set; }
 
         //Common fields for all applications
-        public DbSet<BusinessType> BusinessTypes { get; set; }
-        public DbSet<AppStatus> AppStatus { get; set; }
-        public DbSet<RequiredDoc> RequiredDocs { get; set; }
-        public DbSet<PaymentDue> PaymentDues { get; set; }
-        public DbSet<PaymentReceived> PaymentReceiveds { get; set; }
-        public DbSet<RouteUnit> RouteUnits { get; set; }
-        public DbSet<Comment> Comments { get; set; }
+        public DbSet<APPSTATUS> APPSTATUS { get; set; }
+        public DbSet<PAY_DUE> PAY_DUEs { get; set; }
+        public DbSet<PAY_REC> PAY_RECs { get; set; }
+        public DbSet<ROUTEUNIT> ROUTEUNITs { get; set; }
+        public DbSet<COMMENT> COMMENTs { get; set; }
         
-
-
         //User related
-        public DbSet<Users> Users { get; set; }
+        public DbSet<USERS> USERS { get; set; }
         public DbSet<ROLE> ROLEs { get; set; }
-        public DbSet<AccessPage> AccessPages { get; set; }
-        public DbSet<LoginLog> LoginLogs { get; set; }       
+        public DbSet<ACCESSPAGE> ACCESSPAGEs { get; set; }
+        public DbSet<LOGINLOG> LOGINLOGs { get; set; }       
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

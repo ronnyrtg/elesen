@@ -37,16 +37,16 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var userModel = ctx.Users.Where(u => u.Username == model.Username.Trim() || u.Email ==model.Email.Trim()).FirstOrDefault();
-                    if (userModel != null && userModel.UsersID > 0)
+                    var userModel = ctx.USERS.Where(u => u.USERNAME == model.Username.Trim() || u.EMAIL ==model.Email.Trim()).FirstOrDefault();
+                    if (userModel != null && userModel.USERSID > 0)
                     {
 
-                        if (userModel.Username.Trim() == model.Username.Trim())
+                        if (userModel.USERNAME.Trim() == model.Username.Trim())
                         {
                             ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.UserNameAvailable);
                             return View(model);
                         }
-                        else if (userModel.Email.Trim() == model.Email.Trim())
+                        else if (userModel.EMAIL.Trim() == model.Email.Trim())
                         {
                             ViewBag.openPopup = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), Messages.EmailAvailable);
                             return View(model);
@@ -54,10 +54,10 @@ namespace TradingLicense.Web.Controllers
                     }
                     else
                     {
-                        Users users = Mapper.Map<Users>(model);
-                        users.Password = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
-                        users.Locked = 0;
-                        ctx.Users.AddOrUpdate(users);
+                        USERS users = Mapper.Map<USERS>(model);
+                        users.PASSWORD = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
+                        users.LOCKED = 0;
+                        ctx.USERS.AddOrUpdate(users);
                         ctx.SaveChanges();
                         
                         TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.success.ToString(), Messages.UserRegistration);

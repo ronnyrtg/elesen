@@ -4,26 +4,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Location
+    public class LOCATION
     {
         [Key]
-        public int LocationID { get; set; }
+        public int LOCATIONID { get; set; }
         [Required]
         [StringLength(4)]
         [Column(TypeName = "VARCHAR2")]
-        public string LocationCode { get; set; }
+        public string L_CODE { get; set; }
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string LocationDesc { get; set; }
-        public int? UsersID { get; set; }
-        public DateTime? LastUpdated { get; set; }
-        public bool Active { get; set; }
-        public Location()
+        public string L_DESC { get; set; }
+        public bool ACTIVE { get; set; }
+        public LOCATION()
         {
-            Active = true;
+            ACTIVE = true;
         }
-
-        public virtual Users Users { get; set; }
     }
 }

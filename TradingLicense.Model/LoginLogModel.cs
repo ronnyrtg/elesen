@@ -6,20 +6,20 @@ namespace TradingLicense.Model
     public class LoginLogModel
     {
         [Key]
-        public int LoginLogID { get; set; }
+        public int LOGINLOGID { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime LogDate { get; set; }
+        public DateTime LOGDATE { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string LogDesc { get; set; }
+        public string LOGDESC { get; set; }
 
         [Required]
         [StringLength(20)]
-        public string IpAddress { get; set; }
+        public string IPADDRESS { get; set; }
 
-        public bool LoginStatus { get; set; }
+        public bool LOGINSTATUS { get; set; }
     }
 }

@@ -4,21 +4,21 @@ namespace TradingLicense.Model
 {
     public class EntmtObjectModel
     {
-        public int EntmtObjectID { get; set; }
+        public int E_OID { get; set; }
 
         [Display(Name = "Entertainment Object Description")]
         [Required(ErrorMessage = "Please enter Entertainment Object Description")]
         [StringLength(255)]
-        public string EntmtObjectDesc { get; set; }
+        public string E_O_DESC { get; set; }
         [Required(ErrorMessage = "Please enter Fee")]
-        public float ObjectFee { get; set; }
+        public float E_O_FEE { get; set; }
+        public float? E_O_B_FEE { get; set; }
         [Display(Name = "Object Name")]
         [Required(ErrorMessage = "Please enter Object Name")]
         [StringLength(255)]
-        public string ObjectName { get; set; }
-        public float? BaseFee { get; set; }
-        public int? Period { get; set; }
-        public int? PeriodQuantity { get; set; }
+        public string E_O_NAME { get; set; }       
+        public int? E_O_PERIOD { get; set; }
+        public int? E_O_PERIOD_Q { get; set; }
         [Display(Name = "Is Active")]
         public bool Active { get; set; }
     }

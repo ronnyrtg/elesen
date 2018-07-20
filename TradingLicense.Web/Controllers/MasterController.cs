@@ -52,15 +52,15 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
 
-                IQueryable<Department> query = ctx.Departments.Where(d => d.Internal == unitType);
+                IQueryable<DEPARTMENT> query = ctx.DEPARTMENTs.Where(d => d.INTERNAL == unitType);
                 totalRecord = query.Count();
 
                 #region Filtering
                 // Apply filters for searching
 
                 query = query.Where(p =>
-                                        p.DepartmentCode.Contains(departmentCode) &&
-                                        p.DepartmentDesc.ToString().Contains(departmentDesc)
+                                        p.DEP_CODE.Contains(departmentCode) &&
+                                        p.DEP_DESC.ToString().Contains(departmentDesc)
                                     );
 
                 filteredRecord = query.Count();
@@ -101,14 +101,14 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageDepartment(int Type, int? Id)
         {
             DepartmentModel departmentModel = new DepartmentModel();
-            departmentModel.Active = true;
+            departmentModel.ACTIVE = true;
             ViewBag.DepartmentType = Type;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int DepartmentID = Convert.ToInt32(Id);
-                    var department = ctx.Departments.Where(a => a.DepartmentID == DepartmentID).FirstOrDefault();
+                    var department = ctx.DEPARTMENTs.Where(a => a.DEP_ID == DepartmentID).FirstOrDefault();
                     departmentModel = Mapper.Map<DepartmentModel>(department);
                 }
             }
@@ -129,14 +129,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Department department;
-                    if (IsDepartmentDuplicate(departmentModel.DepartmentCode, departmentModel.DepartmentID))
+                    DEPARTMENT department;
+                    if (IsDepartmentDuplicate(departmentModel.DEP_CODE, departmentModel.DEP_ID))
                     {
                         TempData["ErrorMessage"] = "Department Code is already exist in the database.";
                         return View(departmentModel);
                     }
-                    department = Mapper.Map<Department>(departmentModel);
-                    ctx.Departments.AddOrUpdate(department);
+                    department = Mapper.Map<DEPARTMENT>(departmentModel);
+                    ctx.DEPARTMENTs.AddOrUpdate(department);
                     ctx.SaveChanges();
                 }
 
@@ -161,7 +161,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Department = new TradingLicense.Entities.Department() { DepartmentID = id };
+                var Department = new TradingLicense.Entities.DEPARTMENT() { DEP_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Department).State = System.Data.Entity.EntityState.Deleted;
@@ -186,10 +186,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Departments.FirstOrDefault(
-                   c => c.DepartmentID != id && c.DepartmentCode.ToLower() == name.ToLower())
-               : ctx.Departments.FirstOrDefault(
-                   c => c.DepartmentCode.ToLower() == name.ToLower());
+               ctx.DEPARTMENTs.FirstOrDefault(
+                   c => c.DEP_ID != id && c.DEP_CODE.ToLower() == name.ToLower())
+               : ctx.DEPARTMENTs.FirstOrDefault(
+                   c => c.DEP_CODE.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -250,9 +250,9 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    AccessPage[] accessPages;
-                    accessPages = Mapper.Map<AccessPage[]>(accessPageModel.RoleAccess);
-                    ctx.AccessPages.AddOrUpdate(accessPages);
+                    ACCESSPAGE[] accessPages;
+                    accessPages = Mapper.Map<ACCESSPAGE[]>(accessPageModel.RoleAccess);
+                    ctx.ACCESSPAGEs.AddOrUpdate(accessPages);
                     ctx.SaveChanges();
                 }
 
@@ -276,7 +276,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var AccessPage = new TradingLicense.Entities.AccessPage() { AccessPageID = id };
+                var AccessPage = new TradingLicense.Entities.ACCESSPAGE() { ACCESSPAGEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(AccessPage).State = System.Data.Entity.EntityState.Deleted;
@@ -301,10 +301,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.AccessPages.FirstOrDefault(
-                   c => c.AccessPageID != id && c.PageDesc.ToLower() == name.ToLower())
-               : ctx.AccessPages.FirstOrDefault(
-                   c => c.PageDesc.ToLower() == name.ToLower());
+               ctx.ACCESSPAGEs.FirstOrDefault(
+                   c => c.ACCESSPAGEID != id && c.PAGEDESC.ToLower() == name.ToLower())
+               : ctx.ACCESSPAGEs.FirstOrDefault(
+                   c => c.PAGEDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -336,7 +336,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
 
-                IQueryable<RequiredDoc> query = ctx.RequiredDocs;
+                IQueryable<RD> query = ctx.RDs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -345,7 +345,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(requiredDocDesc))
                 {
                     query = query.Where(p =>
-                                            p.RequiredDocDesc.Contains(requiredDocDesc)
+                                            p.RD_DESC.Contains(requiredDocDesc)
                                       );
                 }
 
@@ -366,7 +366,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "RequiredDocID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "RD_ID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -387,13 +387,12 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageRequiredDoc(int? Id)
         {
             RequiredDocModel requiredDocModel = new RequiredDocModel();
-            requiredDocModel.Active = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int RequiredDocID = Convert.ToInt32(Id);
-                    var RequiredDoc = ctx.RequiredDocs.Where(a => a.RequiredDocID == RequiredDocID).FirstOrDefault();
+                    int RD_ID = Convert.ToInt32(Id);
+                    var RequiredDoc = ctx.RDs.Where(a => a.RD_ID == RD_ID).FirstOrDefault();
                     requiredDocModel = Mapper.Map<RequiredDocModel>(RequiredDoc);
                 }
             }
@@ -414,14 +413,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    RequiredDoc requiredDoc;
-                    if (IsRequiredDocDuplicate(requiredDocModel.RequiredDocDesc, requiredDocModel.RequiredDocID))
+                    RD requiredDoc;
+                    if (IsRequiredDocDuplicate(requiredDocModel.RD_DESC, requiredDocModel.RD_ID))
                     {
                         TempData["ErrorMessage"] = "Required Document is already exist in the database.";
                         return View(requiredDocModel);
                     }
-                    requiredDoc = Mapper.Map<RequiredDoc>(requiredDocModel);
-                    ctx.RequiredDocs.AddOrUpdate(requiredDoc);
+                    requiredDoc = Mapper.Map<RD>(requiredDocModel);
+                    ctx.RDs.AddOrUpdate(requiredDoc);
                     ctx.SaveChanges();
                 }
 
@@ -446,7 +445,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var RequiredDoc = new TradingLicense.Entities.RequiredDoc() { RequiredDocID = id };
+                var RequiredDoc = new TradingLicense.Entities.RD() { RD_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(RequiredDoc).State = System.Data.Entity.EntityState.Deleted;
@@ -471,10 +470,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.RequiredDocs.FirstOrDefault(
-                   c => c.RequiredDocID != id && c.RequiredDocDesc.ToLower() == name.ToLower())
-               : ctx.RequiredDocs.FirstOrDefault(
-                   c => c.RequiredDocDesc.ToLower() == name.ToLower());
+               ctx.RDs.FirstOrDefault(
+                   c => c.RD_ID != id && c.RD_DESC.ToLower() == name.ToLower())
+               : ctx.RDs.FirstOrDefault(
+                   c => c.RD_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -505,7 +504,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Company> query = ctx.Companies;
+                IQueryable<COMPANY> query = ctx.COMPANIES;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -514,8 +513,8 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(companyName) || !string.IsNullOrWhiteSpace(registrationNo))
                 {
                     query = query.Where(p =>
-                                        p.CompanyName.Contains(companyName) &&
-                                        p.RegistrationNo.ToString().Contains(registrationNo)
+                                        p.C_NAME.Contains(companyName) &&
+                                        p.REG_NO.ToString().Contains(registrationNo)
                                     );
                 }
 
@@ -536,7 +535,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "CompanyID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "COMPANYID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -562,12 +561,12 @@ namespace TradingLicense.Web.Controllers
             List<TradingLicense.Model.CompanyModel> Company = new List<Model.CompanyModel>();
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Company> query = ctx.IndLinkComs.Where(i => i.IndividualID == individualId).Select(l => l.Company);
+                IQueryable<COMPANY> query = ctx.IND_L_COMs.Where(i => i.IND_ID == individualId).Select(l => l.COMPANY);
 
                 #region Sorting
                 // Sorting
                 var orderByString = String.Empty;
-                query = query.OrderBy(orderByString == string.Empty ? "CompanyID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "COMPANYID asc" : orderByString);
 
                 #endregion Sorting
                 Company = Mapper.Map<List<CompanyModel>>(query.ToList());
@@ -584,14 +583,14 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageCompany(int? Id)
         {
             CompanyModel companyModel = new CompanyModel();
-            companyModel.SSMRegDate = DateTime.Today;
-            companyModel.SSMExpDate = DateTime.Today;
+            companyModel.SSMREGDATE = DateTime.Today;
+            companyModel.SSMEXPDATE = DateTime.Today;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int companyID = Convert.ToInt32(Id);
-                    var company = ctx.Companies.Where(a => a.CompanyID == companyID).FirstOrDefault();
+                    var company = ctx.COMPANIES.Where(a => a.COMPANYID == companyID).FirstOrDefault();
                     companyModel = Mapper.Map<CompanyModel>(company);
                 }
             }
@@ -611,14 +610,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Company company;
-                    if (IsCompanyDuplicate(companyModel.CompanyName, companyModel.CompanyID))
+                    COMPANY company;
+                    if (IsCompanyDuplicate(companyModel.C_NAME, companyModel.COMPANYID))
                     {
                         TempData["ErrorMessage"] = "Comapany Name is already exist in the database.";
                         return View(companyModel);
                     }
-                    company = Mapper.Map<Company>(companyModel);
-                    ctx.Companies.AddOrUpdate(company);
+                    company = Mapper.Map<COMPANY>(companyModel);
+                    ctx.COMPANIES.AddOrUpdate(company);
                     ctx.SaveChanges();
                 }
 
@@ -643,7 +642,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Company = new TradingLicense.Entities.Company() { CompanyID = id };
+                var Company = new TradingLicense.Entities.COMPANY() { COMPANYID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Company).State = System.Data.Entity.EntityState.Deleted;
@@ -668,10 +667,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Companies.FirstOrDefault(
-                   c => c.CompanyID != id && c.CompanyName.ToLower() == name.ToLower())
-               : ctx.Companies.FirstOrDefault(
-                   c => c.CompanyName.ToLower() == name.ToLower());
+               ctx.COMPANIES.FirstOrDefault(
+                   c => c.COMPANYID != id && c.C_NAME.ToLower() == name.ToLower())
+               : ctx.COMPANIES.FirstOrDefault(
+                   c => c.C_NAME.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -686,10 +685,10 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Company> primaryQuery = ctx.Companies;
+                IQueryable<COMPANY> primaryQuery = ctx.COMPANIES;
                 if (!String.IsNullOrWhiteSpace(query))
                 {
-                    primaryQuery = primaryQuery.Where(c => c.CompanyName.ToLower().Contains(query.ToLower()));
+                    primaryQuery = primaryQuery.Where(c => c.C_NAME.ToLower().Contains(query.ToLower()));
                 }
                 var company = primaryQuery.ToList();
                 var companyModel = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(company);
@@ -707,10 +706,10 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                Company com = new Company();
-                com.CompanyName = Cname;
-                com.RegistrationNo = RegNo;
-                ctx.Companies.Add(com);
+                COMPANY com = new COMPANY();
+                com.C_NAME = Cname;
+                com.REG_NO = RegNo;
+                ctx.COMPANIES.Add(com);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Syarikat berjaya ditambah.";
 
@@ -745,10 +744,10 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                // totalRecord = ctx.Attachments.Count();
-                // Attachment = ctx.Attachments.OrderByDescending(a => a.AttachmentID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                // totalRecord = ctx.ATTACHMENTs.Count();
+                // Attachment = ctx.ATTACHMENTs.OrderByDescending(a => a.ATT_ID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
 
-                IQueryable<Attachment> query = ctx.Attachments;
+                IQueryable<ATTACHMENT> query = ctx.ATTACHMENTs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -756,7 +755,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(fileName))
                 {
                     query = query.Where(p =>
-                                        p.FileName.Contains(fileName)
+                                        p.FILENAME.Contains(fileName)
                                     );
                 }
 
@@ -777,7 +776,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "AttachmentID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "ATT_ID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -802,16 +801,16 @@ namespace TradingLicense.Web.Controllers
             List<IndLinkAttModel> Attachment = new List<IndLinkAttModel>();
             using (var ctx = new LicenseApplicationContext())
             {
-                // totalRecord = ctx.Attachments.Count();
-                // Attachment = ctx.Attachments.OrderByDescending(a => a.AttachmentID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                // totalRecord = ctx.ATTACHMENTs.Count();
+                // Attachment = ctx.ATTACHMENTs.OrderByDescending(a => a.ATT_ID).Skip(requestModel.Start).Take(requestModel.Length).ToList();
 
-                IQueryable<IndLinkAtt> query = from ila in ctx.IndLinkAtts
-                                               join a in ctx.Attachments
-                                               on ila.AttachmentID equals a.AttachmentID
-                                               where ila.IndividualID == individualId
+                IQueryable<IND_L_ATT> query = from ila in ctx.IND_L_ATTs
+                                               join a in ctx.ATTACHMENTs
+                                               on ila.ATT_ID equals a.ATT_ID
+                                               where ila.IND_ID == individualId
                                                select ila;
                 // Paging
-                query = query.OrderBy("AttachmentID asc");
+                query = query.OrderBy("ATT_ID asc");
 
                 Attachment = Mapper.Map<List<IndLinkAttModel>>(query.ToList());
 
@@ -820,7 +819,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     if (item.Attachment != null)
                     {
-                        var physicalPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + (individualId ?? 0).ToString("D6")), item.Attachment.FileName);
+                        var physicalPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + (individualId ?? 0).ToString("D6")), item.Attachment.FILENAME);
                         item.Attachment.FileNameFullPath = physicalPath.Substring(hostingPath.Length).Replace('\\', '/').Insert(0, "../");
                     }
                 }
@@ -842,7 +841,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int attachmentID = Convert.ToInt32(Id);
-                    var attachment = ctx.Attachments.Where(a => a.AttachmentID == attachmentID).FirstOrDefault();
+                    var attachment = ctx.ATTACHMENTs.Where(a => a.ATT_ID == attachmentID).FirstOrDefault();
                     attachmentModel = Mapper.Map<AttachmentModel>(attachment);
                 }
             }
@@ -863,14 +862,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Attachment attachment;
+                    ATTACHMENT attachment;
                     if (Request.Files != null)
                     {
                         var file = Request.Files[0];
                         if (file != null && file.ContentLength > 0)
                         {
                             var fileName = Path.GetFileName(file.FileName);
-                            if (IsAttachmentDuplicate(fileName, attachmentModel.AttachmentID))
+                            if (IsAttachmentDuplicate(fileName, attachmentModel.ATT_ID))
                             {
                                 TempData["ErrorMessage"] = "File Name is already exist in the database.";
                                 return View(attachmentModel);
@@ -883,10 +882,10 @@ namespace TradingLicense.Web.Controllers
                                 Directory.CreateDirectory(folder);
                             }
                             file.SaveAs(path);
-                            attachmentModel.FileName = fileName;
+                            attachmentModel.FILENAME = fileName;
 
-                            attachment = Mapper.Map<Attachment>(attachmentModel);
-                            ctx.Attachments.AddOrUpdate(attachment);
+                            attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
+                            ctx.ATTACHMENTs.AddOrUpdate(attachment);
                             ctx.SaveChanges();
 
                             TempData["SuccessMessage"] = "Attachment saved successfully.";
@@ -895,12 +894,12 @@ namespace TradingLicense.Web.Controllers
                         }
                     }
 
-                    if (attachmentModel.AttachmentID > 0)
+                    if (attachmentModel.ATT_ID > 0)
                     {
-                        if (!string.IsNullOrWhiteSpace(attachmentModel.FileName))
+                        if (!string.IsNullOrWhiteSpace(attachmentModel.FILENAME))
                         {
-                            attachment = Mapper.Map<Attachment>(attachmentModel);
-                            ctx.Attachments.AddOrUpdate(attachment);
+                            attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
+                            ctx.ATTACHMENTs.AddOrUpdate(attachment);
                             ctx.SaveChanges();
                             return RedirectToAction("Attachment");
                         }
@@ -933,7 +932,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Attachment = new TradingLicense.Entities.Attachment() { AttachmentID = id };
+                var Attachment = new TradingLicense.Entities.ATTACHMENT() { ATT_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Attachment).State = System.Data.Entity.EntityState.Deleted;
@@ -958,10 +957,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Attachments.FirstOrDefault(
-                   c => c.AttachmentID != id && c.FileName.ToLower() == name.ToLower())
-               : ctx.Attachments.FirstOrDefault(
-                   c => c.FileName.ToLower() == name.ToLower());
+               ctx.ATTACHMENTs.FirstOrDefault(
+                   c => c.ATT_ID != id && c.FILENAME.ToLower() == name.ToLower())
+               : ctx.ATTACHMENTs.FirstOrDefault(
+                   c => c.FILENAME.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -1007,14 +1006,14 @@ namespace TradingLicense.Web.Controllers
                     fname = Path.Combine(individualUploadPath, fname);
                     file.SaveAs(fname);
 
-                    attachmentModel.FileName = fileName;
+                    attachmentModel.FILENAME = fileName;
 
                     using (var ctx = new LicenseApplicationContext())
                     {
-                        var attachment = Mapper.Map<Attachment>(attachmentModel);
-                        ctx.Attachments.AddOrUpdate(attachment);
+                        var attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
+                        ctx.ATTACHMENTs.AddOrUpdate(attachment);
                         ctx.SaveChanges();
-                        attachmentID = attachment.AttachmentID;
+                        attachmentID = attachment.ATT_ID;
                     }
 
                     return Json("File Uploaded Successfully!#" + attachmentID.ToString() + "#"
@@ -1096,20 +1095,20 @@ namespace TradingLicense.Web.Controllers
                         fname = Path.Combine(individualUploadPath, fname);
                         file.SaveAs(fname);
 
-                        attachmentModel.FileName = fileName;
+                        attachmentModel.FILENAME = fileName;
 
                         using (var ctx = new LicenseApplicationContext())
                         {
-                            var attachment = Mapper.Map<Attachment>(attachmentModel);
-                            ctx.Attachments.AddOrUpdate(attachment);
+                            var attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
+                            ctx.ATTACHMENTs.AddOrUpdate(attachment);
                             ctx.SaveChanges();
-                            attachmentID = attachment.AttachmentID;
+                            attachmentID = attachment.ATT_ID;
 
-                            ctx.IndLinkAtts.AddOrUpdate(new Entities.IndLinkAtt()
+                            ctx.IND_L_ATTs.AddOrUpdate(new Entities.IND_L_ATT()
                             {
-                                IndividualID = individualId,
-                                AttachmentID = attachmentID,
-                                AttachmentDesc = attachmentDesc
+                                IND_ID = individualId,
+                                ATT_ID = attachmentID,
+                                ATT_DESC = attachmentDesc
                             });
                             ctx.SaveChanges();
                         }
@@ -1147,7 +1146,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult RoleTemplate([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string roleTemplateDesc)
         {
-            List<TradingLicense.Model.ROLEModel> roleTemplate = new List<Model.ROLEModel>();
+            List<TradingLicense.Model.RoleModel> roleTemplate = new List<Model.RoleModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -1189,7 +1188,7 @@ namespace TradingLicense.Web.Controllers
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                roleTemplate = Mapper.Map<List<ROLEModel>>(query.ToList());
+                roleTemplate = Mapper.Map<List<RoleModel>>(query.ToList());
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, roleTemplate, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -1202,14 +1201,14 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageRoleTemplate(int? Id)
         {
-            ROLEModel roleTemplateModel = new ROLEModel();
+            RoleModel roleTemplateModel = new RoleModel();
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int roleTemplateID = Convert.ToInt32(Id);
                     var roleTemplate = ctx.ROLEs.Where(a => a.ROLEID == roleTemplateID).FirstOrDefault();
-                    roleTemplateModel = Mapper.Map<ROLEModel>(roleTemplate);
+                    roleTemplateModel = Mapper.Map<RoleModel>(roleTemplate);
                 }
             }
 
@@ -1223,7 +1222,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageRoleTemplate(ROLEModel roleTemplateModel)
+        public ActionResult ManageRoleTemplate(RoleModel roleTemplateModel)
         {
             if (ModelState.IsValid)
             {
@@ -1319,7 +1318,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<AppStatus> query = ctx.AppStatus;
+                IQueryable<APPSTATUS> query = ctx.APPSTATUS;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1327,7 +1326,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(statusDesc))
                 {
                     query = query.Where(p =>
-                                        p.StatusDesc.Contains(statusDesc)
+                                        p.STATUSDESC.Contains(statusDesc)
                                     );
                 }
 
@@ -1348,7 +1347,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "AppStatusID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "APPSTATUSID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -1374,7 +1373,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int pAStatusID = Convert.ToInt32(Id);
-                    var pAStatus = ctx.AppStatus.Where(a => a.AppStatusID == pAStatusID).FirstOrDefault();
+                    var pAStatus = ctx.APPSTATUS.Where(a => a.APPSTATUSID == pAStatusID).FirstOrDefault();
                     appStatusModel = Mapper.Map<AppStatusModel>(pAStatus);
                 }
             }
@@ -1395,14 +1394,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    AppStatus pAStatus;
-                    if (IsAppStatusDuplicate(appStatusModel.StatusDesc, appStatusModel.AppStatusID))
+                    APPSTATUS pAStatus;
+                    if (IsAppStatusDuplicate(appStatusModel.STATUSDESC, appStatusModel.APPSTATUSID))
                     {
                         TempData["ErrorMessage"] = "AppStatus is already exist in the database.";
                         return View(appStatusModel);
                     }
-                    pAStatus = Mapper.Map<AppStatus>(appStatusModel);
-                    ctx.AppStatus.AddOrUpdate(pAStatus);
+                    pAStatus = Mapper.Map<APPSTATUS>(appStatusModel);
+                    ctx.APPSTATUS.AddOrUpdate(pAStatus);
                     ctx.SaveChanges();
                 }
 
@@ -1427,7 +1426,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var AppStatus = new TradingLicense.Entities.AppStatus() { AppStatusID = id };
+                var AppStatus = new TradingLicense.Entities.APPSTATUS() { APPSTATUSID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(AppStatus).State = System.Data.Entity.EntityState.Deleted;
@@ -1452,10 +1451,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.AppStatus.FirstOrDefault(
-                   c => c.AppStatusID != id && c.StatusDesc.ToLower() == name.ToLower())
-               : ctx.AppStatus.FirstOrDefault(
-                   c => c.StatusDesc.ToLower() == name.ToLower());
+               ctx.APPSTATUS.FirstOrDefault(
+                   c => c.APPSTATUSID != id && c.STATUSDESC.ToLower() == name.ToLower())
+               : ctx.APPSTATUS.FirstOrDefault(
+                   c => c.STATUSDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -1486,7 +1485,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<PremiseType> query = ctx.PremiseTypes;
+                IQueryable<PREMISETYPE> query = ctx.PREMISETYPEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1495,7 +1494,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(premiseDesc))
                 {
                     query = query.Where(p =>
-                                        p.PremiseDesc.Contains(premiseDesc)
+                                        p.PT_DESC.Contains(premiseDesc)
                                     );
                 }
 
@@ -1516,7 +1515,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "PremiseTypeID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "PT_ID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -1537,13 +1536,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManagePremiseType(int? Id)
         {
             PremiseTypeModel premiseTypeModel = new PremiseTypeModel();
-            premiseTypeModel.Active = true;
+            premiseTypeModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int premiseTypeID = Convert.ToInt32(Id);
-                    var premiseType = ctx.PremiseTypes.Where(a => a.PremiseTypeID == premiseTypeID).FirstOrDefault();
+                    var premiseType = ctx.PREMISETYPEs.Where(a => a.PT_ID == premiseTypeID).FirstOrDefault();
                     premiseTypeModel = Mapper.Map<PremiseTypeModel>(premiseType);
                 }
             }
@@ -1564,15 +1563,15 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    PremiseType premiseType;
-                    if (IsPremiseTypeDuplicate(premiseTypeModel.PremiseDesc, premiseTypeModel.PremiseTypeID))
+                    PREMISETYPE premiseType;
+                    if (IsPremiseTypeDuplicate(premiseTypeModel.PT_DESC, premiseTypeModel.PT_ID))
                     {
                         TempData["ErrorMessage"] = "Premise Type is already exist in the database.";
                         return View(premiseTypeModel);
                     }
 
-                    premiseType = Mapper.Map<PremiseType>(premiseTypeModel);
-                    ctx.PremiseTypes.AddOrUpdate(premiseType);
+                    premiseType = Mapper.Map<PREMISETYPE>(premiseTypeModel);
+                    ctx.PREMISETYPEs.AddOrUpdate(premiseType);
                     ctx.SaveChanges();
                 }
 
@@ -1597,7 +1596,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var premiseType = new TradingLicense.Entities.PremiseType() { PremiseTypeID = id };
+                var premiseType = new TradingLicense.Entities.PREMISETYPE() { PT_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(premiseType).State = System.Data.Entity.EntityState.Deleted;
@@ -1622,10 +1621,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.PremiseTypes.FirstOrDefault(
-                   c => c.PremiseTypeID != id && c.PremiseDesc.ToLower() == name.ToLower())
-               : ctx.PremiseTypes.FirstOrDefault(
-                   c => c.PremiseDesc.ToLower() == name.ToLower());
+               ctx.PREMISETYPEs.FirstOrDefault(
+                   c => c.PT_ID != id && c.PT_DESC.ToLower() == name.ToLower())
+               : ctx.PREMISETYPEs.FirstOrDefault(
+                   c => c.PT_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -1640,9 +1639,9 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                PremiseType pre = new PremiseType();
-                pre.PremiseDesc = PTypeDesc;
-                ctx.PremiseTypes.Add(pre);
+                PREMISETYPE pre = new PREMISETYPE();
+                pre.PT_DESC = PTypeDesc;
+                ctx.PREMISETYPEs.Add(pre);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Jenis Premis berjaya ditambah.";
 
@@ -1677,7 +1676,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Individual> query = ctx.Individuals;
+                IQueryable<INDIVIDUAL> query = ctx.INDIVIDUALs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1686,9 +1685,9 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(fullName) || !string.IsNullOrWhiteSpace(mykadPassport) || !string.IsNullOrWhiteSpace(phoneNo))
                 {
                     query = query.Where(p =>
-                                    p.FullName.Contains(fullName) &&
-                                    p.MykadNo.Contains(mykadPassport) &&
-                                    p.PhoneNo.Contains(phoneNo)
+                                    p.FULLNAME.Contains(fullName) &&
+                                    p.MYKADNO.Contains(mykadPassport) &&
+                                    p.PHONE.Contains(phoneNo)
                                 );
                 }
 
@@ -1709,7 +1708,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "IndividualID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "IND_ID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -1743,13 +1742,13 @@ namespace TradingLicense.Web.Controllers
         {
             IndividualModel IndividualModel = new IndividualModel();
             ViewBag.IndividualId = Id;
-            IndividualModel.Active = true;
+            IndividualModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int individualID = Convert.ToInt32(Id);
-                    var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
+                    var individual = ctx.INDIVIDUALs.Where(a => a.IND_ID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
                 }
             }
@@ -1777,7 +1776,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageIndividual(int? Id)
         {
             IndividualModel IndividualModel = new IndividualModel();
-            IndividualModel.Active = true;
+            IndividualModel.ACTIVE = true;
             ViewBag.IndividualId = Id;
             ViewBag.ViewName = "ManageIndividual";
             ManageIndividualModel model = new ManageIndividualModel();
@@ -1787,10 +1786,10 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int individualID = Convert.ToInt32(Id);
-                    var individual = ctx.Individuals.Where(a => a.IndividualID == individualID).FirstOrDefault();
+                    var individual = ctx.INDIVIDUALs.Where(a => a.IND_ID == individualID).FirstOrDefault();
                     IndividualModel = Mapper.Map<IndividualModel>(individual);
 
-                    model.CompanyIds = (string.Join(",", ctx.IndLinkComs.Where(x => x.IndividualID == Id).Select(x => x.CompanyID.ToString()).ToArray()));
+                    model.CompanyIds = (string.Join(",", ctx.IND_L_COMs.Where(x => x.IND_ID == Id).Select(x => x.COMPANYID.ToString()).ToArray()));
                 }
                 model.Individual = IndividualModel;
             }
@@ -1817,20 +1816,20 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Individual Individual;
-                    if (IsIndividualDuplicate(model.Individual.IndividualEmail, model.Individual.IndividualID))
+                    INDIVIDUAL Individual;
+                    if (IsIndividualDuplicate(model.Individual.IND_EMAIL, model.Individual.IND_ID))
                     {
                         TempData["ErrorMessage"] = "Individual Email is already exist in the database.";
                         return View(model);
                     }
 
-                    Individual = Mapper.Map<Individual>(model.Individual);
-                    ctx.Individuals.AddOrUpdate(Individual);
+                    Individual = Mapper.Map<INDIVIDUAL>(model.Individual);
+                    ctx.INDIVIDUALs.AddOrUpdate(Individual);
 
-                    if (model.Individual.IndividualID == 0)
+                    if (model.Individual.IND_ID == 0)
                     {
                         ctx.SaveChanges();
-                        individualId = Individual.IndividualID;
+                        individualId = Individual.IND_ID;
 
                         //change Profile Pic upload location
                         var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
@@ -1843,28 +1842,28 @@ namespace TradingLicense.Web.Controllers
                     }
                     else
                     {
-                        individualId = model.Individual.IndividualID;
-                        var oldLinkedCompanies = ctx.IndLinkComs.Where(i => i.IndividualID == model.Individual.IndividualID).ToList();
-                        ctx.IndLinkComs.RemoveRange(oldLinkedCompanies);
+                        individualId = model.Individual.IND_ID;
+                        var oldLinkedCompanies = ctx.IND_L_COMs.Where(i => i.IND_ID == model.Individual.IND_ID).ToList();
+                        ctx.IND_L_COMs.RemoveRange(oldLinkedCompanies);
                     }
 
 
-                    List<IndLinkCom> LinkedCompanies = new List<IndLinkCom>();
+                    List<IND_L_COM> LinkedCompanies = new List<IND_L_COM>();
 
                     if (model.CompanyIds != null)
                     {
                         foreach (string id in model.CompanyIds.Split(',').ToList())
                         {
-                            IndLinkCom LinkedCompany = new IndLinkCom()
+                            IND_L_COM LinkedCompany = new IND_L_COM()
                             {
-                                IndividualID = individualId,
-                                CompanyID = int.Parse(id)
+                                IND_ID = individualId,
+                                COMPANYID = int.Parse(id)
                             };
 
                             LinkedCompanies.Add(LinkedCompany);
                         }
                     }
-                    ctx.IndLinkComs.AddRange(LinkedCompanies);
+                    ctx.IND_L_COMs.AddRange(LinkedCompanies);
 
                     ctx.SaveChanges();
                 }
@@ -1890,22 +1889,22 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Individual = new TradingLicense.Entities.Individual() { IndividualID = id };
+                var Individual = new TradingLicense.Entities.INDIVIDUAL() { IND_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var individual = ctx.Individuals.Where(i => i.IndividualID == id).FirstOrDefault();
+                    var individual = ctx.INDIVIDUALs.Where(i => i.IND_ID == id).FirstOrDefault();
                     int attachmentId = 0;
                     if (individual != null)
                     {
-                        attachmentId = individual.AttachmentID ?? 0;
+                        attachmentId = individual.ATT_ID ?? 0;
                     }
 
-                    ctx.Individuals.Remove(individual);
+                    ctx.INDIVIDUALs.Remove(individual);
                     ctx.SaveChanges();
 
                     if (attachmentId != 0)
                     {
-                        var Attachment = new TradingLicense.Entities.Attachment() { AttachmentID = attachmentId };
+                        var Attachment = new TradingLicense.Entities.ATTACHMENT() { ATT_ID = attachmentId };
                         ctx.Entry(Attachment).State = System.Data.Entity.EntityState.Deleted;
                         ctx.SaveChanges();
                     }
@@ -1930,10 +1929,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Individuals.FirstOrDefault(
-                   c => c.IndividualID != id && c.IndividualEmail.ToLower() == email.ToLower())
-               : ctx.Individuals.FirstOrDefault(
-                   c => c.IndividualEmail.ToLower() == email.ToLower());
+               ctx.INDIVIDUALs.FirstOrDefault(
+                   c => c.IND_ID != id && c.IND_EMAIL.ToLower() == email.ToLower())
+               : ctx.INDIVIDUALs.FirstOrDefault(
+                   c => c.IND_EMAIL.ToLower() == email.ToLower());
                 return existObj != null;
             }
         }
@@ -1944,14 +1943,14 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddIndividual(int id, string appType, string Fname, string MykadNo)
+        public ActionResult AddIndividual(int id, string appType, string Fname, string MYKADNO)
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                Individual ind = new Individual();
-                ind.FullName = Fname;
-                ind.MykadNo = MykadNo;
-                ctx.Individuals.Add(ind);
+                INDIVIDUAL ind = new INDIVIDUAL();
+                ind.FULLNAME = Fname;
+                ind.MYKADNO = MYKADNO;
+                ctx.INDIVIDUALs.Add(ind);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Individu berjaya ditambah.";
                 
@@ -1986,7 +1985,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Users> query = ctx.Users.Where(u => u.Locked == 1);
+                IQueryable<USERS> query = ctx.USERS.Where(u => u.LOCKED == 1);
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -1995,8 +1994,8 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(usersName) || !string.IsNullOrWhiteSpace(fullName))
                 {
                     query = query.Where(p =>
-                                        p.Username.Contains(usersName) &&
-                                        p.FullName.ToString().Contains(fullName)
+                                        p.USERNAME.Contains(usersName) &&
+                                        p.FULLNAME.ToString().Contains(fullName)
                                     );
                 }
 
@@ -2017,7 +2016,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "UsersID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "USERSID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -2042,11 +2041,11 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var Users = ctx.Users.Where(u => u.UsersID == id).FirstOrDefault();
-                    if (Users != null && Users.UsersID > 0)
+                    var Users = ctx.USERS.Where(u => u.USERSID == id).FirstOrDefault();
+                    if (Users != null && Users.USERSID > 0)
                     {
-                        Users.Locked = 0;
-                        ctx.Users.AddOrUpdate(Users);
+                        Users.LOCKED = 0;
+                        ctx.USERS.AddOrUpdate(Users);
                         ctx.SaveChanges();
                     }
                 }
@@ -2084,7 +2083,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Users> query = ctx.Users.Where(u => u.Locked == 0);
+                IQueryable<USERS> query = ctx.USERS.Where(u => u.LOCKED == 0);
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -2093,8 +2092,8 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(usersName) || !string.IsNullOrWhiteSpace(fullName))
                 {
                     query = query.Where(p =>
-                                        p.Username.Contains(usersName) &&
-                                        p.FullName.ToString().Contains(fullName)
+                                        p.USERNAME.Contains(usersName) &&
+                                        p.FULLNAME.ToString().Contains(fullName)
                                     );
                 }
 
@@ -2115,7 +2114,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "UsersID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "USERSID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -2141,7 +2140,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int usersID = Convert.ToInt32(Id);
-                    var User = ctx.Users.Where(a => a.UsersID == usersID).FirstOrDefault();
+                    var User = ctx.USERS.Where(a => a.USERSID == usersID).FirstOrDefault();
                     userModel = Mapper.Map<UsersModel>(User);
                 }
             }
@@ -2162,21 +2161,21 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Users users;
-                    if (IsUserNameDuplicate(usersModel.Username, usersModel.UsersID))
+                    USERS users;
+                    if (IsUserNameDuplicate(usersModel.USERNAME, usersModel.USERSID))
                     {
                         TempData["ErrorMessage"] = "UserName is already exist in the database.";
                         return View(usersModel);
                     }
 
-                    if (IsEmailDuplicate(usersModel.Email, usersModel.UsersID))
+                    if (IsEmailDuplicate(usersModel.EMAIL, usersModel.USERSID))
                     {
                         TempData["ErrorMessage"] = "Email is already exist in the database.";
                         return View(usersModel);
                     }
 
-                    users = Mapper.Map<Users>(usersModel);
-                    ctx.Users.AddOrUpdate(users);
+                    users = Mapper.Map<USERS>(usersModel);
+                    ctx.USERS.AddOrUpdate(users);
                     ctx.SaveChanges();
                 }
 
@@ -2200,7 +2199,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Users = new TradingLicense.Entities.Users() { UsersID = id };
+                var Users = new TradingLicense.Entities.USERS() { USERSID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Users).State = System.Data.Entity.EntityState.Deleted;
@@ -2225,10 +2224,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Users.FirstOrDefault(
-                   c => c.UsersID != id && c.Username.ToLower() == name.ToLower())
-               : ctx.Users.FirstOrDefault(
-                   c => c.Username.ToLower() == name.ToLower());
+               ctx.USERS.FirstOrDefault(
+                   c => c.USERSID != id && c.USERNAME.ToLower() == name.ToLower())
+               : ctx.USERS.FirstOrDefault(
+                   c => c.USERNAME.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -2245,10 +2244,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Users.FirstOrDefault(
-                   c => c.UsersID != id && c.Email.ToLower() == name.ToLower())
-               : ctx.Users.FirstOrDefault(
-                   c => c.Email.ToLower() == name.ToLower());
+               ctx.USERS.FirstOrDefault(
+                   c => c.USERSID != id && c.EMAIL.ToLower() == name.ToLower())
+               : ctx.USERS.FirstOrDefault(
+                   c => c.EMAIL.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -2279,7 +2278,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Sector> query = ctx.Sectors;
+                IQueryable<SECTOR> query = ctx.SECTORs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -2287,7 +2286,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(sectorDesc))
                 {
                     query = query.Where(p =>
-                                        p.SectorDesc.Contains(sectorDesc)
+                                        p.SECTORDESC.Contains(sectorDesc)
                                     );
                 }
 
@@ -2308,7 +2307,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "SectorID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "SECTORID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -2329,13 +2328,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageSector(int? Id)
         {
             SectorModel SectorModel = new SectorModel();
-            SectorModel.Active = true;
+            SectorModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int SectorID = Convert.ToInt32(Id);
-                    var Sector = ctx.Sectors.Where(a => a.SectorID == SectorID).FirstOrDefault();
+                    int SECTORID = Convert.ToInt32(Id);
+                    var Sector = ctx.SECTORs.Where(a => a.SECTORID == SECTORID).FirstOrDefault();
                     SectorModel = Mapper.Map<SectorModel>(Sector);
                 }
             }
@@ -2356,14 +2355,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Sector Sector;
-                    if (IsSectorDuplicate(SectorModel.SectorDesc, SectorModel.SectorID))
+                    SECTOR Sector;
+                    if (IsSectorDuplicate(SectorModel.SECTORDESC, SectorModel.SECTORID))
                     {
                         TempData["ErrorMessage"] = "Sector is already exist in the database.";
                         return View(SectorModel);
                     }
-                    Sector = Mapper.Map<Sector>(SectorModel);
-                    ctx.Sectors.AddOrUpdate(Sector);
+                    Sector = Mapper.Map<SECTOR>(SectorModel);
+                    ctx.SECTORs.AddOrUpdate(Sector);
                     ctx.SaveChanges();
                 }
 
@@ -2388,7 +2387,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Sector = new TradingLicense.Entities.Sector() { SectorID = id };
+                var Sector = new TradingLicense.Entities.SECTOR() { SECTORID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Sector).State = System.Data.Entity.EntityState.Deleted;
@@ -2413,50 +2412,50 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Sectors.FirstOrDefault(
-                   c => c.SectorID != id && c.SectorDesc.ToLower() == name.ToLower())
-               : ctx.Sectors.FirstOrDefault(
-                   c => c.SectorDesc.ToLower() == name.ToLower());
+               ctx.SECTORs.FirstOrDefault(
+                   c => c.SECTORID != id && c.SECTORDESC.ToLower() == name.ToLower())
+               : ctx.SECTORs.FirstOrDefault(
+                   c => c.SECTORDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
 
         #endregion
 
-        #region BusinessType
+        #region BT
 
         /// <summary>
-        /// GET: BusinessType
+        /// GET: BT
         /// </summary>
         /// <returns></returns>
-        public ActionResult BusinessType()
+        public ActionResult BT()
         {
             return View();
         }
 
         /// <summary>
-        /// Save BusinessType Data
+        /// Save BT Data
         /// </summary>
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BusinessType([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BusinessTypeCode, string BusinessTypeDesc)
+        public JsonResult BT([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BTCode, string BTDesc)
         {
             List<TradingLicense.Model.BusinessTypeModel> businessType = new List<Model.BusinessTypeModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<BusinessType> query = ctx.BusinessTypes;
+                IQueryable<BT> query = ctx.BTs;
                 totalRecord = query.Count();
 
                 #region Filtering
                 // Apply filters for searching
 
-                if (!string.IsNullOrWhiteSpace(BusinessTypeDesc))
+                if (!string.IsNullOrWhiteSpace(BTDesc))
                 {
                     query = query.Where(p =>
-                                        p.BusinessTypeDesc.Contains(BusinessTypeDesc)
+                                        p.BT_DESC.Contains(BTDesc)
                                     );
                 }
 
@@ -2477,7 +2476,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "BusinessTypeID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "BT_ID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -2491,24 +2490,24 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Get BusinessType Data by ID
+        /// Get BT Data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageBusinessType(int? Id)
+        public ActionResult ManageBT(int? Id)
         {
             BusinessTypeModel businessTypeModel = new BusinessTypeModel();
-            businessTypeModel.Active = true;
+            businessTypeModel.ACTIVE = true;
             using (var ctx = new LicenseApplicationContext())
             {
                 if (Id != null && Id > 0)
                 {
                     int businessTypeID = Convert.ToInt32(Id);
-                    var businessType = ctx.BusinessTypes.Where(a => a.BusinessTypeID == businessTypeID).FirstOrDefault();
+                    var businessType = ctx.BTs.Where(a => a.BT_ID == businessTypeID).FirstOrDefault();
                     businessTypeModel = Mapper.Map<BusinessTypeModel>(businessType);
-                    businessTypeModel.RequiredDocs = ctx.PALinkReqDocs.Where(a => a.BusinessTypeID == businessTypeID).Select(a => a.RequiredDocID).ToList();
+                    //businessTypeModel.RequiredDocs = ctx.APP_L_RDs.Where(a => a.BT_ID == businessTypeID).Select(a => a.RD_ID).ToList();
                 }
-                var requiredDocs = ctx.RequiredDocs;
+                var requiredDocs = ctx.RDs;
                 ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
             }
 
@@ -2522,47 +2521,47 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBusinessType(BusinessTypeModel businessTypeModel)
+        public ActionResult ManageBT(BusinessTypeModel businessTypeModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    BusinessType businessType;
-                    if (IsBusinessTypeDuplicate(businessTypeModel.BusinessTypeDesc, businessTypeModel.BusinessTypeID))
+                    BT businessType;
+                    if (IsBTDuplicate(businessTypeModel.BT_DESC, businessTypeModel.BT_ID))
                     {
                         TempData["ErrorMessage"] = "Business Type already exists in the database.";
                         return View(businessTypeModel);
                     }
-                    bool isNew = businessTypeModel.BusinessTypeID == 0;
-                    businessType = Mapper.Map<BusinessType>(businessTypeModel);
-                    ctx.BusinessTypes.AddOrUpdate(businessType);
-                    List<BTLinkReqDoc> addReqDocs = new List<BTLinkReqDoc>();
+                    bool isNew = businessTypeModel.BT_ID == 0;
+                    businessType = Mapper.Map<BT>(businessTypeModel);
+                    ctx.BTs.AddOrUpdate(businessType);
+                    List<RD_L_BT> addReqDocs = new List<RD_L_BT>();
                     if (isNew)
                     {
-                        addReqDocs.AddRange(businessTypeModel
-                                                .RequiredDocs
-                                                .Select(rd =>
-                                                            new BTLinkReqDoc
-                                                            {
-                                                                BusinessTypeID = businessType.BusinessTypeID,
-                                                                RequiredDocID = rd
-                                                            }));
+                        //addReqDocs.AddRange(businessTypeModel
+                                                //.RD
+                                                //.Select(rd =>
+                                                  //          new RD_L_BT
+                                                    //        {
+                                                      //          BT_ID = businessType.BT_ID,
+                                                        //        RD_ID = rd
+                                                          //  }));
 
                     }
                     else
                     {
-                        var selectedDocs = ctx.PALinkReqDocs.Where(bt => bt.BusinessTypeID == businessType.BusinessTypeID).ToList();
+                        var selectedDocs = ctx.APP_L_RDs.Where(bt => bt.BT_ID == businessType.BT_ID).ToList();
                         foreach (var rd in businessTypeModel.RequiredDocs)
                         {
-                            if (!selectedDocs.Any(sd => sd.RequiredDocID == rd))
+                            if (!selectedDocs.Any(sd => sd.RD_ID == rd))
                             {
-                                addReqDocs.Add(new BTLinkReqDoc { BusinessTypeID = businessType.BusinessTypeID, RequiredDocID = rd });
+                                addReqDocs.Add(new RD_L_BT { BT_ID = businessType.BT_ID, RD_ID = rd });
                             }
                         }
                         foreach (var btReqDoc in selectedDocs)
                         {
-                            if (!businessTypeModel.RequiredDocs.Any(rd => rd == btReqDoc.RequiredDocID))
+                            if (!businessTypeModel.RequiredDocs.Any(rd => rd == btReqDoc.RD_ID))
                             {
                                 ctx.Entry(btReqDoc).State = System.Data.Entity.EntityState.Deleted;
                             }
@@ -2570,14 +2569,14 @@ namespace TradingLicense.Web.Controllers
                     }
                     if (addReqDocs.Count > 0)
                     {
-                        ctx.PALinkReqDocs.AddOrUpdate(addReqDocs.ToArray());
+                       // ctx.APP_L_RDs.AddOrUpdate(addReqDocs.ToArray());
                     }
                     ctx.SaveChanges();
                 }
 
                 TempData["SuccessMessage"] = "Business Type saved successfully.";
 
-                return RedirectToAction("BusinessType");
+                return RedirectToAction("BT");
             }
             else
             {
@@ -2592,11 +2591,11 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteBusinessType(int id)
+        public ActionResult DeleteBT(int id)
         {
             try
             {
-                var businessType = new TradingLicense.Entities.BusinessType() { BusinessTypeID = id };
+                var businessType = new TradingLicense.Entities.BT() { BT_ID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(businessType).State = System.Data.Entity.EntityState.Deleted;
@@ -2616,15 +2615,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="name"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsBusinessTypeDuplicate(string name, int? id = null)
+        private bool IsBTDuplicate(string name, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.BusinessTypes.FirstOrDefault(
-                   c => c.BusinessTypeID != id && c.BusinessTypeDesc.ToLower() == name.ToLower())
-               : ctx.BusinessTypes.FirstOrDefault(
-                   c => c.BusinessTypeDesc.ToLower() == name.ToLower());
+               ctx.BTs.FirstOrDefault(
+                   c => c.BT_ID != id && c.BT_DESC.ToLower() == name.ToLower())
+               : ctx.BTs.FirstOrDefault(
+                   c => c.BT_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -2655,7 +2654,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Holiday> query = ctx.Holidays;
+                IQueryable<HOLIDAY> query = ctx.HOLIDAYs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -2663,7 +2662,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(holidayDesc))
                 {
                     query = query.Where(p =>
-                                        p.HolidayDesc.Contains(holidayDesc)
+                                        p.H_DESC.Contains(holidayDesc)
                                     );
                 }
 
@@ -2710,7 +2709,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int HolidayID = Convert.ToInt32(Id);
-                    var Holiday = ctx.Holidays.Where(a => a.HolidayID == HolidayID).FirstOrDefault();
+                    var Holiday = ctx.HOLIDAYs.Where(a => a.HOLIDAYID == HolidayID).FirstOrDefault();
                     HolidayModel = Mapper.Map<HolidayModel>(Holiday);
                 }
             }
@@ -2731,14 +2730,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Holiday Holiday;
-                    if (IsHolidayDuplicate(HolidayModel.HolidayDesc, HolidayModel.HolidayID))
+                    HOLIDAY Holiday;
+                    if (IsHolidayDuplicate(HolidayModel.H_DESC, HolidayModel.HOLIDAYID))
                     {
                         TempData["ErrorMessage"] = "Holiday already exists in the database.";
                         return View(HolidayModel);
                     }
-                    Holiday = Mapper.Map<Holiday>(HolidayModel);
-                    ctx.Holidays.AddOrUpdate(Holiday);
+                    Holiday = Mapper.Map<HOLIDAY>(HolidayModel);
+                    ctx.HOLIDAYs.AddOrUpdate(Holiday);
                     ctx.SaveChanges();
                 }
 
@@ -2763,7 +2762,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Holiday = new TradingLicense.Entities.Holiday() { HolidayID = id };
+                var Holiday = new TradingLicense.Entities.HOLIDAY() { HOLIDAYID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Holiday).State = System.Data.Entity.EntityState.Deleted;
@@ -2788,185 +2787,16 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Holidays.FirstOrDefault(
-                   c => c.HolidayID != id && c.HolidayDesc.ToLower() == name.ToLower())
-               : ctx.Holidays.FirstOrDefault(
-                   c => c.HolidayDesc.ToLower() == name.ToLower());
+               ctx.HOLIDAYs.FirstOrDefault(
+                   c => c.HOLIDAYID != id && c.H_DESC.ToLower() == name.ToLower())
+               : ctx.HOLIDAYs.FirstOrDefault(
+                   c => c.H_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
 
         #endregion
 
-        #region AdditionalDoc
-
-        /// <summary>
-        /// GET: AdditionalDoc
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult AdditionalDoc()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Save AdditionalDoc Data
-        /// </summary>
-        /// <param name="requestModel"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult AdditionalDoc([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string docDesc)
-        {
-            List<TradingLicense.Model.AdditionalDocModel> AdditionalDoc = new List<Model.AdditionalDocModel>();
-            int totalRecord = 0;
-            int filteredRecord = 0;
-            using (var ctx = new LicenseApplicationContext())
-            {
-
-                IQueryable<AdditionalDoc> query = ctx.AdditionalDocs;
-                totalRecord = query.Count();
-
-                #region Filtering
-                // Apply filters for searching
-
-                if (!string.IsNullOrWhiteSpace(docDesc))
-                {
-                    query = query.Where(p =>
-                                            p.DocDesc.Contains(docDesc)
-                                      );
-                }
-
-                filteredRecord = query.Count();
-
-                #endregion Filtering
-
-                #region Sorting
-                // Sorting
-                var sortedColumns = requestModel.Columns.GetSortedColumns();
-                var orderByString = String.Empty;
-
-                foreach (var column in sortedColumns)
-                {
-                    orderByString += orderByString != String.Empty ? "," : "";
-                    orderByString += (column.Data) +
-                      (column.SortDirection ==
-                      Column.OrderDirection.Ascendant ? " asc" : " desc");
-                }
-
-                query = query.OrderBy(orderByString == string.Empty ? "AdditionalDocID asc" : orderByString);
-
-                #endregion Sorting
-
-                // Paging
-                query = query.Skip(requestModel.Start).Take(requestModel.Length);
-
-                AdditionalDoc = Mapper.Map<List<AdditionalDocModel>>(query.ToList());
-
-            }
-            return Json(new DataTablesResponse(requestModel.Draw, AdditionalDoc, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get AdditionalDoc Data by ID
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        public ActionResult ManageAdditionalDoc(int? Id)
-        {
-            AdditionalDocModel additionalDocModel = new AdditionalDocModel();
-            additionalDocModel.Active = true;
-            if (Id != null && Id > 0)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    int AdditionalDocID = Convert.ToInt32(Id);
-                    var AdditionalDoc = ctx.AdditionalDocs.Where(a => a.AdditionalDocID == AdditionalDocID).FirstOrDefault();
-                    additionalDocModel = Mapper.Map<AdditionalDocModel>(AdditionalDoc);
-                }
-            }
-
-            return View(additionalDocModel);
-        }
-
-        /// <summary>
-        /// Save AdditionalDoc Information
-        /// </summary>
-        /// <param name="additionalDocModel"></param>
-        /// <returns></returns>
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public ActionResult ManageAdditionalDoc(AdditionalDocModel additionalDocModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    AdditionalDoc additionalDoc;
-                    if (IsAdditionalDocDuplicate(additionalDocModel.DocDesc, additionalDocModel.AdditionalDocID))
-                    {
-                        TempData["ErrorMessage"] = "Required Document is already exist in the database.";
-                        return View(additionalDocModel);
-                    }
-                    additionalDoc = Mapper.Map<AdditionalDoc>(additionalDocModel);
-                    ctx.AdditionalDocs.AddOrUpdate(additionalDoc);
-                    ctx.SaveChanges();
-                }
-
-                TempData["SuccessMessage"] = "Required Document saved successfully.";
-
-                return RedirectToAction("AdditionalDoc");
-            }
-            else
-            {
-                return View(additionalDocModel);
-            }
-
-        }
-
-        /// <summary>
-        /// Delete AdditionalDoc Information
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteAdditionalDoc(int id)
-        {
-            try
-            {
-                var AdditionalDoc = new TradingLicense.Entities.AdditionalDoc() { AdditionalDocID = id };
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    ctx.Entry(AdditionalDoc).State = System.Data.Entity.EntityState.Deleted;
-                    ctx.SaveChanges();
-                }
-                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
-        /// Check Duplicate
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool IsAdditionalDocDuplicate(string name, int? id = null)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                var existObj = id != null ?
-               ctx.AdditionalDocs.FirstOrDefault(
-                   c => c.AdditionalDocID != id && c.DocDesc.ToLower() == name.ToLower())
-               : ctx.AdditionalDocs.FirstOrDefault(
-                   c => c.DocDesc.ToLower() == name.ToLower());
-                return existObj != null;
-            }
-        }
-
-        #endregion
 
         #region Zone
 
@@ -2992,7 +2822,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Zone> query = ctx.Zones;
+                IQueryable<ZONE> query = ctx.ZONEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3000,7 +2830,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(zoneDesc))
                 {
                     query = query.Where(p =>
-                                        p.ZoneDesc.Contains(zoneDesc)
+                                        p.ZONEDESC.Contains(zoneDesc)
                                     );
                 }
 
@@ -3021,7 +2851,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "ZoneID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "ZONEID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -3042,13 +2872,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageZone(int? Id)
         {
             ZoneModel ZoneModel = new ZoneModel();
-            ZoneModel.Active = true;
+            ZoneModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int ZoneID = Convert.ToInt32(Id);
-                    var Zone = ctx.Zones.Where(a => a.ZoneID == ZoneID).FirstOrDefault();
+                    int ZONEID = Convert.ToInt32(Id);
+                    var Zone = ctx.ZONEs.Where(a => a.ZONEID == ZONEID).FirstOrDefault();
                     ZoneModel = Mapper.Map<ZoneModel>(Zone);
                 }
             }
@@ -3069,14 +2899,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Zone Zone;
-                    if (IsZoneDuplicate(ZoneModel.ZoneDesc, ZoneModel.ZoneID))
+                    ZONE Zone;
+                    if (IsZoneDuplicate(ZoneModel.ZONEDESC, ZoneModel.ZONEID))
                     {
                         TempData["ErrorMessage"] = "Zone is already exist in the database.";
                         return View(ZoneModel);
                     }
-                    Zone = Mapper.Map<Zone>(ZoneModel);
-                    ctx.Zones.AddOrUpdate(Zone);
+                    Zone = Mapper.Map<ZONE>(ZoneModel);
+                    ctx.ZONEs.AddOrUpdate(Zone);
                     ctx.SaveChanges();
                 }
 
@@ -3101,7 +2931,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Zone = new TradingLicense.Entities.Zone() { ZoneID = id };
+                var Zone = new TradingLicense.Entities.ZONE() { ZONEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Zone).State = System.Data.Entity.EntityState.Deleted;
@@ -3126,10 +2956,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Zones.FirstOrDefault(
-                   c => c.ZoneID != id && c.ZoneDesc.ToLower() == name.ToLower())
-               : ctx.Zones.FirstOrDefault(
-                   c => c.ZoneDesc.ToLower() == name.ToLower());
+               ctx.ZONEs.FirstOrDefault(
+                   c => c.ZONEID != id && c.ZONEDESC.ToLower() == name.ToLower())
+               : ctx.ZONEs.FirstOrDefault(
+                   c => c.ZONEDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3160,7 +2990,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Location> query = ctx.Locations;
+                IQueryable<LOCATION> query = ctx.LOCATIONs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3168,7 +2998,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(locationDesc))
                 {
                     query = query.Where(p =>
-                                        p.LocationDesc.Contains(locationDesc)
+                                        p.L_DESC.Contains(locationDesc)
                                     );
                 }
 
@@ -3189,7 +3019,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "LocationID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "LOCATIONID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -3210,13 +3040,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageLocation(int? Id)
         {
             LocationModel LocationModel = new LocationModel();
-            LocationModel.Active = true;
+            LocationModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int LocationID = Convert.ToInt32(Id);
-                    var Location = ctx.Locations.Where(a => a.LocationID == LocationID).FirstOrDefault();
+                    int LOCATIONID = Convert.ToInt32(Id);
+                    var Location = ctx.LOCATIONs.Where(a => a.LOCATIONID == LOCATIONID).FirstOrDefault();
                     LocationModel = Mapper.Map<LocationModel>(Location);
                 }
             }
@@ -3237,14 +3067,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Location Location;
-                    if (IsLocationDuplicate(LocationModel.LocationDesc, LocationModel.LocationID))
+                    LOCATION Location;
+                    if (IsLocationDuplicate(LocationModel.L_DESC, LocationModel.LOCATIONID))
                     {
                         TempData["ErrorMessage"] = "Location is already exist in the database.";
                         return View(LocationModel);
                     }
-                    Location = Mapper.Map<Location>(LocationModel);
-                    ctx.Locations.AddOrUpdate(Location);
+                    Location = Mapper.Map<LOCATION>(LocationModel);
+                    ctx.LOCATIONs.AddOrUpdate(Location);
                     ctx.SaveChanges();
                 }
 
@@ -3269,7 +3099,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Location = new TradingLicense.Entities.Location() { LocationID = id };
+                var Location = new TradingLicense.Entities.LOCATION() { LOCATIONID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Location).State = System.Data.Entity.EntityState.Deleted;
@@ -3294,10 +3124,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Locations.FirstOrDefault(
-                   c => c.LocationID != id && c.LocationDesc.ToLower() == name.ToLower())
-               : ctx.Locations.FirstOrDefault(
-                   c => c.LocationDesc.ToLower() == name.ToLower());
+               ctx.LOCATIONs.FirstOrDefault(
+                   c => c.LOCATIONID != id && c.L_DESC.ToLower() == name.ToLower())
+               : ctx.LOCATIONs.FirstOrDefault(
+                   c => c.L_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3328,7 +3158,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Road> query = ctx.Roads;
+                IQueryable<ROAD> query = ctx.ROADs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3336,7 +3166,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(roadDesc))
                 {
                     query = query.Where(p =>
-                                        p.RoadDesc.Contains(roadDesc)
+                                        p.ROADDESC.Contains(roadDesc)
                                     );
                 }
 
@@ -3357,7 +3187,7 @@ namespace TradingLicense.Web.Controllers
                       Column.OrderDirection.Ascendant ? " asc" : " desc");
                 }
 
-                query = query.OrderBy(orderByString == string.Empty ? "RoadID asc" : orderByString);
+                query = query.OrderBy(orderByString == string.Empty ? "ROADID asc" : orderByString);
 
                 #endregion Sorting
 
@@ -3378,13 +3208,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageRoad(int? Id)
         {
             RoadModel RoadModel = new RoadModel();
-            RoadModel.Active = true;
+            RoadModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    int RoadID = Convert.ToInt32(Id);
-                    var Road = ctx.Roads.Where(a => a.RoadID == RoadID).FirstOrDefault();
+                    int ROADID = Convert.ToInt32(Id);
+                    var Road = ctx.ROADs.Where(a => a.ROADID == ROADID).FirstOrDefault();
                     RoadModel = Mapper.Map<RoadModel>(Road);
                 }
             }
@@ -3405,14 +3235,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Road Road;
-                    if (IsRoadDuplicate(RoadModel.RoadDesc, RoadModel.RoadID))
+                    ROAD Road;
+                    if (IsRoadDuplicate(RoadModel.ROADDESC, RoadModel.ROADID))
                     {
                         TempData["ErrorMessage"] = "Road is already exist in the database.";
                         return View(RoadModel);
                     }
-                    Road = Mapper.Map<Road>(RoadModel);
-                    ctx.Roads.AddOrUpdate(Road);
+                    Road = Mapper.Map<ROAD>(RoadModel);
+                    ctx.ROADs.AddOrUpdate(Road);
                     ctx.SaveChanges();
                 }
 
@@ -3437,7 +3267,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Road = new TradingLicense.Entities.Road() { RoadID = id };
+                var Road = new TradingLicense.Entities.ROAD() { ROADID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Road).State = System.Data.Entity.EntityState.Deleted;
@@ -3462,10 +3292,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Roads.FirstOrDefault(
-                   c => c.RoadID != id && c.RoadDesc.ToLower() == name.ToLower())
-               : ctx.Roads.FirstOrDefault(
-                   c => c.RoadDesc.ToLower() == name.ToLower());
+               ctx.ROADs.FirstOrDefault(
+                   c => c.ROADID != id && c.ROADDESC.ToLower() == name.ToLower())
+               : ctx.ROADs.FirstOrDefault(
+                   c => c.ROADDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3496,14 +3326,14 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<LoginLog> query = ctx.LoginLogs;
+                IQueryable<LOGINLOG> query = ctx.LOGINLOGs;
                 totalRecord = query.Count();
 
                 #region Filtering
                 // Apply filters for searching
                 if (!string.IsNullOrWhiteSpace(logDesc))
                 {
-                    query = query.Where(z => z.LogDesc.Contains(logDesc));
+                    query = query.Where(z => z.LOGDESC.Contains(logDesc));
                 }
 
 
@@ -3513,7 +3343,7 @@ namespace TradingLicense.Web.Controllers
 
                 #region Sorting
 
-                query = query.OrderByDescending(c => c.LogDate);
+                query = query.OrderByDescending(c => c.LOGDATE);
                 #endregion Sorting
 
                 // Paging
@@ -3550,7 +3380,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<Race> query = ctx.Races;
+                IQueryable<RACE> query = ctx.RACEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3559,7 +3389,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(raceDesc))
                 {
                     query = query.Where(p =>
-                                        p.RaceDesc.Contains(raceDesc)
+                                        p.RACEDESC.Contains(raceDesc)
                                     );
                 }
 
@@ -3601,13 +3431,13 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageRace(int? Id)
         {
             RaceModel raceTypeModel = new RaceModel();
-            raceTypeModel.Active = true;
+            raceTypeModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int raceTypeID = Convert.ToInt32(Id);
-                    var raceType = ctx.Races.Where(a => a.RaceID == raceTypeID).FirstOrDefault();
+                    var raceType = ctx.RACEs.Where(a => a.RACEID == raceTypeID).FirstOrDefault();
                     raceTypeModel = Mapper.Map<RaceModel>(raceType);
                 }
             }
@@ -3628,15 +3458,15 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    Race raceType;
-                    if (IsRaceDuplicate(raceTypeModel.RaceDesc, raceTypeModel.RaceID))
+                    RACE raceType;
+                    if (IsRaceDuplicate(raceTypeModel.RACEDESC, raceTypeModel.RACEID))
                     {
                         TempData["ErrorMessage"] = "Race Type is already exist in the database.";
                         return View(raceTypeModel);
                     }
 
-                    raceType = Mapper.Map<Race>(raceTypeModel);
-                    ctx.Races.AddOrUpdate(raceType);
+                    raceType = Mapper.Map<RACE>(raceTypeModel);
+                    ctx.RACEs.AddOrUpdate(raceType);
                     ctx.SaveChanges();
                 }
 
@@ -3661,7 +3491,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var raceType = new TradingLicense.Entities.Race() { RaceID = id };
+                var raceType = new TradingLicense.Entities.RACE() { RACEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(raceType).State = System.Data.Entity.EntityState.Deleted;
@@ -3686,10 +3516,10 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.Races.FirstOrDefault(
-                   c => c.RaceID != id && c.RaceDesc.ToLower() == name.ToLower())
-               : ctx.Races.FirstOrDefault(
-                   c => c.RaceDesc.ToLower() == name.ToLower());
+               ctx.RACEs.FirstOrDefault(
+                   c => c.RACEID != id && c.RACEDESC.ToLower() == name.ToLower())
+               : ctx.RACEs.FirstOrDefault(
+                   c => c.RACEDESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3715,7 +3545,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult LIC_TYPE([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string lic_TYPEDESC)
         {
-            List<TradingLicense.Model.LIC_TYPEModel> licType = new List<Model.LIC_TYPEModel>();
+            List<TradingLicense.Model.LicenseTypeModel> licType = new List<Model.LicenseTypeModel>();
             int totalRecord = 0;
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -3757,7 +3587,7 @@ namespace TradingLicense.Web.Controllers
                 // Paging
                 query = query.Skip(requestModel.Start).Take(requestModel.Length);
 
-                licType = Mapper.Map<List<LIC_TYPEModel>>(query.ToList());
+                licType = Mapper.Map<List<LicenseTypeModel>>(query.ToList());
 
             }
             return Json(new DataTablesResponse(requestModel.Draw, licType, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
@@ -3770,7 +3600,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageLIC_TYPE(int? Id)
         {
-            LIC_TYPEModel licTypeModel = new LIC_TYPEModel();
+            LicenseTypeModel licTypeModel = new LicenseTypeModel();
             licTypeModel.ACTIVE = true;
             if (Id != null && Id > 0)
             {
@@ -3778,7 +3608,7 @@ namespace TradingLicense.Web.Controllers
                 {
                     int licTypeID = Convert.ToInt32(Id);
                     var licType = ctx.LIC_TYPEs.Where(a => a.LIC_TYPEID == licTypeID).FirstOrDefault();
-                    licTypeModel = Mapper.Map<LIC_TYPEModel>(licType);
+                    licTypeModel = Mapper.Map<LicenseTypeModel>(licType);
                 }
             }
 
@@ -3792,7 +3622,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageLIC_TYPE(LIC_TYPEModel licTypeModel)
+        public ActionResult ManageLIC_TYPE(LicenseTypeModel licTypeModel)
         {
             if (ModelState.IsValid)
             {

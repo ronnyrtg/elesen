@@ -25,7 +25,7 @@ namespace TradingLicense.Web.Controllers
         {
             if (ProjectSession.UserID > 0)
             {
-                return RedirectToAction(Actions.PremiseApplication, Pages.Controllers.PremiseApplication);
+                return RedirectToAction(Actions.Application, Pages.Controllers.Application);
             }
 
             LoginModel loginModel = new LoginModel();
@@ -68,22 +68,22 @@ namespace TradingLicense.Web.Controllers
                 {
                     try
                     {
-                        var userModel = ctx.Users.Where(u => u.Username == model.Username).FirstOrDefault();
+                        var userModel = ctx.USERS.Where(u => u.USERNAME == model.Username).FirstOrDefault();
 
-                        if (userModel != null && userModel.UsersID > 0)
+                        if (userModel != null && userModel.USERSID > 0)
                         {
-                            if (userModel.Locked != 1)
+                            if (userModel.LOCKED != 1)
                             {
                                 string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
                                 string ipAddress = Dns.GetHostByName(hostName).AddressList[0].ToString();
-                                LoginLog loginLog = new LoginLog();
-                                loginLog.LogDate = DateTime.Now;
-                                loginLog.UsersID = userModel.UsersID;
-                                loginLog.IpAddress = ipAddress;
-                                loginLog.LogDesc = userModel.Username;
+                                LOGINLOG loginLog = new LOGINLOG();
+                                loginLog.LOGDATE = DateTime.Now;
+                                loginLog.USERSID = userModel.USERSID;
+                                loginLog.IPADDRESS = ipAddress;
+                                loginLog.LOGDESC = userModel.USERNAME;
 
                                 var result = Infrastructure.EncryptionDecryption.GetEncrypt(model.Password);
-                                if (userModel.Password == Infrastructure.EncryptionDecryption.GetEncrypt(model.Password))
+                                if (userModel.PASSWORD == Infrastructure.EncryptionDecryption.GetEncrypt(model.Password))
                                 {
                                     if (model.RememberMe)
                                     {
@@ -101,13 +101,13 @@ namespace TradingLicense.Web.Controllers
                                         Response.Cookies["TradingLicenseIsRemember"].Expires = DateTime.Now.AddMonths(-1);
                                     }
 
-                                    loginLog.LoginStatus = true;
-                                    ctx.LoginLogs.AddOrUpdate(loginLog);
+                                    loginLog.LOGINSTATUS = true;
+                                    ctx.LOGINLOGs.AddOrUpdate(loginLog);
                                     ctx.SaveChanges();
 
                                     UsersModel user = new UsersModel();
                                     user = Mapper.Map<UsersModel>(userModel);
-                                    ProjectSession.UserID = userModel.UsersID;
+                                    ProjectSession.UserID = userModel.USERSID;
                                     ProjectSession.User = user;
 
                                     FormsAuthentication.SetAuthCookie(model.Username, false);
@@ -118,23 +118,23 @@ namespace TradingLicense.Web.Controllers
                                     }
                                     else
                                     {
-                                        return RedirectToAction(Actions.PremiseApplication, Pages.Controllers.PremiseApplication);
+                                        return RedirectToAction(Actions.Application, Pages.Controllers.Application);
                                     }
                                 }
                                 else
                                 {
-                                    loginLog.LoginStatus = false;
-                                    ctx.LoginLogs.AddOrUpdate(loginLog);
+                                    loginLog.LOGINSTATUS = false;
+                                    ctx.LOGINLOGs.AddOrUpdate(loginLog);
                                     ctx.SaveChanges();
 
                                     DateTime fromDate = DateTime.Now.AddMinutes(-30);
                                     DateTime toDate = DateTime.Now;
 
-                                    var loginLoglist = ctx.LoginLogs.Where(l => l.UsersID == userModel.UsersID && l.LogDate >= fromDate && l.LogDate < toDate && l.LoginStatus == false).ToList();
+                                    var loginLoglist = ctx.LOGINLOGs.Where(l => l.USERSID == userModel.USERSID && l.LOGDATE >= fromDate && l.LOGDATE < toDate && l.LOGINSTATUS == false).ToList();
                                     if (loginLoglist != null && loginLoglist.Count() == 5 || loginLoglist.Count() > 5)
                                     {
-                                        userModel.Locked = 1;
-                                        ctx.Users.AddOrUpdate(userModel);
+                                        userModel.LOCKED = 1;
+                                        ctx.USERS.AddOrUpdate(userModel);
                                         ctx.SaveChanges();
                                     }
 
@@ -190,14 +190,14 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     string link = string.Empty;
-                    var user = ctx.Users.Where(a => a.Email == emailValue).FirstOrDefault();
-                    if (user != null && user.UsersID > 0)
+                    var user = ctx.USERS.Where(a => a.EMAIL == emailValue).FirstOrDefault();
+                    if (user != null && user.USERSID > 0)
                     {
-                        string resetPasswordParameter = string.Format("{0}#{1}#{2}", SystemEnum.RoleType.User.GetHashCode(), user.UsersID, DateTime.Now.AddMinutes(ProjectConfiguration.ResetPasswordExpireTime).ToString(ProjectConfiguration.EmailDateTimeFormat));
+                        string resetPasswordParameter = string.Format("{0}#{1}#{2}", SystemEnum.RoleType.User.GetHashCode(), user.USERSID, DateTime.Now.AddMinutes(ProjectConfiguration.ResetPasswordExpireTime).ToString(ProjectConfiguration.EmailDateTimeFormat));
                         string encryptResetPasswordParameter = EncryptionDecryption.GetEncrypt(resetPasswordParameter);
                         string encryptResetPasswordUrl = string.Format("{0}?q={1}", ProjectConfiguration.SiteUrlBase + TradingLicense.Web.Pages.Controllers.Account + "/" + Actions.ResetPassword, encryptResetPasswordParameter);
 
-                        if (UserMail.SendForgotPassword(user.Email, user.Username, encryptResetPasswordUrl))
+                        if (UserMail.SendForgotPassword(user.EMAIL, user.USERNAME, encryptResetPasswordUrl))
                         {
                             return Json(new object[] { Convert.ToInt32(MessageType.success), MessageType.success.ToString(), Messages.Mailsend }, JsonRequestBehavior.AllowGet);
                         }
@@ -254,12 +254,12 @@ namespace TradingLicense.Web.Controllers
                         {
                             if (roleTypeId == SystemEnum.RoleType.User.GetHashCode())
                             {
-                                var user = ctx.Users.Where(u => u.UsersID == id).FirstOrDefault();
+                                var user = ctx.USERS.Where(u => u.USERSID == id).FirstOrDefault();
                                 resetPasswordModel.RoleTypeId = roleTypeId;
-                                if (user != null && user.UsersID > 0)
+                                if (user != null && user.USERSID > 0)
                                 {
                                     ViewBag.IsVisible = 1;
-                                    resetPasswordModel.Id = user.UsersID;
+                                    resetPasswordModel.Id = user.USERSID;
                                 }
                                 else
                                 {
@@ -314,16 +314,16 @@ namespace TradingLicense.Web.Controllers
                 if (resetPasswordModel.RoleTypeId == SystemEnum.RoleType.User.GetHashCode())
                 {
 
-                    var user = ctx.Users.Where(u => u.UsersID == resetPasswordModel.Id).FirstOrDefault();
-                    if (user != null && user.UsersID > 0)
+                    var user = ctx.USERS.Where(u => u.USERSID == resetPasswordModel.Id).FirstOrDefault();
+                    if (user != null && user.USERSID > 0)
                     {
-                        user.Password = EncryptionDecryption.GetEncrypt(resetPasswordModel.NewPassword);
-                        ctx.Users.AddOrUpdate(user);
+                        user.PASSWORD = EncryptionDecryption.GetEncrypt(resetPasswordModel.NewPassword);
+                        ctx.USERS.AddOrUpdate(user);
                         ctx.SaveChanges();
 
                         UsersModel usermodel = new UsersModel();
                         usermodel = Mapper.Map<UsersModel>(user);
-                        ProjectSession.UserID = user.UsersID;
+                        ProjectSession.UserID = user.USERSID;
                         ProjectSession.User = usermodel;
 
                         FormsAuthentication.SetAuthCookie(ProjectSession.UserName, false);

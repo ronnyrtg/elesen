@@ -19,7 +19,7 @@
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var businessType = ctx.BT.ToList();
+        var businessType = ctx.BTs.ToList();
         businessTypeList = Mapper.Map<List<TradingLicense.Model.BTModel>>(businessType);
 
         var sectors = ctx.Sectors.ToList();
@@ -277,6 +277,67 @@
                     </div>
                 </div>
             </div>
+            if (Model.totalBannerObjects == 0)
+            {
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner">
+                        <div class="form-group">
+                            <div class="control-label">Kod Iklan</div>
+                            @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
+                            <span class="text-danger BannerCodeVal"></span>
+                        </div>
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner">
+                            <div class="form-group">
+                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner">
+                            <div class="form-group">
+                                <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                                <span class="text-danger SizeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner">
+                            <div class="form-group">
+                                <div class="control-label">Bilangan Iklan</div>
+                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                                <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>
+            }
+            else
+            {
             <div class="row">
                 <div class="col-sm-12 col-lg-12 banner" style="display:none;">
                     <div class="form-group">
@@ -291,7 +352,7 @@
                     </div>
                 </div>
             </div>
-
+            }
             <hr />
             <div class="row">
                 <div class="col-md-4 col-sm-12 premise" style="display:normal;">
@@ -361,10 +422,19 @@
             
 
             <div class="row">
+                <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
+                    <div class="form-group">
+                        <div class="control-label">
+                            Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen   @if (Model.UserRollTemplate > 1)
+                            {<span class="cfont">*</span>}
+                        </div>
+                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblLicenseType"></table>
+                    </div>
+                </div>
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Dokumen Wajib   @if (Model.UserRollTemplate > 1)
+                            Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan   @if (Model.UserRollTemplate > 1)
                             {<span class="cfont">*</span>}
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
@@ -373,7 +443,7 @@
                 <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Dokumen Tambahan @if (Model.UserRollTemplate > 1)
+                            Senarai Dokumen Tambahan mengikut Kod Perniagaan @if (Model.UserRollTemplate > 1)
                             {<span class="cfont">*</span>}
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
@@ -1307,7 +1377,7 @@
         }
 
         function changeLicense() {
-
+            bindLicense();
             bindCode();
             if ($("#APP_TYPE_ID").val() == 1) {
                 $('#approvalType').show();
@@ -1458,7 +1528,7 @@
         }
 
         function bindTable() {
-
+            //displays related documents required linked to business types
             $('#RequiredDocument').show();
             if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
                 $('#tblBusinessType').dataTable().fnDestroy();
@@ -1553,7 +1623,7 @@
         }
 
         function bindAdditionalTable() {
-
+            //displays required document related to business code selected
             $('#AdditionalDocument').show();
             if ($.fn.DataTable.isDataTable("#tblAdditional")) {
                 $('#tblAdditional').dataTable().fnDestroy();
@@ -1631,6 +1701,88 @@
                             return appendstring
                         },
                         "orderable": false,
+                    }
+                ]
+            });
+        }
+
+        function bindLicense() {
+            //displays required document related to license type
+            $('#LicenseDocument').show();
+            if ($.fn.DataTable.isDataTable("#tblLicenseType")) {
+                $('#tblLicenseType').dataTable().fnDestroy();
+            }
+
+            table = $("#tblLicenseType").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("LicenseDocument", "Application")',
+                    type: "POST",
+                    data: bindSearch()
+                },
+                "columns": [
+                    {
+                        "title": "Disertakan?",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
+                    {
+                        "title": "Muat Naik",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (userRollTemplate == 1) {
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                            }
+                            else if (userRollTemplate > 2) {
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                            }
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridUploadColume,
+                    },
+                    {
+                        "title": "Nama Fail",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (visibleGridUploadColume) {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+
+                                } else {
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                                }
+
+                            } else {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                } else {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                                }
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+                        "visible": visibleGridUploadColume,
                     }
                 ]
             });

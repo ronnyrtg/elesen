@@ -4,41 +4,41 @@ namespace TradingLicense.Model
 {
     public class IndividualModel
     {
-        public int IndividualID { get; set; }
+        public int IND_ID { get; set; }
 
         [Required(ErrorMessage = "SIla masukkan nama penuh")]
         [Display(Name = "Full Name")]
         [StringLength(50)]
-        public string FullName { get; set; }
+        public string FULLNAME { get; set; }
 
         [Required(ErrorMessage = "Masukkan nombor MyKad atau Paspot")]
         [Display(Name = "Mykad No")]
         [StringLength(30)]
-        public string MykadNo { get; set; }
+        public string MYKADNO { get; set; }
 
         [Display(Name = "Kewarganegaraan")]
-        public int? NationalityID { get; set; }
+        public int? NAT_ID { get; set; }
 
         [Required(ErrorMessage = "Sila masukkan alamat mengikut IC")]
         [Display(Name = "Address")]
         [StringLength(200)]
-        public string AddressIC { get; set; }
+        public string ADD_IC { get; set; }
 
         [Required(ErrorMessage = "Sila masukkan nombor telefon")]
         [Display(Name = "Phone No")]
         [StringLength(200)]
-        public string PhoneNo { get; set; }
+        public string PHONE { get; set; }
 
         [Display(Name = "Email")]
         [StringLength(200)]
-        public string IndividualEmail { get; set; }
+        public string IND_EMAIL { get; set; }
         [Display(Name = "Gambar")]
-        public int? AttachmentID { get; set; }
+        public int? ATT_ID { get; set; }
         public string FileName { get; set; }
         [Display(Name = "Gender")]
-        public int? Gender { get; set; }
+        public int? GENDER { get; set; }
 
         [Display(Name = "Active")]
-        public bool Active { get; set; }
+        public bool ACTIVE { get; set; }
     }
 }

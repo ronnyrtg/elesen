@@ -3,19 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Sector
+    public class SECTOR
     {
         [Key]
-        public int SectorID { get; set; }
+        public int SECTORID { get; set; }
 
         [Column(TypeName = "VARCHAR2")]
         [StringLength(30)]
-        public string SectorDesc { get; set; }
+        public string SECTORDESC { get; set; }
 
-        public bool Active { get; set; }
-        public Sector()
+        public bool ACTIVE { get; set; }
+        public SECTOR()
         {
-            Active = true;
+            ACTIVE = true;
         }
     }
 }

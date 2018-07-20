@@ -19,8 +19,8 @@ namespace TradingLicense.Entities
         public float B_SIZE { get; set; }
         public float? FEE { get; set; }
 
-        public virtual APPLICATION Application { get; set; }
-        public virtual ADDRESS Address { get; set; }
+        public virtual APPLICATION APPLICATION { get; set; }
+        public virtual ADDRESS ADDRESS { get; set; }
         public virtual BC BC { get; set; }
     }
 }

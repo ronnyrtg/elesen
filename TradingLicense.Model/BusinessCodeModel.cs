@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
@@ -6,58 +6,40 @@ namespace TradingLicense.Model
     public class BusinessCodeModel
     {
 
-        public int BusinessCodeID { get; set; }
-
-        [Required(ErrorMessage = "Please Enter Code Number")]
-        [Display(Name = "Code Number")]
-        [StringLength(5)]
-        public string CodeNumber { get; set; }
-
+        public int BC_ID { get; set; }
+        public int LIC_TYPEID { get; set; }
+        [Required(ErrorMessage = "Please Enter Code Reference")]
+        [Display(Name = "Code Reference")]
+        public string C_R { get; set; }
         [Required(ErrorMessage = "Please Enter Code Description")]
         [Display(Name = "Code Description")]
-        [StringLength(255)]
-        public string CodeDesc { get; set; }
-
-        [Required(ErrorMessage = "Please Enter Default Rate")]
+        public string C_R_DESC { get; set; }
+        public int? SECTORID { get; set; }
         [Display(Name = "Default Rate")]
-        public float DefaultRate { get; set; }
-
-        [Required(ErrorMessage = "Please Enter Base Fee")]
+        public float? DEF_RATE { get; set; }       
         [Display(Name = "Base Fee")]
-        public float BaseFee { get; set; }
-
-        [Required(ErrorMessage = "Please Enter Period")]
+        public float? BASE_FEE { get; set; }
+        public string O_NAME { get; set; }
+        public float? O_FEE { get; set; }
+        public string DEF_HOUR { get; set; }
+        public float? EX_HOUR_FEE { get; set; }
+        public float? EX_FEE { get; set; }
+        public float? DEPOSIT { get; set; }
+        public float? P_FEE { get; set; }
         [Display(Name = "Period")]
-        public int Period { get; set; }
-
+        public int? PERIOD { get; set; }
         [Required(ErrorMessage = "Please Enter Period Quantity")]
         [Display(Name = "Period Quantity")]
-        public int PeriodQuantity { get; set; }
+        public int? PERIOD_Q { get; set; }
 
         [Display(Name = "Is Active")]
-        public bool Active { get; set; }
+        public bool ACTIVE { get; set; }
 
-        [Required(ErrorMessage = "Please Select Sector")]
-        public int SectorID { get; set; }
+        public string Lic_TypeDesc { get; set; }
         public string SectorDesc { get; set; }
-
         public string DepartmentIDs { get; set; }
         public List<int> AdditionalDocs { get; set; }
 
         public List<Select2ListItem> selectedDepartments = new List<Select2ListItem>();
-    }
-
-    public class Select2ListItem
-    {
-       public int id { get; set; }
-       public string text { get; set; }
-    }
-
-    public class SelectedIndividualModel
-    {
-        public int id { get; set; }
-        public string text { get; set; }
-        public string fullName { get; set; }
-        public string passportNo { get; set; }
     }
 }

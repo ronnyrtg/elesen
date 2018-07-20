@@ -6,17 +6,17 @@ namespace TradingLicense.Model
 {
     public class PaymentReceivedModel
     {
-        public int PaymentReceivedID { get; set; }        
-        public int IndividualID { get; set; }
+        public int PAY_RECID { get; set; }        
+        public int IND_ID { get; set; }
         [Display(Name = "Tujuan Pembayaran")]
         [Required(ErrorMessage = "Sila masukkan tujuan pembayaran")]
-        public string PaymentFor { get; set; }
+        public string PAY_FOR { get; set; }
         [Display(Name = "Jumlah Bayaran")]
         [Required(ErrorMessage = "Sila masukkan nilai bayaran")]
-        public float AmountPaid { get; set; }
-        public DateTime DatePaid { get; set; }
+        public float AMT_PAID { get; set; }
+        public DateTime DATE_PAID { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
-        public string ReceivedBy { get; set; }
+        public string REC_BY { get; set; }
     }
 }

@@ -3,15 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class AppStatus
+    public class APPSTATUS
     {
         [Key]
-        public int AppStatusID { get; set; }
-
+        public int APPSTATUSID { get; set; }
         [StringLength(100)]
         [Column(TypeName = "VARCHAR2")]
-        public string StatusDesc { get; set; }
-
-        public float PercentProgress { get; set; }
+        public string STATUSDESC { get; set; }
+        public float PROGRESS { get; set; }
     }
 }

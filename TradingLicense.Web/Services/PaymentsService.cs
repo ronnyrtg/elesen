@@ -8,61 +8,61 @@ namespace TradingLicense.Web.Services
 {
     public class PaymentsService
     {
-        public static PaymentDueModel AddPaymentDue(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, string userName, float? totalDue = null)
+        public static PaymentDueModel AddPaymentDue(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, string userName, float? totalDue = null)
         {
             totalDue = totalDue ?? CalculatePaymentDue(premiseApplicationModel, ctx);
 
             PaymentDueModel paymentDueModel = new PaymentDueModel();
-            paymentDueModel.IndividualIDs = string.Join(",", ctx.PALinkInd
-                                                .Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID)
+            paymentDueModel.IND_IDs = string.Join(",", ctx.APP_L_INDs
+                                                .Where(pa => pa.APP_ID == premiseApplicationModel.APP_ID)
                                                 .AsEnumerable()
-                                                .Select(pa => $"~{pa.IndividualID}~"));
-            paymentDueModel.AmountDue = totalDue.Value;
-            paymentDueModel.PaymentFor = premiseApplicationModel.ReferenceNo;
-            paymentDueModel.DateBilled = DateTime.Now;
+                                                .Select(pa => $"~{pa.IND_ID}~"));
+            paymentDueModel.AMT_DUE = totalDue.Value;
+            paymentDueModel.PAY_FOR = premiseApplicationModel.REF_NO;
+            paymentDueModel.DATE_BILL = DateTime.Now;
 
-            paymentDueModel.DueDate = DateTime.Now.Date.AddMonths(1);
-            paymentDueModel.BilledBy = userName;
+            paymentDueModel.DUE_DATE = DateTime.Now.Date.AddMonths(1);
+            paymentDueModel.BILL_BY = userName;
 
-            var paymentDue = AutoMapper.Mapper.Map<PaymentDue>(paymentDueModel);
-            ctx.PaymentDues.Add(paymentDue);
+            var paymentDue = AutoMapper.Mapper.Map<PAY_DUE>(paymentDueModel);
+            ctx.PAY_DUEs.Add(paymentDue);
             ctx.SaveChanges();
 
             return paymentDueModel;
         }
 
-        public static float CalculatePaymentDue(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
+        public static float CalculatePaymentDue(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx)
         {
             var totalDue = 0.0f;
 
-            var businessCodes = ctx.PALinkBC.Include("BusinessCode").Where(pa => pa.PremiseApplicationID == premiseApplicationModel.PremiseApplicationID).Select(pabc => pabc.BusinessCode);
+            var businessCodes = ctx.APP_L_BCs.Include("BusinessCode").Where(pa => pa.APP_ID == premiseApplicationModel.APP_ID).Select(pabc => pabc.BC);
 
             foreach (var bc in businessCodes)
             {
-                if (bc.BaseFee == 0)
+                if (bc.BASE_FEE == 0)
                 {
-                    totalDue += (premiseApplicationModel.PremiseArea * bc.DefaultRate);
+                    totalDue += (premiseApplicationModel.P_AREA * (float)bc.DEF_RATE);
                 }
                 else
                 {
-                    totalDue += bc.BaseFee;
+                    totalDue += (float)bc.BASE_FEE;
                 }
             }
 
             return totalDue;
         }
 
-        public static PaymentReceivedModel AddPaymentReceived(PremiseApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int individualID, string userName)
+        public static PaymentReceivedModel AddPaymentReceived(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int individualID, string userName)
         {
             PaymentReceivedModel payment = new PaymentReceivedModel();
-            payment.IndividualID = individualID;
-            payment.PaymentFor = premiseApplicationModel.ReferenceNo;
-            payment.AmountPaid = premiseApplicationModel.AmountDue;
-            payment.DatePaid = DateTime.Now;
-            payment.ReceivedBy = userName;
+            payment.IND_ID = individualID;
+            payment.PAY_FOR = premiseApplicationModel.REF_NO;
+            payment.AMT_PAID = premiseApplicationModel.AmountDue;
+            payment.DATE_PAID = DateTime.Now;
+            payment.REC_BY = userName;
 
-            var paymentReceived = AutoMapper.Mapper.Map<PaymentReceived>(payment);
-            ctx.PaymentReceiveds.Add(paymentReceived);
+            var paymentReceived = AutoMapper.Mapper.Map<PAY_REC>(payment);
+            ctx.PAY_RECs.Add(paymentReceived);
             ctx.SaveChanges();
 
             return payment;

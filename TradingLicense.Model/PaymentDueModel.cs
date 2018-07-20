@@ -6,19 +6,19 @@ namespace TradingLicense.Model
 {
     public class PaymentDueModel
     {
-        public int PaymentDueID { get; set; }
-        public string IndividualIDs { get; set; }
+        public int PAY_DUEID { get; set; }
+        public string IND_IDs { get; set; }
         [Display(Name = "Tujuan Pembayaran")]
         [Required(ErrorMessage = "Sila masukkan tujuan pembayaran")]
-        public string PaymentFor { get; set; }
+        public string PAY_FOR { get; set; }
         [Display(Name = "Jumlah Bayaran")]
         [Required(ErrorMessage = "Sila masukkan nilai yang perlu dibayar")]
-        public float AmountDue { get; set; }
-        public DateTime DateBilled { get; set; }
-        public DateTime DueDate { get; set; }
+        public float AMT_DUE { get; set; }
+        public DateTime DATE_BILL { get; set; }
+        public DateTime DUE_DATE { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
-        public string BilledBy { get; set; }
-        public int BillStatus { get; set; }
+        public string BILL_BY { get; set; }
+        public int BILL_STATUS { get; set; }
     }
 }

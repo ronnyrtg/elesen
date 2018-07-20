@@ -3,14 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Attachment
+    public class ATTACHMENT
     {
         [Key]
-
-        public int AttachmentID { get; set; }
-
+        public int ATT_ID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string FileName { get; set; }
+        public string FILENAME { get; set; }
     }
 }

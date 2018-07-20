@@ -8,16 +8,9 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int RD_ID { get; set; }
-
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string RD_DESC { get; set; }
-
-        public bool ACTIVE { get; set; }
-        public RD()
-        {
-            ACTIVE = true;
-        }
     }
 }

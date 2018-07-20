@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Race
+    public class RACE
     {
         [Key]
-        public int RaceID { get; set; }
+        public int RACEID { get; set; }
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string RaceDesc { get; set; }
-        public bool Active { get; set; }
-        public Race()
+        public string RACEDESC { get; set; }
+        public bool ACTIVE { get; set; }
+        public RACE()
         {
-            Active = true;
+            ACTIVE = true;
         }
     }
 }

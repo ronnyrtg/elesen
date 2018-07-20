@@ -3,26 +3,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class Department
+    public class DEPARTMENT
     {
         [Key]
-        public int DepartmentID { get; set; }
+        public int DEP_ID { get; set; }
 
         [Required]
         [StringLength(10)]
         [Column(TypeName = "VARCHAR2")]
-        public string DepartmentCode { get; set; }
+        public string DEP_CODE { get; set; }
 
         [Required]
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string DepartmentDesc { get; set; }
-        public int Internal { get; set; }
-        public int Routeable { get; set; }
-        public bool Active { get; set; }
-        public Department()
+        public string DEP_DESC { get; set; }
+        public int INTERNAL { get; set; }
+        public int ROUTE { get; set; }
+        public bool ACTIVE { get; set; }
+        public DEPARTMENT()
         {
-            Active = true;
+            ACTIVE = true;
         }
     }
 }

@@ -5,17 +5,15 @@ namespace TradingLicense.Model
 {
     public class HolidayModel
     {
-        public int HolidayID { get; set; }
+        public int HOLIDAYID { get; set; }
 
         [Display(Name = "Holiday Name")]
         [Required(ErrorMessage = "Please Enter Holiday Name")]
         [StringLength(100)]
-        public string HolidayDesc { get; set; }
+        public string H_DESC { get; set; }
 
         [Display(Name = "Holiday Date")]
         [Required(ErrorMessage = "Please Enter Holiday Date")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime HolidayDate { get; set; }
+        public DateTime H_DATE { get; set; }
     }
 }

@@ -22,6 +22,7 @@ using PdfSharp.Drawing.Layout;
 
 namespace TradingLicense.Web.Controllers
 {
+
     public class ApplicationController : BaseController
     {
 
@@ -31,7 +32,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnKIV = "KIV";
 
         private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R_DESC}~{bc.C_R}" };
-        private Func<Individual, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IndividualID, text = $"{ind.FullName} ({ind.MykadNo})" };
+        private Func<INDIVIDUAL, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IND_ID, text = $"{ind.FULLNAME} ({ind.MYKADNO})" };
 
         /// <summary>
         /// GET: Application
@@ -59,7 +60,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 int? rollTemplateID = ProjectSession.User?.ROLEID;
-                IQueryable<APPLICATION> query = ctx.Applications;
+                IQueryable<APPLICATION> query = ctx.APPLICATIONs;
 
                 if (rollTemplateID.HasValue)
                 {
@@ -78,12 +79,12 @@ namespace TradingLicense.Web.Controllers
                         case (int)RollTemplate.RouteUnit:
                             if (string.IsNullOrEmpty(ApplicationId))
                             {
-                                var departmentID = ProjectSession.User?.DepartmentID;
+                                var departmentID = ProjectSession.User?.DEP_ID;
                                 if (departmentID.HasValue)
                                 {
-                                    var paIDs = ctx.RouteUnits
-                                            .Where(pa => pa.DepartmentID == departmentID.Value && pa.ApplicationType == (int)Enums.ApplicationTypeID.Application && pa.Active)
-                                            .Select(d => d.ApplicationID).Distinct()
+                                    var paIDs = ctx.ROUTEUNITs
+                                            .Where(pa => pa.DEP_ID == departmentID.Value && pa.APP_TYPE == (int)Enums.ApplicationTypeID.TradeApplication && pa.ACTIVE)
+                                            .Select(d => d.APP_ID).Distinct()
                                             .ToList();
                                     query = query.Where(q => paIDs.Contains(q.APP_ID) && q.APPSTATUSID == 5);
                                 }
@@ -137,53 +138,56 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var application = ctx.Applications.FirstOrDefault(a => a.APP_ID == id);
+                    var application = ctx.APPLICATIONs.FirstOrDefault(a => a.APP_ID == id);
                     applicationModel = Mapper.Map<ApplicationModel>(application);
 
-                    var paLinkBc = ctx.PALinkBC.Where(a => a.PremiseApplicationID == id).ToList();
-                    applicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BusinessCodeID.ToString()).ToArray());
+                    var paLinkBc = ctx.APP_L_BCs.Where(a => a.APP_ID == id).ToList();
+                    applicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BC_ID.ToString()).ToArray());
+
+                    var bannerObjects = ctx.B_Os.Where(a => a.APP_ID == id).ToList();
+                    applicationModel.totalBannerObjects = bannerObjects.Count;
 
                     //TODO: replaced with this for avoid calling database in foreach loop
                     // TODO: Select2ListItem is just the same as build-in KeyValuePair class
                     List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
-                    var ids = paLinkBc.Select(b => b.BusinessCodeID).ToList();
+                    var ids = paLinkBc.Select(b => b.BC_ID).ToList();
                     businessCodesList = ctx.BCs
                         .Where(b => ids.Contains(b.BC_ID))
                         .Select(fnSelectBusinessCode)
                         .ToList();
 
                     applicationModel.selectedbusinessCodeList = businessCodesList;
-                    applicationModel.HasPADepSupp = ctx.RouteUnits.Any(pa => pa.ApplicationID == id.Value);
+                    applicationModel.HasPADepSupp = ctx.ROUTEUNITs.Any(pa => pa.APP_ID == id.Value);
 
-                    var paLinkInd = ctx.PALinkInd.Where(a => a.PremiseApplicationID == id).ToList();
-                    applicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IndividualID.ToString()).ToArray());
+                    var paLinkInd = ctx.APP_L_INDs.Where(a => a.APP_ID == id).ToList();
+                    applicationModel.Individualids = string.Join(",", paLinkInd.Select(x => x.IND_ID.ToString()).ToArray());
                     List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
-                    var iids = paLinkInd.Select(b => b.IndividualID).ToList();
-                    selectedIndividualList = ctx.Individuals
-                        .Where(b => iids.Contains(b.IndividualID))
+                    var iids = paLinkInd.Select(b => b.IND_ID).ToList();
+                    selectedIndividualList = ctx.INDIVIDUALs
+                        .Where(b => iids.Contains(b.IND_ID))
                         .Select(fnSelectIndividualFormat)
                         .ToList();
 
                     applicationModel.selectedIndividualList = selectedIndividualList;
 
-                    var paLinkReqDocumentList = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == id).ToList();
+                    var paLinkReqDocumentList = ctx.APP_L_RDs.Where(p => p.APP_ID == id).ToList();
                     if (paLinkReqDocumentList.Count > 0)
                     {
-                        applicationModel.UploadRequiredDocids = (string.Join(",", paLinkReqDocumentList.Select(x => x.RequiredDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
+                        applicationModel.UploadRequiredDocids = (string.Join(",", paLinkReqDocumentList.Select(x => x.RD_ID.ToString() + ":" + x.ATTACHMENTID.ToString()).ToArray()));
                     }
 
-                    var paLinkAddDocumentlist = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == id).ToList();
+                    var paLinkAddDocumentlist = ctx.APP_L_RDs.Where(p => p.APP_ID == id).ToList();
                     if (paLinkAddDocumentlist.Count > 0)
                     {
-                        applicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.AdditionalDocID.ToString() + ":" + x.AttachmentID.ToString()).ToArray()));
+                        applicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.RD_ID.ToString() + ":" + x.ATTACHMENTID.ToString()).ToArray()));
                     }
 
                     if (application.APPSTATUSID == (int)PAStausenum.Pendingpayment)
                     {
-                        var duePayment = ctx.PaymentDues.Where(pd => pd.PaymentFor == applicationModel.REF_NO).FirstOrDefault();
+                        var duePayment = ctx.PAY_DUEs.Where(pd => pd.PAY_FOR == applicationModel.REF_NO).FirstOrDefault();
                         if (duePayment != null)
                         {
-                            applicationModel.AmountDue = duePayment.AmountDue;
+                            applicationModel.AmountDue = duePayment.AMT_DUE;
                         }
                     }
                 }
@@ -192,7 +196,7 @@ namespace TradingLicense.Web.Controllers
             if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
                 applicationModel.UserRollTemplate = ProjectSession.User.ROLEID.Value;
-                applicationModel.USERSID = ProjectSession.User.UsersID;
+                applicationModel.USERSID = ProjectSession.User.USERSID;
             }
 
 
@@ -211,18 +215,18 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult RequiredDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessTypeId)
         {
-            List<BT_L_RDModel> requiredDocument;
+            List<RD_L_BTModel> requiredDocument;
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<BT_L_RD> query = ctx.BT_L_RD.Where(p => p.BT_ID.ToString().Contains(businessTypeId));
+                IQueryable<RD_L_BT> query = ctx.RD_L_BTs.Where(p => p.BT_ID.ToString().Contains(businessTypeId));
 
                 #region Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
                 string orderByString = sortedColumns.GetOrderByString();
 
-                var result = Mapper.Map<List<BT_L_RDModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "BT_L_RDID asc" : orderByString).ToList();
+                var result = Mapper.Map<List<RD_L_BTModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "RD_L_BTID asc" : orderByString).ToList();
 
                 totalRecord = result.Count;
 
@@ -285,8 +289,8 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                var individual = ctx.Individuals
-                                    .Where(t => t.MykadNo.ToLower().Contains(query.ToLower()) || t.FullName.ToLower().Contains(query.ToLower()))
+                var individual = ctx.INDIVIDUALs
+                                    .Where(t => t.MYKADNO.ToLower().Contains(query.ToLower()) || t.FULLNAME.ToLower().Contains(query.ToLower()))
                                     .Select(fnSelectIndividualFormat).ToList();
                 return Json(individual, JsonRequestBehavior.AllowGet);
             }
@@ -303,7 +307,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult AdditionalDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string businessCodeids, string premiseApplicationId)
         {
-            List<BCLinkADModel> requiredDocument = new List<BCLinkADModel>();
+            List<RD_L_BCModel> requiredDocument = new List<RD_L_BCModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
@@ -325,15 +329,15 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
 
-                IQueryable<BCLinkAD> query = ctx.BCLinkAD.Where(p => businessCodelist.Contains(p.BusinessCodeID));
+                IQueryable<RD_L_BC> query = ctx.RD_L_BCs.Where(p => businessCodelist.Contains(p.BC_ID));
 
                 #region Sorting
                 // Sorting
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
                 var orderByString = sortedColumns.GetOrderByString();
 
-                var result = Mapper.Map<List<BCLinkADModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "BCLinkADID asc" : orderByString).ToList();
+                var result = Mapper.Map<List<RD_L_BCModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "RD_L_BCID asc" : orderByString).ToList();
 
                 totalRecord = result.Count;
 
@@ -348,21 +352,85 @@ namespace TradingLicense.Web.Controllers
                     int premiseAppId;
                     int.TryParse(premiseApplicationId, out premiseAppId);
 
-                    var palinkAdd = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseAppId).ToList();
+                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId).ToList();
                     foreach (var item in requiredDocument)
                     {
                         if (palinkAdd.Count > 0)
                         {
-                            var resultpalinkReq = palinkAdd.FirstOrDefault(p => p.AdditionalDocID == item.AdditionalDocID && p.PremiseApplicationID == premiseAppId);
+                            var resultpalinkReq = palinkAdd.FirstOrDefault(p => p.RD_ID == item.RD_ID && p.APP_ID == premiseAppId);
                             if (resultpalinkReq != null)
                             {
                                 item.IsChecked = "checked";
-                                var attechmentdetails = ctx.Attachments.FirstOrDefault(a => a.AttachmentID == resultpalinkReq.AttachmentID);
+                                var attechmentdetails = ctx.ATTACHMENTs.FirstOrDefault(a => a.ATT_ID == resultpalinkReq.ATTACHMENTID);
                                 if (attechmentdetails != null)
                                 {
-                                    item.AttachmentFileName = attechmentdetails.FileName;
-                                    item.AttachmentId = attechmentdetails.AttachmentID;
-                                    item.PremiseApplicationID = premiseAppId;
+                                    item.AttachmentFileName = attechmentdetails.FILENAME;
+                                    item.AttachmentId = attechmentdetails.ATT_ID;
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Get License Doc data for Datatable
+        /// <summary>
+        /// get Additional Document Data for Selected License Type
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <param name="businessCodeids"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult LicenseDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string APP_TYPE_ID)
+        {
+            List<RD_L_BCModel> requiredDocument = new List<RD_L_BCModel>();
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<RD_L_BC> query = ctx.RD_L_BCs;
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<RD_L_BCModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "RD_L_BCID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                requiredDocument = result;
+
+                #region IsChecked
+
+                if (!string.IsNullOrWhiteSpace(APP_TYPE_ID))
+                {
+                    int premiseAppId;
+                    int.TryParse(APP_TYPE_ID, out premiseAppId);
+
+                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId).ToList();
+                    foreach (var item in requiredDocument)
+                    {
+                        if (palinkAdd.Count > 0)
+                        {
+                            var resultpalinkReq = palinkAdd.FirstOrDefault(p => p.RD_ID == item.RD_ID && p.APP_ID == premiseAppId);
+                            if (resultpalinkReq != null)
+                            {
+                                item.IsChecked = "checked";
+                                var attechmentdetails = ctx.ATTACHMENTs.FirstOrDefault(a => a.ATT_ID == resultpalinkReq.ATTACHMENTID);
+                                if (attechmentdetails != null)
+                                {
+                                    item.AttachmentFileName = attechmentdetails.FILENAME;
+                                    item.AttachmentId = attechmentdetails.ATT_ID;
+                                    
                                 }
                             }
                         }
@@ -397,7 +465,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult BC([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
         {
-            List<BCModel> businessCode;
+            List<BusinessCodeModel> businessCode;
             int totalRecord = 0;
             // int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
@@ -413,7 +481,7 @@ namespace TradingLicense.Web.Controllers
                     query = query.Where(p => p.C_R_DESC.ToLower().Contains(value) ||
                                              p.SECTORID.ToString().Contains(value) ||
                                              p.DEF_RATE.ToString().Contains(value) ||
-                                             p.Sector.SectorDesc.ToLower().Contains(value)
+                                             p.SECTOR.SECTORDESC.ToLower().Contains(value)
                                        );
                 }
 
@@ -438,7 +506,7 @@ namespace TradingLicense.Web.Controllers
                 var sortedColumns = requestModel.Columns.GetSortedColumns();
                 var orderByString = sortedColumns.GetOrderByString();
 
-                var result = Mapper.Map<List<BCModel>>(query.ToList());
+                var result = Mapper.Map<List<BusinessCodeModel>>(query.ToList());
                 result = result.OrderBy(orderByString == string.Empty ? "BC_ID asc" : orderByString).ToList();
 
                 totalRecord = result.Count;
@@ -459,7 +527,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         public ActionResult ManageBC(int? id)
         {
-            BCModel businessCodeModel = new BCModel
+            BusinessCodeModel businessCodeModel = new BusinessCodeModel
             {
                 ACTIVE = true
             };
@@ -469,24 +537,24 @@ namespace TradingLicense.Web.Controllers
                 {
                     int businessCodeId = Convert.ToInt32(id);
                     var businessCode = ctx.BCs.FirstOrDefault(a => a.BC_ID == businessCodeId);
-                    businessCodeModel = Mapper.Map<BCModel>(businessCode);
+                    businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
 
-                    var additionalDocs = ctx.BCLinkAD.Where(blAd => blAd.BusinessCodeID == businessCodeId);
+                    var additionalDocs = ctx.RD_L_BCs.Where(blAd => blAd.BC_ID == businessCodeId);
                     businessCodeModel.AdditionalDocs = additionalDocs.Any()
-                        ? additionalDocs.Select(blAd => blAd.AdditionalDocID).ToList()
+                        ? additionalDocs.Select(blAd => blAd.RD_ID).ToList()
                         : new List<int>();
 
-                    var departments = ctx.BCLinkDeps.Where(blD => blD.BusinessCodeID == businessCodeId);
+                    var departments = ctx.BC_L_DEPs.Where(blD => blD.BC_ID == businessCodeId);
                     if (departments.Any())
                     {
                         foreach (var dep in departments)
                         {
-                            if (dep.Department != null)
+                            if (dep.DEPARTMENT != null)
                             {
-                                businessCodeModel.selectedDepartments.Add(new Select2ListItem() { id = dep.DepartmentID, text = $"{dep.Department.DepartmentCode} - {dep.Department.DepartmentDesc }" });
+                                businessCodeModel.selectedDepartments.Add(new Select2ListItem() { id = dep.DEP_ID, text = $"{dep.DEPARTMENT.DEP_CODE} - {dep.DEPARTMENT.DEP_DESC }" });
                             }
                         }
-                        businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DepartmentID).ToArray());
+                        businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DEP_ID).ToArray());
                     }
 
                 }
@@ -502,7 +570,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBC(BCModel businessCodeModel)
+        public ActionResult ManageBC(BusinessCodeModel businessCodeModel)
         {
             if (ModelState.IsValid)
             {
@@ -520,22 +588,22 @@ namespace TradingLicense.Web.Controllers
 
                     if (!string.IsNullOrEmpty(businessCodeModel.DepartmentIDs))
                     {
-                        List<BCLinkDep> selectedDepartments = new List<BCLinkDep>();
-                        var selectedDeps = ctx.BCLinkDeps.Where(bd => bd.BusinessCodeID == businessCode.BC_ID).ToList();
+                        List<BC_L_DEP> selectedDepartments = new List<BC_L_DEP>();
+                        var selectedDeps = ctx.BC_L_DEPs.Where(bd => bd.BC_ID == businessCode.BC_ID).ToList();
                         var deptIds = businessCodeModel.DepartmentIDs.Split(',');
                         foreach (var dep in deptIds)
                         {
                             var depId = Convert.ToInt32(dep);
-                            if (selectedDeps.All(sd => sd.DepartmentID != depId))
+                            if (selectedDeps.All(sd => sd.DEP_ID != depId))
                             {
-                                selectedDepartments.Add(new BCLinkDep { BusinessCodeID = businessCode.BC_ID, DepartmentID = depId });
+                                selectedDepartments.Add(new BC_L_DEP { BC_ID = businessCode.BC_ID, DEP_ID = depId });
                             }
                         }
                         if (selectedDeps.Count > 0)
                         {
                             foreach (var bcDep in selectedDeps)
                             {
-                                if (deptIds.All(rd => rd != bcDep.DepartmentID.ToString()))
+                                if (deptIds.All(rd => rd != bcDep.DEP_ID.ToString()))
                                 {
                                     ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
                                 }
@@ -543,27 +611,27 @@ namespace TradingLicense.Web.Controllers
                         }
                         if (selectedDepartments.Count > 0)
                         {
-                            ctx.BCLinkDeps.AddOrUpdate(selectedDepartments.ToArray());
+                            ctx.BC_L_DEPs.AddOrUpdate(selectedDepartments.ToArray());
                         }
                     }
 
                     if (businessCodeModel.AdditionalDocs.Count > 0)
                     {
-                        List<BCLinkAD> selectedAdditionalDocs = new List<BCLinkAD>();
-                        var selectedADocs = ctx.BCLinkAD.Where(bd => bd.BusinessCodeID == businessCode.BC_ID).ToList();
+                        List<RD_L_BC> selectedAdditionalDocs = new List<RD_L_BC>();
+                        var selectedADocs = ctx.RD_L_BCs.Where(bd => bd.BC_ID == businessCode.BC_ID).ToList();
                         var addDocIds = businessCodeModel.AdditionalDocs;
                         foreach (var addDocId in addDocIds)
                         {
-                            if (selectedADocs.All(sd => sd.AdditionalDocID != addDocId))
+                            if (selectedADocs.All(sd => sd.RD_ID != addDocId))
                             {
-                                selectedAdditionalDocs.Add(new BCLinkAD { BusinessCodeID = businessCode.BC_ID, AdditionalDocID = addDocId });
+                                selectedAdditionalDocs.Add(new RD_L_BC { BC_ID = businessCode.BC_ID, RD_ID = addDocId });
                             }
                         }
                         if (selectedADocs.Count > 0)
                         {
                             foreach (var bcDep in selectedADocs)
                             {
-                                if (addDocIds.All(rd => rd != bcDep.AdditionalDocID))
+                                if (addDocIds.All(rd => rd != bcDep.RD_ID))
                                 {
                                     ctx.Entry(bcDep).State = System.Data.Entity.EntityState.Deleted;
                                 }
@@ -571,7 +639,7 @@ namespace TradingLicense.Web.Controllers
                         }
                         if (selectedAdditionalDocs.Count > 0)
                         {
-                            ctx.BCLinkAD.AddOrUpdate(selectedAdditionalDocs.ToArray());
+                            ctx.RD_L_BCs.AddOrUpdate(selectedAdditionalDocs.ToArray());
                         }
 
                     }
@@ -640,7 +708,7 @@ namespace TradingLicense.Web.Controllers
         {
             using (var ctx = new LicenseApplicationContext())
             {
-                B_O_Model ba = new B_O_Model();
+                var ba = ctx.B_Os.Where(p => p.B_O_ID == APP_ID).FirstOrDefault();
                 var Fee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.P_FEE).FirstOrDefault();
                 var eFee = ctx.BCs.Where(p => p.BC_ID == BC_ID).Select(p => p.EX_FEE).FirstOrDefault();
                 float? TotalFee = 0;
@@ -665,7 +733,8 @@ namespace TradingLicense.Web.Controllers
                     }
                     ba.FEE = TotalFee;
 
-                    
+                    ctx.B_Os.Add(ba);
+                    ctx.SaveChanges();
                     TempData["SuccessMessage"] = "Iklan berjaya ditambah.";
                 }
                 else
@@ -688,14 +757,14 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult BannerObject([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? bannerApplicationId)
         {
-            List<B_O_Model> bannerObject = new List<B_O_Model>();
+            List<BannerObjectModel> bannerObject = new List<BannerObjectModel>();
             int totalRecord = 0;
             if (bannerApplicationId.HasValue)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     var bannerObj = ctx.B_Os.Where(bo => bo.APP_ID == bannerApplicationId).ToList();
-                    bannerObject = Mapper.Map<List<B_O_Model>>(bannerObj);
+                    bannerObject = Mapper.Map<List<BannerObjectModel>>(bannerObj);
                     totalRecord = bannerObject.Count;
                 }
             }

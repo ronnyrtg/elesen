@@ -6,10 +6,9 @@ namespace TradingLicense.Model
 {
     public class AttachmentModel
     {
-        public int AttachmentID { get; set; }
-
-        [Display(Name = "Attachment File")]
-        public string FileName { get; set; }
+        public int ATT_ID { get; set; }
+        [Display(Name = "Attachment File Name")]
+        public string FILENAME { get; set; }
 
         public string FileNameFullPath { get; set; }
         

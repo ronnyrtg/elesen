@@ -22,7 +22,7 @@
         #endregion
 
         #region PremiseApplication
-        public const string PremiseApplication = "PremiseApplication";
+        public const string Application = "Application";
         #endregion
 
         #region Error
