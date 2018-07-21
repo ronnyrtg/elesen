@@ -16,9 +16,6 @@ using TradingLicense.Web.Classes;
 using TradingLicense.Infrastructure;
 using TradingLicense.Data;
 using System.Diagnostics;
-using CrystalDecisions.Web;
-using CrystalDecisions.Shared;
-using CrystalDecisions.CrystalReports.Engine;
 using System.IO;
 
 namespace TradingLicense.Web.Controllers
