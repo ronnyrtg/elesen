@@ -481,6 +481,7 @@
     <Content Include="Views\Application\ManageBC.cshtml" />
     <Content Include="Views\Master\LicenseType.cshtml" />
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

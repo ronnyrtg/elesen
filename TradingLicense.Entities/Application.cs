@@ -75,6 +75,7 @@ namespace TradingLicense.Entities
 
         public virtual LIC_TYPE LIC_TYPE { get; set; }
         public virtual BT BT { get; set; }
+        public virtual PREMISETYPE PREMISETYPE { get; set;  }
         public virtual COMPANY COMPANY { get; set; }
         public virtual APPSTATUS APPSTATUS { get; set; }
         public virtual USERS USERS { get; set; }
