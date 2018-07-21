@@ -446,7 +446,6 @@
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Master\Users.cshtml" />
     <Content Include="Views\Registration\Index.cshtml" />
-    <Content Include="Views\Master\Userslist.cshtml" />
     <Content Include="Views\Master\ManageUsers.cshtml" />
     <Content Include="Views\Master\Sector.cshtml" />
     <Content Include="Views\Master\ManageSector.cshtml" />
@@ -481,6 +480,7 @@
     <Content Include="Views\Application\ManageBC.cshtml" />
     <Content Include="Views\Master\LicenseType.cshtml" />
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
+    <Content Include="Views\Master\Userslist.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

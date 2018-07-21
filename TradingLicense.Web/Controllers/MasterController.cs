@@ -27,9 +27,8 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <returns></returns>
 
-        public ActionResult Department(int Type)
+        public ActionResult Department()
         {
-            ViewBag.DepartmentType = Type;
             return View();
         }
 
@@ -2076,7 +2075,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult UsersList([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string usersName, string fullName)
+        public JsonResult Userslist([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string usersName, string fullName)
         {
             List<TradingLicense.Model.UsersModel> Users = new List<Model.UsersModel>();
             int totalRecord = 0;

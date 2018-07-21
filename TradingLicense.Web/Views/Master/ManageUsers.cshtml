@@ -9,15 +9,15 @@
     List<TradingLicense.Model.DepartmentModel> DepartmentList = new List<TradingLicense.Model.DepartmentModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var department = ctx.Departments.ToList();
+        var department = ctx.DEPARTMENTs.ToList();
         DepartmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(department);
     }
 
-    List<TradingLicense.Model.RoleTemplateModel> RoleTemplateList = new List<TradingLicense.Model.RoleTemplateModel>();
+    List<TradingLicense.Model.RoleModel> RoleTemplateList = new List<TradingLicense.Model.RoleModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var roletemplate= ctx.RoleTemplates.ToList();
-        RoleTemplateList = Mapper.Map<List<TradingLicense.Model.RoleTemplateModel>>(roletemplate);
+        var roletemplate= ctx.ROLEs.ToList();
+        RoleTemplateList = Mapper.Map<List<TradingLicense.Model.RoleModel>>(roletemplate);
     }
 }
 
@@ -31,15 +31,15 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmUser", id = "frmUser" }))
     {
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.UsersID)
+        @Html.HiddenFor(m => m.USERSID)
         @Html.HiddenFor(m => m.Password)
 
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Nama Penuh<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", @maxlength = "50" })
-                    @Html.ValidationMessageFor(m => m.FullName)
+                    @Html.TextBoxFor(m => m.FULLNAME, new { @class = "form-control", @maxlength = "50" })
+                    @Html.ValidationMessageFor(m => m.FULLNAME)
                 </div>
             </div>
         </div>
@@ -48,8 +48,8 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Nama Pengguna<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @maxlength = "30" })
-                    @Html.ValidationMessageFor(m => m.Username)
+                    @Html.TextBoxFor(m => m.USERNAME, new { @class = "form-control", @maxlength = "30" })
+                    @Html.ValidationMessageFor(m => m.USERNAME)
                 </div>
             </div>
         </div>
@@ -58,8 +58,8 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Emel<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @maxlength = "200" })
-                    @Html.ValidationMessageFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.EMAIL, new { @class = "form-control", @maxlength = "200" })
+                    @Html.ValidationMessageFor(m => m.EMAIL)
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Jabatan<span class="cfont">*</span></div>
-                    @Html.DropDownListFor(m => m.DepartmentID, new SelectList(DepartmentList, "DepartmentID", "DepartmentCode"), new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.DEP_ID, new SelectList(DepartmentList, "DEP_ID", "DEP_CODE"), new { @class = "form-control" })
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <div class="control-label">Peranan Pengguna<span class="cfont">*</span></div>
-                    @Html.DropDownListFor(m => m.RoleTemplateID, new SelectList(RoleTemplateList, "RoleTemplateID", "RoleTemplateDesc"), new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.ROLEID, new SelectList(RoleTemplateList, "ROLEID", "ROLE_DESC"), new { @class = "form-control" })
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                 <div class="form-group">
                     <div class="checkbox">
                         <label>
-                            @Html.CheckBoxFor(model => model.Active)
+                            @Html.CheckBoxFor(model => model.ACTIVE)
                             <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                         </label>
                     </div>
