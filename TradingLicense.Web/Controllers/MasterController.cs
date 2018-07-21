@@ -20,6 +20,7 @@ namespace TradingLicense.Web.Controllers
 {
     public class MasterController : BaseController
     {
+
         #region Department
 
         /// <summary>

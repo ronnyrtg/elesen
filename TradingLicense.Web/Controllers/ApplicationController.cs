@@ -133,8 +133,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageApplication(int? id)
         {
             ApplicationModel applicationModel = new ApplicationModel();
-            applicationModel.START_RENT = DateTime.Today.AddMonths(-6);
-            applicationModel.STOP_RENT = DateTime.Today.AddMonths(6);
+            
             if (id != null && id > 0)
             {
                 using (var ctx = new LicenseApplicationContext())
@@ -205,6 +204,8 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
+                applicationModel.START_RENT = DateTime.Today.AddMonths(-6);
+                applicationModel.STOP_RENT = DateTime.Today.AddMonths(6);
                 using (var ctx = new LicenseApplicationContext())
                 {
                     List<Select2ListItem> premiseFeeList = new List<Select2ListItem>();

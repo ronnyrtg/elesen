@@ -104,10 +104,11 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
-                                { "title": "No. Rujukan", "data": "ReferenceNo" },
+                                { "title": "No. Rujukan", "data": "REF_NO" },
+                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
                                 {
                                     "title": "Kelulusan",
-                                    "data": "Mode",
+                                    "data": "MODE",
                                     "render" : function (data, type, row) {
                                         switch(data) {
                                             case 1 : return 'Ekspres'; break;
@@ -119,21 +120,21 @@
                                     }
                                 },
                                 { "title": "Syarikat", "data": "CompanyName" },
-                                { "title": "Tarikh Memohon", "data": "DateSubmitted", render: renderDate },
-                                { "title": "Dikemaskini Oleh", "data": "UpdatedBy" },
+                                { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
+                                { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
                                 { "title": "Status", "data": "StatusDesc" },
                                 {
                                     "title": "Tindakan",
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-                                        appendstring += '<a  href="@Url.Action("ViewApplication", "Application")?Id=' + row["ApplicationID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                                        appendstring += '<a  href="@Url.Action("ViewApplication", "Application")?Id=' + row["APP_ID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
                                         if (!restrictSubmittedApps || data['AppStatusID'] == 1) {
                                             if (IsEdit != "False") {
-                                                appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["ApplicationID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                                appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                             }
                                             if (IsDelete != "False") {
-                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["ApplicationID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                                             }
                                         }
                                         return appendstring

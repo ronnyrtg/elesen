@@ -105,6 +105,7 @@
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel))
                     {
                     <li><a href="#">Received Applications</a></li>
+                    <li>@Html.ActionLink("Hello World", "TestPage", "Master")</li>
                     }
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel2))
                     {
