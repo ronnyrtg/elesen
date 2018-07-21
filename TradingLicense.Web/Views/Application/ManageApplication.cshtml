@@ -9,7 +9,6 @@
 
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
     List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
-    List<TradingLicense.Model.EntmtPremiseFeeModel> premiseFeeList = new List<TradingLicense.Model.EntmtPremiseFeeModel>();
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
     List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
@@ -24,9 +23,6 @@
 
         var sectors = ctx.SECTORs.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
-
-        var entmtGroup = ctx.E_P_FEEs.ToList();
-        premiseFeeList = Mapper.Map<List<TradingLicense.Model.EntmtPremiseFeeModel>>(entmtGroup);
 
         var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
@@ -219,7 +215,7 @@
                 <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
-                        @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.text), "id", "text"), "Pilih Kategori", new { @id = "premiseFeeList", @class = "form-control", @onchange = "changePremiseFee()" })
+                        @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.id), "id", "text"), "Pilih Kategori", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -1073,6 +1069,57 @@
             errorMessage(actionError);
         }
 
+        function bindPremiseFee(){
+
+            function formatPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-2">' + r[1] + '</div>' +
+                        '<div class="col-md-10">' + r[0] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatSelectionPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[1] + ' | '  + r[0] +
+                    '</span>'
+                );
+                return $result;
+            }
+
+            $("#premiseFeeList").select2({
+                placeholder: "Cari Jenis Tempat Hiburan",
+                minimumInputLength: 0,
+                width: '100%',
+                templateResult: formatPremiseFees,
+                templateSelection: formatSelectionPremiseFees,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillPremiseFee", "Application")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        console.log(query)
+                        return {
+                            query: query.term,
+                            selectedPFID: $('#E_P_FEEID').val()
+                        }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        }
+
         function bindCode(){
 
             function formatBusinessCodes(data) {
@@ -1129,53 +1176,7 @@
 
         $(function () {
 
-            function formatPremiseFees(data) {
-                var r = data.text.split('~');
-                var $result = $(
-                    '<div class="row">' +
-                        '<div class="col-md-2">' + r[1] + '</div>' +
-                        '<div class="col-md-10">' + r[0] + '</div>' +
-                    '</div>'
-                );
-                return $result;
-            }
 
-            function formatSelectionPremiseFees(data) {
-                var r = data.text.split('~');
-                var $result = $(
-                    '<span>' +
-                        r[1] + ' | '  + r[0] +
-                    '</span>'
-                );
-                return $result;
-            }
-
-            $("#premiseFeeList").select2({
-                placeholder: "Cari Jenis Tempat Hiburan",
-                minimumInputLength: 0,
-                width: '100%',
-                templateResult: formatPremiseFees,
-                templateSelection: formatSelectionPremiseFees,
-                ajax: {
-                    type: "POST",
-                    url: encodeURI('@Url.Action("FillPremiseFee", "Application")'),
-                    //Data: allows us to pass a parameter to the controller
-                    data: function (query) {
-                        //console.log(query)
-                        return {
-                            query: query.term,
-                            selectedPFID: $('#E_P_FEEID').val()
-                        }
-                    },
-                    //processes the results from the JSON method and gives us the select list
-                    processResults: function (data) {
-                        //console.log(data)
-                        return {
-                            results: data
-                        };
-                    }
-                }
-            });
 
 
             userRollTemplate = $("#UserRollTemplate").val();
@@ -1198,6 +1199,7 @@
             }
 
             $("#businessCodeList").select2({ width: '100%' });
+            $("#premiseFeeList").select2({ width: '100%' });
             $("#individualList").select2({ width: '100%' });
             $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
@@ -1283,20 +1285,6 @@
                 $('#businessCodeList').trigger('change');
             } else {
                 businessSelecteId = [];
-            }
-
-            var premiseSelecteId = [];
-            if ('@Model.PremiseFeeids' != null && '@Model.PremiseFeeids' != '') {
-                var PremiseFeeIds = '@Model.PremiseFeeids';
-
-                var arr = PremiseFeeIds.split(',');
-                $.each(arr, function (index, value) {
-                    premiseSelecteId.push(value);
-                });
-                $('#premiseFeeList').val(premiseSelecteId);
-                $('#premiseFeeList').trigger('change');
-            } else {
-                premiseSelecteId = [];
             }
 
             var individualSelecteId = [];
@@ -1418,11 +1406,7 @@
             checkButtonState();
         }
 
-        function changePremiseFee() {
-            $('#PremiseFeeids').val($('#premiseFeeList').val());
-            bindAdditionalTable();
-            checkButtonState();
-        }
+       
 
         function changeIndindividual() {
             var individuals = $("#individualList").select2('data');
@@ -1576,12 +1560,7 @@
             checkButtonState();
         }
 
-        function premiseFeeChange() {
-            if ($("#E_P_FEEID").val() > 0) {
-                bindTable();
-            }
-            checkButtonState();
-        }
+        
 
         function bindDownload(attechmentID) {
             if (attechmentID > 0) {

@@ -38,7 +38,14 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.DepartmentDesc, opt => opt.MapFrom(s => $"{s.DEPARTMENT.DEP_DESC} ({ s.DEPARTMENT.DEP_CODE})"));
 
                 //Combined Application
-                cfg.CreateMap<APPLICATION, ApplicationModel>();
+                cfg.CreateMap<APPLICATION, ApplicationModel>()
+                            .ForMember(dest => dest.LicenseTypeDesc, opt => opt.MapFrom(s => s.LIC_TYPE.LIC_TYPEDESC))
+                            .ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BT.BT_DESC))
+                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.COMPANY.C_NAME))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
+                cfg.CreateMap<ApplicationModel, APPLICATION>()
+                            .ForMember(dest => dest.LIC_TYPE, opt => opt.Ignore());
                 cfg.CreateMap<LIC_TYPE, LicenseTypeModel>();
                 cfg.CreateMap<SECTOR, SectorModel>();
                 cfg.CreateMap<BT, BusinessTypeModel>();
