@@ -32,7 +32,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string FLOOR { get; set; }
         //Building type refer from PremiseType table
-        public int PREMISETYPEID { get; set; }
+        public int PT_ID { get; set; }
         //Name of last user updating this application
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]

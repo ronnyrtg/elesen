@@ -145,6 +145,8 @@ namespace TradingLicense.Web.Controllers
                     var paLinkBc = ctx.APP_L_BCs.Where(a => a.APP_ID == id).ToList();
                     applicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BC_ID.ToString()).ToArray());
 
+                    
+
                     var bannerObjects = ctx.B_Os.Where(a => a.APP_ID == id).ToList();
                     applicationModel.totalBannerObjects = bannerObjects.Count;
 
@@ -201,6 +203,18 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
+            else
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    List<Select2ListItem> premiseFeeList = new List<Select2ListItem>();
+                    premiseFeeList = ctx.E_P_FEEs
+                        .Select(fnSelectPremiseFee)
+                        .ToList();
+
+                    applicationModel.selectedPremiseFeeList = premiseFeeList;
+                }
+            }
 
             if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
@@ -211,6 +225,403 @@ namespace TradingLicense.Web.Controllers
 
             applicationModel.IsDraft = false;
             return View(applicationModel);
+        }
+        #endregion
+
+        #region Check ManageApplication data isValid
+        /// <summary>
+        /// Check Application Information
+        /// </summary>
+        /// <param name="ApplicationModel">The application model.</param>
+        /// <param name="btnSubmit">The BTN submit.</param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageApplication(ApplicationModel ApplicationModel, string btnSubmit)
+        {
+            try
+            {
+
+                if (ModelState.IsValid)
+                {
+                    bool saveSuccess = false;
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        saveSuccess = SaveApplication(ApplicationModel, ctx);
+                    }
+                    if (saveSuccess && ApplicationModel.IsDraft)
+                    {
+                        TempData["SuccessMessage"] = "License Application draft saved successfully.";
+
+                        return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + ApplicationModel.APP_ID);
+                    }
+                    if (saveSuccess)
+                    {
+                        TempData["SuccessMessage"] = "License Application saved successfully.";
+                        return RedirectToAction("Application");
+                    }
+                    return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + ApplicationModel.APP_ID);
+                }
+
+
+                return View(ApplicationModel);
+            }
+            catch (Exception ex)
+            {
+
+                return View(ex.Message);
+            }
+        }
+        #endregion
+
+        #region Get Roletemplate from ProjectSession
+
+        private static int GetUserRoleTemplate(ApplicationModel applicationModel,
+            APPLICATION application, LicenseApplicationContext ctx)
+        {
+            int userroleTemplate = 0;
+            application.UPDATED_BY = ProjectSession.User.USERNAME;
+
+            if (ProjectSession.User.ROLEID != null)
+            {
+                userroleTemplate = ProjectSession.User.ROLEID.Value;
+            }
+
+            return userroleTemplate;
+        }
+        #endregion
+
+        #region Get APPSTATUSID Upon Submit Button
+        private int GetStatusOnSubmit(ApplicationModel applicationModel, LicenseApplicationContext ctx, APPLICATION application, int roleTemplate)
+        {
+            PAStausenum finalStatus = 0;
+            if (!applicationModel.IsDraft)
+            {
+                switch (roleTemplate)
+                {
+                    case (int)RollTemplate.DeskOfficer:
+                        finalStatus = PAStausenum.submittedtoclerk;
+                        break;
+                    case (int)RollTemplate.Clerk:
+                        if (applicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                                case 2:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                                case 4:
+                                    finalStatus = PAStausenum.unitroute;
+                                    break;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = PAStausenum.documentIncomplete;
+                        }
+                        else
+                        {
+                            finalStatus = PAStausenum.unitroute;
+                        }
+                        break;
+                    case (int)RollTemplate.Director:
+                        if (applicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.CEOcheck;
+                                    break;
+                                case 2:
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.CEOcheck;
+                                    break;
+                                case 4:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnRejected)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                                case 2:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                                case 4:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                            }
+                        }
+                        break;
+                    case (int)RollTemplate.CEO:
+                        if (applicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.Complete;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
+                                    break;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnRejected)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case 1:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                                case 3:
+                                    finalStatus = PAStausenum.LetterofnotificationRejected;
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                finalStatus = PAStausenum.draftcreated;
+            }
+            return (int)finalStatus;
+        }
+        #endregion
+
+        #region Save data from ManageApplication
+        private bool SaveApplication(ApplicationModel applicationModel, LicenseApplicationContext ctx)
+        {
+
+            var application = Mapper.Map<APPLICATION>(applicationModel);
+            int userroleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.UserID > 0)
+            {
+                userroleTemplate = GetUserRoleTemplate(applicationModel, application, ctx);
+            }
+            var finalStatus = GetStatusOnSubmit(applicationModel, ctx, application, userroleTemplate);
+            if (finalStatus != 0)
+            {
+                application.APPSTATUSID = finalStatus;
+            }
+
+            if (applicationModel.APPSTATUSID <= (int)Enums.PAStausenum.draftcreated && applicationModel.MODE == 1 || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions && applicationModel.MODE > 1)
+            {
+                application.APPROVE = DateTime.Now;
+                application.EXPIRE = DateTime.Now.AddMonths(6);
+                application.L_STATUS = "LULUS BERSYARAT";
+            }
+            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved && applicationModel.MODE > 1)
+            {
+                application.APPROVE = DateTime.Now;
+                application.EXPIRE = DateTime.Now.AddMonths(12);
+                application.L_STATUS = "LULUS";
+            }
+            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationRejected && applicationModel.MODE > 1)
+            {
+                application.APPROVE = DateTime.Now;
+                application.EXPIRE = DateTime.Now;
+                application.L_STATUS = "TIDAK DILULUSKAN";
+            }
+            ctx.APPLICATIONs.AddOrUpdate(application);
+            ctx.SaveChanges();
+
+
+            int applicationId = application.APP_ID;
+            if (applicationModel.APP_ID == 0)
+            {
+                application.SUBMIT = DateTime.Now;
+                applicationModel.APP_ID = applicationId;
+                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT);
+                ctx.APPLICATIONs.AddOrUpdate(application);
+                ctx.SaveChanges();
+            }
+
+            int roleTemplate = 0;
+            if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
+            {
+                roleTemplate = ProjectSession.User.ROLEID.Value;
+            }
+
+            if (userroleTemplate == (int)RollTemplate.Public)
+            {
+                if (!string.IsNullOrWhiteSpace(applicationModel.UploadRequiredDocids))
+                {
+                    DocumentService.UpdateDocs(applicationModel, ctx, applicationId, roleTemplate);
+                }
+                else
+                {
+                    if (roleTemplate == (int)RollTemplate.Public)
+                    {
+                        var paLinkReqDocUmentList = ctx.APP_L_RDs
+                            .Where(p => p.APP_ID == applicationId).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
+                        {
+                            ctx.APP_L_RDs.RemoveRange(paLinkReqDocUmentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+
+            else if (userroleTemplate == (int)RollTemplate.DeskOfficer)
+            {
+                if (!string.IsNullOrWhiteSpace(applicationModel.RequiredDocIds))
+                {
+                    DocumentService.UpdateRequiredDocs(applicationModel, ctx, applicationId, roleTemplate);
+                }
+                else
+                {
+                    if (!applicationModel.IsDraft && roleTemplate == (int)RollTemplate.Public || roleTemplate == (int)RollTemplate.DeskOfficer)
+                    {
+                        var paLinkReqDocUmentList = ctx.APP_L_RDs.Where(p => p.APP_ID == applicationId).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
+                        {
+                            ctx.APP_L_RDs.RemoveRange(paLinkReqDocUmentList);
+                            ctx.SaveChanges();
+                        }
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(applicationModel.BusinessCodeids))
+            {
+                var businessCodelist = applicationModel.BusinessCodeids.ToIntList();
+
+                List<int> existingRecord = new List<int>();
+                var dbEntryPaLinkBAct = ctx.APP_L_BCs.Where(q => q.APP_ID == applicationId).ToList();
+                if (dbEntryPaLinkBAct.Count > 0)
+                {
+                    float? Totalfee = 0;
+                    foreach (var item in dbEntryPaLinkBAct)
+                    {
+                        if (businessCodelist.All(q => q != item.BC_ID))
+                        {
+                            ctx.APP_L_BCs.Remove(item);
+                        }
+                        else
+                        {
+                            existingRecord.Add(item.BC_ID);
+                        }
+                        var fee = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.DEF_RATE).FirstOrDefault();
+                        if (fee == 0)
+                        {
+                            fee = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.BASE_FEE).FirstOrDefault();
+                        }
+                        if (applicationModel.P_AREA != 0)
+                        {
+                            Totalfee = Totalfee + fee * applicationModel.P_AREA;
+                            application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                            //application.TOTAL_FEE = Totalfee;
+                        }
+                        ctx.APPLICATIONs.AddOrUpdate(application);
+                    }
+                    ctx.SaveChanges();
+                }
+
+
+                foreach (var businessCode in businessCodelist)
+                {
+                    if (existingRecord.All(q => q != businessCode))
+                    {
+                        APP_L_BC paLinkBc = new APP_L_BC();
+                        paLinkBc.APP_ID = applicationId;
+                        paLinkBc.BC_ID = businessCode;
+                        ctx.APP_L_BCs.Add(paLinkBc);
+
+                    }
+                }
+                ctx.SaveChanges();
+            }
+            else
+            {
+                var dbEntryPaLinkBActs = ctx.APP_L_BCs.Where(va => va.APP_ID == applicationId).ToList();
+                if (dbEntryPaLinkBActs.Count > 0)
+                {
+                    ctx.APP_L_BCs.RemoveRange(dbEntryPaLinkBActs);
+                    ctx.SaveChanges();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(applicationModel.Individualids))
+            {
+                //todo: I guess it's a draft for new logic
+                var individualidslist = applicationModel.Individualids.ToIntList();
+                List<int> existingRecord = new List<int>();
+                var dbEntryPaLinkInd = ctx.APP_L_INDs.Where(q => q.APP_ID == applicationId).ToList();
+                if (dbEntryPaLinkInd.Count > 0)
+                {
+                    foreach (var item in dbEntryPaLinkInd)
+                    {
+                        if (individualidslist.All(q => q != item.IND_ID))
+                        {
+                            ctx.APP_L_INDs.Remove(item);
+                        }
+                        else
+                        {
+                            existingRecord.Add(item.IND_ID);
+                        }
+                    }
+                    ctx.SaveChanges();
+                }
+
+                foreach (var individual in individualidslist)
+                {
+                    if (existingRecord.All(q => q != individual))
+                    {
+                        APP_L_IND paLinkInd = new APP_L_IND();
+                        paLinkInd.APP_ID = applicationId;
+                        paLinkInd.IND_ID = individual;
+                        ctx.APP_L_INDs.Add(paLinkInd);
+
+                    }
+                }
+                ctx.SaveChanges();
+            }
+
+            if (!string.IsNullOrWhiteSpace(applicationModel.newIndividualsList))
+            {
+                List<NewIndividualModel> individuals = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<List<NewIndividualModel>>(applicationModel.newIndividualsList);
+                foreach (var indModel in individuals)
+                {
+                    INDIVIDUAL ind = new INDIVIDUAL();
+                    ind.FULLNAME = indModel.fullName;
+                    ind.MYKADNO = indModel.passportNo;
+                    ctx.INDIVIDUALs.Add(ind);
+
+                }
+                ctx.SaveChanges();
+            }
+
+            if (!string.IsNullOrWhiteSpace(applicationModel.newComment))
+            {
+                COMMENT comment = new COMMENT();
+                comment.CONTENT = applicationModel.newComment;
+                comment.COMMENTDATE = DateTime.Now;
+                comment.APP_ID = applicationId;
+                comment.USERSID = ProjectSession.UserID;
+                ctx.COMMENTs.Add(comment);
+                ctx.SaveChanges();
+            }
+
+            applicationModel.APP_ID = applicationId;
+            return true;
+
         }
         #endregion
 
@@ -283,32 +694,6 @@ namespace TradingLicense.Web.Controllers
                 }
                 var businessCode = primaryQuery.Select(fnSelectBusinessCode).ToList();
                 return Json(businessCode, JsonRequestBehavior.AllowGet);
-            }
-        }
-        #endregion
-
-        #region Get Premise Fee data for Select2 dropdown (FillPremiseFee)
-        /// <summary>
-        /// Get Premise Fee
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <param name="selectedPFee">The selected Fee ID</param>
-        /// <param name="selectedPDesc">The selected Premise Group Description</param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult FillPremiseFee(string query, int selectedPFID)
-        {
-            using (var ctx = new LicenseApplicationContext())
-            {
-                IQueryable<E_P_FEE> primaryQuery = ctx.E_P_FEEs;
-                primaryQuery = primaryQuery.Where(ep => ep.E_P_FEEID == selectedPFID);                  
-
-                if (!String.IsNullOrWhiteSpace(query))
-                {
-                    primaryQuery = primaryQuery.Where(ep => ep.E_P_DESC.ToLower().Contains(query.ToLower()) || ep.E_P_DESC.ToLower().Contains(query.ToLower()));
-                }
-                var premiseFee = primaryQuery.Select(fnSelectPremiseFee).ToList();
-                return Json(premiseFee, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion
@@ -478,7 +863,7 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region BC
+        #region BusinessCode
 
         /// <summary>
         /// GET: BusinessCode

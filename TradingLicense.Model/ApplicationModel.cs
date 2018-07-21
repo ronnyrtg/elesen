@@ -64,7 +64,6 @@ namespace TradingLicense.Model
         public string E_S_O_NAME { get; set; }
         public int E_S_PERIOD { get; set; }
         public int E_S_P_QTY { get; set; }
-        public string PremiseFeeids { get; set; }
         public List<Select2ListItem> selectedPremiseFeeList = new List<Select2ListItem>();
 
         //Save to Address Table
@@ -89,7 +88,7 @@ namespace TradingLicense.Model
         public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
 
-        public string LIC_TYPEDESC { get; set; }
+        public string LicenseTypeDesc { get; set; }
         public int UserRollTemplate { get; set; }
         public string BusinessTypeDesc { get; set; }
         public string FullName { get; set; }
@@ -110,6 +109,16 @@ namespace TradingLicense.Model
 
         
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
-        
+
+        public static string GetReferenceNo(int ApplicationId, DateTime submittedDateTime)
+        {
+            return $"{submittedDateTime.Year}/PA/NEW/{ApplicationId.ToString().PadLeft(6, '0')}";
+        }
+
+    }
+    public class NewIndividualModel
+    {
+        public string fullName { get; set; }
+        public string passportNo { get; set; }
     }
 }
