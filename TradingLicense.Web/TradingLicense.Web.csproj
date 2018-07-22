@@ -483,6 +483,29 @@
     <Content Include="Views\Master\LicenseType.cshtml" />
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Report\LicenseBusinessTypeMaster.cshtml" />
+    <Content Include="Views\Report\LicenseTypeLookup.cshtml" />
+    <Content Include="Views\Report\ZoneMaster.cshtml" />
+    <Content Include="Views\Report\SubzoneMaster.cshtml" />
+    <Content Include="Views\Report\RoadMaster.cshtml" />
+    <Content Include="Views\Report\CitizenMaster.cshtml" />
+    <Content Include="Views\Report\CitizenLookup.cshtml" />
+    <Content Include="Views\Report\BankMaster.cshtml" />
+    <Content Include="Views\Report\OwnerMaster.cshtml" />
+    <Content Include="Views\Report\JointOwner.cshtml" />
+    <Content Include="Views\Report\PaymentTransaction.cshtml" />
+    <Content Include="Views\Report\PaymentCollection.cshtml" />
+    <Content Include="Views\Report\PaymentInquiry.cshtml" />
+    <Content Include="Views\Report\AdjustmentListing.cshtml" />
+    <Content Include="Views\Report\Duration.cshtml" />
+    <Content Include="Views\Report\LicenseListing.cshtml" />
+    <Content Include="Views\Report\OwnerInfo.cshtml" />
+    <Content Include="Views\Report\License.cshtml" />
+    <Content Include="Views\Report\LicenseApplicationStats.cshtml" />
+    <Content Include="Views\Report\ApplicationStatus.cshtml" />
+    <Content Include="Views\Report\ApplicationLocationStatus.cshtml" />
+    <Content Include="Views\Report\RenewalStatusResult.cshtml" />
+    <Content Include="Views\Report\BusinessListing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
