@@ -497,8 +497,6 @@
     <Content Include="Views\Report\LicenseTypeLookup.cshtml" />
     <Content Include="Views\Report\ZoneMaster.cshtml" />
     <Content Include="Views\Report\RoadMaster.cshtml" />
-    <Content Include="Views\Report\CitizenMaster.cshtml" />
-    <Content Include="Views\Report\CitizenLookup.cshtml" />
     <Content Include="Views\Report\BankMaster.cshtml" />
     <Content Include="Views\Report\OwnerMaster.cshtml" />
     <Content Include="Views\Report\JointOwner.cshtml" />
@@ -521,6 +519,7 @@
     <Content Include="Views\Report\LicenseBusinessTypeMasterPdf.cshtml" />
     <Content Include="Views\Report\ReceivedApplication.cshtml" />
     <Content Include="Views\Shared\_Report.cshtml" />
+    <Content Include="Views\Report\RaceMaster.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

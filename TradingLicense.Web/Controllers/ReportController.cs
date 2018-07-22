@@ -87,25 +87,20 @@ namespace TradingLicense.Web.Controllers
             return new ViewAsPdf();
         }
 
-        public ActionResult CitizenMaster()
-        {
-            return View();
-        }
-
-        public ActionResult CitizenLookup()
-        {
-            return View();
-        }
-
         public ActionResult RaceMaster()
         {
-            return View();
+            List<RaceModel> items = new List<RaceModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var races = ctx.RACEs.ToList();
+                items = Mapper.Map<List<RaceModel>>(races);
+            }
+            ViewBag.races = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
-        public ActionResult BankMaster()
-        {
-            return View();
-        }
 
         public ActionResult OwnerMaster()
         {
