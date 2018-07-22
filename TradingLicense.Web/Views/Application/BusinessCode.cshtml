@@ -1,13 +1,13 @@
 ﻿@using AutoMapper;
 @{
-    ViewBag.Title = "BC";
+    ViewBag.Title = "BusinessCode";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
     List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var sector = ctx.Sectors.ToList();
+        var sector = ctx.SECTORs.ToList();
         sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
     }
 }
@@ -59,7 +59,7 @@
         });
 
         function addBC() {
-           var link = '@Url.Action("ManageBC", "Application")';
+           var link = '@Url.Action("ManageBusinessCode", "Application")';
              window.location.href = link;
         }
 
@@ -85,7 +85,7 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("BC", "Application")',
+                        url: '@Url.Action("BusinessCode", "Application")',
                         type: "POST",
                         data: bindSearch()
                     },
@@ -100,7 +100,7 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Jenis Lesen", "data": "LIC_TYPEDESC" },
+                        { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
                         { "title": "Kumpulan", "data": "SectorDesc" },
                         { "title": "Kod Perniagaan", "data": "C_R" },
                         { "title": "Aktiviti", "data": "C_R_DESC" },
@@ -129,8 +129,8 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBC", "Application")?Id=' + row["BCID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BCID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageBusinessCode", "Application")?Id=' + row["BC_ID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BC_ID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
@@ -215,7 +215,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteBC", "Application")'),
+                    url: encodeURI('@Url.Action("DeleteBusinessCode", "Application")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',

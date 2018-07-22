@@ -32,6 +32,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnKIV = "KIV";
 
         private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R_DESC}~{bc.C_R}" };
+        private Func<DEPARTMENT, Select2ListItem> fnSelectDepartment = de => new Select2ListItem { id = de.DEP_ID, text = $"{de.DEP_CODE}~{de.DEP_DESC}" };
         private Func<E_P_FEE, Select2ListItem> fnSelectPremiseFee = ep => new Select2ListItem { id = ep.E_P_FEEID, text = $"{ep.E_P_DESC}~{ep.E_S_DESC}" };
         private Func<INDIVIDUAL, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IND_ID, text = $"{ind.FULLNAME} ({ind.MYKADNO})" };
 
@@ -699,6 +700,29 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Get Routeable Departments data for Datatable (FillDepartments)
+        /// <summary>
+        /// Get Department Aray String
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillDepartments(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<DEPARTMENT> primaryQuery = ctx.DEPARTMENTs.Where(de => de.ROUTE == 1);               
+               
+                if (!String.IsNullOrWhiteSpace(query))
+                {
+                    primaryQuery = primaryQuery.Where(bc => bc.DEP_DESC.ToLower().Contains(query.ToLower()) || bc.DEP_DESC.ToLower().Contains(query.ToLower()));
+                }
+                var businessCode = primaryQuery.Select(fnSelectDepartment).ToList();
+                return Json(businessCode, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         #region Get Individual Name (MyKad) for Datatable
         /// <summary>
         /// Get Individual Code
@@ -870,7 +894,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: BusinessCode
         /// </summary>
         /// <returns></returns>
-        public ActionResult BC()
+        public ActionResult BusinessCode()
         {
             return View();
         }
@@ -884,7 +908,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="sectorId">The sector identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BC([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
+        public JsonResult BusinessCode([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
         {
             List<BusinessCodeModel> businessCode;
             int totalRecord = 0;
@@ -946,19 +970,25 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult ManageBC(int? id)
+        public ActionResult ManageBusinessCode(int? id)
         {
-            BusinessCodeModel businessCodeModel = new BusinessCodeModel
-            {
-                ACTIVE = true
-            };
+            BusinessCodeModel businessCodeModel = new BusinessCodeModel();
+
             if (id != null && id > 0)
+
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
                     int businessCodeId = Convert.ToInt32(id);
+
                     var businessCode = ctx.BCs.FirstOrDefault(a => a.BC_ID == businessCodeId);
                     businessCodeModel = Mapper.Map<BusinessCodeModel>(businessCode);
+
+                    var sector = ctx.SECTORs.ToList();
+                    businessCodeModel.sectorList = Mapper.Map<List<SectorModel>>(sector);
+
+                    var additionaDocs = ctx.RDs.ToList();
+                    businessCodeModel.additionalDocsList = Mapper.Map<List<RequiredDocModel>>(additionaDocs);
 
                     var additionalDocs = ctx.RD_L_BCs.Where(blAd => blAd.BC_ID == businessCodeId);
                     businessCodeModel.AdditionalDocs = additionalDocs.Any()
@@ -976,11 +1006,28 @@ namespace TradingLicense.Web.Controllers
                             }
                         }
                         businessCodeModel.DepartmentIDs = String.Join(",", departments.Select(blD => blD.DEP_ID).ToArray());
-                    }
+                    }      
+                }
+            }
+            else
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var license = ctx.LIC_TYPEs.ToList();
+                    businessCodeModel.licenseList = Mapper.Map<List<LicenseTypeModel>>(license);
 
+                    var sector = ctx.SECTORs.ToList();
+                    businessCodeModel.sectorList = Mapper.Map<List<SectorModel>>(sector);
+
+                    var additionaDocs = ctx.RDs.ToList();
+                    businessCodeModel.additionalDocsList = Mapper.Map<List<RequiredDocModel>>(additionaDocs);
                 }
             }
 
+            businessCodeModel.periodList.Add(new Select2ListItem() { id = 1, text = "Tahun" });
+            businessCodeModel.periodList.Add(new Select2ListItem() { id = 2, text = "Bulan" });
+            businessCodeModel.periodList.Add(new Select2ListItem() { id = 3, text = "Minggu" });
+            businessCodeModel.periodList.Add(new Select2ListItem() { id = 4, text = "Hari" });
             return View(businessCodeModel);
         }
 
@@ -991,7 +1038,7 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBC(BusinessCodeModel businessCodeModel)
+        public ActionResult ManageBusinessCode(BusinessCodeModel businessCodeModel)
         {
             if (ModelState.IsValid)
             {
@@ -1007,6 +1054,7 @@ namespace TradingLicense.Web.Controllers
                     ctx.BCs.AddOrUpdate(businessCode);
                     ctx.SaveChanges();
 
+
                     if (!string.IsNullOrEmpty(businessCodeModel.DepartmentIDs))
                     {
                         List<BC_L_DEP> selectedDepartments = new List<BC_L_DEP>();
@@ -1017,7 +1065,7 @@ namespace TradingLicense.Web.Controllers
                             var depId = Convert.ToInt32(dep);
                             if (selectedDeps.All(sd => sd.DEP_ID != depId))
                             {
-                                selectedDepartments.Add(new BC_L_DEP { BC_ID = businessCode.BC_ID, DEP_ID = depId });
+                                selectedDepartments.Add(new BC_L_DEP { BC_ID = businessCodeModel.BC_ID, DEP_ID = depId });
                             }
                         }
                         if (selectedDeps.Count > 0)
@@ -1036,7 +1084,7 @@ namespace TradingLicense.Web.Controllers
                         }
                     }
 
-                    if (businessCodeModel.AdditionalDocs.Count > 0)
+                    if (businessCodeModel.AdditionalDocs != null)
                     {
                         List<RD_L_BC> selectedAdditionalDocs = new List<RD_L_BC>();
                         var selectedADocs = ctx.RD_L_BCs.Where(bd => bd.BC_ID == businessCode.BC_ID).ToList();
@@ -1064,6 +1112,15 @@ namespace TradingLicense.Web.Controllers
                         }
 
                     }
+                    else
+                    {                       
+                        var paLinkReqDocUmentList = ctx.RD_L_BCs
+                        .Where(p => p.BC_ID == businessCodeModel.BC_ID).ToList();
+                        if (paLinkReqDocUmentList.Count > 0)
+                        {
+                            ctx.RD_L_BCs.RemoveRange(paLinkReqDocUmentList);
+                        }
+                    }
                     ctx.SaveChanges();
                 }
 
@@ -1084,7 +1141,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteBC(int id)
+        public ActionResult DeleteBusinessCode(int id)
         {
             try
             {

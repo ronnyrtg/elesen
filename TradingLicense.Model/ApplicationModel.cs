@@ -10,6 +10,7 @@ namespace TradingLicense.Model
         public string text { get; set; }
     }
 
+
     public class ApplicationModel
     {
         public int APP_ID { get; set; }

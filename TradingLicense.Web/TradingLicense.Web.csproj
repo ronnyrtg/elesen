@@ -476,11 +476,12 @@
     <Content Include="Views\Master\ManageRace.cshtml" />
     <Content Include="Views\Application\Application.cshtml" />
     <Content Include="Views\Application\ManageApplication.cshtml" />
-    <Content Include="Views\Application\BC.cshtml" />
-    <Content Include="Views\Application\ManageBC.cshtml" />
+    <Content Include="Views\Application\BusinessCode.cshtml" />
+    <Content Include="Views\Application\ManageBusinessCode.cshtml" />
     <Content Include="Views\Master\LicenseType.cshtml" />
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
     <Content Include="Views\Master\Userslist.cshtml" />
+    <Content Include="Views\Application\EntmtPremiseFee.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
