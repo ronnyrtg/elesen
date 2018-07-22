@@ -1,7 +1,15 @@
-﻿
+﻿@using AutoMapper;
 @{
     ViewBag.Title = "ZoneMaster";
+
+    List<TradingLicense.Model.ZoneModel> fromZoneList = new List<TradingLicense.Model.ZoneModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var zone = ctx.ZONEs.ToList();
+        fromZoneList = Mapper.Map<List<TradingLicense.Model.ZoneModel>>(zone);
+    }
 }
 
 <h2>ZoneMaster</h2>
-
+@Html.DropDownList("ZONE", new SelectList(fromZoneList.OrderBy(x => x.ZONEID), "ZONEID", "ZONEDESC"), "Pilih Jenis Perniagaan", new { @class = "form-control" })
