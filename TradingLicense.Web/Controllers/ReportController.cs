@@ -1,5 +1,6 @@
 using System.Web.Mvc;
 using TradingLicense.Web.Classes;
+using Rotativa;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -14,6 +15,11 @@ namespace TradingLicense.Web.Controllers
         public ActionResult LicenseBusinessTypeMaster()
         {
             return View();
+        }
+
+        public ActionResult LicenseBusinessTypeMasterPdf()
+        {
+            return new ViewAsPdf();
         }
 
         public ActionResult LicenceTypeLookup()
