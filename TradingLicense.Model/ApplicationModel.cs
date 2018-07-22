@@ -17,7 +17,7 @@ namespace TradingLicense.Model
         public int MODE { get; set; }
         public int BT_ID { get; set; }
         public int COMPANYID { get; set; }
-        public int ADDRESSID { get; set; }
+        
         public string P_OWN { get; set; }
         public float P_AREA { get; set; }
         public DateTime? START_RENT { get; set; }
