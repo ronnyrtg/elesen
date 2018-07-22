@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
@@ -12,5 +11,7 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string CONTENT { get; set; }
+
+        public virtual APPLICATION APPLICATION { get; set; }
     }
 }

@@ -5,7 +5,6 @@ namespace TradingLicense.Model
     public class CommentModel
     {
         public int COMMENTID { get; set; }
-        public int LIC_TYPEID { get; set; }
         public int APP_ID { get; set; }
         public string CONTENT { get; set; }
         public int USERSID { get; set; }

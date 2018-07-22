@@ -8,7 +8,6 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int COMMENTID { get; set; }
-        public int LIC_TYPEID { get; set; }
         public int APP_ID { get; set; }
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
@@ -16,6 +15,7 @@ namespace TradingLicense.Entities
         public int USERSID { get; set; }
         public DateTime COMMENTDATE { get; set; }
 
+        public virtual APPLICATION APPLICATION { get; set; }
         public virtual USERS USERS { get; set; }
     }
 }

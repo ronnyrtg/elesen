@@ -55,6 +55,7 @@ namespace TradingLicense.Data
         public DbSet<PAY_REC> PAY_RECs { get; set; }
         public DbSet<ROUTEUNIT> ROUTEUNITs { get; set; }
         public DbSet<COMMENT> COMMENTs { get; set; }
+        public DbSet<CATATAN> CATATANs { get; set; }
         public DbSet<ATTACHMENT> ATTACHMENTs { get; set; }
 
         //User related
