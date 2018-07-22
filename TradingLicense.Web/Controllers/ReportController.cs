@@ -73,14 +73,18 @@ namespace TradingLicense.Web.Controllers
             return View(zoneModel);
         }
 
-        public ActionResult SubzoneMaster()
-        {
-            return View();
-        }
-
         public ActionResult RoadMaster()
         {
-            return View();
+            List<RoadModel> items = new List<RoadModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var roads = ctx.ROADs.ToList();
+                items = Mapper.Map<List<RoadModel>>(roads);
+            }
+            ViewBag.roads = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult CitizenMaster()

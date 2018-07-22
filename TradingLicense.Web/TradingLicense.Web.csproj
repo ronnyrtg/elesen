@@ -496,7 +496,6 @@
     <Content Include="Views\Report\LicenseBusinessTypeMaster.cshtml" />
     <Content Include="Views\Report\LicenseTypeLookup.cshtml" />
     <Content Include="Views\Report\ZoneMaster.cshtml" />
-    <Content Include="Views\Report\SubzoneMaster.cshtml" />
     <Content Include="Views\Report\RoadMaster.cshtml" />
     <Content Include="Views\Report\CitizenMaster.cshtml" />
     <Content Include="Views\Report\CitizenLookup.cshtml" />

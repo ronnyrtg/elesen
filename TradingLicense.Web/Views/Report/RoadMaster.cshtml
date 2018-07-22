@@ -1,7 +1,39 @@
 ﻿
 @{
-    ViewBag.Title = "RoadMaster";
+    ViewBag.Title = "Road Master Report";
+    Layout = "~/Views/Shared/_Report.cshtml";
 }
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> PS-09 </td>
+        <td>
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br /><br />
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>ROAD LISTING </div>
+</div>
+<br /><br />
+<table class="A4">
+    <tr>
+        <th> No </th>
+        <th> Code </th>
+        <th> Description </th>
+    </tr>
+    @foreach (var item in ViewBag.roads)
+    {
+        <tr>
+            <td>@item.ROADID</td>
+            <td>@item.ROADCODE</td>
+            <td>@item.ROADDESC</td>
+        </tr>
+    }
+</table>
 
-<h2>RoadMaster</h2>
 
