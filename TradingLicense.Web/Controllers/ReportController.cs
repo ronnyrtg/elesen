@@ -75,7 +75,12 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
-        public ActionResult PaymentInquiry()
+        public ActionResult PaymentInquiryPaid()
+        {
+            return View();
+        }
+
+        public ActionResult PaymentInquiryUnpaid()
         {
             return View();
         }

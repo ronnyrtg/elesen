@@ -108,27 +108,27 @@
                     }
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel2))
                     {
-                    <li><a href="#">License/Business Type Master</a></li>
-                    <li><a href="#">Zone Master</a></li>
-                    <li><a href="#">Subzone Master</a></li>
-                    <li><a href="#">Road Master</a></li>
-                    <li><a href="#">Citizen Master</a></li>
-                    <li><a href="#">Race Master</a></li>
-                    <li><a href="#">Bank Master</a></li>
-                    <li><a href="#">Owner Master</a></li>
-                    <li><a href="#">Joint Owner</a></li>
-                    <li><a href="#">Payment Transaction Listing</a></li>
-                    <li><a href="#">Payment Collection Listing</a></li>
-                    <li><a href="#">Payment Inquiry Listing Paid</a></li>
-                    <li><a href="#">Payment Inquiry Listing Unpaid</a></li>
-                    <li><a href="#">Duration Report</a></li>
-                    <li><a href="#">Status Permohonan Lesen</a></li>
-                    <li><a href="#">Senarai Keputusan Pembaharuan</a></li>
-                    <li><a href="#">Analisa Pemohon Lesen</a></li>
-                    <li><a href="#">Analisa Lokasi Permohonan Lesen</a></li>
-                    <li><a href="#">Senarai Perniagaan</a></li>
-                    <li><a href="#">Status Pergerakan Permohonan Lesen</a></li>
-                    <li><a href="../Print/Print">Laporan Kod Perniagaan</a></li>
+                    <li>@Html.ActionLink("License/Business Type Master", "LicenseBusinessTypeMaster", "Report")</li>
+                    <li>@Html.ActionLink("Zone Master", "ZoneMaster", "Report")</li>
+                    <li>@Html.ActionLink("Subzone Master", "SubzoneMaster", "Report")</li>
+                    <li>@Html.ActionLink("Road Master", "RoadMaster", "Report")</li>
+                    <li>@Html.ActionLink("Citizen Master", "CitizenMater", "Report")</li>
+                    <li>@Html.ActionLink("Race Master", "RaceMaster", "Report")</li>
+                    <li>@Html.ActionLink("Bank Master", "BankMaster", "Report")</li>
+                    <li>@Html.ActionLink("Owner Master", "OwnerMaster", "Report")</li>
+                    <li>@Html.ActionLink("Joint Owner", "JointOwner", "Report")</li>
+                    <li>@Html.ActionLink("Payment Transaction Listing", "PaymentTransaction", "Report")</li>
+                    <li>@Html.ActionLink("Payment Collection Listing", "PaymentCollection", "Report")</li>
+                    <li>@Html.ActionLink("Payment Inquiry Listing Paid", "PaymentInquiryPaid", "Report")</li>
+                    <li>@Html.ActionLink("Payment Inquiry Listing Unpaid", "PaymentInquiryUnpaid", "Report")</li>
+                    <li>@Html.ActionLink("Duration Report", "Duration", "Report")</li>
+                    <li>@Html.ActionLink("Status Permohonan Lesen", "ApplicationStatus", "Report")</li>
+                    <li>@Html.ActionLink("Senarai Keputusan Pembaharuan", "RenewalStatusResult", "Report")</li>
+                    <li>@Html.ActionLink("Analisa Pemohon Lesen", "ApplicationStatusStats", "Report")</li>
+                    <li>@Html.ActionLink("Analisa Lokasi Permohonan Lesen", "ApplicationLocationStatus", "Report")</li>
+                    <li>@Html.ActionLink("Senarai Perniagaan", "BusinessListing", "Report")</li>
+                    <li>@Html.ActionLink("Status Pergerakan Permohonan Lesen", "ApplicationStatus", "Report")</li>
+                    <li>@Html.ActionLink("Laporan Kod Perniagaan", "BusinessCode", "Report")</li>
                     }
                 </ul>
             </li>

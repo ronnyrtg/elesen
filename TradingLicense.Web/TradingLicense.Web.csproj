@@ -228,6 +228,10 @@
     <Content Include="images\logoPL.jpg" />
     <Content Include="images\logoPL.png" />
     <Content Include="images\wm1.png" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\select2\select2.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -305,6 +309,7 @@
     <Content Include="Content\bootstrap-datepicker3.css.map" />
     <Content Include="Content\bootstrap-datepicker.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker.css.map" />
+    <Content Include="App_Browsers\qt.browser" />
     <None Include="Properties\PublishProfiles\elesen VPS.pubxml" />
     <None Include="Properties\PublishProfiles\Mesrahosting.pubxml" />
     <Content Include="Scripts\Datatables\dataTables.bootstrap.js" />
@@ -495,7 +500,7 @@
     <Content Include="Views\Report\JointOwner.cshtml" />
     <Content Include="Views\Report\PaymentTransaction.cshtml" />
     <Content Include="Views\Report\PaymentCollection.cshtml" />
-    <Content Include="Views\Report\PaymentInquiry.cshtml" />
+    <Content Include="Views\Report\PaymentInquiryPaid.cshtml" />
     <Content Include="Views\Report\AdjustmentListing.cshtml" />
     <Content Include="Views\Report\Duration.cshtml" />
     <Content Include="Views\Report\LicenseListing.cshtml" />
@@ -506,6 +511,9 @@
     <Content Include="Views\Report\ApplicationLocationStatus.cshtml" />
     <Content Include="Views\Report\RenewalStatusResult.cshtml" />
     <Content Include="Views\Report\BusinessListing.cshtml" />
+    <Content Include="Views\Report\PaymentInquiryUnpaid.cshtml" />
+    <Content Include="Views\Report\BusinessCode.cshtml" />
+    <Content Include="Views\Report\ApplicationStatusStats.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
