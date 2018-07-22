@@ -1,16 +1,33 @@
 ﻿
 @{
     ViewBag.Title = "LicenseBusinessTypeMasterPdf";
+    Layout = "~/Views/Shared/_Report.cshtml";
 }
-
-<table>
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> L5-01</td>
+        <td> 
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br/><br/>
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>LICENSE BUSINESS TYPE LISTING </div>
+</div>
+<br/><br/>
+<table class="A4">
     <tr>
         <th> License Type </th>
         <th> Code </th>
         <th> Description </th>
         <th> Fees </th>
     </tr>
-    @foreach(var item in ViewBag.businessCodes)
+    @foreach (var item in ViewBag.businessCodes)
     {
         <tr>
             <td>@item.Lic_TypeDesc</td>

@@ -42,7 +42,7 @@ namespace TradingLicense.Web
                        // "~/Content/Datatables/dataTables.bootstrap4.css",
                        "~/Content/Datatables/dataTables.bootstrap.css",
                        "~/Content/Datatables/responsive.dataTables.min.css",
-                      //  "~/Content/site.css",
+                      //"~/Content/site.css",
                       "~/Content/toastr.css",
                       "~/Content/select2/select2.min.css",
                       "~/Content/themes/base/jquery-ui.min.css",

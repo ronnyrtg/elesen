@@ -1,3 +1,4 @@
+using System;
 using System.Web.Mvc;
 using Rotativa;
 using System.Collections.Generic;
@@ -42,6 +43,8 @@ namespace TradingLicense.Web.Controllers
                 items = Mapper.Map<List<BusinessCodeModel>>(businessCodes);
             }
             ViewBag.businessCodes = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
             return new ViewAsPdf();
         }
 
