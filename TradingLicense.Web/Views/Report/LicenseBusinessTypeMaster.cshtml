@@ -3,5 +3,12 @@
     ViewBag.Title = "LicenseBusinessTypeMaster";
 }
 
-<h2>LicenseBusinessTypeMaster</h2>
+@using (Html.BeginForm("LicenseBusinessTypeMasterPdf", "Report", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="licenseCode"> License Code </label>
+        @Html.DropDownList("LicenseCode", null, new { @class="form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
 

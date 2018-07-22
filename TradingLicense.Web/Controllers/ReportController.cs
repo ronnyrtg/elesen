@@ -1,8 +1,11 @@
+using System;
 using System.Web.Mvc;
-using TradingLicense.Web.Classes;
 using Rotativa;
-using TradingLicense.Model;
 using System.Collections.Generic;
+using System.Linq;
+using TradingLicense.Web.Classes;
+using TradingLicense.Model;
+using AutoMapper;
 using TradingLicense.Data;
 using TradingLicense.Entities;
 using System;
@@ -21,13 +24,34 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        // Show filter form
         public ActionResult LicenseBusinessTypeMaster()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach(var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
         }
 
-        public ActionResult LicenseBusinessTypeMasterPdf()
+        // Display generated pdf
+        public ActionResult LicenseBusinessTypeMasterPdf(string LicenseCode)
         {
+            List<BusinessCodeModel> items = new List<BusinessCodeModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var businessCodes = ctx.BCs.ToList();
+                items = Mapper.Map<List<BusinessCodeModel>>(businessCodes);
+            }
+            ViewBag.businessCodes = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
             return new ViewAsPdf();
         }
 
