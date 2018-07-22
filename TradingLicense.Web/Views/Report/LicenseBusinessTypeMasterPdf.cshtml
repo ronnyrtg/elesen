@@ -3,5 +3,21 @@
     ViewBag.Title = "LicenseBusinessTypeMasterPdf";
 }
 
-<h2>LicenseBusinessTypeMasterPdf</h2>
+<table>
+    <tr>
+        <th> License Type </th>
+        <th> Code </th>
+        <th> Description </th>
+        <th> Fees </th>
+    </tr>
+    @foreach(var item in ViewBag.businessCodes)
+    {
+        <tr>
+            <td>@item.Lic_TypeDesc</td>
+            <td>@item.C_R</td>
+            <td>@item.C_R_DESC</td>
+            <td>@item.DEF_RATE</td>
+        </tr>
+    }
+</table>
 

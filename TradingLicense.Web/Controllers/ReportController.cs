@@ -1,8 +1,10 @@
 using System.Web.Mvc;
-using TradingLicense.Web.Classes;
 using Rotativa;
 using System.Collections.Generic;
 using System.Linq;
+using TradingLicense.Web.Classes;
+using TradingLicense.Model;
+using AutoMapper;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -18,7 +20,7 @@ namespace TradingLicense.Web.Controllers
         public ActionResult LicenseBusinessTypeMaster()
         {
             List<SelectListItem> items = new List<SelectListItem>();
-            using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+            using (var ctx = new Data.LicenseApplicationContext())
             {
                 var licenseCodes = ctx.LIC_TYPEs.ToList();
                 foreach(var item in licenseCodes)
@@ -31,8 +33,15 @@ namespace TradingLicense.Web.Controllers
         }
 
         // Display generated pdf
-        public ActionResult LicenseBusinessTypeMasterPdf()
+        public ActionResult LicenseBusinessTypeMasterPdf(string LicenseCode)
         {
+            List<BusinessCodeModel> items = new List<BusinessCodeModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var businessCodes = ctx.BCs.ToList();
+                items = Mapper.Map<List<BusinessCodeModel>>(businessCodes);
+            }
+            ViewBag.businessCodes = items;
             return new ViewAsPdf();
         }
 
