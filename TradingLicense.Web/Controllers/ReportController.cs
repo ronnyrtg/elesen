@@ -1,8 +1,9 @@
 using System.Web.Mvc;
+using TradingLicense.Web.Classes;
 
 namespace TradingLicense.Web.Controllers
 {
-    public class ReportController : Controller
+    public class ReportController : BaseController
     {
         // GET /Report
         public ActionResult Index()
