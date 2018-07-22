@@ -3670,5 +3670,196 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region EntmtPremiseFee
+
+        /// <summary>
+        /// GET: EntmtPremiseFee
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult EntmtPremiseFee()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Get Entmt Entmt Premise Fee Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult EntmtPremiseFee([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string premiseDesc)
+        {
+            List<TradingLicense.Model.EntmtPremiseFeeModel> EntmtPremiseFee = new List<Model.EntmtPremiseFeeModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<E_P_FEE> query = ctx.E_P_FEEs;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(premiseDesc))
+                {
+                    query = query.Where(p =>
+                                        p.E_P_DESC.Contains(premiseDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "EP_FEEID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                EntmtPremiseFee = Mapper.Map<List<EntmtPremiseFeeModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, EntmtPremiseFee, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get EntmtPremiseFee Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageEntmtPremiseFee(int? Id)
+        {
+            EntmtPremiseFeeModel EntmtPremiseFeeModel = new EntmtPremiseFeeModel();
+            EntmtPremiseFeeModel.ACTIVE = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int premiseTypeID = Convert.ToInt32(Id);
+                    var EntmtPremiseFee = ctx.E_P_FEEs.Where(a => a.E_P_FEEID == premiseTypeID).FirstOrDefault();
+                    EntmtPremiseFeeModel = Mapper.Map<EntmtPremiseFeeModel>(EntmtPremiseFee);
+                }
+            }
+
+            return View(EntmtPremiseFeeModel);
+        }
+
+        /// <summary>
+        /// Save Entmt Premise Fee Infomration
+        /// </summary>
+        /// <param name="EntmtPremiseFeeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManagePremiseType(EntmtPremiseFeeModel EntmtPremiseFeeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    E_P_FEE EntmtPremiseFee;
+                    if (IsEntmtPremiseTypeDuplicate(EntmtPremiseFeeModel.E_P_DESC, EntmtPremiseFeeModel.E_P_FEEID))
+                    {
+                        TempData["ErrorMessage"] = "Entmt Premise Fee is already exist in the database.";
+                        return View(EntmtPremiseFeeModel);
+                    }
+
+                    EntmtPremiseFee = Mapper.Map<E_P_FEE>(EntmtPremiseFeeModel);
+                    ctx.E_P_FEEs.AddOrUpdate(EntmtPremiseFee);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Entmt Premise Fee saved successfully.";
+
+                return RedirectToAction("EntmtPremiseFee");
+            }
+            else
+            {
+                return View(EntmtPremiseFeeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Entmt Premise Fee Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteEntmtPremiseFee(int id)
+        {
+            try
+            {
+                var EntmtPremiseFee = new TradingLicense.Entities.E_P_FEE() { E_P_FEEID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(EntmtPremiseFee).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsEntmtPremiseTypeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_FEEID != id && c.E_P_DESC.ToLower() == name.ToLower())
+               : ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_DESC.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Add New Entmt Premise Fee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEntmtPremiseFee(int id, string PTypeDesc)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                E_P_FEE pre = new E_P_FEE();
+                pre.E_P_DESC = PTypeDesc;
+                ctx.E_P_FEEs.Add(pre);
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Jenis Premis Hiburan berjaya ditambah.";
+
+            }
+
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
+        }
+
+        #endregion
     }
 }

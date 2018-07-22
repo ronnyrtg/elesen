@@ -1193,5 +1193,44 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Comments List Datatable
+        /// <summary>
+        /// Get Comments for the premise applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="APP_ID">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Comments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? applicationID)
+        {
+            List<CommentModel> premiseComments = new List<CommentModel>();
+            int totalRecord = 0;
+            if (applicationID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    IQueryable<COMMENT> query = ctx.COMMENTs.Include("Users").Where(pac => pac.APP_ID == applicationID.Value);
+
+                    #region Sorting
+                    // Sorting
+                    var sortedColumns = requestModel.Columns.GetSortedColumns();
+                    var orderByString = sortedColumns.GetOrderByString();
+
+                    var result = Mapper.Map<List<CommentModel>>(query.ToList());
+                    result = result.OrderBy(orderByString == string.Empty ? "COMMENTDATE desc" : orderByString).ToList();
+
+                    totalRecord = result.Count;
+
+                    #endregion Sorting
+
+                    // Paging
+                    result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                    premiseComments = result;
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, premiseComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
     }
 }
