@@ -518,6 +518,8 @@
     <Content Include="Views\Report\PaymentInquiryUnpaid.cshtml" />
     <Content Include="Views\Report\BusinessCode.cshtml" />
     <Content Include="Views\Report\ApplicationStatusStats.cshtml" />
+    <Content Include="Views\Report\LicenseBusinessTypeMasterPdf.cshtml" />
+    <Content Include="Views\Report\ReceivedApplication.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

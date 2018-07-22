@@ -1,6 +1,8 @@
 using System.Web.Mvc;
 using TradingLicense.Web.Classes;
 using Rotativa;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -12,11 +14,23 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        // Show filter form
         public ActionResult LicenseBusinessTypeMaster()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach(var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
         }
 
+        // Display generated pdf
         public ActionResult LicenseBusinessTypeMasterPdf()
         {
             return new ViewAsPdf();
