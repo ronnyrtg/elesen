@@ -183,10 +183,5 @@ namespace TradingLicense.Web.Controllers
         {
             return View();
         }
-
-        public ActionResult BusinessListing()
-        {
-            return View();
-        }
     }
 }
