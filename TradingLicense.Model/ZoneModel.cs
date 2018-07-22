@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
@@ -16,5 +16,6 @@ namespace TradingLicense.Model
         public string ZONEDESC { get; set; }
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
+        public List<Select2ListItem> zoneCombineList = new List<Select2ListItem>();
     }
 }

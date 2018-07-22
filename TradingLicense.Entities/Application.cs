@@ -16,8 +16,7 @@ namespace TradingLicense.Entities
         public int BT_ID { get; set; }
         //Foreign Key to Company Table
         public int COMPANYID { get; set; }
-        //Foreign Key to Address Table
-        public int ADDRESSID { get; set; }
+        
         //Rent or Own
         [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]

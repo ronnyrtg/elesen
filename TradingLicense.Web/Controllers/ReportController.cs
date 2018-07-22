@@ -6,11 +6,15 @@ using System.Linq;
 using TradingLicense.Web.Classes;
 using TradingLicense.Model;
 using AutoMapper;
+using TradingLicense.Data;
+using TradingLicense.Entities;
 
 namespace TradingLicense.Web.Controllers
 {
     public class ReportController : BaseController
     {
+        private Func<ZONE, Select2ListItem> fnZoneDisplayFormat = ind => new Select2ListItem { id = ind.ZONEID, text = $" Kod {ind.ZONECODE} | {ind.ZONEDESC}" };
+
         // GET /Report
         public ActionResult Index()
         {
@@ -55,7 +59,18 @@ namespace TradingLicense.Web.Controllers
 
         public ActionResult ZoneMaster()
         {
-            return View();
+            ZoneModel zoneModel = new ZoneModel();
+            List<Select2ListItem> zoneList = new List<Select2ListItem>();
+
+            using (var ctx = new LicenseApplicationContext())
+            {
+                zoneList = ctx.ZONEs
+                .Select(fnZoneDisplayFormat)
+                .ToList();
+            }
+
+            zoneModel.zoneCombineList = zoneList;
+            return View(zoneModel);
         }
 
         public ActionResult SubzoneMaster()
