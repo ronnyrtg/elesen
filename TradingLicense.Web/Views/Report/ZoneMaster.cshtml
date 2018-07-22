@@ -1,9 +1,22 @@
-﻿@using AutoMapper;
+﻿@model IEnumerable<TradingLicense.Model.ZoneModel>
 @{
     ViewBag.Title = "ZoneMaster";
 }
 
 <h2>ZoneMaster</h2>
-    <div class="col-lg-6">
-        @Html.DropDownList("ZONE", new SelectList(Model.zoneCombineList, "id", "text"), "Pilih Jenis Zon", new { @class = "form-control" })
-    </div>
+   <table class="table table-bordered table-responsive table-hover">
+    <tr>
+        <th>Employee Id </th>
+        <th>First Name </th>
+        <th>Last Name </th>
+    </tr>
+    @foreach (var d in Model)
+    {
+        <tr>
+            <td>@d.ZONEID</td>
+            <td>@d.ZONECODE</td>
+            <td>@d.ZONEDESC</td>
+            
+        </tr>
+    }
+</table> 
