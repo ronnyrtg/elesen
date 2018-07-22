@@ -7,6 +7,7 @@ using TradingLicense.Data;
 using TradingLicense.Entities;
 using System;
 using System.Linq;
+using AutoMapper;
 
 namespace TradingLicense.Web.Controllers
 {
@@ -39,14 +40,19 @@ namespace TradingLicense.Web.Controllers
         {
             ZoneModel zoneModel = new ZoneModel();
             List<Select2ListItem> zoneList = new List<Select2ListItem>();
+            
 
             using (var ctx = new LicenseApplicationContext())
             {
                 zoneList = ctx.ZONEs
                 .Select(fnZoneDisplayFormat)
                 .ToList();
+
+                var zoneAll = from ZONE in ctx.ZONEs select new Alldata();
+                zoneModel.zListAll = zoneAll.ToList();
             }
 
+            
             zoneModel.zoneCombineList = zoneList;
             return View(zoneModel);
         }

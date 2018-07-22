@@ -17,5 +17,15 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
         public List<Select2ListItem> zoneCombineList = new List<Select2ListItem>();
+        public List<Alldata> zListAll = new List<Alldata>();
+        
     }
+
+    public class Alldata
+    {
+        public int  ZONEID { get; set; }
+        public string ZONECODE { get; set; }
+        public string ZONEDESC { get; set; }
+    }
+
 }
