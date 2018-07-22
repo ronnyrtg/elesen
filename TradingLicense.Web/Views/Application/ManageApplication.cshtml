@@ -273,7 +273,7 @@
                     </div>
                 </div>
             </div>
-            if (Model.totalBannerObjects == 0)
+            if (Model.totalBannerObjects == 0 && Model.LIC_TYPEID == 5)
             {
                 <div class="row">
                     <div class="col-sm-12 col-lg-6 banner">
@@ -421,8 +421,8 @@
                 <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen   @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                            Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen
+                            <span class="cfont">*</span>
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblLicenseType"></table>
                     </div>
@@ -430,8 +430,8 @@
                 <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan   @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                            Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan
+                            <span class="cfont">*</span>
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
                     </div>
@@ -439,8 +439,8 @@
                 <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Dokumen Tambahan mengikut Kod Perniagaan @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                            Senarai Dokumen Tambahan mengikut Kod Perniagaan
+                            <span class="cfont">*</span>
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
                     </div>
@@ -460,7 +460,7 @@
                 <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
                     <div class="form-group">
                         <div class="control-label">
-                            Senarai Catatan
+                            Senarai Ulasan
                         </div>
                         <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
                     </div>
@@ -1050,6 +1050,7 @@
         })
 
         $(document).ready(function () {
+            bindLicense();
             $('#btnLicense').click(function () {
                 $('.modal-body iframe').attr('src', "../Application/GeneratLicense?AppId=@Model.APP_ID");
                 $('#myModalLicense').modal('show');
@@ -1403,6 +1404,7 @@
         function changeBussinesscode() {
             $('#BusinessCodeids').val($('#businessCodeList').val());
             bindAdditionalTable();
+            console.log("changebusinesscode");
             checkButtonState();
         }
 
@@ -1554,7 +1556,7 @@
         }
 
         function businessTypeChange() {
-            if ($("#BUSINESSTYPEID").val() > 0) {
+            if ($("#BT_ID").val() > 0) {
                 bindTable();
             }
             checkButtonState();
@@ -1577,6 +1579,32 @@
                 param["ApplicationID"] = $("#APP_ID").val();
             } else {
                 param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchLicense() {
+            var param = {};
+            param["licenseTypeID"] = $("#LIC_TYPEID").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["ApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchAdditional() {
+            var param = {};
+            param["BusinessCodeids"] = $("#BusinessCodeids").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["premiseApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["premiseApplicationID"] = "";
             }
 
             return param;
@@ -1664,18 +1692,7 @@
             });
         }
 
-        function bindSearchAdditional() {
-            var param = {};
-            param["BusinessCodeids"] = $("#BusinessCodeids").val();
-
-            if ($("#APP_ID").val() > 0) {
-                param["premiseApplicationID"] = $("#APP_ID").val();
-            } else {
-                param["premiseApplicationID"] = "";
-            }
-
-            return param;
-        }
+        
 
         function bindAdditionalTable() {
             //displays required document related to business code selected
@@ -1735,27 +1752,19 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-
-                            if (visibleGridUploadColume) {
-
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") 
+                                {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
+                                } 
+                            else 
+                                {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
                                 }
-
-                            } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
-                            }
-
                             return appendstring
                         },
                         "orderable": false,
+                        "visible": visibleGridUploadColume,
+
                     }
                 ]
             });
@@ -1764,6 +1773,7 @@
         function bindLicense() {
             //displays required document related to license type
             $('#LicenseDocument').show();
+            console.log("change license type");
             if ($.fn.DataTable.isDataTable("#tblLicenseType")) {
                 $('#tblLicenseType').dataTable().fnDestroy();
             }
@@ -1780,7 +1790,7 @@
                 "ajax": {
                     url: '@Url.Action("LicenseDocument", "Application")',
                     type: "POST",
-                    data: bindSearch()
+                    data: bindSearchLicense()
                 },
                 "columns": [
                     {
@@ -1818,22 +1828,14 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-
-                            if (visibleGridUploadColume) {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") 
+                                {
                                     appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
+                                } 
+                            else 
+                                {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
-                                }
-
-                            } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
-                            }
+                                }                            
                             return appendstring
                         },
                         "orderable": false,
@@ -2139,7 +2141,7 @@
                 $('#tblComments').dataTable().fnDestroy();
             }
 
-            var data = { "APP_ID": @Model.APP_ID };
+            var data = { "applicationID": @Model.APP_ID };
 
             table = $("#tblComments").dataTable({
                 "lengthChange": true,
@@ -2152,7 +2154,7 @@
                 "bInfo": false,
                 "orderMulti": false,
                 "ajax": {
-                    url: '@Url.Action("PremiseComments", "Application")',
+                    url: '@Url.Action("Comments", "Application")',
                     type: "POST",
                     data: data
                 },
@@ -2167,9 +2169,9 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Ulasan", "orderable": false, "data": "Comment" },
-                    { "title": "Pengulas", "orderable": false, "data": "FullName" },
-                    { "title": "Ulasan dibuat pada", "data": "CommentDate", render: renderDateTime },
+                    { "title": "Ulasan", "orderable": false, "data": "COMMENT" },
+                    { "title": "Nama", "orderable": false, "data": "FULLNAME" },
+                    { "title": "Tarikh", "data": "COMMENTDATE", render: renderDateTime },
                     {
                         "title": "Tindakan",
                         "data": null,
@@ -2178,7 +2180,7 @@
 
                             if (data['UsersID'] == '@(ProjectSession.User.USERSID)') {
                                 appendstring += '<a  href="@Url.Action("AddCatatan", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
-                                appendstring += '<a href="javascript:void(0);" data-id="' + row["PACommentID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["COMMENTID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             }
                             return appendstring
                         },
