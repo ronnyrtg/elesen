@@ -1,22 +1,31 @@
 ﻿@model IEnumerable<TradingLicense.Model.ZoneModel>
 @{
     ViewBag.Title = "ZoneMaster";
-}
 
-<h2>ZoneMaster</h2>
-   <table class="table table-bordered table-responsive table-hover">
-    <tr>
-        <th>Employee Id </th>
-        <th>First Name </th>
-        <th>Last Name </th>
-    </tr>
-    @foreach (var d in Model)
+    List<TradingLicense.Model.ZoneModel> fromZoneList = new List<TradingLicense.Model.ZoneModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        <tr>
-            <td>@d.ZONEID</td>
-            <td>@d.ZONECODE</td>
-            <td>@d.ZONEDESC</td>
-            
-        </tr>
+        var zone = ctx.ZONEs.ToList();
+        fromZoneList = Mapper.Map<List<TradingLicense.Model.ZoneModel>>(zone);
     }
-</table> 
+}
+<div class="row">
+    <div class="col-lg-12"><h2>ZoneMaster</h2></div>
+        <div class="col-lg-5" id="zoneFrom" style="display:normal;">
+            <div class="form-group">
+                <div class="control-label">Zone From<span class="cfont">*</span></div>
+                @Html.DropDownList("ZONE", new SelectList(fromZoneList.OrderBy(x => x.ZONEID), "ZONEID", "ZONEDESC"), "Zone From", new { @class = "form-control" })
+            </div>
+        </div>
+        
+        <div class="col-lg-5">
+            <div class="form-group">
+                <div class="control-label">To Zone<span class="cfont">*</span></div>
+                @Html.DropDownList("ZONE", new SelectList(fromZoneList.OrderBy(x => x.ZONEID), "ZONEID", "ZONEDESC"), "Zone To", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-lg-12">
+                <input type="Submit" />
+        </div>
+        </div>
