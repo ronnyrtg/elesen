@@ -105,12 +105,12 @@
                                     return meta.settings._iDisplayStart + meta.row + 1;
                                 }
                             },
-                            { "title": "Nama Penuh", "searchable": true, "data": "FullName" },
-                            { "title": "Mykad/Paspot", "data": "MykadNo" },
-                            { "title": "Nombor Telefon", "data": "PhoneNo" },
+                            { "title": "Nama Penuh", "searchable": true, "data": "FULLNAME" },
+                            { "title": "Mykad/Paspot", "data": "MYKADNO" },
+                            { "title": "Nombor Telefon", "data": "PHONE" },
                             {
                                 "title": "Status",
-                                "data": "Active",
+                                "data": "ACTIVE",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return '<label class="label label-success">Aktif</label>';
@@ -128,13 +128,13 @@
                                 "render": function (data, type, row) {
                                     var appendstring = '';
                                     if (IsView != "False") {
-                                        appendstring += '<a  href="@Url.Action("ViewIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
+                                        appendstring += '<a  href="@Url.Action("ViewIndividual", "Master")?Id=' + row["IND_ID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; '
                                     }
                                     if (IsEdit != "False") {
-                                        appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IndividualID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                                        appendstring += '<a  href="@Url.Action("ManageIndividual", "Master")?Id=' + row["IND_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
                                     }
                                     if (IsDelete != "False") {
-                                        appendstring += '<a href="javascript:void(0);" data-id="' + row["IndividualID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                        appendstring += '<a href="javascript:void(0);" data-id="' + row["IND_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                                     }
                                     return appendstring
                                 },

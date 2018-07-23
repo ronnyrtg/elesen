@@ -109,9 +109,9 @@
                     $.each(result, function (index, company) {
                         var row = '<tr>';
                         row += '<td>' + (parseInt(index) + 1) + '</td>';
-                        row += '<td>' + company.CompanyName + '</td>';
-                        row += '<td>' + company.RegistrationNo + '</td>';
-                        row += '<td>' + company.CompanyAddress + '</td>';
+                        row += '<td>' + company.C_NAME + '</td>';
+                        row += '<td>' + company.REG_NO + '</td>';
+                        row += '<td>' + company.ADDRA1 + company.ADDRA2 + '</td>';
                         if (company.Active) {
                             row += '<td>' + '<label class="label label-success">Active</label>' + '</td>';
                         }
@@ -123,7 +123,7 @@
                     });
                 },
                 error: function (err) {
-                    alert(err.statusText);
+                    alert("1");
                 }
             });
         }
@@ -284,18 +284,18 @@
                     $.each(result, function (index, payment) {
                         var row = '<tr>';
                         row += '<td>' + (parseInt(index) + 1) + '</td>';
-                        row += '<td>' + payment.PaymentFor + '</td>';
-                        row += '<td>' + payment.AmountDue + '</td>';
-                        row += '<td>' + renderDate(premise.DateBilled) + '</td>';
-                        row += '<td>' + renderDate(premise.DueDate) + '</td>';
-                        row += '<td>' + payment.BilledBy + '</td>';
-                        row += '<td>' + payment.BillStatus + '</td>';
+                        row += '<td>' + payment.PAY_FOR + '</td>';
+                        row += '<td>' + payment.AMT_DUE + '</td>';
+                        row += '<td>' + renderDate(payment.DATE_BILL) + '</td>';
+                        row += '<td>' + renderDate(payment.DUE_DATE) + '</td>';
+                        row += '<td>' + payment.BILL_BY + '</td>';
+                        row += '<td>' + payment.BILL_STATUS + '</td>';
                         row += '</tr>';
                         $('#tblPaymentDue tbody').append(row);
                     });
                 },
                 error: function (err) {
-                    alert(err.statusText);
+                    alert("2");
                 }
             });
         }
@@ -354,7 +354,7 @@
                     });
                 },
                 error: function (err) {
-                    alert(err.statusText);
+                    alert("3");
                 }
             });
         }

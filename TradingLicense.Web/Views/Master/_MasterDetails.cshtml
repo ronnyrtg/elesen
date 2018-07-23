@@ -13,7 +13,7 @@
                         <td>
                             @if (Model.FileName != null)
                             {
-                                int value = Model.IndividualID;
+                                int value = Model.IND_ID;
                                 string text = value.ToString("D6");
                                 <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@text/@Model.FileName" />
                             }
@@ -23,12 +23,12 @@
                             }
                         </td>
                     </tr>
-                    <tr><td>Nama Penuh:</td><td>@Model.FullName</td></tr>
-                    <tr><td>No. Kad Pengenalan/No. Pasport:</td><td>@Model.MykadNo</td></tr>
+                    <tr><td>Nama Penuh:</td><td>@Model.FULLNAME</td></tr>
+                    <tr><td>No. Kad Pengenalan/No. Pasport:</td><td>@Model.MYKADNO</td></tr>
                     <tr>
                         <td>Warganegara:</td>
                         <td>
-                            @switch (Model.NationalityID)
+                            @switch (Model.NAT_ID)
                             {
                                 case 1:
                                     <label>Warganegara</label>
@@ -43,13 +43,13 @@
                             }
                         </td>
                     </tr>
-                    <tr><td>Alamat:</td><td>@Model.AddressIC</td></tr>
-                    <tr><td>Email:</td><td>@Model.IndividualEmail</td></tr>
-                    <tr><td>Nombor Telefon:</td><td>@Model.PhoneNo</td></tr>
+                    <tr><td>Alamat:</td><td>@Model.ADD_IC</td></tr>
+                    <tr><td>Email:</td><td>@Model.IND_EMAIL</td></tr>
+                    <tr><td>Nombor Telefon:</td><td>@Model.PHONE</td></tr>
                     <tr>
                         <td>Jantina:</td>
                         <td>
-                            @if (Model.Gender == 1)
+                            @if (Model.GENDER == 1)
                             {
                                 <label>Lelaki</label>
                             }
@@ -61,7 +61,7 @@
                     </tr>
                     <tr><td>Status:</td>
                         <td>
-                            @if (Model.Active)
+                            @if (Model.ACTIVE)
                             {
                                 <label>Aktif</label>
                             }
@@ -79,7 +79,7 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.IndividualID)
+            @Html.HiddenFor(m => m.IND_ID)
         }
     </div>
 </div>

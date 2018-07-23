@@ -46,7 +46,7 @@ namespace TradingLicense.Web.Controllers
                     // Sorting
                     var orderByString = String.Empty;
                     var result = Mapper.Map<List<PaymentDueModel>>(query.ToList());
-                    result = result.OrderBy(orderByString == string.Empty ? "PaymentDueID asc" : orderByString).ToList();
+                    result = result.OrderBy(orderByString == string.Empty ? "PAY_DUEID asc" : orderByString).ToList();
                     totalRecord = result.Count();
                     #endregion Sorting
                     PaymentDue = result;
@@ -92,7 +92,7 @@ namespace TradingLicense.Web.Controllers
                 var orderByString = String.Empty;
 
                 var result = Mapper.Map<List<PaymentReceivedModel>>(query.ToList());
-                result = result.OrderBy(orderByString == string.Empty ? "PaymentReceivedID asc" : orderByString).ToList();
+                result = result.OrderBy(orderByString == string.Empty ? "PAY_RECID asc" : orderByString).ToList();
 
                 #endregion Sorting
 

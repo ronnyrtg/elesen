@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
@@ -17,6 +18,7 @@ namespace TradingLicense.Model
         public int E_S_P_QTY { get; set; }
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
+        public List<Select2ListItem> periodList = new List<Select2ListItem>();
     }
     public class SelectedEntmtCodeModel
     {

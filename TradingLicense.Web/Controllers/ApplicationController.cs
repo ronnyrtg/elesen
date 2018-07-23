@@ -1180,6 +1180,202 @@ namespace TradingLicense.Web.Controllers
 
         #endregion
 
+        #region EntmtPremiseFee
+
+        /// <summary>
+        /// GET: EntmtPremiseFee
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult EntmtPremiseFee()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Save EntmtPremiseFee Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="codeNumber">The code number.</param>
+        /// <param name="codeDesc">The code desc.</param>
+        /// <param name="sectorId">The sector identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult EntmtPremiseFee([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string codeNumber, string codeDesc, string sectorId)
+        {
+            List<EntmtPremiseFeeModel> entmtPremiseFee;
+            int totalRecord = 0;
+            // int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<E_P_FEE> query = ctx.E_P_FEEs;
+
+                #region Filtering
+
+                // Apply filters for comman Grid searching
+                if (requestModel.Search.Value != string.Empty)
+                {
+                    var value = requestModel.Search.Value.ToLower().Trim();
+                    query = query.Where(p => p.E_P_DESC.ToLower().Contains(value) ||
+                                             p.E_P_FEEID.ToString().Contains(value) ||
+                                             p.E_S_FEE.ToString().Contains(value) ||
+                                             p.E_S_DESC.ToLower().Contains(value)
+                                       );
+                }
+
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(codeDesc))
+                {
+                    query = query.Where(p => p.E_P_DESC.ToLower().Contains(codeDesc.ToLower()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(sectorId))
+                {
+                    query = query.Where(p => p.E_P_FEEID.ToString().Contains(sectorId));
+                }
+
+                // Filter End
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<EntmtPremiseFeeModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "E_P_FEEID asc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+
+                entmtPremiseFee = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, entmtPremiseFee, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get EntmtPremiseFee Data by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult ManageEntmtPremiseFee(int? id)
+        {
+            EntmtPremiseFeeModel entmtPremiseModel = new EntmtPremiseFeeModel();
+
+            if (id != null && id > 0)
+
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int businessCodeId = Convert.ToInt32(id);
+
+                    var entmtPremiseFee = ctx.E_P_FEEs.FirstOrDefault(a => a.E_P_FEEID == businessCodeId);
+                    entmtPremiseModel = Mapper.Map<EntmtPremiseFeeModel>(entmtPremiseFee);
+
+                    
+
+                    
+                }
+            }
+            else
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    
+                }
+            }
+
+            entmtPremiseModel.periodList.Add(new Select2ListItem() { id = 1, text = "Tahun" });
+            entmtPremiseModel.periodList.Add(new Select2ListItem() { id = 2, text = "Bulan" });
+            entmtPremiseModel.periodList.Add(new Select2ListItem() { id = 3, text = "Minggu" });
+            entmtPremiseModel.periodList.Add(new Select2ListItem() { id = 4, text = "Hari" });
+            return View(entmtPremiseModel);
+        }
+
+        /// <summary>
+        /// Save EntmtPremiseFee Infomration
+        /// </summary>
+        /// <param name="entmtPremiseModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManageEntmtPremiseFee(EntmtPremiseFeeModel entmtPremiseModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    E_P_FEE entmtPremiseFee;
+                    if (IsEntmtPremiseFeeDuplicate(entmtPremiseModel.E_P_DESC, entmtPremiseModel.E_P_FEEID))
+                    {
+                        TempData["ErrorMessage"] = "Premise Fee detail already exists in the database.";
+                        return View(entmtPremiseModel);
+                    }
+                    entmtPremiseFee = Mapper.Map<E_P_FEE>(entmtPremiseModel);
+                    ctx.E_P_FEEs.AddOrUpdate(entmtPremiseFee);
+                    ctx.SaveChanges();                   
+                }
+
+                TempData["SuccessMessage"] = "Business Code saved successfully.";
+
+                return RedirectToAction("EntmtPremiseFee");
+            }
+            else
+            {
+                return View(entmtPremiseModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete EntmtPremiseFee Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteEntmtPremiseFee(int id)
+        {
+            try
+            {
+                var entmtPremiseFee = new E_P_FEE() { E_P_FEEID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(entmtPremiseFee).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsEntmtPremiseFeeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_FEEID != id && c.E_P_DESC.ToLower() == name.ToLower())
+               : ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_DESC.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        #endregion
+
         #region Save Banner Objects to Model
         [HttpPost]
         public ActionResult AddBannerObject(int APP_ID, int BC_ID, string ADDRA1, string ADDRA2, string ADDRA3, string ADDRA4, float B_SIZE, int B_QTY)
