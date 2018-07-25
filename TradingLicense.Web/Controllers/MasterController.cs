@@ -2428,7 +2428,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: BT
         /// </summary>
         /// <returns></returns>
-        public ActionResult BT()
+        public ActionResult BusinessType()
         {
             return View();
         }
@@ -2439,7 +2439,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BT([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BTCode, string BTDesc)
+        public JsonResult BusinessType([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BTCode, string BTDesc)
         {
             List<TradingLicense.Model.BusinessTypeModel> businessType = new List<Model.BusinessTypeModel>();
             int totalRecord = 0;
@@ -2494,7 +2494,7 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageBT(int? Id)
+        public ActionResult ManageBusinessType(int? Id)
         {
             BusinessTypeModel businessTypeModel = new BusinessTypeModel();
             businessTypeModel.ACTIVE = true;
@@ -2505,7 +2505,7 @@ namespace TradingLicense.Web.Controllers
                     int businessTypeID = Convert.ToInt32(Id);
                     var businessType = ctx.BTs.Where(a => a.BT_ID == businessTypeID).FirstOrDefault();
                     businessTypeModel = Mapper.Map<BusinessTypeModel>(businessType);
-                    //businessTypeModel.RequiredDocs = ctx.APP_L_RDs.Where(a => a.BT_ID == businessTypeID).Select(a => a.RD_ID).ToList();
+                    businessTypeModel.RequiredDocs = ctx.RD_L_BTs.Where(a => a.BT_ID == businessTypeID).Select(a => a.RD_ID).ToList();
                 }
                 var requiredDocs = ctx.RDs;
                 ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
@@ -2515,13 +2515,13 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Save Premise Type Infomration
+        /// Get Business Type Infomration
         /// </summary>
         /// <param name="businessTypeModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBT(BusinessTypeModel businessTypeModel)
+        public ActionResult ManageBusinessType(BusinessTypeModel businessTypeModel)
         {
             if (ModelState.IsValid)
             {
@@ -2539,19 +2539,11 @@ namespace TradingLicense.Web.Controllers
                     List<RD_L_BT> addReqDocs = new List<RD_L_BT>();
                     if (isNew)
                     {
-                        //addReqDocs.AddRange(businessTypeModel
-                                                //.RD
-                                                //.Select(rd =>
-                                                  //          new RD_L_BT
-                                                    //        {
-                                                      //          BT_ID = businessType.BT_ID,
-                                                        //        RD_ID = rd
-                                                          //  }));
-
+                        addReqDocs.AddRange(businessTypeModel.RequiredDocs.Select(rd => new RD_L_BT { BT_ID = businessType.BT_ID, RD_ID = rd }));
                     }
                     else
                     {
-                        var selectedDocs = ctx.APP_L_RDs.Where(bt => bt.BT_ID == businessType.BT_ID).ToList();
+                        var selectedDocs = ctx.RD_L_BTs.Where(bt => bt.BT_ID == businessType.BT_ID).ToList();
                         foreach (var rd in businessTypeModel.RequiredDocs)
                         {
                             if (!selectedDocs.Any(sd => sd.RD_ID == rd))
@@ -2569,14 +2561,14 @@ namespace TradingLicense.Web.Controllers
                     }
                     if (addReqDocs.Count > 0)
                     {
-                       // ctx.APP_L_RDs.AddOrUpdate(addReqDocs.ToArray());
+                        ctx.RD_L_BTs.AddOrUpdate(addReqDocs.ToArray());
                     }
                     ctx.SaveChanges();
                 }
 
                 TempData["SuccessMessage"] = "Business Type saved successfully.";
 
-                return RedirectToAction("BT");
+                return RedirectToAction("BusinessType");
             }
             else
             {
@@ -2591,7 +2583,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteBT(int id)
+        public ActionResult DeleteBusinessType(int id)
         {
             try
             {
@@ -3608,6 +3600,9 @@ namespace TradingLicense.Web.Controllers
                     int licTypeID = Convert.ToInt32(Id);
                     var licType = ctx.LIC_TYPEs.Where(a => a.LIC_TYPEID == licTypeID).FirstOrDefault();
                     licTypeModel = Mapper.Map<LicenseTypeModel>(licType);
+                    licTypeModel.RequiredDocs = ctx.RD_L_LTs.Where(a => a.LIC_TYPEID == licTypeID).Select(a => a.RD_ID).ToList();
+                    var requiredDocs = ctx.RDs;
+                    ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
                 }
             }
 
@@ -3633,9 +3628,33 @@ namespace TradingLicense.Web.Controllers
                         TempData["ErrorMessage"] = "License Type already exists in the database.";
                         return View(licTypeModel);
                     }
-
+                    
                     licType = Mapper.Map<LIC_TYPE>(licTypeModel);
+                    licType.ACTIVE = true;
                     ctx.LIC_TYPEs.AddOrUpdate(licType);
+
+                    List<RD_L_LT> addReqDocs = new List<RD_L_LT>();
+                    var selectedDocs = ctx.RD_L_LTs.Where(bt => bt.LIC_TYPEID == licType.LIC_TYPEID).ToList();
+                    foreach (var rd in licTypeModel.RequiredDocs)
+                    {
+                        if (!selectedDocs.Any(sd => sd.RD_ID == rd))
+                        {
+                            addReqDocs.Add(new RD_L_LT { LIC_TYPEID = licType.LIC_TYPEID, RD_ID = rd });
+                        }
+                    }
+                    foreach (var btReqDoc in selectedDocs)
+                    {
+                        if (!licTypeModel.RequiredDocs.Any(rd => rd == btReqDoc.RD_ID))
+                        {
+                            ctx.Entry(btReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                        }
+                    }
+                    
+                    if (addReqDocs.Count > 0)
+                    {
+                        ctx.RD_L_LTs.AddOrUpdate(addReqDocs.ToArray());
+                    }
+                    
                     ctx.SaveChanges();
                 }
 
@@ -3861,5 +3880,6 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
     }
 }

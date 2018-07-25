@@ -34,7 +34,7 @@ namespace TradingLicense.Web.Services
             {
                 foreach (var item in dbEntryRequiredDoc)
                 {
-                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RD_ID && q.AttachmentID == item.ATTACHMENTID))
+                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RD_ID && q.AttachmentID == item.ATT_ID))
                     {
                         if (roleTemplate == (int)Enums.RollTemplate.Public)
                         {
@@ -56,7 +56,7 @@ namespace TradingLicense.Web.Services
                     APP_L_RD pALinkReqDoc = new APP_L_RD();
                     pALinkReqDoc.APP_ID = premiseApplicationId;
                     pALinkReqDoc.RD_ID = requiredDoc.RequiredDocID;
-                    pALinkReqDoc.ATTACHMENTID = requiredDoc.AttachmentID;
+                    pALinkReqDoc.ATT_ID = requiredDoc.AttachmentID;
                     ctx.APP_L_RDs.AddOrUpdate(pALinkReqDoc);
 
                 }

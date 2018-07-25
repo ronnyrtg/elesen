@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace TradingLicense.Model
@@ -16,5 +17,7 @@ namespace TradingLicense.Model
         public string LIC_TYPECODE { get; set; }
         [Display(Name = "Aktif?")]
         public bool ACTIVE { get; set; }
+
+        public List<int> RequiredDocs { get; set; }
     }
 }

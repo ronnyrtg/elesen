@@ -720,6 +720,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="breqDocid" id="breqDocid">
                     <input type="hidden" name="reqDocid" id="reqDocid">
                     <input type="hidden" name="addDocid" id="addDocid">
                     <input type="hidden" name="isReqDoc" id="isReqDoc">
@@ -1050,7 +1051,6 @@
         })
 
         $(document).ready(function () {
-            bindLicense();
             $('#btnLicense').click(function () {
                 $('.modal-body iframe').attr('src', "../Application/GeneratLicense?AppId=@Model.APP_ID");
                 $('#myModalLicense').modal('show');
@@ -1308,6 +1308,12 @@
                 bindTable();
             }
 
+            if(@Model.LIC_TYPEID > 0)
+            {
+                $("#licTypeID").val(@Model.LIC_TYPEID);
+                bindLicense();
+            }
+
             if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
 
                 var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
@@ -1404,11 +1410,11 @@
         function changeBussinesscode() {
             $('#BusinessCodeids').val($('#businessCodeList').val());
             bindAdditionalTable();
-            console.log("changebusinesscode");
+            //console.log("changebusinesscode");
             checkButtonState();
         }
 
-       
+
 
         function changeIndindividual() {
             var individuals = $("#individualList").select2('data');
@@ -1432,9 +1438,10 @@
         }
 
         function changeLicense() {
-            bindLicense();
+
             bindCode();
             if ($("#LIC_TYPEID").val() == 1) {
+                bindLicense();
                 $('#approvalType').show();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1446,6 +1453,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 2){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1458,6 +1466,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 3){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1470,6 +1479,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 4){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1482,6 +1492,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 5){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').show();
                 $('#approvalCEO').hide();
@@ -1494,6 +1505,7 @@
                 $('.banner').show();
             }
             else if ($("#LIC_TYPEID").val() == 6){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1506,6 +1518,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 7){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1518,6 +1531,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 8){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1530,6 +1544,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 9){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1542,6 +1557,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 10){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1557,12 +1573,13 @@
 
         function businessTypeChange() {
             if ($("#BT_ID").val() > 0) {
+                //console.log($("#BT_ID").val());
                 bindTable();
             }
             checkButtonState();
         }
 
-        
+
 
         function bindDownload(attechmentID) {
             if (attechmentID > 0) {
@@ -1573,7 +1590,7 @@
 
         function bindSearch() {
             var param = {};
-            param["businessTypeID"] = $("#BUSINESSTYPEID").val();
+            param["businessTypeID"] = $("#BT_ID").val();
 
             if ($("#APP_ID").val() > 0) {
                 param["ApplicationID"] = $("#APP_ID").val();
@@ -1586,7 +1603,7 @@
 
         function bindSearchLicense() {
             var param = {};
-            param["licenseTypeID"] = $("#LIC_TYPEID").val();
+            param["licTypeID"] = $("#LIC_TYPEID").val();
 
             if ($("#APP_ID").val() > 0) {
                 param["ApplicationID"] = $("#APP_ID").val();
@@ -1651,10 +1668,10 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1692,7 +1709,7 @@
             });
         }
 
-        
+
 
         function bindAdditionalTable() {
             //displays required document related to business code selected
@@ -1737,9 +1754,9 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             } else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1752,11 +1769,11 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") 
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
                                 {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-                                } 
-                            else 
+                                }
+                            else
                                 {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
                                 }
@@ -1771,9 +1788,10 @@
         }
 
         function bindLicense() {
+            //console.log('bindLicense');
             //displays required document related to license type
             $('#LicenseDocument').show();
-            console.log("change license type");
+            //console.log("change license type");
             if ($.fn.DataTable.isDataTable("#tblLicenseType")) {
                 $('#tblLicenseType').dataTable().fnDestroy();
             }
@@ -1812,10 +1830,10 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1828,14 +1846,14 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") 
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
                                 {
                                     appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-                                } 
-                            else 
+                                }
+                            else
                                 {
                                     appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
-                                }                            
+                                }
                             return appendstring
                         },
                         "orderable": false,
@@ -1889,15 +1907,25 @@
             checkButtonState();
         }
 
-        function RequiredDocumentModel(Requiredid) {
+        function LicenseRequiredDocument(Requiredid) {
             $("#reqDocid").val(Requiredid);
+            $("#breqDocid").val("0");
             $("#addDocid").val("0");
             $('#isReqDoc').val("1");
             $('#uploadDocumentModal').modal('show');
         }
 
-        function AdditionalModel(Additionalid) {
+        function BusinessRequiredDocument(BRequiredid) {
             $("#reqDocid").val("0");
+            $("#breqDocid").val(BRequiredid);
+            $("#addDocid").val("0");
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+        function AdditionalDoc(Additionalid) {
+            $("#reqDocid").val("0");
+            $("#breqDocid").val("0");
             $("#addDocid").val(Additionalid);
             $('#isReqDoc').val("0");
             $('#uploadDocumentModal').modal('show');
@@ -1920,6 +1948,7 @@
 
                 data.append("APP_ID", @Model.APP_ID);
                 data.append("reqDocid", $("#reqDocid").val());
+                data.append("breqDocid", $("#breqDocid").val());
                 data.append("addDocid", $("#addDocid").val());
                 data.append("isReqDoc", $("#isReqDoc").val());
 

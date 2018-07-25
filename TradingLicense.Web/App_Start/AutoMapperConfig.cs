@@ -58,6 +58,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<B_O, BannerObjectModel>();
                 cfg.CreateMap<RD_L_BT, RD_L_BTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<RD_L_BTModel, RD_L_BT>();
+                cfg.CreateMap<RD_L_LT, RD_L_LTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<RD_L_BC, RD_L_BCModel>()
                             .ForMember(dest => dest.C_R_DESC, opt => opt.MapFrom(s => s.BC.C_R_DESC))
                             .ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
