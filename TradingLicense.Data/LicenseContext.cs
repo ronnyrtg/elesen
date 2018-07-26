@@ -20,10 +20,13 @@ namespace TradingLicense.Data
         public DbSet<INDIVIDUAL> INDIVIDUALs { get; set; }
         public DbSet<IND_L_COM> IND_L_COMs { get; set; }  // Individual Link Company
         public DbSet<IND_L_ATT> IND_L_ATTs { get; set; }  // Individual Link Attachments
-        public DbSet<ZONE> ZONEs { get; set; }
+        public DbSet<ZONE_M> ZONEs { get; set; }
+        public DbSet<SUBZONE_M> SUBZONEs { get; set; }
         public DbSet<LOCATION> LOCATIONs { get; set; }
-        public DbSet<ROAD> ROADs { get; set; }
-        public DbSet<RACE> RACEs { get; set; }
+        public DbSet<ROAD_M> ROADs { get; set; }
+        public DbSet<RACE_M> RACEs { get; set; }
+        public DbSet<BANK_M> BANKs { get; set; }
+        public DbSet<CITIZEN_M> CITIZENs { get; set; }
 
         //Combined Applications
         public DbSet<APPLICATION> APPLICATIONs { get; set; }

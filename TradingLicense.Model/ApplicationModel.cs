@@ -18,19 +18,24 @@ namespace TradingLicense.Model
         public int MODE { get; set; }
         public int BT_ID { get; set; }
         public int COMPANYID { get; set; }
+        public string ADDRA1 { get; set; }
+        public string ADDRA2 { get; set; }
+        public string ADDRA3 { get; set; }
+        public string ADDRA4 { get; set; }
+        public string PCODEA { get; set; }
+        public string STATEA { get; set; }
         public string P_OWN { get; set; }
         public float P_AREA { get; set; }
         public DateTime? START_RENT { get; set; }
         public DateTime? STOP_RENT { get; set; }
         public string FLOOR { get; set; }
-        public int PT_ID { get; set; }
+        public int? PT_ID { get; set; }
         public string UPDATED_BY { get; set; }
         public float? TOTAL_FEE { get; set; }
         public int APPSTATUSID { get; set; }
 
         //Premise Application
-        [Required(ErrorMessage = "Sila pilih Kumpulan Kod")]
-        public int SectorID { get; set; }
+        public int? SectorID { get; set; }
         public string BusinessCodeids { get; set; }
         public string BusinessCodeDesc { get; set; }
         public string SectorDesc { get; set; }
@@ -67,12 +72,11 @@ namespace TradingLicense.Model
         public List<Select2ListItem> selectedPremiseFeeList = new List<Select2ListItem>();
 
         //Save to Address Table
-        public string ADDRA1 { get; set; }
-        public string ADDRA2 { get; set; }
-        public string ADDRA3 { get; set; }
-        public string ADDRA4 { get; set; }
-        public string PCODEA { get; set; }
-        public string STATEA { get; set; }
+        public string ADDRB1 { get; set; }
+        public string ADDRB2 { get; set; }
+        public string ADDRB3 { get; set; }
+        public string ADDRB4 { get; set; }
+        
 
         //User that creates the application, either Public user or Desk Officer
         public int USERSID { get; set; }

@@ -6,7 +6,7 @@ namespace TradingLicense.Model
     public class RouteUnitModel
     {
         public int ROUTEUNITID { get; set; }
-        public int APP_TYPE { get; set; }
+        public int LIC_TYPEID { get; set; }
         public int APP_ID { get; set; }
         public int DEP_ID { get; set; }
         public bool SUPPORT { get; set; }

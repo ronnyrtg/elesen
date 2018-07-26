@@ -55,7 +55,8 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<BusinessCodeModel, BC>()
                             .ForMember(dest => dest.LIC_TYPE, opt => opt.Ignore())
                             .ForMember(dest => dest.SECTOR, opt => opt.Ignore());
-                cfg.CreateMap<B_O, BannerObjectModel>();
+                cfg.CreateMap<B_O, BannerObjectModel>()
+                            .ForMember(dest => dest.CodeRefDesc, opt => opt.MapFrom(s => s.BC.C_R_DESC)); ;
                 cfg.CreateMap<RD_L_BT, RD_L_BTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<RD_L_BTModel, RD_L_BT>();
                 cfg.CreateMap<RD_L_LT, RD_L_LTModel>().ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));

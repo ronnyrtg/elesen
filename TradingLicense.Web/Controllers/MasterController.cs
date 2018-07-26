@@ -2813,7 +2813,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<ZONE> query = ctx.ZONEs;
+                IQueryable<ZONE_M> query = ctx.ZONEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -2821,7 +2821,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(zoneDesc))
                 {
                     query = query.Where(p =>
-                                        p.ZONEDESC.Contains(zoneDesc)
+                                        p.ZONE_DESC.Contains(zoneDesc)
                                     );
                 }
 
@@ -2890,13 +2890,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ZONE Zone;
+                    ZONE_M Zone;
                     if (IsZoneDuplicate(ZoneModel.ZONEDESC, ZoneModel.ZONEID))
                     {
                         TempData["ErrorMessage"] = "Zone is already exist in the database.";
                         return View(ZoneModel);
                     }
-                    Zone = Mapper.Map<ZONE>(ZoneModel);
+                    Zone = Mapper.Map<ZONE_M>(ZoneModel);
                     ctx.ZONEs.AddOrUpdate(Zone);
                     ctx.SaveChanges();
                 }
@@ -2922,7 +2922,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Zone = new TradingLicense.Entities.ZONE() { ZONEID = id };
+                var Zone = new TradingLicense.Entities.ZONE_M() { ZONEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Zone).State = System.Data.Entity.EntityState.Deleted;
@@ -2948,9 +2948,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.ZONEs.FirstOrDefault(
-                   c => c.ZONEID != id && c.ZONEDESC.ToLower() == name.ToLower())
+                   c => c.ZONEID != id && c.ZONE_DESC.ToLower() == name.ToLower())
                : ctx.ZONEs.FirstOrDefault(
-                   c => c.ZONEDESC.ToLower() == name.ToLower());
+                   c => c.ZONE_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3149,7 +3149,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<ROAD> query = ctx.ROADs;
+                IQueryable<ROAD_M> query = ctx.ROADs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3157,7 +3157,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(roadDesc))
                 {
                     query = query.Where(p =>
-                                        p.ROADDESC.Contains(roadDesc)
+                                        p.ROAD_DESC.Contains(roadDesc)
                                     );
                 }
 
@@ -3226,13 +3226,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ROAD Road;
+                    ROAD_M Road;
                     if (IsRoadDuplicate(RoadModel.ROADDESC, RoadModel.ROADID))
                     {
                         TempData["ErrorMessage"] = "Road is already exist in the database.";
                         return View(RoadModel);
                     }
-                    Road = Mapper.Map<ROAD>(RoadModel);
+                    Road = Mapper.Map<ROAD_M>(RoadModel);
                     ctx.ROADs.AddOrUpdate(Road);
                     ctx.SaveChanges();
                 }
@@ -3258,7 +3258,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Road = new TradingLicense.Entities.ROAD() { ROADID = id };
+                var Road = new TradingLicense.Entities.ROAD_M() { ROADID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Road).State = System.Data.Entity.EntityState.Deleted;
@@ -3284,9 +3284,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.ROADs.FirstOrDefault(
-                   c => c.ROADID != id && c.ROADDESC.ToLower() == name.ToLower())
+                   c => c.ROADID != id && c.ROAD_DESC.ToLower() == name.ToLower())
                : ctx.ROADs.FirstOrDefault(
-                   c => c.ROADDESC.ToLower() == name.ToLower());
+                   c => c.ROAD_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3371,7 +3371,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<RACE> query = ctx.RACEs;
+                IQueryable<RACE_M> query = ctx.RACEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3380,7 +3380,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(raceDesc))
                 {
                     query = query.Where(p =>
-                                        p.RACEDESC.Contains(raceDesc)
+                                        p.RACE_DESC.Contains(raceDesc)
                                     );
                 }
 
@@ -3449,14 +3449,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    RACE raceType;
+                    RACE_M raceType;
                     if (IsRaceDuplicate(raceTypeModel.RACEDESC, raceTypeModel.RACEID))
                     {
                         TempData["ErrorMessage"] = "Race Type is already exist in the database.";
                         return View(raceTypeModel);
                     }
 
-                    raceType = Mapper.Map<RACE>(raceTypeModel);
+                    raceType = Mapper.Map<RACE_M>(raceTypeModel);
                     ctx.RACEs.AddOrUpdate(raceType);
                     ctx.SaveChanges();
                 }
@@ -3482,7 +3482,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var raceType = new TradingLicense.Entities.RACE() { RACEID = id };
+                var raceType = new TradingLicense.Entities.RACE_M() { RACEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(raceType).State = System.Data.Entity.EntityState.Deleted;
@@ -3508,9 +3508,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.RACEs.FirstOrDefault(
-                   c => c.RACEID != id && c.RACEDESC.ToLower() == name.ToLower())
+                   c => c.RACEID != id && c.RACE_DESC.ToLower() == name.ToLower())
                : ctx.RACEs.FirstOrDefault(
-                   c => c.RACEDESC.ToLower() == name.ToLower());
+                   c => c.RACE_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }

@@ -185,39 +185,54 @@
         public enum ApplicationTypeID
         {
             /// <summary>
-            /// for PremiseApplication
+            /// Lesen Tred, Perniagaan & Perindustrian
             /// </summary>
             TradeApplication = 1,
 
             /// <summary>
-            /// for BannerApplication
+            /// Lesen Petempatan Makanan
             /// </summary>
-            BannerApplication = 2,
+            FoodApplication = 2,
 
             /// <summary>
-            /// for HawkerApplication
+            /// Lesen Hotel & Rumah Tumpangan
             /// </summary>
-            HawkerApplication = 3,
+            HotelApplication = 3,
 
             /// <summary>
-            /// for StallApplication
+            /// Lesen Pengurusan Skrap
             /// </summary>
-            StallApplication = 4,
+            ScrapApplication = 4,
 
             /// <summary>
-            /// for LiquorApplication
+            /// lesen Iklan
             /// </summary>
-            LiquorApplication = 5,
+            BannerApplication = 5,
 
             /// <summary>
-            /// for MoneyLenderApplication
+            /// Lesen Penjaja
             /// </summary>
-            MLApplication = 6,
+            HawkerApplication = 6,
 
             /// <summary>
-            /// for EntertainmentApplication
+            /// LEsen Pasar
             /// </summary>
-            EntmtApplication = 7,
+            StallApplication = 7,
+
+            /// <summary>
+            /// Lesen Minuman Keras
+            /// </summary>
+            LiquorApplication = 8,
+
+            /// <summary>
+            /// Lesen Pemberi Pinjam Wang
+            /// </summary>
+            MLApplication = 9,
+
+            /// <summary>
+            /// Lesen Hiburan
+            /// </summary>
+            EntmtApplication = 10,
         }
 
         public enum Mode

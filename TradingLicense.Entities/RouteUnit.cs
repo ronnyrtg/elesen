@@ -8,7 +8,7 @@ namespace TradingLicense.Entities
     {
         [Key]
         public int ROUTEUNITID { get; set; }
-        public int APP_TYPE { get; set; }
+        public int LIC_TYPEID { get; set; }
         public int APP_ID { get; set; }
         public int DEP_ID { get; set; }
         public bool SUPPORT { get; set; }
@@ -23,6 +23,7 @@ namespace TradingLicense.Entities
             ACTIVE = true;
         }
 
+        public virtual LIC_TYPE LIC_TYPE { get; set; }
         public virtual USERS USERS { get; set; }
         public virtual DEPARTMENT DEPARTMENT { get; set; }
     }
