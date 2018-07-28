@@ -89,6 +89,7 @@ namespace TradingLicense.Model
 
         
         public string Individualids { get; set; }
+        public string LicenseDocIds { get; set; }
         public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
 
@@ -101,7 +102,7 @@ namespace TradingLicense.Model
         public string PremiseDesc { get; set; }
         public bool IsDraft { get; set; }
         public string UploadRequiredDocids { get; set; }
-        public string UploadAdditionalDocids { get; set; }
+        public string UploadLicenseDocids { get; set; }
         public string newIndividualsList { get; set; }
 
         public string newComment { get; set; }

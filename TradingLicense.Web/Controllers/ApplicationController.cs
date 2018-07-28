@@ -85,7 +85,7 @@ namespace TradingLicense.Web.Controllers
                                 if (departmentID.HasValue)
                                 {
                                     var paIDs = ctx.ROUTEUNITs
-                                            .Where(pa => pa.DEP_ID == departmentID.Value && pa.LIC_TYPEID == (int)Enums.ApplicationTypeID.TradeApplication && pa.ACTIVE)
+                                            .Where(pa => pa.DEP_ID == departmentID.Value && pa.ACTIVE)
                                             .Select(d => d.APP_ID).Distinct()
                                             .ToList();
                                     query = query.Where(q => paIDs.Contains(q.APP_ID) && q.APPSTATUSID == 5);
@@ -205,16 +205,15 @@ namespace TradingLicense.Web.Controllers
 
                     applicationModel.selectedIndividualList = selectedIndividualList;
 
-                    var paLinkReqDocumentList = ctx.APP_L_RDs.Where(p => p.APP_ID == id).ToList();
+                    var paLinkReqDocumentList = ctx.APP_L_RDs.Where(p => p.APP_ID == id && p.RD_TYPE == 1).ToList();
                     if (paLinkReqDocumentList.Count > 0)
                     {
                         applicationModel.UploadRequiredDocids = (string.Join(",", paLinkReqDocumentList.Select(x => x.RD_ID.ToString() + ":" + x.ATT_ID.ToString()).ToArray()));
                     }
-
-                    var paLinkAddDocumentlist = ctx.APP_L_RDs.Where(p => p.APP_ID == id).ToList();
-                    if (paLinkAddDocumentlist.Count > 0)
+                    var paLinkLicDocumentList = ctx.APP_L_RDs.Where(p => p.APP_ID == id && p.RD_TYPE == 3).ToList();
+                    if (paLinkLicDocumentList.Count > 0)
                     {
-                        applicationModel.UploadAdditionalDocids = (string.Join(",", paLinkAddDocumentlist.Select(x => x.RD_ID.ToString() + ":" + x.ATT_ID.ToString()).ToArray()));
+                        applicationModel.UploadLicenseDocids = (string.Join(",", paLinkLicDocumentList.Select(x => x.RD_ID.ToString() + ":" + x.ATT_ID.ToString()).ToArray()));
                     }
 
                     if (application.APPSTATUSID == (int)PAStausenum.Pendingpayment)
@@ -526,6 +525,14 @@ namespace TradingLicense.Web.Controllers
                         }
                     }
                 }
+                if (!string.IsNullOrWhiteSpace(applicationModel.AdditionalDocIds))
+                {
+                    DocumentService.SaveAdditionalDocInfo(applicationModel, ctx, applicationId, roleTemplate);
+                }
+                if (!string.IsNullOrWhiteSpace(applicationModel.LicenseDocIds))
+                {
+                    DocumentService.SaveLicenseDocInfo(applicationModel, ctx, applicationId, roleTemplate);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(applicationModel.BusinessCodeids))
@@ -660,10 +667,12 @@ namespace TradingLicense.Web.Controllers
                 {
                     banner.FEE = applicationModel.B_SIZE * applicationModel.B_QTY * fee + (float)Math.Floor((float)applicationModel.B_SIZE - 8) * applicationModel.B_QTY * exfee;
                 }
+                applicationModel.TOTAL_FEE = banner.FEE + applicationModel.PRO_FEE;
+
                 ctx.B_Os.Add(banner);
                 ctx.SaveChanges();
             }
-
+            
             applicationModel.APP_ID = applicationId;
             return true;
 
@@ -748,6 +757,10 @@ namespace TradingLicense.Web.Controllers
                 var departmentIds = ctx.BC_L_DEPs.Where(bc => businessCodelist.Contains(bc.BC_ID)).Select(bc => bc.DEP_ID).Distinct().ToList();
                 var departmentList = ctx.DEPARTMENTs.Where(dep => departmentIds.Contains(dep.DEP_ID)).ToList();
                 int totalRecord = departmentList.Count;
+                if(totalRecord == 0)
+                {
+                    departmentList = ctx.DEPARTMENTs.Where(dep => dep.DEP_ID == 3).ToList();
+                }
                 return Json(new DataTablesResponse(requestModel.Draw, Mapper.Map<List<DepartmentModel>>(departmentList), totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
             }
         }
@@ -760,7 +773,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddRoute(int id, int appID, string appType, int[] DeptId, string comment)
+        public ActionResult AddRoute(int id, int[] DeptId)
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -769,7 +782,6 @@ namespace TradingLicense.Web.Controllers
                 {
 
                     ROUTEUNIT pad = new ROUTEUNIT();
-                    pad.LIC_TYPEID = appID;
                     pad.APP_ID = id;
                     pad.DEP_ID = DeptId[i];
                     pad.SUPPORT = false;
@@ -840,7 +852,7 @@ namespace TradingLicense.Web.Controllers
                     int premiseAppId;
                     int.TryParse(ApplicationID, out premiseAppId);
 
-                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId).ToList();
+                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId && p.RD_TYPE == 1).ToList();
                     foreach (var item in requiredDocument)
                     {
                         if (palinkAdd.Count > 0)
@@ -922,7 +934,7 @@ namespace TradingLicense.Web.Controllers
                     int premiseAppId;
                     int.TryParse(premiseApplicationId, out premiseAppId);
 
-                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId).ToList();
+                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId && p.RD_TYPE == 2).ToList();
                     foreach (var item in requiredDocument)
                     {
                         if (palinkAdd.Count > 0)
@@ -958,7 +970,7 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public JsonResult LicenseDocument([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int licTypeID, string ApplicationID)
         {
-            List<RD_L_LTModel> requiredDocument = new List<RD_L_LTModel>();
+            List<RD_L_LTModel> licenseDocument = new List<RD_L_LTModel>();
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
@@ -976,7 +988,7 @@ namespace TradingLicense.Web.Controllers
 
                 #endregion Sorting
 
-                requiredDocument = result;
+                licenseDocument = result;
 
                 #region IsChecked
 
@@ -985,8 +997,8 @@ namespace TradingLicense.Web.Controllers
                     int premiseAppId;
                     int.TryParse(ApplicationID, out premiseAppId);
 
-                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId).ToList();
-                    foreach (var item in requiredDocument)
+                    var palinkAdd = ctx.APP_L_RDs.Where(p => p.APP_ID == premiseAppId && p.RD_TYPE == 3).ToList();
+                    foreach (var item in licenseDocument)
                     {
                         if (palinkAdd.Count > 0)
                         {
@@ -1008,7 +1020,7 @@ namespace TradingLicense.Web.Controllers
 
                 #endregion
             }
-            return Json(new DataTablesResponse(requestModel.Draw, requiredDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+            return Json(new DataTablesResponse(requestModel.Draw, licenseDocument, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
         #endregion
 
@@ -4285,8 +4297,8 @@ namespace TradingLicense.Web.Controllers
                         if (file.ContentLength > 0)
                         {
                             var premisevalue = Request["APP_ID"];
+                            var licDocvalue = Request["licDocid"];
                             var reqDocvalue = Request["reqDocid"];
-                            var breqDocvalue = Request["breqDocid"];
                             var addDocvalue = Request["addDocid"];
                             var isReqvalue = Request["isReqDoc"];
 
@@ -4294,103 +4306,145 @@ namespace TradingLicense.Web.Controllers
                             if (int.TryParse(premisevalue, out premiseApplicationId) && premiseApplicationId > 0)
                             {
                                 int requiredDocId;
-                                int.TryParse(reqDocvalue, out requiredDocId);
-
-                                int brequiredDocId;
-                                int.TryParse(breqDocvalue, out brequiredDocId);
-
-                                int additionalDocId;
-                                int.TryParse(addDocvalue, out additionalDocId);
-
-                                if (requiredDocId > 0 || additionalDocId > 0 || brequiredDocId > 0)
+                                if (reqDocvalue != null)
                                 {
-                                    int isReq;
-                                    int.TryParse(isReqvalue, out isReq);
-
-                                    var fileName = Path.GetFileName(file.FileName);
-
-                                    var folder = Server.MapPath("~/Documents/Attachment/Application/" + premiseApplicationId.ToString());
-                                    var path = Path.Combine(folder, fileName);
-                                    if (!Directory.Exists(folder))
+                                    int.TryParse(reqDocvalue, out requiredDocId);
+                                    if (requiredDocId > 0)
                                     {
-                                        Directory.CreateDirectory(folder);
+                                        int isReq;
+                                        int.TryParse(isReqvalue, out isReq);
+
+                                        var fileName = Path.GetFileName(file.FileName);
+
+                                        var folder = Server.MapPath("~/Documents/Attachment/Application/" + premiseApplicationId.ToString());
+                                        var path = Path.Combine(folder, fileName);
+                                        if (!Directory.Exists(folder))
+                                        {
+                                            Directory.CreateDirectory(folder);
+                                        }
+                                        file.SaveAs(path);
+
+                                        ATTACHMENT attachment = new ATTACHMENT();
+                                        attachment.FILENAME = fileName;
+                                        ctx.ATTACHMENTs.AddOrUpdate(attachment);
+                                        ctx.SaveChanges();
+
+                                        if (attachment.ATT_ID > 0)
+                                        {
+
+                                            APP_L_RD paLinkReqDoc;
+                                            paLinkReqDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == requiredDocId);
+                                            if (paLinkReqDoc != null)
+                                            {
+                                                paLinkReqDoc.APP_ID = premiseApplicationId;
+                                                paLinkReqDoc.RD_ID = requiredDocId;
+                                                paLinkReqDoc.RD_TYPE = 1;
+                                                paLinkReqDoc.ATT_ID = attachment.ATT_ID;
+                                                ctx.APP_L_RDs.AddOrUpdate(paLinkReqDoc);
+                                                ctx.SaveChanges();
+                                            }
+                                           
+
+                                            return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                        }
                                     }
-                                    file.SaveAs(path);
-
-                                    ATTACHMENT attachment = new ATTACHMENT();
-                                    attachment.FILENAME = fileName;
-                                    ctx.ATTACHMENTs.AddOrUpdate(attachment);
-                                    ctx.SaveChanges();
-
-                                    if (attachment.ATT_ID > 0)
+                                    if (licDocvalue != null)
                                     {
-                                        
-                                        APP_L_RD paLinkReqDoc;
-                                        paLinkReqDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == requiredDocId);
-                                        if (paLinkReqDoc != null)
+                                        int.TryParse(licDocvalue, out requiredDocId);
+                                        if (requiredDocId > 0)
                                         {
-                                            paLinkReqDoc.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkReqDoc);
+                                            int isReq;
+                                            int.TryParse(isReqvalue, out isReq);
+
+                                            var fileName = Path.GetFileName(file.FileName);
+
+                                            var folder = Server.MapPath("~/Documents/Attachment/Application/" + premiseApplicationId.ToString());
+                                            var path = Path.Combine(folder, fileName);
+                                            if (!Directory.Exists(folder))
+                                            {
+                                                Directory.CreateDirectory(folder);
+                                            }
+                                            file.SaveAs(path);
+
+                                            ATTACHMENT attachment = new ATTACHMENT();
+                                            attachment.FILENAME = fileName;
+                                            ctx.ATTACHMENTs.AddOrUpdate(attachment);
                                             ctx.SaveChanges();
+
+                                            if (attachment.ATT_ID > 0)
+                                            {
+
+                                                APP_L_RD paLinkReqDoc;
+                                                paLinkReqDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == requiredDocId);
+                                                if (paLinkReqDoc != null)
+                                                {
+                                                    paLinkReqDoc.APP_ID = premiseApplicationId;
+                                                    paLinkReqDoc.RD_ID = requiredDocId;
+                                                    paLinkReqDoc.RD_TYPE = 3;
+                                                    paLinkReqDoc.ATT_ID = attachment.ATT_ID;
+                                                    ctx.APP_L_RDs.AddOrUpdate(paLinkReqDoc);
+                                                    ctx.SaveChanges();
+                                                }
+
+                                                return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                            }
                                         }
-                                        if(requiredDocId >  0)
+                                        if (addDocvalue != null)
                                         {
-                                            APP_L_RD paLinkReqDocument = new APP_L_RD();
-                                            paLinkReqDocument.APP_ID = premiseApplicationId;
-                                            paLinkReqDocument.RD_ID = requiredDocId;
-                                            paLinkReqDocument.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkReqDocument);
-                                            ctx.SaveChanges();
+                                            int.TryParse(addDocvalue, out requiredDocId);
+                                            if (requiredDocId > 0)
+                                            {
+                                                int isReq;
+                                                int.TryParse(isReqvalue, out isReq);
+
+                                                var fileName = Path.GetFileName(file.FileName);
+
+                                                var folder = Server.MapPath("~/Documents/Attachment/Application/" + premiseApplicationId.ToString());
+                                                var path = Path.Combine(folder, fileName);
+                                                if (!Directory.Exists(folder))
+                                                {
+                                                    Directory.CreateDirectory(folder);
+                                                }
+                                                file.SaveAs(path);
+
+                                                ATTACHMENT attachment = new ATTACHMENT();
+                                                attachment.FILENAME = fileName;
+                                                ctx.ATTACHMENTs.AddOrUpdate(attachment);
+                                                ctx.SaveChanges();
+
+                                                if (attachment.ATT_ID > 0)
+                                                {
+
+                                                    APP_L_RD paLinkReqDoc;
+                                                    paLinkReqDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == requiredDocId);
+                                                    if (paLinkReqDoc != null)
+                                                    {
+                                                        paLinkReqDoc.APP_ID = premiseApplicationId;
+                                                        paLinkReqDoc.RD_ID = requiredDocId;
+                                                        paLinkReqDoc.RD_TYPE = 2;
+                                                        paLinkReqDoc.ATT_ID = attachment.ATT_ID;
+                                                        ctx.APP_L_RDs.AddOrUpdate(paLinkReqDoc);
+                                                        ctx.SaveChanges();
+                                                    }
+
+                                                    return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                                }
+                                            }
+
+
+                                            return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
                                         }
 
-                                        APP_L_RD paLinkBReqDoc;
-                                        paLinkBReqDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == brequiredDocId);
-                                        if (paLinkBReqDoc != null)
-                                        {
-                                            paLinkBReqDoc.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkBReqDoc);
-                                            ctx.SaveChanges();
-                                        }
-                                        if(brequiredDocId > 0)
-                                        {
-                                            APP_L_RD paLinkReqBDocument = new APP_L_RD();
-                                            paLinkReqBDocument.APP_ID = premiseApplicationId;
-                                            paLinkReqBDocument.RD_ID = brequiredDocId;
-                                            paLinkReqBDocument.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkReqBDocument);
-                                            ctx.SaveChanges();
-                                        }
-                                       
-                                        APP_L_RD paLinkAddDoc;
-                                        paLinkAddDoc = ctx.APP_L_RDs.FirstOrDefault(p => p.APP_ID == premiseApplicationId && p.RD_ID == additionalDocId);
-                                        if (paLinkAddDoc != null)
-                                        {
-                                            paLinkAddDoc.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkAddDoc);
-                                            ctx.SaveChanges();
-                                        }
-                                        if(additionalDocId > 0)
-                                        {
-                                            APP_L_RD paLinkAddDocument = new APP_L_RD();
-                                            paLinkAddDocument.APP_ID = premiseApplicationId;
-                                            paLinkAddDocument.RD_ID = additionalDocId;
-                                            paLinkAddDocument.ATT_ID = attachment.ATT_ID;
-                                            ctx.APP_L_RDs.AddOrUpdate(paLinkAddDocument);
-                                            ctx.SaveChanges();
-                                        }
-                                        
-                                        return Json(new { status = "1", message = "Document Upload Successfully" }, JsonRequestBehavior.AllowGet);
+                                        return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
                                     }
 
-                                    return Json(new { status = "2", message = "Error While Saving Record" }, JsonRequestBehavior.AllowGet);
+                                    return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
                                 }
 
-                                return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                                return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                             }
-
-                            return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                            return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                         }
-
                         return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
                     }
                     return Json(new { status = "2", message = "Please select File" }, JsonRequestBehavior.AllowGet);
@@ -4424,9 +4478,13 @@ namespace TradingLicense.Web.Controllers
                         var file = documentFile;
                         if (file.ContentLength > 0)
                         {
+                            var licDocvalue = Request["licDocid"];
                             var reqDocvalue = Request["reqDocid"];
                             var addDocvalue = Request["addDocid"];
                             var isReqvalue = Request["isReqDoc"];
+
+                            int licenseDocId;
+                            int.TryParse(licDocvalue, out licenseDocId);
 
                             int requiredDocId;
                             int.TryParse(reqDocvalue, out requiredDocId);
@@ -4434,7 +4492,7 @@ namespace TradingLicense.Web.Controllers
                             int additionalDocId;
                             int.TryParse(addDocvalue, out additionalDocId);
 
-                            if (requiredDocId > 0 || additionalDocId > 0)
+                            if (requiredDocId > 0 || additionalDocId > 0 || licenseDocId > 0)
                             {
                                 int isReq;
                                 int.TryParse(isReqvalue, out isReq);
@@ -4456,47 +4514,20 @@ namespace TradingLicense.Web.Controllers
 
                                 if (attachment.ATT_ID > 0)
                                 {
-                                    if (isReq > 0)
+                                    if (licenseDocId > 0)
                                     {
-                                        //PALinkReqDoc paLinkReqDoc = new PALinkReqDoc();
-                                        //paLinkReqDoc = ctx.PALinkReqDoc.Where(p => p.PremiseApplicationID == premiseApplicationID && p.RequiredDocID == requiredDocID).FirstOrDefault();
-                                        //if (paLinkReqDoc != null)
-                                        //{
-                                        //    paLinkReqDoc.AttachmentID = attachment.AttachmentID;
-                                        //    ctx.PALinkReqDoc.AddOrUpdate(paLinkReqDoc);
-                                        //    ctx.SaveChanges();
-                                        //}
-                                        //else
-                                        //{
-                                        //    PALinkReqDoc paLinkReqDocument = new PALinkReqDoc();
-                                        //    paLinkReqDocument.PremiseApplicationID = premiseApplicationID;
-                                        //    paLinkReqDocument.RequiredDocID = requiredDocID;
-                                        //    paLinkReqDocument.AttachmentID = attachment.AttachmentID;
-                                        //    ctx.PALinkReqDoc.AddOrUpdate(paLinkReqDocument);
-                                        //    ctx.SaveChanges();
-                                        //}
+
+
+                                        return Json(new { status = "1", result = new { status = "1", LicenseDocID = licenseDocId, AttachmentID = attachment.ATT_ID, AttachmentName = attachment.FILENAME } }, JsonRequestBehavior.AllowGet);
+                                    }
+                                    if (requiredDocId > 0)
+                                    {
+                                        
 
                                         return Json(new { status = "1", result = new { status = "1", RequiredDocID = requiredDocId, AttachmentID = attachment.ATT_ID, AttachmentName = attachment.FILENAME } }, JsonRequestBehavior.AllowGet);
                                     }
-                                    else
+                                    if(additionalDocId > 0)
                                     {
-                                        //PALinkAddDoc paLinkAddDoc = new PALinkAddDoc();
-                                        //paLinkAddDoc = ctx.PALinkAddDocs.Where(p => p.PremiseApplicationID == premiseApplicationID && p.AdditionalDocID == additionalDocID).FirstOrDefault();
-                                        //if (paLinkAddDoc != null)
-                                        //{
-                                        //    paLinkAddDoc.AttachmentID = attachment.AttachmentID;
-                                        //    ctx.PALinkAddDocs.AddOrUpdate(paLinkAddDoc);
-                                        //    ctx.SaveChanges();
-                                        //}
-                                        //else
-                                        //{
-                                        //    PALinkAddDoc paLinkAddDocument = new PALinkAddDoc();
-                                        //    paLinkAddDocument.PremiseApplicationID = premiseApplicationID;
-                                        //    paLinkAddDocument.AdditionalDocID = additionalDocID;
-                                        //    paLinkAddDocument.AttachmentID = attachment.AttachmentID;
-                                        //    ctx.PALinkAddDocs.AddOrUpdate(paLinkAddDocument);
-                                        //    ctx.SaveChanges();
-                                        //}
 
                                         return Json(new { status = "1", result = new { status = "1", AdditionalDocID = additionalDocId, AttachmentID = attachment.ATT_ID, AttachmentName = attachment.FILENAME } }, JsonRequestBehavior.AllowGet);
                                     }

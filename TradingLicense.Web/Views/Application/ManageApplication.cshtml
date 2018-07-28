@@ -75,6 +75,7 @@
             @Html.HiddenFor(m => m.APP_ID)
             @Html.HiddenFor(m => m.USERSID)
             @Html.HiddenFor(m => m.UserRollTemplate)
+            @Html.HiddenFor(m => m.LicenseDocIds)
             @Html.HiddenFor(m => m.RequiredDocIds)
             @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
@@ -94,7 +95,7 @@
             }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
-            @Html.HiddenFor(m => m.UploadAdditionalDocids)
+            @Html.HiddenFor(m => m.UploadLicenseDocids)
 
             if (Model.LIC_TYPEID > 0)
             {
@@ -353,13 +354,21 @@
                         </div>
                     </div>
                 </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
-                            </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            <div class="well well-sm">@Model.PRO_FEE</div>
+                        </div>
+                    </div>
+                </div>
             }
 
                     <div class="row">
@@ -415,6 +424,15 @@
                                 <div class="control-label">Bilangan Iklan</div>
                                 @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
                                 <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Yuran Pemprosesan</div>
+                                @Html.TextBoxFor(m => m.PRO_FEE, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
+                                
                             </div>
                         </div>
                     </div>
@@ -537,7 +555,7 @@
                             </div>
                         </div>
                     </div>
-                    if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
+                    if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
                     {
                     List<SelectListItem>
                         supportList = new List<SelectListItem>
@@ -624,7 +642,10 @@
 
                                                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.APPSTATUSID <= (int)Enums.PAStausenum.unitroute) || Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.MODE == 1))
                                                         {
+                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+                                                            {
                                                             <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                            }
                                                             <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
                                                         }
                                                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0)
@@ -639,8 +660,15 @@
 
                                                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting || Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck))
                                                         {
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Kembali ke Supervisor</button>
+                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+                                                            {
+                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
+                                                            }
+                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Hantar ke Supervisor Untuk Disemak Semula</button>
                                                         }
 
                                                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.APP_ID > 0 && (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck))
@@ -797,7 +825,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="preAppid" id="preAppid">
-                    <input type="hidden" name="breqDocid" id="breqDocid">
+                    <input type="hidden" name="licDocid" id="licDocid">
                     <input type="hidden" name="reqDocid" id="reqDocid">
                     <input type="hidden" name="addDocid" id="addDocid">
                     <input type="hidden" name="isReqDoc" id="isReqDoc">
@@ -832,7 +860,7 @@
             {
                 @Html.AntiForgeryToken()
                 @Html.Hidden("id", Model.APP_ID)
-                @Html.Hidden("appType", "Application")
+                
 
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1139,6 +1167,7 @@
         var visibleGridColume = false;
         var visibleGridUploadColume = false;
 
+        var licenseDocList = [];
         var requiredDocList = [];
         var addtionalDocList = [];
 
@@ -1269,7 +1298,7 @@
                 errorMessage(actionError);
             }
 
-            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
+            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 5 || userRollTemplate == 6) {
                 visibleGridUploadColume = true;
             }
             if (userRollTemplate == 2) {
@@ -1401,15 +1430,17 @@
                 });
             }
 
-            if ('@Model.UploadAdditionalDocids' != null && '@Model.UploadAdditionalDocids' != '') {
+            if ('@Model.UploadLicenseDocids' != null && '@Model.UploadLicenseDocids' != '') {
 
-                var UploadAdditionalDocumentlist = '@Model.UploadAdditionalDocids';
+                var UploadLicenseDocumentlist = '@Model.UploadLicenseDocids';
 
-                var arr = UploadAdditionalDocumentlist.split(',');
+                var arr = UploadLicenseDocumentlist.split(',');
                 $.each(arr, function (index, value) {
-                    addtionalDocList.push(value);
+                    licenseDocList.push(value);
                 });
             }
+
+
 
             $("#preAppid").val(@Model.APP_ID);
 
@@ -1430,17 +1461,16 @@
         });
 
         function frmSubmit(isdraft) {
-            $("#IsDraft").val(isdraft);            
-            $("#frmApplication").submit();            
+            $("#IsDraft").val(isdraft);
+            $("#frmApplication").submit();
         }
 
         function validatePremiseApplication(isdraft) {
             $("#UploadRequiredDocids").val(requiredDocList);
-            $("#UploadAdditionalDocids").val(addtionalDocList);
 
             AdditionalChecked();
 
-            RequiredDocument();
+            RequiredCheck();
 
             if (!$("#frmApplication").valid()) {
                 return false;
@@ -1452,6 +1482,9 @@
                 return false;
             } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
                 alert("Please Upload all Required Document");
+                return false;
+            } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != licenseDocList.length) {
+                alert("Please Upload all License Document");
                 return false;
             }
             else if (userRollTemplate == 1 && !isdraft && $('.lableadddocument').length != addtionalDocList.length) {
@@ -1729,7 +1762,7 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            appendstring += '<div class="checkbox"> <label for="chkreqdoc_' + row["RD_ID"] + '"> <input id="chkreqdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             return appendstring
                         },
                         width: "7%",
@@ -1814,7 +1847,7 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalCheck();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             }
                             return appendstring
                         },
@@ -1891,7 +1924,7 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            appendstring += '<div class="checkbox"> <label for="chkLicdoc_' + row["RD_ID"] + '"> <input id="chkLicdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkLicdoc" type = "checkbox" onclick = "LicenseCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             return appendstring
                         },
                         width: "7%",
@@ -1923,11 +1956,11 @@
                             var appendstring = '';
                             if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
                                 {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablelicdocument" style="cursor: pointer;" id="lbllicAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
                                 }
                             else
                                 {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablelicdocument"  id="lbllicAttachment_' + row["RD_ID"] + '"> </label> </a>';
                                 }
                             return appendstring
                         },
@@ -1938,8 +1971,21 @@
             });
         }
 
-        function RequiredDocument() {
+        function LicenseCheck() {
+            console.log("LicenseChecked");
+            var LicenseArray = [];
+            $('.chkLicdoc').each(function () {
+                if ($(this).is(":checked")) {
+                    LicenseArray.push($(this).val());
+                }
+            });
+            $("#LicenseDocIds").val(LicenseArray);
 
+            checkButtonState();
+        }
+
+        function RequiredCheck() {
+            console.log("RequiredCheck");
             var RequiredArray = [];
             $('.chkreqdoc').each(function () {
                 if ($(this).is(":checked")) {
@@ -1951,26 +1997,9 @@
             checkButtonState();
         }
 
-        function checkButtonState() {
-            var isAddtional = false;
-            if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
-                isAddtional = true;
-            }
 
-            var isDocument = false;
-            if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
-                isDocument = true;
-            }
-
-            if (isAddtional && isDocument) {
-                $('.btSubmit').show();
-            } else {
-                $('.btSubmit').hide();
-            }
-        }
-
-        function AdditionalChecked() {
-
+        function AdditionalCheck() {
+            console.log("AdditionalChecked");
             var AdditionalArray = [];
             $('.chkAdddoc').each(function () {
                 if ($(this).is(":checked")) {
@@ -1982,25 +2011,49 @@
             checkButtonState();
         }
 
+        function checkButtonState() {
+
+            var isLicense = false;
+            if ($('.chkLicdoc:checked').length == $('.chkLicdoc').length) {
+                isLicense = true;
+            }
+
+            var isDocument = false;
+            if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
+                isDocument = true;
+            }
+
+            var isAddtional = false;
+            if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
+                isAddtional = true;
+            }
+
+            if (isAddtional && isDocument && isLicense) {
+                $('.btSubmit').show();
+            } else {
+                $('.btSubmit').hide();
+            }
+        }
+
         function LicenseRequiredDocument(Requiredid) {
-            $("#reqDocid").val(Requiredid);
-            $("#breqDocid").val("0");
+            $("#licDocid").val(Requiredid);
+            $("#reqDocid").val("0");
             $("#addDocid").val("0");
             $('#isReqDoc').val("1");
             $('#uploadDocumentModal').modal('show');
         }
 
         function BusinessRequiredDocument(BRequiredid) {
-            $("#reqDocid").val("0");
-            $("#breqDocid").val(BRequiredid);
+            $("#licDocid").val("0");
+            $("#reqDocid").val(BRequiredid);
             $("#addDocid").val("0");
             $('#isReqDoc').val("1");
             $('#uploadDocumentModal').modal('show');
         }
 
         function AdditionalDoc(Additionalid) {
+            $("#licDocid").val("0");
             $("#reqDocid").val("0");
-            $("#breqDocid").val("0");
             $("#addDocid").val(Additionalid);
             $('#isReqDoc').val("0");
             $('#uploadDocumentModal').modal('show');
@@ -2022,8 +2075,8 @@
                 }
 
                 data.append("APP_ID", @Model.APP_ID);
+                data.append("licDocid", $("#licDocid").val());
                 data.append("reqDocid", $("#reqDocid").val());
-                data.append("breqDocid", $("#breqDocid").val());
                 data.append("addDocid", $("#addDocid").val());
                 data.append("isReqDoc", $("#isReqDoc").val());
 
@@ -2040,10 +2093,17 @@
                             if (result.status == 1) {
                                 successMessage(result.message);
 
-                                if ($("#isReqDoc").val() > 0) {
+                                if ($("#reqDocid").val() > 0)
+                                {
                                     bindTable();
-                                } else {
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
                                     bindAdditionalTable();
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    bindLicense();
                                 }
                             }
                             else {
@@ -2065,7 +2125,7 @@
         function UploadAttechment(){
 
             if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
-
+                console.log("sini pula?");
                 var data = new FormData();
                 var files = $("#DocumentFile").get(0).files;
 
@@ -2073,6 +2133,7 @@
                     data.append("DocumentFile", files[0]);
                 }
 
+                data.append("licDocid", $("#licDocid").val());
                 data.append("reqDocid", $("#reqDocid").val());
                 data.append("addDocid", $("#addDocid").val());
                 data.append("isReqDoc", $("#isReqDoc").val());
@@ -2085,21 +2146,43 @@
                     data: data,
                     async: false,
                     success: function (result) {
-                        if (result != null) {
+                        if (result != null)
+                        {
+                            console.log("sini ada ka");
                             $("#DocumentFile").val("");
-                            if (result.status == 1) {
+                            if (result.status == 1)
+                            {
                                 successMessage("Document Upload Successfully");
 
                                 console.log(result.result);
-                                if ($("#isReqDoc").val() > 0) {
+                                if ($("#reqDocid").val() > 0)
+                                {
                                     var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
-                                    $('.lablereqdocument').each(function () {
-                                        if ($(this).attr('id') == lblreqAttachment) {
+                                    $('.lablereqdocument').each(function ()
+                                    {
+                                        console.log("oyo oyo");
+                                        if ($(this).attr('id') == lblreqAttachment)
+                                        {
                                             $("#" + lblreqAttachment).html(result.result.AttachmentName);
                                             RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
                                         }
                                     });
-                                } else {
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    var lbllicAttachment = "lbllicAttachment_" + $("#licDocid").val();
+                                    $('.lablelicdocument').each(function ()
+                                    {
+                                        console.log("oye oye");
+                                        if ($(this).attr('id') == lbllicAttachment)
+                                        {
+                                            $("#" + lbllicAttachment).html(result.result.AttachmentName);
+                                            LicenseDocumentDublicateCheck(result.result.LicenseDocID, result.result.AttachmentID);
+                                        }
+                                    });
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
                                     var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
                                     $('.lableadddocument').each(function () {
                                         if ($(this).attr('id') == lbladdAttachment) {
@@ -2109,7 +2192,8 @@
                                     });
                                 }
                             }
-                            else {
+                            else
+                            {
                                 errorMessage(result.message);
                             }
                         }
@@ -2125,10 +2209,32 @@
             }
         }
 
+        function LicenseDocumentDublicateCheck(LicenseDocID, AttachmentID) {
+            var itemfound = 0;
+            var itemFoundbool = false;
+            console.log("LicenseDublicateCheck");
+            for (var i = 0; i < licenseDocList.length; i++) {
+                var doc = licenseDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == LicenseDocID ) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = licenseDocList.length+1;
+                }
+            }
+
+            if (itemFoundbool) {
+                licenseDocList.splice(itemfound, 1);
+            }
+
+            var licenseDocument = LicenseDocID + ":" + AttachmentID;
+            licenseDocList.push(licenseDocument);
+        }
+
         function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
             var itemfound = 0;
             var itemFoundbool = false;
-
+            console.log("RequiredDublicateCheck");
             for (var i = 0; i < requiredDocList.length; i++) {
                 var doc = requiredDocList[i].split(',');
                 var document = doc[0].split(':');
@@ -2415,7 +2521,7 @@
 
 
             });
-            
+
                 $('#routeUnitModal').modal('show');
                 $('#RouteUnitTable').show();
                 if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
@@ -2457,7 +2563,7 @@
 
                     ]
                 });
-            
+
             return false;
         }
 
@@ -2511,7 +2617,7 @@
             if ($.fn.DataTable.isDataTable("#BannerObject")) {
                 $('#BannerObject').dataTable().fnDestroy();
             }
-            console.log("banner");
+            //console.log("banner");
             var data = { "ApplicationId": @Model.APP_ID };
 
             table = $("#BannerObject").DataTable({
@@ -2539,8 +2645,8 @@
                         "title": "Padam",
                         "data": null,
                         "render": function (data, type, row) {
-                            var appendstring = '';                                                           
-                            appendstring += '<a href="javascript:void(0);" data-id="' + row["B_O_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';                            
+                            var appendstring = '';
+                            appendstring += '<a href="javascript:void(0);" data-id="' + row["B_O_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             return appendstring
                         },
                         "width": "100px",
@@ -2562,7 +2668,7 @@
         function RoutePremiseApplication() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRouteSubmit');
             $("#frmsaveRoute").submit();
-            $("#frmApplication").submit();
+            //$("#frmApplication").submit();
             return false;
         }
 
@@ -2593,7 +2699,7 @@
             {
                 $('#btnLetter').show();
                 $('#btnLetter').css('visibility', 'visible');
-                if(!($('#Mode').val() == 1 || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
+                if(!($('#MODE').val() == 1 || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
                 {
                     $('#btnLetter').hide();
                 }
