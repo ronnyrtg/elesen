@@ -31,7 +31,7 @@ namespace TradingLicense.Web.Controllers
         public const string OnRejected = "Rejected";
         public const string OnKIV = "KIV";
 
-        private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R_DESC}~{bc.C_R}" };
+        private Func<BC, Select2ListItem> fnSelectBusinessCode = bc => new Select2ListItem { id = bc.BC_ID, text = $"{bc.C_R}~{bc.C_R_DESC}" };
         private Func<DEPARTMENT, Select2ListItem> fnSelectDepartment = de => new Select2ListItem { id = de.DEP_ID, text = $"{de.DEP_CODE}~{de.DEP_DESC}" };
         private Func<E_P_FEE, Select2ListItem> fnSelectPremiseFee = ep => new Select2ListItem { id = ep.E_P_FEEID, text = $"{ep.E_P_DESC}~{ep.E_S_DESC}" };
         private Func<INDIVIDUAL, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IND_ID, text = $"{ind.FULLNAME} ({ind.MYKADNO})" };

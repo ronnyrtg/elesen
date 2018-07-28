@@ -45,6 +45,7 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))
                             .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
                 cfg.CreateMap<ApplicationModel, APPLICATION>()
+                            .ForMember(dest => dest.PRO_FEE, opt => opt.Ignore())
                             .ForMember(dest => dest.LIC_TYPE, opt => opt.Ignore());
                 cfg.CreateMap<LIC_TYPE, LicenseTypeModel>();
                 cfg.CreateMap<SECTOR, SectorModel>();

@@ -105,6 +105,7 @@ namespace TradingLicense.Model
         public string UploadLicenseDocids { get; set; }
         public string newIndividualsList { get; set; }
 
+        public string newCatatan { get; set; }
         public string newComment { get; set; }
         public string Supported { get; set; }
         public string SubmitType { get; set; }
