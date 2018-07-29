@@ -85,7 +85,7 @@ namespace TradingLicense.Web.Controllers
                                 if (departmentID.HasValue)
                                 {
                                     var paIDs = ctx.ROUTEUNITs
-                                            .Where(pa => pa.DEP_ID == departmentID.Value && pa.ACTIVE)
+                                            .Where(pa => pa.DEP_ID == departmentID.Value)
                                             .Select(d => d.APP_ID).Distinct()
                                             .ToList();
                                     query = query.Where(q => paIDs.Contains(q.APP_ID) && q.APPSTATUSID == 5);
@@ -228,10 +228,13 @@ namespace TradingLicense.Web.Controllers
             }
             else
             {
+                
                 applicationModel.START_RENT = DateTime.Today.AddMonths(-6);
                 applicationModel.STOP_RENT = DateTime.Today.AddMonths(6);
                 using (var ctx = new LicenseApplicationContext())
                 {
+                    
+
                     List<Select2ListItem> premiseFeeList = new List<Select2ListItem>();
                     premiseFeeList = ctx.E_P_FEEs
                         .Select(fnSelectPremiseFee)
@@ -766,14 +769,14 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
-        #region Save Route Departments to ROUTEUNIT table
+        #region Add new Route Departments entry to ROUTEUNIT table
         /// <summary>
         /// Add Departments to Route
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddRoute(int id, int[] DeptId)
+        public ActionResult AddRoute(int id, int[] DeptId, string newQuestion)
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -784,6 +787,9 @@ namespace TradingLicense.Web.Controllers
                     ROUTEUNIT pad = new ROUTEUNIT();
                     pad.APP_ID = id;
                     pad.DEP_ID = DeptId[i];
+                    pad.QUESTION = newQuestion;
+                    pad.SENDER = ProjectSession.User.FULLNAME;
+                    pad.SUBMITTED = DateTime.Now;
                     pad.SUPPORT = false;
                     ctx.ROUTEUNITs.Add(pad);
                     i++;
@@ -795,6 +801,105 @@ namespace TradingLicense.Web.Controllers
 
             return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
         }
+        #endregion
+
+        #region Route Comments Datatable
+        /// <summary>
+        /// Get Department support/non-supported Comments for the premise applicaiton
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="premiseApplicationID">The premise application identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult RouteComments([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int? APP_ID)
+        {
+            List<RouteUnitModel> premiseRouteComments = new List<RouteUnitModel>();
+            int totalRecord = 0;
+            if (APP_ID.HasValue)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    if (ProjectSession.User.ROLEID == (int)Enums.RollTemplate.RouteUnit)
+                    {
+                        IQueryable<ROUTEUNIT> query = ctx.ROUTEUNITs
+                                                            .Include("Department")
+                                                            .Where(pac => pac.APP_ID == APP_ID.Value && pac.DEP_ID == ProjectSession.User.DEP_ID);
+
+
+                        #region Sorting
+                        // Sorting
+                        var sortedColumns = requestModel.Columns.GetSortedColumns();
+                        var orderByString = sortedColumns.GetOrderByString();
+
+                        var result = Mapper.Map<List<RouteUnitModel>>(query.ToList());
+                        result = result.OrderBy(orderByString == string.Empty ? "SUBMITTED desc" : orderByString).ToList();
+
+                        totalRecord = result.Count;
+
+                        #endregion Sorting
+
+
+                        // Paging
+                        //result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                        premiseRouteComments = result;
+                    }
+                    else
+                    {
+                        IQueryable<ROUTEUNIT> query = ctx.ROUTEUNITs
+                                                            .Include("Department")
+                                                            .Where(pac => pac.APP_ID == APP_ID.Value);
+
+
+                        #region Sorting
+                        // Sorting
+                        var sortedColumns = requestModel.Columns.GetSortedColumns();
+                        var orderByString = sortedColumns.GetOrderByString();
+
+                        var result = Mapper.Map<List<RouteUnitModel>>(query.ToList());
+                        result = result.OrderBy(orderByString == string.Empty ? "SUBMITTED desc" : orderByString).ToList();
+
+                        totalRecord = result.Count;
+
+                        #endregion Sorting
+
+
+                        // Paging
+                        //result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                        premiseRouteComments = result;
+                    }
+                }
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, premiseRouteComments, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Update Route Unit Answers
+        /// <summary>
+        /// Update answers to RouteUnit table
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SaveRouteComment(int APP_ID, int routeID, string newComment, bool Supported)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var route = new ROUTEUNIT() { ROUTEUNITID = APP_ID };
+                route.ANSWER = newComment;
+                route.SUPPORT = Supported;
+                route.RECEIVER = ProjectSession.User.FULLNAME;                
+                route.REPLIED = DateTime.Now;
+                ctx.Entry<ROUTEUNIT>(route).State = System.Data.Entity.EntityState.Modified;
+
+
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Maklumbalas berjaya dihantar.";
+
+            }
+
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + APP_ID);
+        }
+
         #endregion
 
         #region Get Individual Name (MyKad) for Datatable
@@ -1695,11 +1800,12 @@ namespace TradingLicense.Web.Controllers
                     ctx.Entry(paComment).State = System.Data.Entity.EntityState.Deleted;
                     ctx.SaveChanges();
                 }
-                return RedirectToAction("Index");
+                //return RedirectToAction("ManageApplication");
+                return Json(new { success = true, message = "Delete Comment Successful" }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
-                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error While Deleting Comment" }, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion

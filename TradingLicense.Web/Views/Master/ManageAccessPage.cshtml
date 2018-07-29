@@ -7,11 +7,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-    List<TradingLicense.Model.RoleTemplateModel> roleTemplateList = new List<TradingLicense.Model.RoleTemplateModel>();
+    List<TradingLicense.Model.RoleModel> roleTemplateList = new List<TradingLicense.Model.RoleModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var roleTemplate = ctx.RoleTemplates.ToList();
-        roleTemplateList = Mapper.Map<List<TradingLicense.Model.RoleTemplateModel>>(roleTemplate);
+        var roleTemplate = ctx.ROLEs.ToList();
+        roleTemplateList = Mapper.Map<List<TradingLicense.Model.RoleModel>>(roleTemplate);
     }
 }
 <div id="divMessage"></div>
@@ -42,25 +42,25 @@
                         @for (int i = 0; i < Model.RoleAccess.Count; i++)
                         {
                             var pageAccess = Model.RoleAccess[i];
-                            var id = pageAccess.RoleTemplateID;
+                            var id = pageAccess.ROLEID;
                             <tr role="row">
                                 <td>
-                                    @pageAccess.RoleTemplateDesc
-                                    @Html.HiddenFor(m => m.RoleAccess[i].AccessPageID)
-                                    @Html.HiddenFor(m => m.RoleAccess[i].RoleTemplateID)
-                                    @Html.HiddenFor(m => m.RoleAccess[i].RoleTemplateDesc)
-                                    @Html.HiddenFor(m => m.RoleAccess[i].PageDesc)
-                                    @Html.HiddenFor(m => m.RoleAccess[i].ScreenId)
+                                    @pageAccess.ROLE_DESC
+                                    @Html.HiddenFor(m => m.RoleAccess[i].ACCESSPAGEID)
+                                    @Html.HiddenFor(m => m.RoleAccess[i].ROLEID)
+                                    @Html.HiddenFor(m => m.RoleAccess[i].ROLE_DESC)
+                                    @Html.HiddenFor(m => m.RoleAccess[i].PAGEDESC)
+                                    @Html.HiddenFor(m => m.RoleAccess[i].SCREENID)
                                 </td>
                                 <td>
                                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.AccessPages, SystemEnum.PageRight.CrudLevel2))
                                     {
-                                        @Html.DropDownListFor(m => m.RoleAccess[i].CrudLevel, new SelectList(TradingLicenseCommon.GetCRUDLevelList(), "Value", "Key", pageAccess.CrudLevel), "-- Select Access Level --", new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => m.RoleAccess[i].CrudLevel)
+                                        @Html.DropDownListFor(m => m.RoleAccess[i].CRUDLEVEL, new SelectList(TradingLicenseCommon.GetCRUDLevelList(), "Value", "Key", pageAccess.CRUDLEVEL), "-- Select Access Level --", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RoleAccess[i].CRUDLEVEL)
                                     }
                                     else
                                     {
-                                        @TradingLicenseCommon.GetCRUDLevelDesc(pageAccess.CrudLevel)
+                                        @TradingLicenseCommon.GetCRUDLevelDesc(pageAccess.CRUDLEVEL)
                                     }
                                 </td>
                             </tr>

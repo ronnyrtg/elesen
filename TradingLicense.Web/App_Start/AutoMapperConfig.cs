@@ -34,7 +34,6 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<INDIVIDUAL, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.ATTACHMENT.FILENAME));
                 cfg.CreateMap<IndividualModel, INDIVIDUAL>().ForMember(dest => dest.ATTACHMENT, options => options.Ignore());
                 cfg.CreateMap<ROUTEUNIT, RouteUnitModel>()
-                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME))
                             .ForMember(dest => dest.DepartmentDesc, opt => opt.MapFrom(s => $"{s.DEPARTMENT.DEP_DESC} ({ s.DEPARTMENT.DEP_CODE})"));
 
                 //Combined Application

@@ -105,8 +105,11 @@ namespace TradingLicense.Model
         public string UploadLicenseDocids { get; set; }
         public string newIndividualsList { get; set; }
 
+        public int? routeID { get; set; }
         public string newCatatan { get; set; }
         public string newComment { get; set; }
+        public string newQuestion { get; set; } = "Mohon semakan bagi permohonan berikut";
+        public string newAnswer { get; set; }
         public string Supported { get; set; }
         public string SubmitType { get; set; }
         public bool HasPADepSupp { get; set; }
