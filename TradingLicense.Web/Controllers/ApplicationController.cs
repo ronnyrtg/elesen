@@ -1621,6 +1621,89 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Save Comments
+        /// <summary>
+        /// Save PAComment
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult SaveComment()
+        {
+            var premiseId = Request["APP_ID"];
+            var comment = Request["newComment"];
+            try
+            {
+
+                using (var ctx = new LicenseApplicationContext())
+                {
+                                        
+
+                    int premiseApplicationId;
+                    int.TryParse(premiseId, out premiseApplicationId);
+
+                    int usersId = 0;
+                    int userroleTemplate = 0;
+                    if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
+                    {
+                        usersId = ProjectSession.User.USERSID;
+                        userroleTemplate = ProjectSession.User.ROLEID.Value;
+                    }
+
+                    if (premiseApplicationId > 0 && usersId > 0 && userroleTemplate > 0)
+                    {
+                        COMMENT paComment = new COMMENT();
+                        paComment.CONTENT = comment;
+                        paComment.APP_ID = premiseApplicationId;
+                        paComment.USERSID = usersId;
+                        paComment.COMMENTDATE = DateTime.Now;
+                        ctx.COMMENTs.AddOrUpdate(paComment);
+                        ctx.SaveChanges();                        
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Data Missing.";
+                        return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + premiseId);
+                        //return Json(new { status = "2", message = "Data Missing" }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Something went wrong, Please try again.";
+                return Redirect(Url.Action("Application", "Application"));
+                //return Json(new { status = "3", message = "Something went wrong, Please try again" }, JsonRequestBehavior.AllowGet);
+            }
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + premiseId);
+        }
+        #endregion
+
+        #region Delete Comments
+        /// <summary>
+        /// Delete Comment from PAComment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteComment(int id)
+        {
+            try
+            {
+                var paComment = new COMMENT() { COMMENTID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(paComment).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+
         #region Generate Letter PDF
 
         public ActionResult GenerateLetter(Int32? appId)

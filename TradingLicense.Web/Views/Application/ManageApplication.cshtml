@@ -947,7 +947,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCatatan()" />
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveComment()" />
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                 </div>
             </div>
@@ -1041,28 +1041,6 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
     </div>
 }
 
-<!--approved/reject-->
-<div id="approvedrejectModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        @using (Html.BeginForm("SaveComment", "Application", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
-        {
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><lable id="lblheaderTitle"></lable></h4>
-                </div>
-                <div class="modal-body">
-                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="return SaveComment()"><lable id="lblapprovedreject"></lable> </button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        }
-    </div>
-</div>
 <!-- Print License-->
 <div id="myModalLicense" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -2415,17 +2393,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
             addtionalDocList.push(additionaDocument);
         }
 
-        function AddRules()
-        {
-            //validation implementation will go here.
-            $("#frmsaveComment").validate({
-                rules: {
-                    txtComment: {
-                        required: true
-                    }
-                }
-            });
-        }
+        
 
         function Approvedreject(name) {
             if (name == "approved") {
@@ -2445,43 +2413,6 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
 
             if (!$("#frmsaveComment").valid()) {
                 return false;
-            } else {
-
-                var data = new FormData();
-                data.append("APP_ID", @Model.APP_ID);
-                data.append("comment", $("#txtComment").val());
-
-                if ($("#lblapprovedreject").html() == "Approve") {
-                    data.append("approveRejectType", "Approve");
-                } else {
-                    data.append("approveRejectType", "Reject");
-                }
-
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("SaveComment", "Application")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#txtComment").val("");
-                            if (result.status == 1) {
-                                successMessage(result.message);
-                                back();
-                            }
-                            else {
-                                errorMessage(result.message);
-                            }
-                        }
-                        $("#approvedrejectModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
-                    }
-                });
-
             }
         }
 
@@ -2520,7 +2451,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         }
                     },
                     { "title": "Ulasan", "orderable": false, "data": "CONTENT" },
-                    { "title": "Nama", "orderable": false, "data": "FULLNAME" },
+                    { "title": "Nama", "orderable": false, "data": "FullName" },
                     { "title": "Tarikh", "data": "COMMENTDATE", render: renderDateTime },
                     {
                         "title": "Tindakan",
@@ -2528,7 +2459,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         "render": function (data, type, row) {
                             var appendstring = '';
 
-                            if (data['UsersID'] == '@(ProjectSession.User.USERSID)') {
+                            if (data['USERSID'] == '@(ProjectSession.User.USERSID)') {
                                 appendstring += '<a  href="@Url.Action("AddComent", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                 appendstring += '<a href="javascript:void(0);" data-id="' + row["COMMENTID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             }
@@ -2553,10 +2484,12 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                     dataType: 'json',
                     success: function (data, textStatus, XMLHttpRequest) {
                         if (data.success) {
-                            bindTable();
+                            loadComments();
+                            console.log("success");
                             successMessage(data.message);
                         }
                         else {
+                            console.log(" not success");
                             successMessage(data.message);
                         }
                     },
