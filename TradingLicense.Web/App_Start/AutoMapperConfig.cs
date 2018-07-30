@@ -64,7 +64,7 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.C_R_DESC, opt => opt.MapFrom(s => s.BC.C_R_DESC))
                             .ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<COMMENT, CommentModel>().ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
-                cfg.CreateMap<PaymentReceivedModel, PAY_REC>().ForMember(dest => dest.INDIVIDUAL, opt => opt.Ignore());
+                
                 
                 //Entertainment License related
                 cfg.CreateMap<E_P_FEE, EntmtPremiseFeeModel>();

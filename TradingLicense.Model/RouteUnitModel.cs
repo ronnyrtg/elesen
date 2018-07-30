@@ -8,7 +8,7 @@ namespace TradingLicense.Model
         public int ROUTEUNITID { get; set; }
         public int APP_ID { get; set; }
         public int DEP_ID { get; set; }
-        public bool SUPPORT { get; set; }
+        public int? SUPPORT { get; set; }
         public string SENDER { get; set; }
         public string QUESTION { get; set; }
         public string RECEIVER { get; set; }

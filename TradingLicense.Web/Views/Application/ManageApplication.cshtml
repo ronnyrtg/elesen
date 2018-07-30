@@ -732,7 +732,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                                                         }
                                                         @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                                                         {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Fi Yang Perlu Dibayar" onclick="showPaymentsDuePopup();" />
+                                                            <input type = "button" class="btn btn-primary btSubmit" value="Selesai" />
                                                         }
                                                         @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
                                                         {
@@ -779,7 +779,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                                                         {
                                                             if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
                                                             {
-                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
+                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar ke KPE</button>
                                                             }
                                                             else
                                                             {
@@ -2545,7 +2545,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         "render": function (data, type, row) {
                             var appendstring = '';
 
-                            if (data['USERSID'] == '@(ProjectSession.User.USERSID)') {
+                            if ('@(ProjectSession.User.ROLEID)' == '@Enums.RollTemplate.Supervisor') {
                                 appendstring += '<a href="javascript:void(0);" data-id="' + row["COMMENTID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Padam" /></a>';
                             }
                             return appendstring
@@ -2642,12 +2642,12 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         "title": "Status",
                         "orderable": false,
                         "data": "SUPPORT",
-                        "render": function (data, type, row) {
-                            if (data) {
-                                return '<label class="label label-success">Tiada Halangan</label>';
-                            }
-                            else {
-                                return '<label class="label label-danger">Mohon Maklumbalas</label>';
+                        "render" : function (data, type, row) {
+                            switch(data) {
+                                case 0 : return 'Belum Ada Jawapan'; break;
+                                case 1 : return '<label class="label label-success">Tiada Halangan</label>'; break;
+                                case 2 : return '<label class="label label-danger">Ada Halangan</label>'; break;
+                                default  : return 'N/A';
                             }
                         }
                     },
@@ -2933,6 +2933,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
             //console.log(rID);
             $('#routeID').val(rID);
             //console.log($('#routeID').val());
+
             $("#showUnitReply").modal('show');
         }
 

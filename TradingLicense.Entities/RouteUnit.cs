@@ -10,7 +10,7 @@ namespace TradingLicense.Entities
         public int ROUTEUNITID { get; set; }
         public int APP_ID { get; set; }
         public int DEP_ID { get; set; }
-        public bool SUPPORT { get; set; }
+        public int? SUPPORT { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string SENDER { get; set; }

@@ -58,6 +58,7 @@
     <Compile Include="BT.cs" />
     <Compile Include="CATATAN.cs" />
     <Compile Include="CITIZEN_M.cs" />
+    <Compile Include="PAYTRAN_M.cs" />
     <Compile Include="RD_L_BT.cs" />
     <Compile Include="LIC_TYPE.cs" />
     <Compile Include="ATTACHMENT.cs" />
@@ -81,8 +82,6 @@
     <Compile Include="RD_L_BC.cs" />
     <Compile Include="RD_L_LT.cs" />
     <Compile Include="APPSTATUS.cs" />
-    <Compile Include="PAY_DUE.cs" />
-    <Compile Include="PAY_REC.cs" />
     <Compile Include="PREMISETYPE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ROAD_M.cs" />

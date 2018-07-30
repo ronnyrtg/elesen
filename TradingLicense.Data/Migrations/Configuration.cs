@@ -511,13 +511,13 @@ namespace TradingLicense.Data.Migrations
                 new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=7,SCREENID=12},
                 new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=8,SCREENID=12},
 
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=1,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=2,ROLEID=1,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=2,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=3,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=3,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=4,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=5,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=6,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=7,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=6,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=7,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=8,SCREENID=13},
             };
             accesspages.ForEach(s => context.ACCESSPAGEs.Add(s));
