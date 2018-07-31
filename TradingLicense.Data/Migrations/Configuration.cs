@@ -65,14 +65,14 @@ namespace TradingLicense.Data.Migrations
             bts.ForEach(s => context.BTs.Add(s));
             context.SaveChanges();
 
-            var race = new List<RACE>
+            var race = new List<RACE_M>
             {
-                new RACE {RACEDESC="Melayu"},
-                new RACE {RACEDESC="Cina"},
-                new RACE {RACEDESC="India"},
-                new RACE {RACEDESC="Bumiputra Sabah"},
-                new RACE {RACEDESC="Bumiputra Sarawak"},
-                new RACE {RACEDESC="Bangsa dari luar negara Malaysia"},
+                new RACE_M {RACE_DESC="Melayu"},
+                new RACE_M {RACE_DESC="Cina"},
+                new RACE_M {RACE_DESC="India"},
+                new RACE_M {RACE_DESC="Bumiputra Sabah"},
+                new RACE_M {RACE_DESC="Bumiputra Sarawak"},
+                new RACE_M {RACE_DESC="Bangsa dari luar negara Malaysia"},
             };
             race.ForEach(s => context.RACEs.Add(s));
             context.SaveChanges();
@@ -511,14 +511,23 @@ namespace TradingLicense.Data.Migrations
                 new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=7,SCREENID=12},
                 new ACCESSPAGE {PAGEDESC="Company",CRUDLEVEL=4,ROLEID=8,SCREENID=12},
 
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=1,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=2,ROLEID=1,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=2,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=3,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=3,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=4,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=1,ROLEID=5,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=6,SCREENID=13},
-                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=7,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=5,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=6,SCREENID=13},
+                new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=7,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=8,SCREENID=13},
+
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=0,ROLEID=1,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=2,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=3,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=4,ROLEID=4,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=0,ROLEID=5,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=4,ROLEID=6,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=7,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=8,SCREENID=14},
             };
             accesspages.ForEach(s => context.ACCESSPAGEs.Add(s));
             context.SaveChanges();
@@ -720,18 +729,18 @@ namespace TradingLicense.Data.Migrations
             indlinkcoms.ForEach(s => context.IND_L_COMs.Add(s));
             context.SaveChanges();
 
-            var zones = new List<ZONE>
+            var zones = new List<ZONE_M>
             {
-                new ZONE {ZONECODE="11",ZONEDESC="Bandar-Perdagangan"},
-                new ZONE {ZONECODE="12",ZONEDESC="Bandar-Perindustrian"},
-                new ZONE {ZONECODE="13",ZONEDESC="Bandar-Tanah Kosong"},
-                new ZONE {ZONECODE="14",ZONEDESC="Bandar-Perumahan dalam taman perumahan"},
-                new ZONE {ZONECODE="15",ZONEDESC="Bandar-Perumahan di luar taman perumahan"},
-                new ZONE {ZONECODE="1A",ZONEDESC="SMK-Perdagangan"},
-                new ZONE {ZONECODE="1B",ZONEDESC="SMK-Perindustrian"},
-                new ZONE {ZONECODE="1D",ZONEDESC="SMK-Tanah Kosong"},
-                new ZONE {ZONECODE="1E",ZONEDESC="SMK-Perumahan dalam taman perumahan"},
-                new ZONE {ZONECODE="1F",ZONEDESC="SMK-Perumahan di luar taman perumahan"},
+                new ZONE_M {ZONE_CODE="11",ZONE_DESC="Bandar-Perdagangan"},
+                new ZONE_M {ZONE_CODE="12",ZONE_DESC="Bandar-Perindustrian"},
+                new ZONE_M {ZONE_CODE="13",ZONE_DESC="Bandar-Tanah Kosong"},
+                new ZONE_M {ZONE_CODE="14",ZONE_DESC="Bandar-Perumahan dalam taman perumahan"},
+                new ZONE_M {ZONE_CODE="15",ZONE_DESC="Bandar-Perumahan di luar taman perumahan"},
+                new ZONE_M {ZONE_CODE="1A",ZONE_DESC="SMK-Perdagangan"},
+                new ZONE_M {ZONE_CODE="1B",ZONE_DESC="SMK-Perindustrian"},
+                new ZONE_M {ZONE_CODE="1D",ZONE_DESC="SMK-Tanah Kosong"},
+                new ZONE_M {ZONE_CODE="1E",ZONE_DESC="SMK-Perumahan dalam taman perumahan"},
+                new ZONE_M {ZONE_CODE="1F",ZONE_DESC="SMK-Perumahan di luar taman perumahan"},
             };
             zones.ForEach(s => context.ZONEs.Add(s));
             context.SaveChanges();
@@ -752,27 +761,27 @@ namespace TradingLicense.Data.Migrations
             locations.ForEach(s => context.LOCATIONs.Add(s));
             context.SaveChanges();
 
-            var roads = new List<ROAD>
+            var roads = new List<ROAD_M>
             {
-                new ROAD {ROADCODE="001",ROADDESC="Jalan Tun Mustapha"},
-                new ROAD {ROADCODE="002",ROADDESC="Jalan Dewan"},
-                new ROAD {ROADCODE="003",ROADDESC="Jalan Merdeka"},
-                new ROAD {ROADCODE="004",ROADDESC="Jalan Bahasa"},
-                new ROAD {ROADCODE="005",ROADDESC="Jalan Bunga Kenanga"},
-                new ROAD {ROADCODE="006",ROADDESC="Jalan Bunga Raya"},
-                new ROAD {ROADCODE="007",ROADDESC="Jalan Perpaduan"},
-                new ROAD {ROADCODE="008",ROADDESC="Jalan Bunga Tanjung"},
-                new ROAD {ROADCODE="009",ROADDESC="Jalan OKK Awang Besar"},
-                new ROAD {ROADCODE="010",ROADDESC="Jalan Tanjung Pasir"},
+                new ROAD_M {ROAD_CODE="001",ROAD_DESC="Jalan Tun Mustapha"},
+                new ROAD_M {ROAD_CODE="002",ROAD_DESC="Jalan Dewan"},
+                new ROAD_M {ROAD_CODE="003",ROAD_DESC="Jalan Merdeka"},
+                new ROAD_M {ROAD_CODE="004",ROAD_DESC="Jalan Bahasa"},
+                new ROAD_M {ROAD_CODE="005",ROAD_DESC="Jalan Bunga Kenanga"},
+                new ROAD_M {ROAD_CODE="006",ROAD_DESC="Jalan Bunga Raya"},
+                new ROAD_M {ROAD_CODE="007",ROAD_DESC="Jalan Perpaduan"},
+                new ROAD_M {ROAD_CODE="008",ROAD_DESC="Jalan Bunga Tanjung"},
+                new ROAD_M {ROAD_CODE="009",ROAD_DESC="Jalan OKK Awang Besar"},
+                new ROAD_M {ROAD_CODE="010",ROAD_DESC="Jalan Tanjung Pasir"},
             };
             roads.ForEach(s => context.ROADs.Add(s));
             context.SaveChanges();
 
             var btls = new List<RD_L_BT>
             {
-                new RD_L_BT {BT_ID=1,RD_ID=1},
+                new RD_L_BT {BT_ID=1,RD_ID=13},
+                new RD_L_BT {BT_ID=1,RD_ID=41},
                 new RD_L_BT {BT_ID=1,RD_ID=2},
-                new RD_L_BT {BT_ID=1,RD_ID=3},
                 new RD_L_BT {BT_ID=2,RD_ID=1},
                 new RD_L_BT {BT_ID=2,RD_ID=2},
                 new RD_L_BT {BT_ID=2,RD_ID=3},
@@ -794,17 +803,23 @@ namespace TradingLicense.Data.Migrations
 
             var bclinkads = new List<RD_L_BC>
             {
-                new RD_L_BC {BC_ID=1,RD_ID=1},
-                new RD_L_BC {BC_ID=1,RD_ID=2},
                 new RD_L_BC {BC_ID=2,RD_ID=3},
                 new RD_L_BC {BC_ID=2,RD_ID=4},
             };
             bclinkads.ForEach(s => context.RD_L_BCs.Add(s));
             context.SaveChanges();
 
-            
+            var rdlinklt = new List<RD_L_LT>
+            {
+                new RD_L_LT {LIC_TYPEID=1,RD_ID=1},
+                new RD_L_LT {LIC_TYPEID=1,RD_ID=4},
+                new RD_L_LT {LIC_TYPEID=5,RD_ID=14},
+                new RD_L_LT {LIC_TYPEID=5,RD_ID=37},
+            };
+            rdlinklt.ForEach(s => context.RD_L_LTs.Add(s));
+            context.SaveChanges();
 
-            
+
         }
     }
 }

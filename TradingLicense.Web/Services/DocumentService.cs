@@ -34,7 +34,7 @@ namespace TradingLicense.Web.Services
             {
                 foreach (var item in dbEntryRequiredDoc)
                 {
-                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RD_ID && q.AttachmentID == item.ATTACHMENTID))
+                    if (!requiredDoclist.Any(q => q.RequiredDocID == item.RD_ID && q.AttachmentID == item.ATT_ID))
                     {
                         if (roleTemplate == (int)Enums.RollTemplate.Public)
                         {
@@ -56,7 +56,7 @@ namespace TradingLicense.Web.Services
                     APP_L_RD pALinkReqDoc = new APP_L_RD();
                     pALinkReqDoc.APP_ID = premiseApplicationId;
                     pALinkReqDoc.RD_ID = requiredDoc.RequiredDocID;
-                    pALinkReqDoc.ATTACHMENTID = requiredDoc.AttachmentID;
+                    pALinkReqDoc.ATT_ID = requiredDoc.AttachmentID;
                     ctx.APP_L_RDs.AddOrUpdate(pALinkReqDoc);
 
                 }
@@ -64,13 +64,12 @@ namespace TradingLicense.Web.Services
             ctx.SaveChanges();
         }
 
-        public static void UpdateRequiredDocs(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx,
-            int premiseApplicationId, int roleTemplate)
+        public static void UpdateRequiredDocs(ApplicationModel premiseApplicationModel, LicenseApplicationContext ctx, int premiseApplicationId, int roleTemplate)
         {
             var requiredDoclist = premiseApplicationModel.RequiredDocIds.ToIntList();
 
             List<int> existingRecord = new List<int>();
-            var dbEntryRequiredDoc = ctx.APP_L_RDs.Where(q => q.RD_ID == premiseApplicationId).ToList();
+            var dbEntryRequiredDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId && q.RD_TYPE == 1).ToList();
             if (dbEntryRequiredDoc.Count > 0)
             {
                 foreach (var item in dbEntryRequiredDoc)
@@ -97,6 +96,7 @@ namespace TradingLicense.Web.Services
                 {
                     APP_L_RD pALinkReqDoc = new APP_L_RD();
                     pALinkReqDoc.APP_ID = premiseApplicationId;
+                    pALinkReqDoc.RD_TYPE = 1;
                     pALinkReqDoc.RD_ID = requiredDoc;
                     ctx.APP_L_RDs.AddOrUpdate(pALinkReqDoc);
                 }
@@ -110,7 +110,7 @@ namespace TradingLicense.Web.Services
             List<int> additionalDoclistlist = premiseApplicationModel.AdditionalDocIds.ToIntList();
 
             List<int> existingRecord = new List<int>();
-            var dbEntryPaLinkAddDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId).ToList();
+            var dbEntryPaLinkAddDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId && q.RD_TYPE == 2).ToList();
             if (dbEntryPaLinkAddDoc.Count > 0)
             {
                 foreach (var item in dbEntryPaLinkAddDoc)
@@ -137,6 +137,49 @@ namespace TradingLicense.Web.Services
                 {
                     APP_L_RD paLinkAddDoc = new APP_L_RD();
                     paLinkAddDoc.APP_ID = premiseApplicationId;
+                    paLinkAddDoc.RD_TYPE = 2;
+                    paLinkAddDoc.RD_ID = additionalDoc;
+                    ctx.APP_L_RDs.Add(paLinkAddDoc);
+
+                }
+            }
+            ctx.SaveChanges();
+        }
+
+        public static void SaveLicenseDocInfo(ApplicationModel premiseApplicationModel,
+           LicenseApplicationContext ctx, int premiseApplicationId, int roleTemplate)
+        {
+            List<int> licenseDoclist = premiseApplicationModel.LicenseDocIds.ToIntList();
+
+            List<int> existingRecord = new List<int>();
+            var dbEntryPaLinkAddDoc = ctx.APP_L_RDs.Where(q => q.APP_ID == premiseApplicationId && q.RD_TYPE == 3).ToList();
+            if (dbEntryPaLinkAddDoc.Count > 0)
+            {
+                foreach (var item in dbEntryPaLinkAddDoc)
+                {
+                    if (licenseDoclist.All(q => q != item.RD_ID))
+                    {
+                        if (roleTemplate == (int)Enums.RollTemplate.Public || roleTemplate == (int)Enums.RollTemplate.DeskOfficer)
+                        {
+                            ctx.APP_L_RDs.Remove(item);
+                        }
+                    }
+                    else
+                    {
+                        existingRecord.Add(item.RD_ID);
+                    }
+                }
+
+                ctx.SaveChanges();
+            }
+
+            foreach (var additionalDoc in licenseDoclist)
+            {
+                if (existingRecord.All(q => q != additionalDoc))
+                {
+                    APP_L_RD paLinkAddDoc = new APP_L_RD();
+                    paLinkAddDoc.APP_ID = premiseApplicationId;
+                    paLinkAddDoc.RD_TYPE = 3;
                     paLinkAddDoc.RD_ID = additionalDoc;
                     ctx.APP_L_RDs.Add(paLinkAddDoc);
 

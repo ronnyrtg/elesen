@@ -20,6 +20,7 @@ namespace TradingLicense.Web.Controllers
 {
     public class MasterController : BaseController
     {
+
         #region Department
 
         /// <summary>
@@ -27,9 +28,8 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <returns></returns>
 
-        public ActionResult Department(int Type)
+        public ActionResult Department()
         {
-            ViewBag.DepartmentType = Type;
             return View();
         }
 
@@ -2076,7 +2076,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult UsersList([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string usersName, string fullName)
+        public JsonResult Userslist([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string usersName, string fullName)
         {
             List<TradingLicense.Model.UsersModel> Users = new List<Model.UsersModel>();
             int totalRecord = 0;
@@ -2428,7 +2428,7 @@ namespace TradingLicense.Web.Controllers
         /// GET: BT
         /// </summary>
         /// <returns></returns>
-        public ActionResult BT()
+        public ActionResult BusinessType()
         {
             return View();
         }
@@ -2439,7 +2439,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="requestModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult BT([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BTCode, string BTDesc)
+        public JsonResult BusinessType([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string BTCode, string BTDesc)
         {
             List<TradingLicense.Model.BusinessTypeModel> businessType = new List<Model.BusinessTypeModel>();
             int totalRecord = 0;
@@ -2494,7 +2494,7 @@ namespace TradingLicense.Web.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult ManageBT(int? Id)
+        public ActionResult ManageBusinessType(int? Id)
         {
             BusinessTypeModel businessTypeModel = new BusinessTypeModel();
             businessTypeModel.ACTIVE = true;
@@ -2505,7 +2505,7 @@ namespace TradingLicense.Web.Controllers
                     int businessTypeID = Convert.ToInt32(Id);
                     var businessType = ctx.BTs.Where(a => a.BT_ID == businessTypeID).FirstOrDefault();
                     businessTypeModel = Mapper.Map<BusinessTypeModel>(businessType);
-                    //businessTypeModel.RequiredDocs = ctx.APP_L_RDs.Where(a => a.BT_ID == businessTypeID).Select(a => a.RD_ID).ToList();
+                    businessTypeModel.RequiredDocs = ctx.RD_L_BTs.Where(a => a.BT_ID == businessTypeID).Select(a => a.RD_ID).ToList();
                 }
                 var requiredDocs = ctx.RDs;
                 ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
@@ -2515,13 +2515,13 @@ namespace TradingLicense.Web.Controllers
         }
 
         /// <summary>
-        /// Save Premise Type Infomration
+        /// Get Business Type Infomration
         /// </summary>
         /// <param name="businessTypeModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult ManageBT(BusinessTypeModel businessTypeModel)
+        public ActionResult ManageBusinessType(BusinessTypeModel businessTypeModel)
         {
             if (ModelState.IsValid)
             {
@@ -2539,19 +2539,11 @@ namespace TradingLicense.Web.Controllers
                     List<RD_L_BT> addReqDocs = new List<RD_L_BT>();
                     if (isNew)
                     {
-                        //addReqDocs.AddRange(businessTypeModel
-                                                //.RD
-                                                //.Select(rd =>
-                                                  //          new RD_L_BT
-                                                    //        {
-                                                      //          BT_ID = businessType.BT_ID,
-                                                        //        RD_ID = rd
-                                                          //  }));
-
+                        addReqDocs.AddRange(businessTypeModel.RequiredDocs.Select(rd => new RD_L_BT { BT_ID = businessType.BT_ID, RD_ID = rd }));
                     }
                     else
                     {
-                        var selectedDocs = ctx.APP_L_RDs.Where(bt => bt.BT_ID == businessType.BT_ID).ToList();
+                        var selectedDocs = ctx.RD_L_BTs.Where(bt => bt.BT_ID == businessType.BT_ID).ToList();
                         foreach (var rd in businessTypeModel.RequiredDocs)
                         {
                             if (!selectedDocs.Any(sd => sd.RD_ID == rd))
@@ -2569,14 +2561,14 @@ namespace TradingLicense.Web.Controllers
                     }
                     if (addReqDocs.Count > 0)
                     {
-                       // ctx.APP_L_RDs.AddOrUpdate(addReqDocs.ToArray());
+                        ctx.RD_L_BTs.AddOrUpdate(addReqDocs.ToArray());
                     }
                     ctx.SaveChanges();
                 }
 
                 TempData["SuccessMessage"] = "Business Type saved successfully.";
 
-                return RedirectToAction("BT");
+                return RedirectToAction("BusinessType");
             }
             else
             {
@@ -2591,7 +2583,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteBT(int id)
+        public ActionResult DeleteBusinessType(int id)
         {
             try
             {
@@ -2821,7 +2813,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<ZONE> query = ctx.ZONEs;
+                IQueryable<ZONE_M> query = ctx.ZONEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -2829,7 +2821,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(zoneDesc))
                 {
                     query = query.Where(p =>
-                                        p.ZONEDESC.Contains(zoneDesc)
+                                        p.ZONE_DESC.Contains(zoneDesc)
                                     );
                 }
 
@@ -2898,13 +2890,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ZONE Zone;
+                    ZONE_M Zone;
                     if (IsZoneDuplicate(ZoneModel.ZONEDESC, ZoneModel.ZONEID))
                     {
                         TempData["ErrorMessage"] = "Zone is already exist in the database.";
                         return View(ZoneModel);
                     }
-                    Zone = Mapper.Map<ZONE>(ZoneModel);
+                    Zone = Mapper.Map<ZONE_M>(ZoneModel);
                     ctx.ZONEs.AddOrUpdate(Zone);
                     ctx.SaveChanges();
                 }
@@ -2930,7 +2922,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Zone = new TradingLicense.Entities.ZONE() { ZONEID = id };
+                var Zone = new TradingLicense.Entities.ZONE_M() { ZONEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Zone).State = System.Data.Entity.EntityState.Deleted;
@@ -2956,9 +2948,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.ZONEs.FirstOrDefault(
-                   c => c.ZONEID != id && c.ZONEDESC.ToLower() == name.ToLower())
+                   c => c.ZONEID != id && c.ZONE_DESC.ToLower() == name.ToLower())
                : ctx.ZONEs.FirstOrDefault(
-                   c => c.ZONEDESC.ToLower() == name.ToLower());
+                   c => c.ZONE_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3157,7 +3149,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<ROAD> query = ctx.ROADs;
+                IQueryable<ROAD_M> query = ctx.ROADs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3165,7 +3157,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(roadDesc))
                 {
                     query = query.Where(p =>
-                                        p.ROADDESC.Contains(roadDesc)
+                                        p.ROAD_DESC.Contains(roadDesc)
                                     );
                 }
 
@@ -3234,13 +3226,13 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    ROAD Road;
+                    ROAD_M Road;
                     if (IsRoadDuplicate(RoadModel.ROADDESC, RoadModel.ROADID))
                     {
                         TempData["ErrorMessage"] = "Road is already exist in the database.";
                         return View(RoadModel);
                     }
-                    Road = Mapper.Map<ROAD>(RoadModel);
+                    Road = Mapper.Map<ROAD_M>(RoadModel);
                     ctx.ROADs.AddOrUpdate(Road);
                     ctx.SaveChanges();
                 }
@@ -3266,7 +3258,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var Road = new TradingLicense.Entities.ROAD() { ROADID = id };
+                var Road = new TradingLicense.Entities.ROAD_M() { ROADID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(Road).State = System.Data.Entity.EntityState.Deleted;
@@ -3292,9 +3284,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.ROADs.FirstOrDefault(
-                   c => c.ROADID != id && c.ROADDESC.ToLower() == name.ToLower())
+                   c => c.ROADID != id && c.ROAD_DESC.ToLower() == name.ToLower())
                : ctx.ROADs.FirstOrDefault(
-                   c => c.ROADDESC.ToLower() == name.ToLower());
+                   c => c.ROAD_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3379,7 +3371,7 @@ namespace TradingLicense.Web.Controllers
             int filteredRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
-                IQueryable<RACE> query = ctx.RACEs;
+                IQueryable<RACE_M> query = ctx.RACEs;
                 totalRecord = query.Count();
 
                 #region Filtering
@@ -3388,7 +3380,7 @@ namespace TradingLicense.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(raceDesc))
                 {
                     query = query.Where(p =>
-                                        p.RACEDESC.Contains(raceDesc)
+                                        p.RACE_DESC.Contains(raceDesc)
                                     );
                 }
 
@@ -3457,14 +3449,14 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    RACE raceType;
+                    RACE_M raceType;
                     if (IsRaceDuplicate(raceTypeModel.RACEDESC, raceTypeModel.RACEID))
                     {
                         TempData["ErrorMessage"] = "Race Type is already exist in the database.";
                         return View(raceTypeModel);
                     }
 
-                    raceType = Mapper.Map<RACE>(raceTypeModel);
+                    raceType = Mapper.Map<RACE_M>(raceTypeModel);
                     ctx.RACEs.AddOrUpdate(raceType);
                     ctx.SaveChanges();
                 }
@@ -3490,7 +3482,7 @@ namespace TradingLicense.Web.Controllers
         {
             try
             {
-                var raceType = new TradingLicense.Entities.RACE() { RACEID = id };
+                var raceType = new TradingLicense.Entities.RACE_M() { RACEID = id };
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ctx.Entry(raceType).State = System.Data.Entity.EntityState.Deleted;
@@ -3516,9 +3508,9 @@ namespace TradingLicense.Web.Controllers
             {
                 var existObj = id != null ?
                ctx.RACEs.FirstOrDefault(
-                   c => c.RACEID != id && c.RACEDESC.ToLower() == name.ToLower())
+                   c => c.RACEID != id && c.RACE_DESC.ToLower() == name.ToLower())
                : ctx.RACEs.FirstOrDefault(
-                   c => c.RACEDESC.ToLower() == name.ToLower());
+                   c => c.RACE_DESC.ToLower() == name.ToLower());
                 return existObj != null;
             }
         }
@@ -3608,6 +3600,9 @@ namespace TradingLicense.Web.Controllers
                     int licTypeID = Convert.ToInt32(Id);
                     var licType = ctx.LIC_TYPEs.Where(a => a.LIC_TYPEID == licTypeID).FirstOrDefault();
                     licTypeModel = Mapper.Map<LicenseTypeModel>(licType);
+                    licTypeModel.RequiredDocs = ctx.RD_L_LTs.Where(a => a.LIC_TYPEID == licTypeID).Select(a => a.RD_ID).ToList();
+                    var requiredDocs = ctx.RDs;
+                    ViewBag.AllRequiredDocs = Mapper.Map<List<RequiredDocModel>>(requiredDocs.ToList());
                 }
             }
 
@@ -3633,9 +3628,33 @@ namespace TradingLicense.Web.Controllers
                         TempData["ErrorMessage"] = "License Type already exists in the database.";
                         return View(licTypeModel);
                     }
-
+                    
                     licType = Mapper.Map<LIC_TYPE>(licTypeModel);
+                    licType.ACTIVE = true;
                     ctx.LIC_TYPEs.AddOrUpdate(licType);
+
+                    List<RD_L_LT> addReqDocs = new List<RD_L_LT>();
+                    var selectedDocs = ctx.RD_L_LTs.Where(bt => bt.LIC_TYPEID == licType.LIC_TYPEID).ToList();
+                    foreach (var rd in licTypeModel.RequiredDocs)
+                    {
+                        if (!selectedDocs.Any(sd => sd.RD_ID == rd))
+                        {
+                            addReqDocs.Add(new RD_L_LT { LIC_TYPEID = licType.LIC_TYPEID, RD_ID = rd });
+                        }
+                    }
+                    foreach (var btReqDoc in selectedDocs)
+                    {
+                        if (!licTypeModel.RequiredDocs.Any(rd => rd == btReqDoc.RD_ID))
+                        {
+                            ctx.Entry(btReqDoc).State = System.Data.Entity.EntityState.Deleted;
+                        }
+                    }
+                    
+                    if (addReqDocs.Count > 0)
+                    {
+                        ctx.RD_L_LTs.AddOrUpdate(addReqDocs.ToArray());
+                    }
+                    
                     ctx.SaveChanges();
                 }
 
@@ -3670,5 +3689,197 @@ namespace TradingLicense.Web.Controllers
         }
 
         #endregion
+
+        #region EntmtPremiseFee
+
+        /// <summary>
+        /// GET: EntmtPremiseFee
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult EntmtPremiseFee()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Get Entmt Entmt Premise Fee Data
+        /// </summary>
+        /// <param name="requestModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult EntmtPremiseFee([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string premiseDesc)
+        {
+            List<TradingLicense.Model.EntmtPremiseFeeModel> EntmtPremiseFee = new List<Model.EntmtPremiseFeeModel>();
+            int totalRecord = 0;
+            int filteredRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                IQueryable<E_P_FEE> query = ctx.E_P_FEEs;
+                totalRecord = query.Count();
+
+                #region Filtering
+                // Apply filters for searching
+
+                if (!string.IsNullOrWhiteSpace(premiseDesc))
+                {
+                    query = query.Where(p =>
+                                        p.E_P_DESC.Contains(premiseDesc)
+                                    );
+                }
+
+                filteredRecord = query.Count();
+
+                #endregion Filtering
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = String.Empty;
+
+                foreach (var column in sortedColumns)
+                {
+                    orderByString += orderByString != String.Empty ? "," : "";
+                    orderByString += (column.Data) +
+                      (column.SortDirection ==
+                      Column.OrderDirection.Ascendant ? " asc" : " desc");
+                }
+
+                query = query.OrderBy(orderByString == string.Empty ? "EP_FEEID asc" : orderByString);
+
+                #endregion Sorting
+
+                // Paging
+                query = query.Skip(requestModel.Start).Take(requestModel.Length);
+
+                EntmtPremiseFee = Mapper.Map<List<EntmtPremiseFeeModel>>(query.ToList());
+
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, EntmtPremiseFee, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get EntmtPremiseFee Data by ID
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult ManageEntmtPremiseFee(int? Id)
+        {
+            EntmtPremiseFeeModel EntmtPremiseFeeModel = new EntmtPremiseFeeModel();
+            EntmtPremiseFeeModel.ACTIVE = true;
+            if (Id != null && Id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    int premiseTypeID = Convert.ToInt32(Id);
+                    var EntmtPremiseFee = ctx.E_P_FEEs.Where(a => a.E_P_FEEID == premiseTypeID).FirstOrDefault();
+                    EntmtPremiseFeeModel = Mapper.Map<EntmtPremiseFeeModel>(EntmtPremiseFee);
+                }
+            }
+
+            return View(EntmtPremiseFeeModel);
+        }
+
+        /// <summary>
+        /// Save Entmt Premise Fee Infomration
+        /// </summary>
+        /// <param name="EntmtPremiseFeeModel"></param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult ManagePremiseType(EntmtPremiseFeeModel EntmtPremiseFeeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    E_P_FEE EntmtPremiseFee;
+                    if (IsEntmtPremiseTypeDuplicate(EntmtPremiseFeeModel.E_P_DESC, EntmtPremiseFeeModel.E_P_FEEID))
+                    {
+                        TempData["ErrorMessage"] = "Entmt Premise Fee is already exist in the database.";
+                        return View(EntmtPremiseFeeModel);
+                    }
+
+                    EntmtPremiseFee = Mapper.Map<E_P_FEE>(EntmtPremiseFeeModel);
+                    ctx.E_P_FEEs.AddOrUpdate(EntmtPremiseFee);
+                    ctx.SaveChanges();
+                }
+
+                TempData["SuccessMessage"] = "Entmt Premise Fee saved successfully.";
+
+                return RedirectToAction("EntmtPremiseFee");
+            }
+            else
+            {
+                return View(EntmtPremiseFeeModel);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete Entmt Premise Fee Information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteEntmtPremiseFee(int id)
+        {
+            try
+            {
+                var EntmtPremiseFee = new TradingLicense.Entities.E_P_FEE() { E_P_FEEID = id };
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    ctx.Entry(EntmtPremiseFee).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+                }
+                return Json(new { success = true, message = " Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Error While Delete Record" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Check Duplicate
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool IsEntmtPremiseTypeDuplicate(string name, int? id = null)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var existObj = id != null ?
+               ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_FEEID != id && c.E_P_DESC.ToLower() == name.ToLower())
+               : ctx.E_P_FEEs.FirstOrDefault(
+                   c => c.E_P_DESC.ToLower() == name.ToLower());
+                return existObj != null;
+            }
+        }
+
+        /// <summary>
+        /// Add New Entmt Premise Fee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEntmtPremiseFee(int id, string PTypeDesc)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                E_P_FEE pre = new E_P_FEE();
+                pre.E_P_DESC = PTypeDesc;
+                ctx.E_P_FEEs.Add(pre);
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Jenis Premis Hiburan berjaya ditambah.";
+
+            }
+
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
+        }
+
+        #endregion
+
     }
 }

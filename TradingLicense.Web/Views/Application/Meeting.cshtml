@@ -9,12 +9,12 @@
     <div class="header">
         <div class="row">
             <div class="col-lg-10">
-                <h4>Senarai Permohonan Baru</h4>
+                <h4>Senarai Mesyuarat</h4>
             </div>
             <div class="col-lg-2">
-                @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel2))
+                @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Meeting, SystemEnum.PageRight.CrudLevel2))
                 {
-                    <button type="button" class="btn btn-primary" onclick="addApplication();">Permohonan Baru</button>
+                    <button type="button" class="btn btn-primary" onclick="addMeeting();">Cipta Mesyuarat Baru</button>
                 }
             </div>
         </div>
@@ -35,8 +35,8 @@
             </form>
         </div>
     </div>
-    <div class="grid" id="divApplicationTable">
-        <table cellspacing="0" class="table table-striped" id="tblApplication"></table>
+    <div class="grid" id="divMeetingTable">
+        <table cellspacing="0" class="table table-striped" id="tblMeeting"></table>
     </div>
 </div>
 
@@ -45,8 +45,9 @@
                     var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel3)';
                     var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel4)';
                     var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel)';
+                    var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
+                    
                     $(function () {
-
                         $('.form-control').keypress(function (e) {
                             if (e.which == 13) {
                                 bindTable();
@@ -60,9 +61,9 @@
                         }
                         bindTable();
                     });
-                    var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
-                    function addApplication() {
-                        var link = '@Url.Action("ManageApplication", "Application")';
+
+                    function addMeeting() {
+                        var link = '@Url.Action("ManageMeeting", "Application")';
                         window.location.href = link;
                     }
 
@@ -70,12 +71,12 @@
 
                         if (!isValidSearchCriteria('SearchCriteria')) { return false; }
 
-                        if ($.fn.DataTable.isDataTable("#tblApplication")) {
-                            $('#tblApplication').dataTable().fnDestroy();
-                            $('#divApplicationTable').html('<table class="table table-striped" width="100%"  id="tblApplication"></table>');
+                        if ($.fn.DataTable.isDataTable("#tblMeeting")) {
+                            $('#tblMeeting').dataTable().fnDestroy();
+                            $('#divMeetingTable').html('<table class="table table-striped" width="100%"  id="tblMeeting"></table>');
                         }
 
-                        table = $("#tblApplication").dataTable({
+                        table = $("#tblMeeting").dataTable({
                             "autoWidth": false,
                             "searching": false,
                             "paging": true,
@@ -89,7 +90,7 @@
                             "serverSide": true,
                             "pageLength": 10,
                             "ajax": {
-                                url: '@Url.Action("Application", "Application")',
+                                url: '@Url.Action("Meeting", "Application")',
                                 type: "POST",
                                 data: bindSearch()
                             },
@@ -104,39 +105,23 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
-                                { "title": "No. Rujukan", "data": "REF_NO" },
-                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
-                                {
-                                    "title": "Kelulusan",
-                                    "data": "MODE",
-                                    "render" : function (data, type, row) {
-                                        switch(data) {
-                                            case 1 : return 'Ekspres'; break;
-                                            case 2 : return 'Pengarah'; break;
-                                            case 3 : return 'Biasa'; break;
-                                            case 4 : return 'Mesyuarat'; break;
-                                            default  : return 'N/A';
-                                        }
-                                    }
-                                },
-                                { "title": "Syarikat", "data": "CompanyName" },
-                                { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
-                                { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
-                                { "title": "Status", "data": "StatusDesc" },
+                                { "title": "Nombor Rujukan", "data": "MT_REF" },
+                                { "title": "Tajuk Mesyuarat", "data": "MT_DESC" },
+                                { "title": "Tarikh", "data": "MT_DATE" },
                                 {
                                     "title": "Tindakan",
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-                                        
-                                        
+
+
                                             if (IsEdit != "False") {
                                                 appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                             }
                                             if (IsDelete != "False") {
                                                 appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                                             }
-                                        
+
                                         return appendstring
                                     },
                                     "width": "100px",
@@ -148,14 +133,14 @@
                                 //hide paging and info when empty datattable
                                 var api = this.api();
                                 if (api.rows({ page: 'current' }).data().length <= 0) {
-                                    $('#tblApplication_info').hide();
-                                    $('#tblApplication_paginate').hide();
-                                    $('#tblApplication_length').hide();
+                                    $('#tblMeeting_info').hide();
+                                    $('#tblMeeting_paginate').hide();
+                                    $('#tblMeeting_length').hide();
                                 }
                                 else {
-                                    $('#tblApplication_info').show();
-                                    $('#tblApplication_paginate').show();
-                                    $('#tblApplication_length').show();
+                                    $('#tblMeeting_info').show();
+                                    $('#tblMeeting_paginate').show();
+                                    $('#tblMeeting_length').show();
                                 }
                                 bindSortingArrow();
                             }
@@ -194,7 +179,7 @@
                         if (x) {
                             $.ajax({
                                 type: "POST",
-                                url: encodeURI('@Url.Action("DeleteApplication", "Application")'),
+                                url: encodeURI('@Url.Action("DeleteMeeting", "Application")'),
                                 data: { "Id": $(item).attr('data-id') },
                                 cache: false,
                                 dataType: 'json',

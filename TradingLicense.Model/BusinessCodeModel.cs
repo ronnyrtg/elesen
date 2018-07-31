@@ -35,11 +35,16 @@ namespace TradingLicense.Model
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
 
-        public string Lic_TypeDesc { get; set; }
+        public string LicenseTypeDesc { get; set; }
         public string SectorDesc { get; set; }
         public string DepartmentIDs { get; set; }
         public List<int> AdditionalDocs { get; set; }
 
         public List<Select2ListItem> selectedDepartments = new List<Select2ListItem>();
+        public List<SectorModel> sectorList = new List<SectorModel>();
+        public List<LicenseTypeModel> licenseList = new List<LicenseTypeModel>();
+        public List<RequiredDocModel> additionalDocsList = new List<RequiredDocModel>();
+        public List<Select2ListItem> periodList = new List<Select2ListItem>();
+
     }
 }

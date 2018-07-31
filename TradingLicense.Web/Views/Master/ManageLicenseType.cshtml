@@ -34,7 +34,26 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row" style="max-height:180px; overflow:auto;">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="control-label">Dokumen Yang Diperlukan Mengikut Jenis Lesen</div><br />
+                        @foreach (var item in ViewBag.AllRequiredDocs)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"
+                                           name="RequiredDocs"
+                                           value="@item.RD_ID"
+                                           @if (Model.RequiredDocs?.Any(rdID => rdID == item.RD_ID) == true) { <text> checked</text> } />
+                                    <span>@item.RD_DESC</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <br />
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">

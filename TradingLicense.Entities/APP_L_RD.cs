@@ -7,10 +7,11 @@ namespace TradingLicense.Entities
         [Key]
         public int APP_L_RDID { get; set; }
         public int APP_ID { get; set; }
+        public int RD_TYPE { get; set; }
         public int RD_ID { get; set; }
-        public int? ATTACHMENTID { get; set; }
+        public int? ATT_ID { get; set; }
 
-        public int BT_ID { get; set; }
+        public virtual ATTACHMENT ATTACHMENT { get; set; }
         public virtual APPLICATION APPLICATION { get; set; }
         public virtual RD RD { get; set; }
     }

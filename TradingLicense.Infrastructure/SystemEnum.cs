@@ -83,10 +83,16 @@ namespace TradingLicense.Infrastructure
             Company = 12,
 
             /// <summary>
-            /// Company
+            /// Application
             /// </summary>
             [Description("Application")]
             Application = 13,
+
+            /// <summary>
+            /// Meeting
+            /// </summary>
+            [Description("Meeting")]
+            Meeting = 14,
 
         }
 

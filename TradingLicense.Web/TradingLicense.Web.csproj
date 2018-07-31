@@ -191,7 +191,6 @@
     <Compile Include="Controllers\ApplicationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
-    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
@@ -203,7 +202,6 @@
     <Compile Include="Pages\Controllers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DocumentService.cs" />
-    <Compile Include="Services\PaymentsService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-datepicker.css" />
@@ -233,10 +231,19 @@
     <Content Include="images\logoPL.jpg" />
     <Content Include="images\logoPL.png" />
     <Content Include="images\wm1.png" />
-    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
-    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
-    <Content Include="Rotativa\wkhtmltoimage.exe" />
-    <Content Include="Rotativa\wkhtmltopdf.exe" />
+    <Content Include="Scripts\cldr.js" />
+    <Content Include="Scripts\cldr\event.js" />
+    <Content Include="Scripts\cldr\supplemental.js" />
+    <Content Include="Scripts\cldr\unresolved.js" />
+    <Content Include="Scripts\globalize.js" />
+    <Content Include="Scripts\globalize\currency.js" />
+    <Content Include="Scripts\globalize\date.js" />
+    <Content Include="Scripts\globalize\message.js" />
+    <Content Include="Scripts\globalize\number.js" />
+    <Content Include="Scripts\globalize\plural.js" />
+    <Content Include="Scripts\globalize\relative-time.js" />
+    <Content Include="Scripts\jquery.validate.globalize.js" />
+    <Content Include="Scripts\jquery.validate.globalize.min.js" />
     <Content Include="Scripts\select2\select2.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -457,7 +464,6 @@
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Master\Users.cshtml" />
     <Content Include="Views\Registration\Index.cshtml" />
-    <Content Include="Views\Master\Userslist.cshtml" />
     <Content Include="Views\Master\ManageUsers.cshtml" />
     <Content Include="Views\Master\Sector.cshtml" />
     <Content Include="Views\Master\ManageSector.cshtml" />
@@ -488,8 +494,8 @@
     <Content Include="Views\Master\ManageRace.cshtml" />
     <Content Include="Views\Application\Application.cshtml" />
     <Content Include="Views\Application\ManageApplication.cshtml" />
-    <Content Include="Views\Application\BC.cshtml" />
-    <Content Include="Views\Application\ManageBC.cshtml" />
+    <Content Include="Views\Application\BusinessCode.cshtml" />
+    <Content Include="Views\Application\ManageBusinessCode.cshtml" />
     <Content Include="Views\Master\LicenseType.cshtml" />
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
@@ -524,6 +530,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="aspnet_client\" />
+    <Folder Include="Documents\Attachment\Application\" />
     <Folder Include="Documents\Attachment\Individual\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Payment\" />

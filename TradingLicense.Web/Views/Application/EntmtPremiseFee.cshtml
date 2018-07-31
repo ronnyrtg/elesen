@@ -1,26 +1,19 @@
 ﻿@using AutoMapper;
 @{
-    ViewBag.Title = "BC";
+    ViewBag.Title = "EntmtPremiseFee";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{
-    List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var sector = ctx.Sectors.ToList();
-        sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
-    }
-}
+
 <div id="divMessage"></div>
 <div class="card">
     <ul class="page-action-button">
-        <li><a href="#" title="Add Business Code" onclick="addBC();"><img src="@Url.Content("~/images/add.png")" alt="Add Business Code"></a></li>
+        <li><a href="#" title="Add Business Code" onclick="addE_P_FEE();"><img src="@Url.Content("~/images/add.png")" alt="Add Business Code"></a></li>
     </ul>
     <div class="header">
-        <h4>Senarai Kod Lesen Berniaga</h4>
+        <h4>Jenis-Jenis Tempat Hiburan</h4>
     </div>
-    <div class="grid" id="divtblBC">
-        <table cellspacing="0" class="table table-striped" id="tblBC"></table>
+    <div class="grid" id="divtblE_P_FEE">
+        <table cellspacing="0" class="table table-striped" id="tblE_P_FEE"></table>
     </div>
 </div>
 @section scripts{
@@ -58,19 +51,19 @@
 
         });
 
-        function addBC() {
-           var link = '@Url.Action("ManageBC", "Application")';
+        function addE_P_FEE() {
+           var link = '@Url.Action("ManageEntmtPremiseFee", "Application")';
              window.location.href = link;
         }
 
      function bindTable() {
 
-         if ($.fn.DataTable.isDataTable("#tblBC")) {
-             $('#tblBC').dataTable().fnDestroy();
-             $('#divtblBC').html('<table class="table table-striped" width="100%"  id="tblBC"></table>');
+         if ($.fn.DataTable.isDataTable("#tblE_P_FEE")) {
+             $('#tblE_P_FEE').dataTable().fnDestroy();
+             $('#divtblE_P_FEE').html('<table class="table table-striped" width="100%"  id="tblE_P_FEE"></table>');
           }
 
-         table = $("#tblBC").dataTable({
+         table = $("#tblE_P_FEE").dataTable({
              "autoWidth": false,
              "searching": false,
              "paging": true,
@@ -85,7 +78,7 @@
              "serverSide": true,
              "pageLength": 10,
                     "ajax": {
-                        url: '@Url.Action("BC", "Application")',
+                        url: '@Url.Action("EntmtPremiseFee", "Application")',
                         type: "POST",
                         data: bindSearch()
                     },
@@ -100,15 +93,19 @@
                                 return meta.settings._iDisplayStart + meta.row + 1;
                             }
                         },
-                        { "title": "Jenis Lesen", "data": "LIC_TYPEDESC" },
-                        { "title": "Kumpulan", "data": "SectorDesc" },
-                        { "title": "Kod Perniagaan", "data": "C_R" },
-                        { "title": "Aktiviti", "data": "C_R_DESC" },
+                        { "title": "Jenis Tempat Hiburan", "data": "E_P_DESC" },
+                        { "title": "Saiz", "data": "E_S_DESC" },
                         {
-                            "title": "Fi (RM/m&sup2;)",
-                            "data": "DEF_RATE",
-                            "render": $.fn.dataTable.render.number( ',', '.', 2, 'RM' ),
+                            "title": "Fi Mengikut Saiz",
+                            "data": "E_S_FEE",
+                            "render": $.fn.dataTable.render.number(',', '.', 2, 'RM'),
                             "orderable": true,
+                        },
+                        { "title": "Objek", "data": "E_S_O_NAME" },
+                        {
+                            "title": "Fi Mengikut Objek",
+                            "data": "E_S_O_FEE",
+                            "render": $.fn.dataTable.render.number(',', '.', 2, 'RM')
                         },
                         {
                             "title": "Aktif",
@@ -129,8 +126,8 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageBC", "Application")?Id=' + row["BCID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["BCID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageEntmtPremiseFee", "Application")?Id=' + row["E_P_FEEID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["E_P_FEEID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",
@@ -143,14 +140,14 @@
                  //hide paging and info when empty datattable
                  var api = this.api();
                  if (api.rows({ page: 'current' }).data().length <= 0) {
-                     $('#tblBC_info').hide();
-                     $('#tblBC_paginate').hide();
-                     $('#tblBC_length').hide();
+                     $('#tblE_P_FEE_info').hide();
+                     $('#tblE_P_FEE_paginate').hide();
+                     $('#tblE_P_FEE_length').hide();
                  }
                  else {
-                     $('#tblBC_info').show();
-                     $('#tblBC_paginate').show();
-                     $('#tblBC_length').show();
+                     $('#tblE_P_FEE_info').show();
+                     $('#tblE_P_FEE_paginate').show();
+                     $('#tblE_P_FEE_length').show();
                  }
                  bindSortingArrow();
              }
@@ -158,7 +155,7 @@
         }
 
         function getDataTableSorage() {
-            var businessCodeSearch = JSON.parse(localStorage.getItem('DataTables_BC_Search'));
+            var businessCodeSearch = JSON.parse(localStorage.getItem('DataTables_E_P_FEE_Search'));
             if (businessCodeSearch != null) {
                 if ($('#txtcodeNumber').val() == "" && businessCodeSearch.codeNumber != "") {
                     $('#txtcodeNumber').val(businessCodeSearch.codeNumber);
@@ -190,7 +187,7 @@
             param["sectorID"] = $('#Sectorlist').val();
 
             // Set Local Storage
-            localStorage.setItem('DataTables_BC_Search', JSON.stringify(param));
+            localStorage.setItem('DataTables_E_P_FEE_Search', JSON.stringify(param));
 
             return param;
         }
@@ -215,7 +212,7 @@
             if (x) {
                 $.ajax({
                     type: "POST",
-                    url: encodeURI('@Url.Action("DeleteBC", "Application")'),
+                    url: encodeURI('@Url.Action("DeleteEntmtPremiseFee", "Application")'),
                     data: { "Id": $(item).attr('data-id') },
                     cache: false,
                     dataType: 'json',

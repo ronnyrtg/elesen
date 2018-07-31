@@ -53,9 +53,13 @@
     <Compile Include="ADDRESS.cs" />
     <Compile Include="APPLICATION.cs" />
     <Compile Include="APP_L_BC.cs" />
+    <Compile Include="APP_L_MT.cs" />
+    <Compile Include="BANK_M.cs" />
     <Compile Include="BC.cs" />
     <Compile Include="BT.cs" />
     <Compile Include="CATATAN.cs" />
+    <Compile Include="CITIZEN_M.cs" />
+    <Compile Include="PAYTRAN_M.cs" />
     <Compile Include="RD_L_BT.cs" />
     <Compile Include="LIC_TYPE.cs" />
     <Compile Include="ATTACHMENT.cs" />
@@ -70,7 +74,7 @@
     <Compile Include="RD.cs" />
     <Compile Include="ROUTEUNIT.cs" />
     <Compile Include="APP_L_IND.cs" />
-    <Compile Include="RACE.cs" />
+    <Compile Include="RACE_M.cs" />
     <Compile Include="LOCATION.cs" />
     <Compile Include="COMMENT.cs" />
     <Compile Include="APP_L_RD.cs" />
@@ -79,15 +83,14 @@
     <Compile Include="RD_L_BC.cs" />
     <Compile Include="RD_L_LT.cs" />
     <Compile Include="APPSTATUS.cs" />
-    <Compile Include="PAY_DUE.cs" />
-    <Compile Include="PAY_REC.cs" />
     <Compile Include="PREMISETYPE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ROAD.cs" />
+    <Compile Include="ROAD_M.cs" />
     <Compile Include="ROLE.cs" />
     <Compile Include="SECTOR.cs" />
+    <Compile Include="SUBZONE_M.cs" />
     <Compile Include="USERS.cs" />
-    <Compile Include="ZONE.cs" />
+    <Compile Include="ZONE_M.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

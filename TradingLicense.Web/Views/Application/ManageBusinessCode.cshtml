@@ -1,29 +1,9 @@
-﻿@using AutoMapper;
-@model TradingLicense.Model.BCModel
+﻿@model TradingLicense.Model.BusinessCodeModel
 @{
     ViewBag.Title = "ManageBC";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{
-    List<TradingLicense.Model.SectorModel> sectorList = new List<TradingLicense.Model.SectorModel>();
-    List<TradingLicense.Model.AdditionalDocModel> additionalDocsList = new List<TradingLicense.Model.AdditionalDocModel>();
-    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
-    {
-        var sector = ctx.Sectors.ToList();
-        sectorList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sector);
 
-        var additionaDocs = ctx.AdditionalDocs.ToList();
-        additionalDocsList = Mapper.Map<List<TradingLicense.Model.AdditionalDocModel>>(additionaDocs);
-    }
-
-
-
-    List<SelectListItem> periodList = new List<SelectListItem>();
-    periodList.Add(new SelectListItem { Text = "Tahun", Value = "1" });
-    periodList.Add(new SelectListItem { Text = "Bulan", Value = "2" });
-    periodList.Add(new SelectListItem { Text = "Minggu", Value = "3" });
-    periodList.Add(new SelectListItem { Text = "Hari", Value = "4" });
-}
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
@@ -34,20 +14,48 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.BC_ID)
+            @Html.HiddenFor(m => m.LIC_TYPEID)
 
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                        @if (Model.LIC_TYPEID > 0)
+                        {
+                            <div class="well well-sm">@Model.LicenseTypeDesc</div>
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(Model.licenseList, "LIC_TYPEID", "LIC_TYPEDESC"), "Select", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.LIC_TYPEID)
+                        }                       
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.C_R, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.C_R)
+                    </div>
+                </div>
+            </div>
+            if (Model.SECTORID > 0 || Model.BC_ID == 0)
+            {
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
                         <div class="control-label">Kumpulan Kod<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SECTORID, new SelectList(sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.SECTORID, new SelectList(Model.sectorList, "SectorID", "SectorDesc"), "Select", new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.SECTORID)
                     </div>
                 </div>
             </div>
-
+            }
 
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
                         <div class="control-label">Aktiviti Perniagaan<span class="cfont">*</span></div>
                         @Html.TextAreaFor(m => m.C_R_DESC, new { @class = "form-control", @maxlength = "255" })
@@ -55,9 +63,10 @@
                     </div>
                 </div>
             </div>
-
+            if (Model.DEF_RATE > 0 || Model.BC_ID == 0)
+            {
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
                         <div class="control-label">Fi Mengikut meter persegi<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.DEF_RATE, new { @class = "form-control allownumericwithdecimal" })
@@ -65,9 +74,11 @@
                     </div>
                 </div>
             </div>
-
+            }
+            if (Model.BASE_FEE > 0 || Model.BC_ID == 0)
+            {
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
                         <div class="control-label">Fi Mengikut Setiap Lesen<span class="cfont">*</span></div>
                         @Html.TextBoxFor(m => m.BASE_FEE, new { @class = "form-control allownumericwithdecimal" })
@@ -75,16 +86,79 @@
                     </div>
                 </div>
             </div>
-
+            }
+            if (Model.O_FEE > 0 || Model.BC_ID == 0)
+            {
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-6">
                     <div class="form-group">
-                        <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
+                        <div class="control-label">Objek<span class="cfont">*</span></div>
+                        @Html.TextAreaFor(m => m.O_NAME, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.O_NAME)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Fi Mengikut Setiap Objek<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.O_FEE, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.ValidationMessageFor(m => m.O_FEE)
+                    </div>
+                </div>
+            </div>
+            }
+            if (Model.LIC_TYPEID == 8 || Model.BC_ID == 0)
+            {
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Waktu Operasi<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.DEF_HOUR, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.DEF_HOUR)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Fi Mengikut Setiap Jam Melebihi Waktu Operasi<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.EX_HOUR_FEE, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.ValidationMessageFor(m => m.EX_HOUR_FEE)
+                    </div>
+                </div>
+            </div>
+            }
+            if (Model.LIC_TYPEID == 5 || Model.BC_ID == 0)
+            {
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Deposit bagi setiap banting<span class="cfont">*</span></div>
+                        @Html.TextBoxFor(m => m.DEPOSIT, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.ValidationMessageFor(m => m.DEPOSIT)
+                    </div>
+                </div>
+            </div>
+            }
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Fi Lesen<span class="cfont">*</span></div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
+                @if (Model.P_FEE > 0 || Model.BC_ID == 0)
+                {
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.P_FEE, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.P_FEE)
+                    </div>
+                </div>
+                }
                 <div class="col-sm-1">
                     <div class="form-group">
                         @Html.TextBoxFor(m => m.PERIOD_Q, new { @class = "form-control" })
@@ -93,7 +167,7 @@
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        @Html.DropDownListFor(model => model.PERIOD, new SelectList(periodList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.PERIOD, new SelectList(Model.periodList, "id", "text"), new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -104,7 +178,7 @@
                         <div class="checkbox">
                             <label>
                                 @Html.CheckBoxFor(model => model.ACTIVE)
-                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
                     </div>
@@ -124,15 +198,15 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Dokumen Tambahan</div>
-                        @foreach (var item in additionalDocsList)
+                        @foreach (var item in Model.additionalDocsList)
                         {
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox"
                                            name="AdditionalDocs"
-                                           value="@item.AdditionalDocID"
-                                           @if (Model.AdditionalDocs?.Any(adID => adID == item.AdditionalDocID) == true) { <text> checked</text> } />
-                                    <span>@item.DocDesc</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                           value="@item.RD_ID"
+                                           @if (Model.AdditionalDocs?.Any(adID => adID == item.RD_ID) == true) { <text> checked</text> } />
+                                    <span>@item.RD_DESC</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                                 </label>
                             </div>
                         }
@@ -224,7 +298,7 @@
             errorMessage(actionError);
         }
         function back() {
-            var link = '@Url.Action("BC", "Application")';
+            var link = '@Url.Action("BusinessCode", "Application")';
             window.location.href = link;
         }
 

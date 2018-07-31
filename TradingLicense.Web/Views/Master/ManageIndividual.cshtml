@@ -19,23 +19,23 @@
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var companies = ctx.Companies.ToList();
+        var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
 
-        if (Model.Individual != null && Model.Individual.AttachmentID != 0)
+        if (Model.Individual != null && Model.Individual.ATT_ID != 0)
         {
-            profilePic = ctx.Attachments.Where(a => a.AttachmentID == Model.Individual.AttachmentID).ToList()[0].FileName;
+            profilePic = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.Individual.ATT_ID).ToList()[0].FILENAME;
         }
     }
 
     string individualLoc = string.Empty;
-    if(Model.Individual == null || Model.Individual.IndividualID == 0)
+    if(Model.Individual == null || Model.Individual.IND_ID == 0)
     {
         individualLoc = Model.TempIndividualLoc;
     }
     else
     {
-        individualLoc = Model.Individual.IndividualID.ToString("D6");
+        individualLoc = Model.Individual.IND_ID.ToString("D6");
     }
 }
 
@@ -46,14 +46,14 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmIndividual", id = "frmIndividual" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.Individual.IndividualID)
+            @Html.HiddenFor(m => m.Individual.IND_ID)
 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Pemohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.Individual.FullName, new { @class = "form-control", @maxlength = "50" })
-                        @Html.ValidationMessageFor(m => m.Individual.FullName)
+                        @Html.TextBoxFor(m => m.Individual.FULLNAME, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.Individual.FULLNAME)
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                         </div>
                         @if (profilePic != null && profilePic !="")
                             {
-                            int value = Model.Individual.IndividualID;
+                            int value = Model.Individual.IND_ID;
                             string text = value.ToString("D6");
                             <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
                         }
@@ -82,7 +82,7 @@
                                 <input type="button" class="btn btn-default" id="btnUpload" value="Tukar Gambar" />
                             </div>
                         </div>
-                        @Html.HiddenFor(m => m.Individual.AttachmentID)
+                        @Html.HiddenFor(m => m.Individual.ATT_ID)
                         @Html.HiddenFor(m => m.TempIndividualLoc)
                     </div>
                 </div>
@@ -92,8 +92,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">No. Kad Pengenalan/No. Pasport<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.Individual.MykadNo, new { @class = "form-control", @maxlength = "30" })
-                        @Html.ValidationMessageFor(m => m.Individual.MykadNo)
+                        @Html.TextBoxFor(m => m.Individual.MYKADNO, new { @class = "form-control", @maxlength = "30" })
+                        @Html.ValidationMessageFor(m => m.Individual.MYKADNO)
                     </div>
                 </div>
             </div>
@@ -102,8 +102,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Warganegara<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.Individual.NationalityID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Individual.NationalityID)
+                        @Html.DropDownListFor(m => m.Individual.NAT_ID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.NAT_ID)
                     </div>
                 </div>
             </div>
@@ -112,8 +112,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Alamat<span class="cfont">*</span></div>
-                        @Html.TextAreaFor(m => m.Individual.AddressIC, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.Individual.AddressIC)
+                        @Html.TextAreaFor(m => m.Individual.ADD_IC, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.ADD_IC)
                     </div>
                 </div>
             </div>
@@ -122,8 +122,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Email Individu</div>
-                        @Html.TextBoxFor(m => m.Individual.IndividualEmail, new { @class = "form-control", @maxlength = "200" })
-                        @Html.ValidationMessageFor(m => m.Individual.IndividualEmail)
+                        @Html.TextBoxFor(m => m.Individual.IND_EMAIL, new { @class = "form-control", @maxlength = "200" })
+                        @Html.ValidationMessageFor(m => m.Individual.IND_EMAIL)
                     </div>
                 </div>
             </div>
@@ -132,8 +132,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nombor Telefon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.Individual.PhoneNo, new { @class = "form-control", @maxlength = "20" })
-                        @Html.ValidationMessageFor(m => m.Individual.PhoneNo)
+                        @Html.TextBoxFor(m => m.Individual.PHONE, new { @class = "form-control", @maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.Individual.PHONE)
                     </div>
                 </div>
             </div>
@@ -142,8 +142,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Jantina</div>
-                        @Html.DropDownListFor(m => m.Individual.Gender, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Individual.Gender)
+                        @Html.DropDownListFor(m => m.Individual.GENDER, new SelectList(genderList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.GENDER)
                     </div>
                 </div>
             </div>
@@ -161,7 +161,7 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                @Html.CheckBoxFor(model => model.Individual.Active)
+                                @Html.CheckBoxFor(model => model.Individual.ACTIVE)
                                 <span>Aktif</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
