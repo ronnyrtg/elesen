@@ -529,6 +529,7 @@
     <Content Include="Views\Report\ZoneMasterPdf.cshtml" />
     <Content Include="Views\Report\SubzoneMaster.cshtml" />
     <Content Include="Views\Report\SubzoneMasterPdf.cshtml" />
+    <Content Include="Views\Report\CitizenMaster.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

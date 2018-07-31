@@ -143,6 +143,19 @@ namespace TradingLicense.Web.Controllers
             return new ViewAsPdf();
         }
 
+        public ActionResult CitizenMaster()
+        {
+            List<CitizenModel> items = new List<CitizenModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var citizens = ctx.CITIZENs.ToList();
+                items = Mapper.Map<List<CitizenModel>>(citizens);
+            }
+            ViewBag.citizens = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
 
         public ActionResult OwnerMaster()
         {
