@@ -4939,7 +4939,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 int? rollTemplateID = ProjectSession.User?.ROLEID;
-                IQueryable<APPLICATION> query = ctx.APPLICATIONs.Where(a => a.APPSTATUSID == (int)Enums.PAStausenum.meeting);
+                IQueryable<APPLICATION> query = ctx.APPLICATIONs.Where(a => a.APPSTATUSID == (int)Enums.PAStausenum.directorcheck);
 
                 #region Sorting
                 // Sorting

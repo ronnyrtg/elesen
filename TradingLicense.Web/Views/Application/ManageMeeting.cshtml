@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
-                    <div class="control-label">Tajuk Mesyuarat</div>
+                    <div class="control-label">Tarikh Mesyuarat</div>
                     @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                     <span class="text-danger LocationVal"></span>
                 </div>
@@ -129,19 +129,11 @@
                     { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
                     { "title": "Status", "data": "StatusDesc" },
                     {
-                        "title": "Tindakan",
+                        "title": "Pilih",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                                        
-                                        
-                                if (IsEdit != "False") {
-                                    appendstring += '<a  href="@Url.Action("ManageMeeting", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
-                                }
-                                if (IsDelete != "False") {
-                                    appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                }
-                                        
+                            appendstring += '<div class="checkbox"> <label for="chkreqdoc_' + row["APP_ID"] + '"> <input id="chkreqdoc_' + row["APP_ID"] + '"  value="' + row["APP_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';                                                                                                               
                             return appendstring
                         },
                         "width": "100px",
