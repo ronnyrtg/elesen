@@ -30,6 +30,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<LOGINLOG, LoginLogModel>();
                 cfg.CreateMap<USERS, UsersModel>();
                 cfg.CreateMap<ZONE_M, ZoneModel>().ForMember(dest => dest.zoneCombineList, opt => opt.Ignore());
+                cfg.CreateMap<SUBZONE_M, SubzoneModel>();
                 cfg.CreateMap<ROAD_M, RoadModel>();
                 cfg.CreateMap<UsersModel, USERS>().ReverseMap();
                 cfg.CreateMap<RegistrationModel, USERS>().ReverseMap();                

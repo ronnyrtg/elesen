@@ -13,8 +13,6 @@ namespace TradingLicense.Web.Controllers
 {
     public class ReportController : BaseController
     {
-        private Func<ZONE_M, Select2ListItem> fnZoneDisplayFormat = ind => new Select2ListItem { id = ind.ZONEID, text = $" Kod {ind.ZONE_CODE} | {ind.ZONE_DESC}" };
-
         // GET /Report
         public ActionResult Index()
         {
@@ -59,22 +57,32 @@ namespace TradingLicense.Web.Controllers
 
         public ActionResult ZoneMaster()
         {
-            ZoneModel zoneModel = new ZoneModel();
-            List<Select2ListItem> zoneList = new List<Select2ListItem>();
-            List<TradingLicense.Model.ZoneModel> zoneAllList = new List<TradingLicense.Model.ZoneModel>();
-
-            using (var ctx = new LicenseApplicationContext())
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
             {
-                zoneList = ctx.ZONEs
-                .Select(fnZoneDisplayFormat)
-                .ToList();
-
-                var zoneAll = ctx.ZONEs.ToList();
-                zoneAllList = Mapper.Map<List<TradingLicense.Model.ZoneModel>>(zoneAll);
+                var licenseCodes = ctx.ZONEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.ZONE_CODE + " - " + item.ZONE_DESC, Value = item.ZONEID.ToString() });
+                }
             }
-
-            zoneModel.zoneCombineList = zoneList; 
+            ViewBag.ZoneList = items;
             return View();
+        }
+
+        // Display generated pdf
+        public ActionResult ZoneMasterPdf(string LicenseCode)
+        {
+            List<ZoneModel> items = new List<ZoneModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var zones = ctx.ZONEs.ToList();
+                items = Mapper.Map<List<ZoneModel>>(zones);
+            }
+            ViewBag.zones = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult RoadMaster()

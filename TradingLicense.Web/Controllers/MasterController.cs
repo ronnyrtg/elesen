@@ -2891,7 +2891,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ZONE_M Zone;
-                    if (IsZoneDuplicate(ZoneModel.ZONEDESC, ZoneModel.ZONEID))
+                    if (IsZoneDuplicate(ZoneModel.ZONE_DESC, ZoneModel.ZONEID))
                     {
                         TempData["ErrorMessage"] = "Zone is already exist in the database.";
                         return View(ZoneModel);
@@ -3227,7 +3227,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     ROAD_M Road;
-                    if (IsRoadDuplicate(RoadModel.ROADDESC, RoadModel.ROADID))
+                    if (IsRoadDuplicate(RoadModel.ROAD_DESC, RoadModel.ROADID))
                     {
                         TempData["ErrorMessage"] = "Road is already exist in the database.";
                         return View(RoadModel);
