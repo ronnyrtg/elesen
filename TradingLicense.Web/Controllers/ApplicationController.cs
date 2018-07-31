@@ -36,6 +36,7 @@ namespace TradingLicense.Web.Controllers
         private Func<E_P_FEE, Select2ListItem> fnSelectPremiseFee = ep => new Select2ListItem { id = ep.E_P_FEEID, text = $"{ep.E_P_DESC}~{ep.E_S_DESC}" };
         private Func<INDIVIDUAL, Select2ListItem> fnSelectIndividualFormat = ind => new Select2ListItem { id = ind.IND_ID, text = $"{ind.FULLNAME} ({ind.MYKADNO})" };
 
+        #region Application List Grid
         /// <summary>
         /// GET: Application
         /// </summary>
@@ -45,8 +46,7 @@ namespace TradingLicense.Web.Controllers
         {
             return View();
         }
-
-        #region Application List Grid
+       
         /// <summary>
         /// Get Application Data
         /// </summary>
@@ -4846,6 +4846,85 @@ namespace TradingLicense.Web.Controllers
                 }
                 return null;
             }
+        }
+        #endregion
+
+        #region Meeting List Grid
+        /// <summary>
+        /// GET: Meeting
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizationPrivilegeFilter(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel)]
+        public ActionResult Meeting()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Get Meeting Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Meeting([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
+        {
+            List<APP_L_MTModel> Meeting;
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                int? rollTemplateID = ProjectSession.User?.ROLEID;
+                IQueryable<APP_L_MT> query = ctx.APP_L_MTs;
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<APP_L_MTModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "MT_DATE desc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                Meeting = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Meeting, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region ManageMeeting
+        /// <summary>
+        /// Get Application Data by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult ManageMeeting(int? id)
+        {
+            APP_L_MTModel meetingModel = new APP_L_MTModel();
+
+            if (id != null && id > 0)
+            {
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var meeting = ctx.APP_L_MTs.Where(a => a.APP_L_MTID == id);
+                    meetingModel = Mapper.Map<APP_L_MTModel>(meeting);
+                }
+            }
+            else
+            {
+                ApplicationModel applicationModel = new ApplicationModel();
+                using (var ctx = new LicenseApplicationContext())
+                {
+                    var application = ctx.APPLICATIONs.Where(a => a.APPSTATUSID == (int)Enums.PAStausenum.meeting);
+                    applicationModel = Mapper.Map<ApplicationModel>(application);
+                }
+            }
+
+            return View(meetingModel);
         }
         #endregion
 

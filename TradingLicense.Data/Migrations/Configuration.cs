@@ -519,6 +519,15 @@ namespace TradingLicense.Data.Migrations
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=6,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=3,ROLEID=7,SCREENID=13},
                 new ACCESSPAGE {PAGEDESC="Application",CRUDLEVEL=4,ROLEID=8,SCREENID=13},
+
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=0,ROLEID=1,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=2,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=3,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=4,ROLEID=4,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=0,ROLEID=5,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=4,ROLEID=6,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=7,SCREENID=14},
+                new ACCESSPAGE {PAGEDESC="Meeting",CRUDLEVEL=1,ROLEID=8,SCREENID=14},
             };
             accesspages.ForEach(s => context.ACCESSPAGEs.Add(s));
             context.SaveChanges();

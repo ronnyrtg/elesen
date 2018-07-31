@@ -1,0 +1,225 @@
+﻿@model TradingLicense.Model.APP_L_MTModel
+@using TradingLicense.Infrastructure;
+@using TradingLicense.Web.Classes;
+@{
+    ViewBag.Title = "Application";
+    int? userRollTemplate = TradingLicense.Infrastructure.ProjectSession.User?.ROLEID;
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <div class="row">
+            <div class="col-lg-10">
+                <h4>Kemaskini Senarai Permohonan Dalam Mesyuarat</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-lg-6">
+            <div class="form-group">
+                <div class="control-label">Nombor Rujukan Mesyuarat</div>
+                @Html.TextBox("refNo", null, new { @class = "form-control" })
+                <span class="text-danger BannerCodeVal"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-lg-6">
+            <div class="form-group">
+                <div class="control-label">Tajuk Mesyuarat</div>
+                @Html.TextBox("titleMT", null, new { @class = "form-control" })
+                <span class="text-danger LocationVal"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-lg-6">
+            <div class="form-group">
+                <div class="control-label">Tajuk Mesyuarat</div>
+                @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                <span class="text-danger LocationVal"></span>
+            </div>
+        </div>
+    </div>
+    <div class="grid" id="divApplicationTable">
+        <table cellspacing="0" class="table table-striped" id="tblApplication"></table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel3)';
+        var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel4)';
+        var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel)';
+        var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
+
+        $(function () {
+            // This will make every element with the class "date-picker" into a DatePicker element
+            $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
+        })
+
+        $(function () {
+
+            $('.form-control').keypress(function (e) {
+                if (e.which == 13) {
+                    bindTable();
+                    return false;
+                }
+            });
+
+            var success = '@(TempData["SuccessMessage"])';
+            if (success != null && success != "") {
+                successMessage(success);
+            }
+            bindTable();
+        });
+                                       
+        function bindTable() {
+
+            if (!isValidSearchCriteria('SearchCriteria')) { return false; }
+
+            if ($.fn.DataTable.isDataTable("#tblApplication")) {
+                $('#tblApplication').dataTable().fnDestroy();
+                $('#divApplicationTable').html('<table class="table table-striped" width="100%"  id="tblApplication"></table>');
+            }
+
+            table = $("#tblApplication").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("Application", "Application")',
+                    type: "POST",
+                    data: bindSearch()
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "No. Rujukan", "data": "REF_NO" },
+                    { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
+                    {
+                        "title": "Kelulusan",
+                        "data": "MODE",
+                        "render" : function (data, type, row) {
+                            switch(data) {
+                                case 1 : return 'Ekspres'; break;
+                                case 2 : return 'Pengarah'; break;
+                                case 3 : return 'Biasa'; break;
+                                case 4 : return 'Mesyuarat'; break;
+                                default  : return 'N/A';
+                            }
+                        }
+                    },
+                    { "title": "Syarikat", "data": "CompanyName" },
+                    { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
+                    { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
+                    { "title": "Status", "data": "StatusDesc" },
+                    {
+                        "title": "Tindakan",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                                        
+                                        
+                                if (IsEdit != "False") {
+                                    appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                }
+                                if (IsDelete != "False") {
+                                    appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                                }
+                                        
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblApplication_info').hide();
+                        $('#tblApplication_paginate').hide();
+                        $('#tblApplication_length').hide();
+                    }
+                    else {
+                        $('#tblApplication_info').show();
+                        $('#tblApplication_paginate').show();
+                        $('#tblApplication_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        }
+
+        function clearControls() {
+            $("#txtApplicationID").val('');
+            $("#txtIndividualID").val('');
+            bindTable();
+        }
+
+        function bindSearch() {
+            var param = {};
+            param["ApplicationID"] = $('#txtApplicationID').val();
+            param["IndividualMkNo"] = $('#txtIndividualID').val();
+            return param;
+        }
+
+        function isValidSearchCriteria(formName) {
+            var isValid = true;
+            $("form#" + formName + " input[type=text]").each(function () {
+                if ($(this).val().match(/[<>]/)) {
+                    $(this).addClass('input-validation-error');
+                    isValid = false;
+                }
+                else {
+                    $(this).removeClass('input-validation-error');
+                }
+            });
+            return isValid;
+        }
+
+        function bindDelete(item) {
+            var x = confirm("Are you sure you want to delete?");
+            if (x) {
+                $.ajax({
+                    type: "POST",
+                    url: encodeURI('@Url.Action("DeleteApplication", "Application")'),
+                    data: { "Id": $(item).attr('data-id') },
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data, textStatus, XMLHttpRequest) {
+                        if (data.success) {
+                            bindTable();
+                            successMessage(data.message);
+                        }
+                        else {
+                            successMessage(data.message);
+                        }
+                    },
+                    error: function (jqXHR, exception, errMsg) {
+                    }
+                });
+            }
+        }
+
+    </script>
+}

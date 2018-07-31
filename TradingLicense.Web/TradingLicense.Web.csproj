@@ -493,6 +493,8 @@
     <Content Include="Views\Master\ManageLicenseType.cshtml" />
     <Content Include="Views\Master\Userslist.cshtml" />
     <Content Include="Views\Application\EntmtPremiseFee.cshtml" />
+    <Content Include="Views\Application\Meeting.cshtml" />
+    <Content Include="Views\Application\ManageMeeting.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

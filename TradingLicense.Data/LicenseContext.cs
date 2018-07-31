@@ -41,6 +41,7 @@ namespace TradingLicense.Data
         public DbSet<APP_L_IND> APP_L_INDs { get; set; }
         public DbSet<APP_L_RD> APP_L_RDs { get; set; }
         public DbSet<APP_L_BC> APP_L_BCs { get; set; }
+        public DbSet<APP_L_MT> APP_L_MTs { get; set; }
 
 
         //Banner Application
