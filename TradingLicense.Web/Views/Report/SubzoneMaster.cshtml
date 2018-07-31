@@ -5,7 +5,7 @@
 @using (Html.BeginForm("SubzoneMasterPdf", "Report", FormMethod.Get))
 {
     <div class="form-group">
-        <label for="licenseCode"> Zone List </label>
+        <label for="licenseCode"> Subzone List </label>
         @Html.DropDownList("SubzoneList", null, new { @class = "form-control" })
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
