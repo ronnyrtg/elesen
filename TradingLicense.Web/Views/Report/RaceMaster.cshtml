@@ -23,13 +23,15 @@
 <table class="A4">
     <tr>
         <th> No </th>
+        <th> Race Code </th>
         <th> Description </th>
     </tr>
     @foreach (var item in ViewBag.races)
     {
         <tr>
             <td>@item.RACEID</td>
-            <td>@item.RACEDESC</td>
+            <td>@item.RACE_CODE</td>
+            <td>@item.RACE_DESC</td>
         </tr>
     }
 </table>

@@ -3450,7 +3450,7 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     RACE_M raceType;
-                    if (IsRaceDuplicate(raceTypeModel.RACEDESC, raceTypeModel.RACEID))
+                    if (IsRaceDuplicate(raceTypeModel.RACE_DESC, raceTypeModel.RACEID))
                     {
                         TempData["ErrorMessage"] = "Race Type is already exist in the database.";
                         return View(raceTypeModel);
