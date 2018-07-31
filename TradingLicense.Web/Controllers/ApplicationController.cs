@@ -4905,28 +4905,61 @@ namespace TradingLicense.Web.Controllers
         public ActionResult ManageMeeting(int? id)
         {
             APP_L_MTModel meetingModel = new APP_L_MTModel();
-
-            if (id != null && id > 0)
+            using (var ctx = new LicenseApplicationContext())
             {
-                using (var ctx = new LicenseApplicationContext())
+                if (id != null && id > 0)
                 {
+
                     var meeting = ctx.APP_L_MTs.Where(a => a.APP_L_MTID == id);
                     meetingModel = Mapper.Map<APP_L_MTModel>(meeting);
-                }
-            }
-            else
-            {
-                ApplicationModel applicationModel = new ApplicationModel();
-                using (var ctx = new LicenseApplicationContext())
-                {
-                    var application = ctx.APPLICATIONs.Where(a => a.APPSTATUSID == (int)Enums.PAStausenum.meeting);
-                    applicationModel = Mapper.Map<ApplicationModel>(application);
-                }
-            }
 
+                }
+                else
+                {
+                    meetingModel.MT_DATE = DateTime.Today;
+                    meetingModel.USERSID = ProjectSession.UserID;
+                    meetingModel.CREATED = DateTime.Now;
+                }
+            }
             return View(meetingModel);
         }
-        #endregion
+
+        /// <summary>
+        /// Get Application Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="ApplicationId">The premise application identifier.</param>
+        /// <param name="individualMkNo">The individual mk no.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult ManageMeeting([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel)
+        {
+            List<ApplicationModel> Application;
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {
+                int? rollTemplateID = ProjectSession.User?.ROLEID;
+                IQueryable<APPLICATION> query = ctx.APPLICATIONs.Where(a => a.APPSTATUSID == (int)Enums.PAStausenum.meeting);
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<ApplicationModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "APP_ID desc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                Application = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Application, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+    #endregion
 
     }
 }
