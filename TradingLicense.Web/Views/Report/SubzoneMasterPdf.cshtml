@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "Subzone Master Report";
+    Layout = "~/Views/Shared/_Report.cshtml";
+}
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> PS-11 </td>
+        <td>
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br /><br />
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>SUBZONE LISTING </div>
+</div>
+<br /><br />
+<table class="A4">
+    <tr>
+        <th> No </th>
+        <th> Zone Code </th>
+        <th> Description </th>
+    </tr>
+    @foreach (var item in ViewBag.zones)
+    {
+        <tr>
+            <td>@item.SUBZONEID</td>
+            <td>@item.SUBZONE_CODE</td>
+            <td>@item.SUBZONE_DESC</td>
+        </tr>
+    }
+</table>
+
+

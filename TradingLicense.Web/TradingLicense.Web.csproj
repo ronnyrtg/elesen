@@ -527,6 +527,8 @@
     <Content Include="Views\Shared\_Report.cshtml" />
     <Content Include="Views\Report\RaceMaster.cshtml" />
     <Content Include="Views\Report\ZoneMasterPdf.cshtml" />
+    <Content Include="Views\Report\SubzoneMaster.cshtml" />
+    <Content Include="Views\Report\SubzoneMasterPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

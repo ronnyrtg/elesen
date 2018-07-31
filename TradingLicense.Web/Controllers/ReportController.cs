@@ -85,6 +85,36 @@ namespace TradingLicense.Web.Controllers
             return new ViewAsPdf();
         }
 
+        public ActionResult SubzoneMaster()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.SUBZONEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.SUBZONE_CODE + " - " + item.SUBZONE_DESC, Value = item.SUBZONEID.ToString() });
+                }
+            }
+            ViewBag.SubzoneList = items;
+            return View();
+        }
+
+        // Display generated pdf
+        public ActionResult SubzoneMasterPdf(string LicenseCode)
+        {
+            List<ZoneModel> items = new List<ZoneModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var zones = ctx.SUBZONEs.ToList();
+                items = Mapper.Map<List<ZoneModel>>(zones);
+            }
+            ViewBag.zones = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
         public ActionResult RoadMaster()
         {
             List<RoadModel> items = new List<RoadModel>();

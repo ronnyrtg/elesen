@@ -60,6 +60,7 @@
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CatatanModel.cs" />
+    <Compile Include="SubzoneModel.cs" />
     <Compile Include="LicenseTypeModel.cs" />
     <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="AttachmentModel.cs" />
