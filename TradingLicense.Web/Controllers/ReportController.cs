@@ -167,6 +167,20 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        public ActionResult BankMaster()
+        {
+            List<BankModel> items = new List<BankModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var citizens = ctx.BANKs.ToList();
+                items = Mapper.Map<List<BankModel>>(citizens);
+            }
+            ViewBag.banks = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
         public ActionResult PaymentTransaction()
         {
             return View();

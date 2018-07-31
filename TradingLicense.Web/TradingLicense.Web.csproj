@@ -503,7 +503,6 @@
     <Content Include="Views\Report\LicenseTypeLookup.cshtml" />
     <Content Include="Views\Report\ZoneMaster.cshtml" />
     <Content Include="Views\Report\RoadMaster.cshtml" />
-    <Content Include="Views\Report\BankMaster.cshtml" />
     <Content Include="Views\Report\OwnerMaster.cshtml" />
     <Content Include="Views\Report\JointOwner.cshtml" />
     <Content Include="Views\Report\PaymentTransaction.cshtml" />
@@ -530,6 +529,7 @@
     <Content Include="Views\Report\SubzoneMaster.cshtml" />
     <Content Include="Views\Report\SubzoneMasterPdf.cshtml" />
     <Content Include="Views\Report\CitizenMaster.cshtml" />
+    <Content Include="Views\Report\BankMaster.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

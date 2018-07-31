@@ -61,6 +61,7 @@
     <Compile Include="BusinessTypeModel.cs" />
     <Compile Include="CatatanModel.cs" />
     <Compile Include="CitizenModel.cs" />
+    <Compile Include="BankModel.cs" />
     <Compile Include="SubzoneModel.cs" />
     <Compile Include="LicenseTypeModel.cs" />
     <Compile Include="ManageIndividualModel.cs" />
