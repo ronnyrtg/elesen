@@ -35,6 +35,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<CITIZEN_M, CitizenModel>();
                 cfg.CreateMap<RACE_M, RaceModel>();
                 cfg.CreateMap<BANK_M, BankModel>();
+                cfg.CreateMap<PAYTRAN_M, PaymentModel>();
                 cfg.CreateMap<UsersModel, USERS>().ReverseMap();
                 cfg.CreateMap<RegistrationModel, USERS>().ReverseMap();                
                 cfg.CreateMap<INDIVIDUAL, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.ATTACHMENT.FILENAME));
