@@ -60,8 +60,8 @@ namespace TradingLicense.Web.Controllers
             List<SelectListItem> items = new List<SelectListItem>();
             using (var ctx = new Data.LicenseApplicationContext())
             {
-                var licenseCodes = ctx.ZONEs.ToList();
-                foreach (var item in licenseCodes)
+                var zones = ctx.ZONEs.ToList();
+                foreach (var item in zones)
                 {
                     items.Add(new SelectListItem { Text = item.ZONE_CODE + " - " + item.ZONE_DESC, Value = item.ZONEID.ToString() });
                 }
@@ -90,8 +90,8 @@ namespace TradingLicense.Web.Controllers
             List<SelectListItem> items = new List<SelectListItem>();
             using (var ctx = new Data.LicenseApplicationContext())
             {
-                var licenseCodes = ctx.SUBZONEs.ToList();
-                foreach (var item in licenseCodes)
+                var subzones = ctx.SUBZONEs.ToList();
+                foreach (var item in subzones)
                 {
                     items.Add(new SelectListItem { Text = item.SUBZONE_CODE + " - " + item.SUBZONE_DESC, Value = item.SUBZONEID.ToString() });
                 }
@@ -202,6 +202,16 @@ namespace TradingLicense.Web.Controllers
 
         public ActionResult PaymentCollection()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
         }
 

@@ -1,7 +1,18 @@
-﻿
-@{
-    ViewBag.Title = "PaymentCollection";
+﻿@using (Html.BeginForm("PaymentTransactionPdf", "Report", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="licenseCode"> License Code </label>
+        @Html.DropDownList("LicenseCode", null, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="fromdate"> From Transaction Date </label>
+        <input type="date" name="fromdate" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="todate"> To Transaction Date </label>
+        <input name="todate" type="date" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 }
 
-<h2>PaymentCollection</h2>
 
