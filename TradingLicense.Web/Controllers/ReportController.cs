@@ -215,6 +215,21 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        public ActionResult PaymentCollectionPdf()
+        {
+            List<PaymentModel> items = new List<PaymentModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var payments = ctx.BANKs.ToList();
+                items = Mapper.Map<List<PaymentModel>>(payments);
+            }
+            ViewBag.payments = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
+
         public ActionResult PaymentInquiryPaid()
         {
             return View();

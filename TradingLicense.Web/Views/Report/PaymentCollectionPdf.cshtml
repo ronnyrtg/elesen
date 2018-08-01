@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Payment Collection Report";
+    Layout = "~/Views/Shared/_Report.cshtml";
+}
+
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> LS-07 </td>
+        <td>
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br /><br />
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>PAYMENT COLLECTION LISTING </div>
+</div>
+<br /><br />
+<table class="A4">
+    <tr>
+        <th> Account No </th>
+        <th> Date </th>
+        <th> Receipt No </th>
+        <th> Company Name </th>
+        <th> Void </th>
+        <th> Amount </th>
+    </tr>
+    @foreach (var item in ViewBag.payments)
+    {
+        <tr>
+            <td>@item.ACCT_NO</td>
+            <td>@item.TX_DATE</td>
+            <td>@item.RCPT_NO</td>
+            <td>@item.RCPT_FROM</td>
+            <td>@item.VOID_IND</td>
+            <td>@item.TOTAL_AMOUNT</td>
+        </tr>
+    }
+</table>
+
+

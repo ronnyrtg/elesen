@@ -531,6 +531,7 @@
     <Content Include="Views\Report\CitizenMaster.cshtml" />
     <Content Include="Views\Report\BankMaster.cshtml" />
     <Content Include="Views\Report\PaymentTransactionPdf.cshtml" />
+    <Content Include="Views\Report\PaymentCollectionPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
