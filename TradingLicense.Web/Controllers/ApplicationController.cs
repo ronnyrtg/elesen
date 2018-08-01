@@ -460,9 +460,10 @@ namespace TradingLicense.Web.Controllers
             int applicationId = application.APP_ID;
             if (applicationModel.APP_ID == 0)
             {
+                var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
                 applicationModel.APP_ID = applicationId;
-                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT);
+                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT, licCode);
                 ctx.APPLICATIONs.AddOrUpdate(application);
                 ctx.SaveChanges();
             }
@@ -4959,7 +4960,20 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, Application, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
-    #endregion
+        #endregion
+
+        #region Save data from ManageMeeting
+        private bool SaveMeeting(APP_L_MTModel meetingModel, LicenseApplicationContext ctx)
+        {
+
+            var meeting = Mapper.Map<APP_L_MT>(meetingModel);           
+            ctx.APP_L_MTs.AddOrUpdate(meeting);
+            ctx.SaveChanges();
+
+            return true;
+
+        }
+        #endregion
 
     }
 }

@@ -119,9 +119,9 @@ namespace TradingLicense.Model
         
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();
 
-        public static string GetReferenceNo(int ApplicationId, DateTime submittedDateTime)
+        public static string GetReferenceNo(int ApplicationId, DateTime submittedDateTime, string licenseCode)
         {
-            return $"{submittedDateTime.Year}/PA/NEW/{ApplicationId.ToString().PadLeft(6, '0')}";
+            return $"{submittedDateTime.Year}/{licenseCode}/NEW/{ApplicationId.ToString().PadLeft(6, '0')}";
         }
 
     }

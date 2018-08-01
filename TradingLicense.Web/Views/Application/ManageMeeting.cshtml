@@ -11,36 +11,41 @@
         <h4 id="headerTitle">Kemaskini Senarai Permohonan Dalam Mesyuarat</h4>           
     </div>
     <div class="body">
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-                <div class="form-group">
-                    <div class="control-label">Nombor Rujukan Mesyuarat</div>
-                    @Html.TextBox("refNo", null, new { @class = "form-control" })
-                    <span class="text-danger BannerCodeVal"></span>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmMeeting", id = "frmMeeting" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.APP_ID)
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Nombor Rujukan Mesyuarat</div>
+                        @Html.TextBoxFor(m => m.MT_REF, null, new { @class = "form-control" })
+                        <span class="text-danger BannerCodeVal"></span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-                <div class="form-group">
-                    <div class="control-label">Tajuk Mesyuarat</div>
-                    @Html.TextBox("titleMT", null, new { @class = "form-control" })
-                    <span class="text-danger LocationVal"></span>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Tajuk Mesyuarat</div>
+                        @Html.TextBoxFor(m => m.MT_DESC, null, new { @class = "form-control" })
+                        <span class="text-danger LocationVal"></span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-                <div class="form-group">
-                    <div class="control-label">Tarikh Mesyuarat</div>
-                    @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                    <span class="text-danger LocationVal"></span>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="control-label">Tarikh Mesyuarat</div>
+                        @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                        <span class="text-danger LocationVal"></span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="grid" id="divMeetingTable">
-            <table cellspacing="0" class="table table-striped" id="tblMeeting"></table>
-        </div>
+            <div class="grid" id="divMeetingTable">
+                <table cellspacing="0" class="table table-striped" id="tblMeeting"></table>
+            </div>
+    }
     </div>
 </div>
 @section scripts{
