@@ -342,6 +342,9 @@ namespace TradingLicense.Web.Controllers
                                 case (int)PAStausenum.Paid:
                                     finalStatus = PAStausenum.submittedtoclerk;
                                     break;
+                                default:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
                             }
                         }
                         else
@@ -494,7 +497,7 @@ namespace TradingLicense.Web.Controllers
 
 
             int applicationId = application.APP_ID;
-            if (applicationModel.APP_ID == 0)
+            if (applicationModel.APP_ID == 0 && applicationModel.MODE != (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -505,7 +508,7 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
-            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid)
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid || applicationModel.MODE != (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -1957,7 +1960,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawLine(lineRed, pt1, pt2);
                             lineheight = lineheight + 15;
                             graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("PL/JP/" + DateTime.Now.Year.ToString() + "/T/00000" + appId, nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString("PL/JP/" + item.REF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("Tarikh           :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(DateTime.Now.ToString("dd/MM/yyyy"), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
