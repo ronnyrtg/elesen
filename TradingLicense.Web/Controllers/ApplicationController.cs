@@ -333,8 +333,18 @@ namespace TradingLicense.Web.Controllers
                         break;
                     case (int)RollTemplate.Clerk:
                         if (applicationModel.SubmitType == OnSubmit)
-                        {                            
-                            finalStatus = PAStausenum.directorcheck;                                    
+                        {   if(applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
+                            {
+                                finalStatus = PAStausenum.Pendingpayment;
+                            }
+                            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid)
+                            {
+                                finalStatus = PAStausenum.Complete;
+                            }
+                            else
+                            {
+                                finalStatus = PAStausenum.directorcheck;
+                            }                                                                                         
                         }
                         else if (applicationModel.SubmitType == OnRouteSubmit)
                         {
@@ -453,6 +463,10 @@ namespace TradingLicense.Web.Controllers
                 application.EXPIRE = DateTime.Now;
                 application.L_STATUS = "TIDAK DILULUSKAN";
             }
+            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid && applicationModel.MODE > 1)
+            {
+                application.PAID = DateTime.Now;
+            }
             ctx.APPLICATIONs.AddOrUpdate(application);
             ctx.SaveChanges();
 
@@ -460,9 +474,10 @@ namespace TradingLicense.Web.Controllers
             int applicationId = application.APP_ID;
             if (applicationModel.APP_ID == 0)
             {
+                var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
                 applicationModel.APP_ID = applicationId;
-                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT);
+                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT, licCode);
                 ctx.APPLICATIONs.AddOrUpdate(application);
                 ctx.SaveChanges();
             }

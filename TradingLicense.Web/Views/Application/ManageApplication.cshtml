@@ -730,13 +730,13 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                                                             <input type = "button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                             <input type = "button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                         }
-                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
+                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.Paid)
                                                         {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Selesai" />
+                                                            <input type = "button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
                                                         }
                                                         @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
                                                         {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Terima Bayaran" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
+                                                            //<input type = "button" class="btn btn-primary btSubmit" value="Terima Bayaran" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
                                                         }
                                                         @if(Model.UserRollTemplate != (int)Enums.RollTemplate.Clerk && Model.APPSTATUSID == (int)Enums.PAStausenum.LicenseGenerated && Model.MODE != 1)
                                                         {
