@@ -83,6 +83,7 @@ namespace TradingLicense.Model
         public DateTime SUBMIT { get; set; }
         public DateTime? APPROVE { get; set; }
         public DateTime? PAID { get; set; }
+        public string PRF_NO { get; set; }
         public string REF_NO { get; set; }
         public string L_STATUS { get; set; }
         public DateTime? EXPIRE { get; set; }

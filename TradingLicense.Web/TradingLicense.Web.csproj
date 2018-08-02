@@ -192,6 +192,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Global.asax.cs">
@@ -231,6 +232,10 @@
     <Content Include="images\logoPL.jpg" />
     <Content Include="images\logoPL.png" />
     <Content Include="images\wm1.png" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
     <Content Include="Scripts\cldr\supplemental.js" />
@@ -534,6 +539,11 @@
     <Content Include="Views\Report\PaymentCollectionPdf.cshtml" />
     <Content Include="Views\Report\PaymentInquiryPaidPdf.cshtml" />
     <Content Include="Views\Report\PaymentInquiryUnpaidPdf.cshtml" />
+    <Content Include="Views\Application\EntmtPremiseFee.cshtml" />
+    <Content Include="Views\Application\ManageMeeting.cshtml" />
+    <Content Include="Views\Application\Meeting.cshtml" />
+    <Content Include="Views\Profile\ProfileList.cshtml" />
+    <Content Include="Views\Profile\ViewProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

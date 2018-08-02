@@ -75,7 +75,7 @@ namespace TradingLicense.Web.Controllers
                             break;
                         case (int)RollTemplate.DeskOfficer:
                             {
-                                query = query.Where(q => q.APPSTATUSID <= 3);
+                                query = query.Where(q => q.APPSTATUSID <= 3 || q.MODE == (int)Enums.Mode.Express);
                             }
                             break;
                         case (int)RollTemplate.RouteUnit:
@@ -329,13 +329,35 @@ namespace TradingLicense.Web.Controllers
                 switch (roleTemplate)
                 {
                     case (int)RollTemplate.DeskOfficer:
-                        finalStatus = PAStausenum.submittedtoclerk;
+                        if(applicationModel.MODE == (int)Mode.Express)
+                        {
+                            switch (applicationModel.APPSTATUSID)
+                            {
+                                case (int)PAStausenum.submittedtoclerk:
+                                    finalStatus = PAStausenum.Pendingpayment;
+                                    break;
+                                case (int)PAStausenum.Pendingpayment:
+                                    finalStatus = PAStausenum.Paid;
+                                    break;
+                                case (int)PAStausenum.Paid:
+                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            finalStatus = PAStausenum.submittedtoclerk;                            
+                        }
                         break;
                     case (int)RollTemplate.Clerk:
                         if (applicationModel.SubmitType == OnSubmit)
                         {   if(applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
                             {
                                 finalStatus = PAStausenum.Pendingpayment;
+                            }
+                            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
+                            {
+                                finalStatus = PAStausenum.Paid;
                             }
                             else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid)
                             {
@@ -476,8 +498,20 @@ namespace TradingLicense.Web.Controllers
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
-                applicationModel.APP_ID = applicationId;
+                var appID = ctx.APPLICATIONs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID);
+                applicationId = appID.Count();
                 application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT, licCode);
+                ctx.APPLICATIONs.AddOrUpdate(application);
+                ctx.SaveChanges();
+            }
+
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid)
+            {
+                var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
+                application.SUBMIT = DateTime.Now;
+                var appID = ctx.APPLICATIONs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID && m.APPSTATUSID == (int)Enums.PAStausenum.Complete);
+                applicationId = appID.Count();
+                application.PRF_NO = ApplicationModel.GetProfileNo(applicationId, application.SUBMIT, licCode);
                 ctx.APPLICATIONs.AddOrUpdate(application);
                 ctx.SaveChanges();
             }
@@ -531,9 +565,10 @@ namespace TradingLicense.Web.Controllers
 
                 List<int> existingRecord = new List<int>();
                 var dbEntryPaLinkBAct = ctx.APP_L_BCs.Where(q => q.APP_ID == applicationId).ToList();
+                float? Totalfee = 0;
                 if (dbEntryPaLinkBAct.Count > 0)
                 {
-                    float? Totalfee = 0;
+                    
                     foreach (var item in dbEntryPaLinkBAct)
                     {
                         if (businessCodelist.All(q => q != item.BC_ID))
@@ -548,6 +583,25 @@ namespace TradingLicense.Web.Controllers
                         if (fee == 0)
                         {
                             fee = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.BASE_FEE).FirstOrDefault();
+                        }
+                        if (applicationModel.P_AREA != 0)
+                        {
+                            Totalfee = Totalfee + fee * applicationModel.P_AREA;
+                            application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                            //application.TOTAL_FEE = Totalfee;
+                        }
+                        ctx.APPLICATIONs.AddOrUpdate(application);
+                    }
+                    ctx.SaveChanges();
+                }
+                else
+                {
+                    foreach ( var item in applicationModel.BusinessCodeids)
+                    {
+                        var fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.DEF_RATE).FirstOrDefault();
+                        if (fee == 0)
+                        {
+                            fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.BASE_FEE).FirstOrDefault();
                         }
                         if (applicationModel.P_AREA != 0)
                         {
@@ -2124,7 +2178,28 @@ namespace TradingLicense.Web.Controllers
                             }
                             else
                             {
-                                graph.DrawString("RM0.00", font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                float? fee = 0;
+                                foreach (var item1 in ctx.APP_L_BCs.Where(x => x.APP_ID == appId))
+                                {
+                                    if (Convert.ToInt32(item1.BC_ID) > 0)
+                                    {
+                                        foreach (var item2 in ctx.BCs.Where(x => x.BC_ID == item1.BC_ID))
+                                        {
+                                            {
+                                                if (item2.DEF_RATE != null)
+                                                {
+                                                    fee = item.P_AREA * item2.DEF_RATE;
+                                                }
+                                                else
+                                                {
+                                                    fee = item2.BASE_FEE;
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
+                                graph.DrawString("RM" + fee, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
 
 
@@ -4974,7 +5049,8 @@ namespace TradingLicense.Web.Controllers
             }
             return Json(new DataTablesResponse(requestModel.Draw, Application, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
         }
-    #endregion
+        #endregion
+
 
     }
 }

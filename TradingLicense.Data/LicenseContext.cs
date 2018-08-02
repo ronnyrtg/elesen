@@ -42,6 +42,8 @@ namespace TradingLicense.Data
         public DbSet<APP_L_RD> APP_L_RDs { get; set; }
         public DbSet<APP_L_BC> APP_L_BCs { get; set; }
         public DbSet<APP_L_MT> APP_L_MTs { get; set; }
+        public DbSet<PROFILE> PROFILEs { get; set; }
+        public DbSet<APP_LOG> APP_LOGs { get; set; }
 
 
         //Banner Application

@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="ACCESSPAGE.cs" />
     <Compile Include="ADDRESS.cs" />
+    <Compile Include="APP_LOG.cs" />
+    <Compile Include="PROFILE.cs" />
     <Compile Include="APPLICATION.cs" />
     <Compile Include="APP_L_BC.cs" />
     <Compile Include="APP_L_MT.cs" />

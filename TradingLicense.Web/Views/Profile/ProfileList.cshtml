@@ -3,34 +3,37 @@
 @{
     ViewBag.Title = "Application";
     int? userRollTemplate = TradingLicense.Infrastructure.ProjectSession.User?.ROLEID;
+
+    List<SelectListItem> LicenseList = new List<SelectListItem>();
+    LicenseList.Add(new SelectListItem { Text = "Lesen Tred, Perniagaan & Perindustrian", Value = "1" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Petempatan Makanan", Value = "2" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Hotel dan Rumah Tumpangan", Value = "3" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pengurusan Skrap", Value = "4" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Iklan", Value = "5" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Penjaja", Value = "6" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pasar", Value = "7" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Minuman Keras", Value = "8" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pemberi Pinjam Wang", Value = "9" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Hiburan", Value = "10" });
 }
 <div id="divMessage"></div>
 <div class="card">
     <div class="header">
         <div class="row">
             <div class="col-lg-10">
-                <h4>Senarai Permohonan Baru</h4>
-            </div>
-            <div class="col-lg-2">
-                @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel2))
-                {
-                    if (userRollTemplate <= (int)Enums.RollTemplate.DeskOfficer)
-                    {
-                        <button type="button" class="btn btn-primary" onclick="addApplication();">Permohonan Baru</button>
-                    }
-                }
+                <h4>Senarai Profail Lesen</h4>
             </div>
         </div>
     </div>
     <div class="filter-block">
         <div class="row small-gutter">
             <form>
-                <div class="col-xs-4">
-                    <input type="text" name="txtApplicationID" id="txtApplicationID" class="form-control" placeholder="No. Rujukan" maxlength="100" />
+                <div class="col-xs-4">                    
+                    @Html.DropDownList("LicenseType", new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @id = "txtLicenseID", @class = "form-control" })                   
                 </div>
-                @*<div class="col-xs-4">
-                        <input type="text" name="txtIndividualID" id="txtIndividualID" class="form-control" placeholder="MyKad/Passport No" />
-                    </div>*@
+                <div class="col-xs-4">
+                    <input type="text" name="txtRefNo" id="txtRefNo" class="form-control" placeholder="No. Rujukan" maxlength="100" />
+                </div>               
                 <div class="col-xs-4">
                     <button type="button" class="btn btn-primary" onclick="return bindTable();">Cari</button>
                     <button type="button" class="btn btn-default" onclick="return clearControls();">Kosongkan</button>
@@ -64,10 +67,7 @@
                         bindTable();
                     });
                     var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
-                    function addApplication() {
-                        var link = '@Url.Action("ManageApplication", "Application")';
-                        window.location.href = link;
-                    }
+                    
 
                     function bindTable() {
 
@@ -92,7 +92,7 @@
                             "serverSide": true,
                             "pageLength": 10,
                             "ajax": {
-                                url: '@Url.Action("Application", "Application")',
+                                url: '@Url.Action("ProfileList", "Profile")',
                                 type: "POST",
                                 data: bindSearch()
                             },
@@ -107,25 +107,11 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
-                                { "title": "No. Rujukan", "data": "REF_NO" },
-                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
-                                {
-                                    "title": "Kelulusan",
-                                    "data": "MODE",
-                                    "render" : function (data, type, row) {
-                                        switch(data) {
-                                            case 1 : return 'Ekspres'; break;
-                                            case 2 : return 'Pengarah'; break;
-                                            case 3 : return 'Biasa'; break;
-                                            case 4 : return 'Mesyuarat'; break;
-                                            default  : return 'N/A';
-                                        }
-                                    }
-                                },
+                                { "title": "No. Rujukan", "data": "PRF_NO" },
+                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },                                
                                 { "title": "Syarikat", "data": "CompanyName" },
                                 { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
-                                { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
-                                { "title": "Status", "data": "StatusDesc" },
+                                { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },                                
                                 {
                                     "title": "Tindakan",
                                     "data": null,
@@ -134,11 +120,9 @@
                                         
                                         
                                             if (IsEdit != "False") {
-                                                appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                                appendstring += '<a  href="@Url.Action("ViewProfile", "Profile")?Id=' + row["APP_ID"] + '" title="Perincian"> <img src="@Url.Content("~/images/view.png")" alt="View" /></a>&nbsp; ';
                                             }
-                                            if (IsDelete != "False") {
-                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                            }
+                                            
                                         
                                         return appendstring
                                     },
@@ -166,15 +150,15 @@
                     }
 
                     function clearControls() {
-                        $("#txtApplicationID").val('');
-                        $("#txtIndividualID").val('');
+                        $("#txtRefNo").val('');
+                        $("#txtLicenseID").val('');
                         bindTable();
                     }
 
                     function bindSearch() {
                         var param = {};
-                        param["ApplicationID"] = $('#txtApplicationID').val();
-                        param["IndividualMkNo"] = $('#txtIndividualID').val();
+                        param["ReferenceNo"] = $('#txtRefNo').val();
+                        param["LicenseTypeID"] = $('#txtLicenseID').val();
                         return param;
                     }
 
@@ -190,31 +174,7 @@
                             }
                         });
                         return isValid;
-                    }
-
-                    function bindDelete(item) {
-                        var x = confirm("Are you sure you want to delete?");
-                        if (x) {
-                            $.ajax({
-                                type: "POST",
-                                url: encodeURI('@Url.Action("DeleteApplication", "Application")'),
-                                data: { "Id": $(item).attr('data-id') },
-                                cache: false,
-                                dataType: 'json',
-                                success: function (data, textStatus, XMLHttpRequest) {
-                                    if (data.success) {
-                                        bindTable();
-                                        successMessage(data.message);
-                                    }
-                                    else {
-                                        successMessage(data.message);
-                                    }
-                                },
-                                error: function (jqXHR, exception, errMsg) {
-                                }
-                            });
-                        }
-                    }
+                    }                    
 
     </script>
 }

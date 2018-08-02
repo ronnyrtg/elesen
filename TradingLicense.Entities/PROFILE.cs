@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingLicense.Entities
 {
-    public class APPLICATION
+    public class PROFILE
     {
         [Key]
-        public int APP_ID { get; set; }
+        public int PRF_ID { get; set; }
         //License Type
         public int LIC_TYPEID { get; set; }
         //Approval Type
