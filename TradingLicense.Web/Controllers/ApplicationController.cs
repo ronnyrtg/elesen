@@ -508,7 +508,7 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
-            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid || applicationModel.MODE != (int)Enums.Mode.Express)
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid || applicationModel.MODE == (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -1960,7 +1960,15 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawLine(lineRed, pt1, pt2);
                             lineheight = lineheight + 15;
                             graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("PL/JP/" + item.REF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if(item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            {
+                                graph.DrawString("PL/JP/" + item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            else
+                            {
+                                graph.DrawString("PL/JP/" + item.REF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            
                             lineheight = lineheight + 15;
                             graph.DrawString("Tarikh           :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(DateTime.Now.ToString("dd/MM/yyyy"), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -2016,7 +2024,15 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("NO. RUJUKAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(DateTime.Now.Year.ToString() + "/T/00000" + appId, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            {
+                                graph.DrawString(item.PRF_NO.ToString(), font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+                            else
+                            {
+                                graph.DrawString(item.REF_NO.ToString(), font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }
+
                             lineheight = lineheight + 20;
                             graph.DrawString("NAMA PERNIAGAAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -2294,7 +2310,11 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 30;
                             graph2.DrawString("NO. RUJUKAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             graph2.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            if (item.REF_NO != null)
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            {
+                                graph2.DrawString(item.PRF_NO, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            }
+                            else
                             {
                                 graph2.DrawString(item.REF_NO, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             }
