@@ -19,7 +19,9 @@ namespace TradingLicense.Model
         public bool ACTIVE { get; set; }
 
         public string ReferenceNo { get; set; }
+        public string CompanyName { get; set; }
         public string LicenseTypeDesc { get; set; }
+        public string Result { get; set; }
         public string FullName { get; set; }
     }
 }

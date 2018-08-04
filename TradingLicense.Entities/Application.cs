@@ -98,6 +98,7 @@ namespace TradingLicense.Entities
         public virtual BT BT { get; set; }
         public virtual BC BC { get; set; }
         public virtual COMPANY COMPANY { get; set; }
+        public virtual PREMISETYPE PREMISETYPE { get; set; }
         public virtual APPSTATUS APPSTATUS { get; set; }
         public virtual USERS USERS { get; set; }
     }

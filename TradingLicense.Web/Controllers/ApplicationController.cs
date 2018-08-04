@@ -75,7 +75,12 @@ namespace TradingLicense.Web.Controllers
                             break;
                         case (int)RollTemplate.DeskOfficer:
                             {
-                                query = query.Where(q => q.APPSTATUSID <= 3 || q.MODE == (int)Enums.Mode.Express);
+                                query = query.Where(q => q.APPSTATUSID <= (int)PAStausenum.submittedtoclerk || q.MODE == (int)Enums.Mode.Express && q.APPSTATUSID <= (int)PAStausenum.expSubmitClerk);
+                            }
+                            break;
+                        case (int)RollTemplate.Clerk:
+                            {
+                                query = query.Where(q => q.APPSTATUSID < (int)PAStausenum.directorcheck || q.MODE == (int)Enums.Mode.Express && q.APPSTATUSID <= (int)PAStausenum.expRoute || q.APPSTATUSID >= (int)PAStausenum.LetterofnotificationApproved || q.APPSTATUSID >= (int)PAStausenum.expLetter);
                             }
                             break;
                         case (int)RollTemplate.RouteUnit:
@@ -88,13 +93,18 @@ namespace TradingLicense.Web.Controllers
                                             .Where(pa => pa.DEP_ID == departmentID.Value && pa.SUPPORT == 0)
                                             .Select(d => d.APP_ID).Distinct()
                                             .ToList();
-                                    query = query.Where(q => paIDs.Contains(q.APP_ID) && q.APPSTATUSID == 5);
+                                    query = query.Where(q => paIDs.Contains(q.APP_ID) && q.APPSTATUSID == (int)PAStausenum.unitroute || paIDs.Contains(q.APP_ID) && q.APPSTATUSID == (int)PAStausenum.expRoute);
                                 }
+                            }
+                            break;
+                        case (int)RollTemplate.Director:
+                            {
+                                query = query.Where(q => q.APPSTATUSID >= (int)PAStausenum.directorcheck && q.APPSTATUSID <= (int)PAStausenum.meetingKIV || q.MODE == (int)Enums.Mode.Express && q.APPSTATUSID == (int)PAStausenum.expMeeting);
                             }
                             break;
                         case (int)RollTemplate.CEO:
                             {
-                                query = query.Where(q => q.APPSTATUSID == 8);
+                                query = query.Where(q => q.APPSTATUSID == (int)PAStausenum.CEOKIV || q.APPSTATUSID == (int)PAStausenum.CEOcheck);
                             }
                             break;
                     }
@@ -329,51 +339,58 @@ namespace TradingLicense.Web.Controllers
                 switch (roleTemplate)
                 {
                     case (int)RollTemplate.DeskOfficer:
-                        if(applicationModel.MODE == (int)Mode.Express)
+                        if (applicationModel.MODE == (int)Mode.Express)
                         {
                             switch (applicationModel.APPSTATUSID)
                             {
-                                case (int)PAStausenum.submittedtoclerk:
-                                    finalStatus = PAStausenum.Pendingpayment;
+                                case (int)PAStausenum.expDraft:
+                                    finalStatus = PAStausenum.expPendingPayment;
                                     break;
-                                case (int)PAStausenum.Pendingpayment:
-                                    finalStatus = PAStausenum.Paid;
+                                case (int)PAStausenum.expPendingPayment:
+                                    finalStatus = PAStausenum.expPaid;
                                     break;
-                                case (int)PAStausenum.Paid:
-                                    finalStatus = PAStausenum.submittedtoclerk;
+                                case (int)PAStausenum.expPaid:
+                                    finalStatus = PAStausenum.expSubmitClerk;
                                     break;
                                 default:
-                                    finalStatus = PAStausenum.submittedtoclerk;
+                                    finalStatus = PAStausenum.expSubmitClerk;
                                     break;
                             }
                         }
                         else
                         {
-                            finalStatus = PAStausenum.submittedtoclerk;                            
+                            finalStatus = PAStausenum.submittedtoclerk;
                         }
                         break;
                     case (int)RollTemplate.Clerk:
                         if (applicationModel.SubmitType == OnSubmit)
-                        {   if(applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
+                        {
+                            switch (applicationModel.MODE)
                             {
-                                finalStatus = PAStausenum.Pendingpayment;
+                                case (int)Mode.Express:
+                                    finalStatus = PAStausenum.expMeeting;
+                                    break;
+                                case (int)Mode.Director:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case (int)Mode.CEO:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case (int)Mode.Meeting:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
                             }
-                            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
-                            {
-                                finalStatus = PAStausenum.Paid;
-                            }
-                            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid)
-                            {
-                                finalStatus = PAStausenum.Complete;
-                            }
-                            else
-                            {
-                                finalStatus = PAStausenum.directorcheck;
-                            }                                                                                         
                         }
                         else if (applicationModel.SubmitType == OnRouteSubmit)
                         {
-                            finalStatus = PAStausenum.unitroute;
+                            if (applicationModel.MODE == (int)Mode.Express)
+                            {
+                                finalStatus = PAStausenum.expRoute;
+                            }
+                            else
+                            {
+                                finalStatus = PAStausenum.unitroute;
+                            }
                         }
                         else if (applicationModel.SubmitType == OnRejected)
                         {
@@ -381,21 +398,22 @@ namespace TradingLicense.Web.Controllers
                         }
                         break;
                     case (int)RollTemplate.Director:
+                         string testc = applicationModel.SubmitType;
                         if (applicationModel.SubmitType == OnSubmit)
                         {
                             switch (applicationModel.MODE)
                             {
-                                case 1:
-                                    finalStatus = PAStausenum.CEOcheck;
+                                case (int)Mode.Express:
+                                    finalStatus = PAStausenum.expApproved;
                                     break;
-                                case 2:
+                                case (int)Mode.Director:
                                     finalStatus = PAStausenum.LetterofnotificationApproved;
                                     break;
-                                case 3:
+                                case (int)Mode.CEO:
                                     finalStatus = PAStausenum.CEOcheck;
                                     break;
-                                case 4:
-                                    finalStatus = PAStausenum.meeting;
+                                case (int)Mode.Meeting:
+                                    finalStatus = PAStausenum.LetterofnotificationApproved;
                                     break;
                             }
                         }
@@ -403,17 +421,35 @@ namespace TradingLicense.Web.Controllers
                         {
                             switch (applicationModel.MODE)
                             {
-                                case 1:
-                                    finalStatus = PAStausenum.meeting;
+                                case (int)Mode.Express:                                    
+                                    finalStatus = PAStausenum.expReject;                                   
                                     break;
-                                case 2:
+                                case (int)Mode.Director:
                                     finalStatus = PAStausenum.submittedtoclerk;
                                     break;
-                                case 3:
+                                case (int)Mode.CEO:
                                     finalStatus = PAStausenum.submittedtoclerk;
                                     break;
-                                case 4:
-                                    finalStatus = PAStausenum.submittedtoclerk;
+                                case (int)Mode.Meeting:
+                                    finalStatus = PAStausenum.LetterofnotificationRejected;
+                                    break;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnKIV)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case (int)Mode.Express:
+                                    finalStatus = PAStausenum.expLetter;
+                                    break;
+                                case (int)Mode.Director:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case (int)Mode.CEO:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case (int)Mode.Meeting:
+                                    finalStatus = PAStausenum.meetingKIV;
                                     break;
                             }
                         }
@@ -421,34 +457,29 @@ namespace TradingLicense.Web.Controllers
                     case (int)RollTemplate.CEO:
                         if (applicationModel.SubmitType == OnSubmit)
                         {
-                            switch (applicationModel.MODE)
-                            {
-                                case 1:
-                                    finalStatus = PAStausenum.Complete;
-                                    break;
-                                case 3:
-                                    finalStatus = PAStausenum.LetterofnotificationApproved;
-                                    break;
-                            }
+                            finalStatus = PAStausenum.LetterofnotificationApproved;
                         }
                         else if (applicationModel.SubmitType == OnRejected)
                         {
-                            switch (applicationModel.MODE)
-                            {
-                                case 1:
-                                    finalStatus = PAStausenum.meeting;
-                                    break;
-                                case 3:
-                                    finalStatus = PAStausenum.LetterofnotificationRejected;
-                                    break;
-                            }
+                            finalStatus = PAStausenum.LetterofnotificationRejected;
                         }
-                        break;
+                        else if (applicationModel.SubmitType == OnKIV)
+                        {
+                            finalStatus = PAStausenum.CEOKIV;
+                        }
+                            break;
                 }
             }
             else
             {
-                finalStatus = PAStausenum.draftcreated;
+                if (applicationModel.MODE == (int)Enums.Mode.Express)
+                {
+                    finalStatus = PAStausenum.expDraft;
+                }
+                else
+                {
+                    finalStatus = PAStausenum.draftcreated;
+                }                   
             }
             return (int)finalStatus;
         }
@@ -488,7 +519,7 @@ namespace TradingLicense.Web.Controllers
                 application.EXPIRE = DateTime.Now;
                 application.L_STATUS = "TIDAK DILULUSKAN";
             }
-            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid && applicationModel.MODE > 1)
+            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid && applicationModel.MODE > 1 || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.expPaid && applicationModel.MODE == 1)
             {
                 application.PAID = DateTime.Now;
             }
@@ -502,8 +533,9 @@ namespace TradingLicense.Web.Controllers
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
                 var appID = ctx.APPLICATIONs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID);
-                applicationId = appID.Count();
-                application.REF_NO = ApplicationModel.GetReferenceNo(applicationId, application.SUBMIT, licCode);
+                int appId = appID.Count();
+                if(appId == 0) { appId = 1; }
+                application.REF_NO = ApplicationModel.GetReferenceNo(appId, application.SUBMIT, licCode);
                 ctx.APPLICATIONs.AddOrUpdate(application);
                 ctx.SaveChanges();
             }
@@ -513,12 +545,17 @@ namespace TradingLicense.Web.Controllers
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
                 var appID = ctx.APPLICATIONs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID && m.APPSTATUSID == (int)Enums.PAStausenum.Complete);
-                applicationId = appID.Count();
-                application.PRF_NO = ApplicationModel.GetProfileNo(applicationId, application.SUBMIT, licCode);
+                int appId = appID.Count();
+                if (appId == 0) { appId = 1; }
+                application.PRF_NO = ApplicationModel.GetProfileNo(appId, application.SUBMIT, licCode);
+                if (applicationModel.MODE == (int)Enums.Mode.Express)
+                {
+                    application.REF_NO = ApplicationModel.GetProfileNo(appId, application.SUBMIT, licCode);
+                }
                 ctx.APPLICATIONs.AddOrUpdate(application);
                 ctx.SaveChanges();
             }
-
+            
             int roleTemplate = 0;
             if (ProjectSession.User != null && ProjectSession.User.ROLEID > 0)
             {
@@ -643,7 +680,7 @@ namespace TradingLicense.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(applicationModel.Individualids))
             {
-                //todo: I guess it's a draft for new logic
+                
                 var individualidslist = applicationModel.Individualids.ToIntList();
                 List<int> existingRecord = new List<int>();
                 var dbEntryPaLinkInd = ctx.APP_L_INDs.Where(q => q.APP_ID == applicationId).ToList();
@@ -2379,8 +2416,7 @@ namespace TradingLicense.Web.Controllers
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    var premiseApp = ctx.APPLICATIONs
-                                        .Include("COMPANY").Where(x => x.APP_ID == appId).ToList();
+                    var premiseApp = ctx.APPLICATIONs.Where(x => x.APP_ID == appId).ToList();
                     if (premiseApp.Count == 0)
                     {
                         return Content("<script language='javascript' type='text/javascript'>alert('No Data Found Or Invalid Premise ApplicationID!');</script>");
@@ -2407,7 +2443,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawImage(xImage1, 10, 70, 100, 75);
 
                             graph.DrawString("TARIKH CETAKAN :", font, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(string.Format("{0:dd MMMM yyyy}", DateTime.Now), nfont, XBrushes.Black, new XRect(500, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            graph.DrawString(string.Format("{0:dd-MM-yyyy}", DateTime.Now), nfont, XBrushes.Black, new XRect(500, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
                             graph.DrawString("PERBADANAN LABUAN", lbfont, XBrushes.Black, new XRect(115, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
@@ -2428,76 +2464,81 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawString("(Lesen ini dikeluarkan dibawah Undang-Undang Kecil Tred,Perniagaan dan Perindustrian Wilayah Persekutuan Labuan 2016)", sfont, XBrushes.Black, new XRect(50, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
                             lineheight = lineheight + 30;
-                            string compName = "";
-                            if (item.COMPANY.C_NAME == null)
+                            foreach (var item1 in ctx.COMPANIES.Where(x => x.COMPANYID == item.COMPANYID))
                             {
-                                compName = "";
-                            }
-                            else
-                            {
-                                compName = item.COMPANY.C_NAME;
-                            }
-                            graph.DrawString(compName, lbfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString("SSM No", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if (item.COMPANY.REG_NO != null)
-                            {
-                                graph.DrawString(item.COMPANY.REG_NO, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            }
+                                string compName = "";
+                                if (item1.C_NAME == null)
+                                {
+                                    compName = "";
+                                }
+                                else
+                                {
+                                    compName = item1.C_NAME;
+                                }
+                                graph.DrawString(compName, lbfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString("SSM No", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                if (item1.REG_NO != null)
+                                {
+                                    graph.DrawString(item1.REG_NO, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
 
-                            lineheight = lineheight + 15;
-                            graph.DrawString("No Rujukan", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(DateTime.Now.Year + "/PA/LB/" + string.Format("{0:0000000}", appId), nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            //if (item.REF_NO != null)
-                            //{
-                            //    graph.DrawString(DateTime.Now.Year + "/PA/LB" + string.Format("{0:000000}",appId) , nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            //}
-                            string compAdd = "";
-                            if (item.COMPANY.ADDRA1 == null)
-                            {
-                                compAdd = "";
-                            }
-                            else
-                            {
-                                compAdd = item.COMPANY.ADDRA1;
-                            }
-                            XTextFormatter tf = new XTextFormatter(graph);
-                            XRect rect = new XRect(30, lineheight, 250, 30);
-                            graph.DrawRectangle(XBrushes.Transparent, rect);
-                            tf.DrawString(compAdd.ToString(), nfont, XBrushes.Black, rect, XStringFormats.TopLeft);
+                                lineheight = lineheight + 15;
+                                graph.DrawString("No Rujukan", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
-                            //graph.DrawString(compAdd.ToString(), nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            lineheight = lineheight + 15;
+                                string compAdd = "";
+                                if (item.ADDRA2 == null)
+                                {
+                                    compAdd = item.ADDRA1 + ", " + item.PCODEA + ", " + item.STATEA;
+                                }
+                                else if (item.ADDRA3 == null)
+                                {
+                                    compAdd = item.ADDRA1 + ", " + item.ADDRA2 + ", " + item.PCODEA + ", " + item.STATEA;
+                                }
+                                else if (item.ADDRA4 == null)
+                                {
+                                    compAdd = item.ADDRA1 + ", " + item.ADDRA2 + ", " + item.ADDRA3 + ", " + item.PCODEA + ", " + item.STATEA;
+                                }
+                                else
+                                {
+                                    compAdd = item.ADDRA1 + ", " + item.ADDRA2 + ", " + item.ADDRA3 + ", " + item.ADDRA4 + ", " + item.PCODEA + ", " + item.STATEA;
+                                }
+                                XTextFormatter tf = new XTextFormatter(graph);
+                                XRect rect = new XRect(30, lineheight, 250, 30);
+                                graph.DrawRectangle(XBrushes.Transparent, rect);
+                                tf.DrawString(compAdd, nfont, XBrushes.Black, rect, XStringFormats.TopLeft);                                
+                                lineheight = lineheight + 15;
+                                graph.DrawString("Taraf Lesen", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                if (item.L_STATUS != null)
+                                {
+                                    graph.DrawString(item.L_STATUS, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
 
-                            graph.DrawString("Taraf Lesen", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if (item.L_STATUS != null)
-                            {
-                                graph.DrawString(item.L_STATUS, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            }
+                                string compPhone = "";
+                                if (item1.C_PHONE == null)
+                                {
+                                    compPhone = "";
+                                }
+                                else
+                                {
+                                    compPhone = item1.C_PHONE;
+                                }
 
-                            string compPhone = "";
-                            if (item.COMPANY.C_PHONE == null)
-                            {
-                                compPhone = "";
+                                graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight + 15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
-                            else
-                            {
-                                compPhone = item.COMPANY.C_PHONE;
-                            }
-
-                            //graph.DrawString(compPhone, nfont, XBrushes.Black, new XRect(30, lineheight+15, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("Tempoh Sah", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             if (item.PAID != null && item.PAID.ToString() != "")
                             {
                                 DateTime dt = new DateTime(item.PAID.Value.Year, item.PAID.Value.Month, item.PAID.Value.Day);
-                                var mDate = string.Format("{0:dd MMMM yyyy}", dt);
+                                var mDate = string.Format("{0:dd-MM-yyyy}", dt);
                                 graph.DrawString(mDate, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
-                                graph.DrawString("Hingga", font, XBrushes.Black, new XRect(453, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString("Hingga", nfont, XBrushes.Black, new XRect(451, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 DateTime? hDate;
                                 hDate = item.PAID;
                                 if (Convert.ToInt32(item.MODE) == 1)
@@ -2508,7 +2549,7 @@ namespace TradingLicense.Web.Controllers
                                 {
                                     hDate = hDate.Value.AddMonths(12);
                                 }
-                                graph.DrawString(string.Format("{0:dd MMMM yyyy}", hDate), nfont, XBrushes.Black, new XRect(490, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                graph.DrawString(string.Format("{0:dd-MM-yyyy}", hDate), nfont, XBrushes.Black, new XRect(490, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
                             lineheight = lineheight + 30;
                             graph.DrawRectangle(XBrushes.LightSalmon, 10, lineheight, pdfPage.Width - 30, 20);
@@ -2524,7 +2565,7 @@ namespace TradingLicense.Web.Controllers
                             System.Drawing.Point pt5 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 20, lineheight);
                             graph.DrawLine(lineRed1, pt4, pt5);
                             lineheight = lineheight + 3;
-                            float TotAmount = 0;
+                            float? TotAmount = 0;
                             int TotHeight = 0;
                             foreach (var item1 in ctx.APP_L_BCs.Where(x => x.APP_ID == appId))
                             {
@@ -2546,7 +2587,7 @@ namespace TradingLicense.Web.Controllers
                                             //graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         }
                                         float? Amount = 0;
-                                        if (item2.BASE_FEE == 0)
+                                        if (item2.BASE_FEE == null)
                                         {
                                             Amount = (item2.DEF_RATE) * (item.P_AREA);
                                             Amount = (float)Math.Round((float)Amount, 1);
@@ -2563,6 +2604,7 @@ namespace TradingLicense.Web.Controllers
                                         System.Drawing.Point pt6 = new System.Drawing.Point(10, lineheight);
                                         System.Drawing.Point pt7 = new System.Drawing.Point(Convert.ToInt32(pdfPage.Width) - 20, lineheight);
                                         graph.DrawLine(lineRed1, pt6, pt7);
+                                        TotAmount = TotAmount + Amount;
                                     }
                                 }
                             }
@@ -2626,9 +2668,9 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                throw ex;
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }
@@ -5074,6 +5116,55 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Add Applications into Meeting Group
+        /// <summary>
+        /// Add Applications to Meeting
+        /// </summary>
+        /// <param name="Appid"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddAppToMeeting(string MT_REF, string MT_DESC, DateTime MT_DATE, int[] AppId)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                int i = 0;
+                foreach (var item in AppId)
+                {
+
+                    APP_L_MT pad = new APP_L_MT();                    
+                    pad.APP_ID = AppId[i];
+                    pad.MT_REF = MT_REF;
+                    pad.MT_DESC = MT_DESC;
+                    pad.MT_DATE = MT_DATE;
+                    pad.USERSID = ProjectSession.User.USERSID;
+                    pad.CREATED = DateTime.Now;
+                    int AppID = AppId[i];
+                    
+                    var SelectedApp = ctx.APPLICATIONs.Where(m => m.APP_ID == AppID).SingleOrDefault();
+                    
+                    var mod = ctx.APPLICATIONs.Where(m => m.APP_ID == AppID).Select(m => m.MODE).SingleOrDefault();
+                    if (mod == 1)
+                    {
+
+                        SelectedApp.APPSTATUSID = (int)Enums.PAStausenum.expScheduledMeeting;
+                    }
+                    else
+                    {
+                        SelectedApp.APPSTATUSID = (int)Enums.PAStausenum.ScheduledMeeting;
+                    }
+                    ctx.APPLICATIONs.AddOrUpdate(SelectedApp);
+
+                    ctx.APP_L_MTs.Add(pad);
+                    i++;                                        
+                }
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Permohonan berjaya ditambah ke dalam Kumpulan Mesyuarat.";
+
+            }
+
+            return Redirect(Url.Action("Meeting", "Application"));
+        }
+        #endregion
 
     }
 }

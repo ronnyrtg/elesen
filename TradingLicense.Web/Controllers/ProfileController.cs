@@ -56,7 +56,7 @@ namespace TradingLicense.Web.Controllers
             using (var ctx = new LicenseApplicationContext())
             {
                 
-                IQueryable<APPLICATION> query = ctx.APPLICATIONs.Where(m => m.APPSTATUSID == (int)Enums.PAStausenum.Complete);
+                IQueryable<APPLICATION> query = ctx.APPLICATIONs.Where(m => m.APPSTATUSID == (int)Enums.PAStausenum.Complete || m.APPSTATUSID == (int)Enums.PAStausenum.expApproved);
 
                 if (!string.IsNullOrWhiteSpace(ReferenceNo) && LicenseTypeID <= 0)
                 {

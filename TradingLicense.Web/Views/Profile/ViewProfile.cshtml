@@ -724,84 +724,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                                             }
                                             <div class="row">
                                                 <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        @if(Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.APPSTATUSID <= (int)Enums.PAStausenum.Pendingpayment) && (Model.MODE == 1) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationRejected)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-                                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
-                                                        }
-                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.Paid)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
-                                                        }
-                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Kaunter Telah Menerima Bayaran"  onclick='return Approved();' />
-                                                        }
-                                                        @if(Model.UserRollTemplate != (int)Enums.RollTemplate.Clerk && Model.APPSTATUSID == (int)Enums.PAStausenum.LicenseGenerated && Model.MODE != 1)
-                                                        {
-                                                            // Add a button for showing License print
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
-                                                        }
-                                                        @if(Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
-                                                        {
-                                                            if (Model.APPSTATUSID == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                                                            {
-                                                                <input type = "submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
-                                                                <input type = "submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                                            }
-                                                        }
-
-                                                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                                                            {
-                                                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                                                            }*@
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.APPSTATUSID <= (int)Enums.PAStausenum.unitroute) || Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.MODE == 1))
-                                                        {
-                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
-                                                            {
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
-                                                            }
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
-                                                        }
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0)
-                                                        {
-                                                            //<button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitReply();'>Ulasan Unit Teknikal/Jabatan Luar</button>
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.APP_ID > 0)
-                                                        {
-
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting || Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck))
-                                                        {
-                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
-                                                            {
-                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar ke KPE</button>
-                                                            }
-                                                            else
-                                                            {
-                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
-                                                            }
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Hantar ke Supervisor Untuk Disemak Semula</button>
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.APP_ID > 0 && (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck))
-                                                        {
-                                                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.APP_ID > 0)
-                                                        {
-
-                                                        }
-                                                        @if (Model.UserRollTemplate != (int)Enums.RollTemplate.Public && Model.UserRollTemplate != (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0 && Model.APPSTATUSID != 15)
-                                                        {
-                                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
-                                                        }
+                                                    <div class="form-group">                                                        
                                                         <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
                                                     </div>
                                                 </div>
@@ -1979,24 +1902,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         "orderable": false,
                         "visible": visibleGridColume,
                     },
-                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
-                    {
-                        "title": "Muat Naik",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridUploadColume,
-                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
                     {
                         "title": "Nama Fail",
                         "data": null,
@@ -2065,23 +1971,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         width: "7%",
                         "visible": visibleGridColume,
                     },
-                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
-                    {
-                        "title": "Muat Naik",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            } else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        "orderable": false,
-                        width: "7%",
-                        "visible": visibleGridUploadColume,
-                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
                     {
                         "title": "Nama Fail",
                         "data": null,
@@ -2141,24 +2031,7 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         "orderable": false,
                         "visible": visibleGridColume,
                     },
-                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },
-                    {
-                        "title": "Muat Naik",
-                        "data": null,
-                        "render": function (data, type, row) {
-                            var appendstring = '';
-                            if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
-                            }
-                            return appendstring
-                        },
-                        width: "7%",
-                        "orderable": false,
-                        "visible": visibleGridUploadColume,
-                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
                     {
                         "title": "Nama Fail",
                         "data": null,

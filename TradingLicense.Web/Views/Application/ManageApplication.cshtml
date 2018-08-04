@@ -96,7 +96,7 @@
             @Html.HiddenFor(m => m.UPDATED_BY)
             @Html.HiddenFor(m => m.TOTAL_FEE)
 
-            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.meeting)
+            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.ScheduledMeeting && Model.APPSTATUSID != (int)Enums.PAStausenum.expScheduledMeeting)
             {
                 @Html.HiddenFor(m => m.SubmitType)
             }
@@ -104,7 +104,7 @@
             @Html.HiddenFor(m => m.UploadRequiredDocids)
             @Html.HiddenFor(m => m.UploadLicenseDocids)
 
-            if (Model.LIC_TYPEID > 0)
+            if (Model.LIC_TYPEID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
                 <div class="row">
                     <div class="col-lg-3 col-md-6" id="licenseType">
@@ -141,7 +141,7 @@
                                     @Html.Hidden("MODE", (int)Enums.Mode.Express, null)
                                     break;
                                 case 2:
-                                    <div class="well well-sm">Pengarah</div>
+                                    <div class="well well-sm">Biasa</div>
                                     @Html.Hidden("MODE", (int)Enums.Mode.Director, null)
                                     break;
                                 case 3:
@@ -170,7 +170,7 @@
                     <div class="col-lg-3 col-md-6" id="approvalDirector" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">Jenis Kelulusan</div>
-                            <div class="well well-sm">Pengarah</div>
+                            <div class="well well-sm">Biasa</div>
                             @Html.Hidden("MODE", 2, null)
                         </div>
                     </div>
@@ -208,7 +208,7 @@
 
             if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
             {
-                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids))
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                 {
                     <div class="row">
                         <div class="col-sm-6" id="businessCode">
@@ -247,7 +247,7 @@
                             </div>
                         </div>
                     </div>
-            if (string.IsNullOrWhiteSpace(Model.Individualids))
+            if (string.IsNullOrWhiteSpace(Model.Individualids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
             {
                     <div class="row">
                         <div class="form-group">
@@ -256,7 +256,7 @@
                                 @Html.HiddenFor(model => model.Individualids)
                                 @Html.HiddenFor(model => model.newIndividualsList)
                             </div>
-                            @if (Model.APP_ID < 1)
+                            @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                             {
                                 <div class="col-sm-2 col-lg-6">
                                     <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
@@ -289,7 +289,7 @@
                             </div>
                         </div>
                     </div>
-            if(Model.COMPANYID > 0)
+            if(Model.COMPANYID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
                     <div class="row">
                         <div class="form-group">
@@ -307,7 +307,7 @@
                         <div class="col-sm-10 col-lg-6">
                             @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
                         </div>
-                        @if (Model.APP_ID < 1)
+                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
                             <div class="col-sm-2 col-lg-6">
                                 <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='return AddCompany();' />
@@ -318,7 +318,7 @@
             }
 
 
-            if (Model.BT_ID > 0)
+            if (Model.BT_ID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
@@ -358,7 +358,7 @@
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
                                 <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
-                                @if (string.IsNullOrWhiteSpace(Model.ADDRA1))
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA1) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                 {
                                 @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
                                 }
@@ -373,7 +373,7 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
-                               @if (string.IsNullOrWhiteSpace(Model.ADDRA2))
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA2) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                {
                                 @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
                                }
@@ -388,7 +388,7 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
-                                @if (string.IsNullOrWhiteSpace(Model.ADDRA3))
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA3) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                 {
                                     @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
                                 }
@@ -403,7 +403,7 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
-                               @if (string.IsNullOrWhiteSpace(Model.ADDRA4))
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA4) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                {
                                 @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
                                }
@@ -419,7 +419,7 @@
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
                                 <div class="control-label">Poskod<span class="cfont">*</span></div>
-                                @if (string.IsNullOrWhiteSpace(Model.PCODEA))
+                                @if (string.IsNullOrWhiteSpace(Model.PCODEA) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                 {
                                     @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
                                 }
@@ -435,7 +435,7 @@
                         <div class="col-md-3 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
                                 <div class="control-label">Negeri<span class="cfont">*</span></div>                                
-                                @if (string.IsNullOrWhiteSpace(Model.STATEA))
+                                @if (string.IsNullOrWhiteSpace(Model.STATEA) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                                 {
                                     @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
                                 }
@@ -484,141 +484,185 @@
                 </div>
             }
 
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Kod Iklan</div>
-                                @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
-                                <span class="text-danger BannerCodeVal"></span>
-                            </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Kod Iklan</div>
+                            @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
+                            <span class="text-danger BannerCodeVal"></span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
-                                @Html.TextBoxFor(m => m.ADDRB1, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.ADDRB1, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRB2, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB2, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRB3, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB3, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRB4, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB4, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Saiz Iklan Dipohon(meter persegi)</div>
-                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
-                                <span class="text-danger SizeVal"></span>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Saiz Iklan Dipohon(meter persegi)</div>
+                            @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                            <span class="text-danger SizeVal"></span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Bilangan Iklan</div>
-                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
-                                <span class="text-danger quantityVal"></span>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Bilangan Iklan</div>
+                            @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                            <span class="text-danger quantityVal"></span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Yuran Pemprosesan</div>
-                                @Html.TextBoxFor(m => m.PRO_FEE, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            @Html.TextBoxFor(m => m.PRO_FEE, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
 
-                            </div>
                         </div>
                     </div>
+                </div>
 
 
-                    <hr />
-                    <div class="row">
-                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Luas Premis<span class="cfont">*</span></div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 premise" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Luas Premis<span class="cfont">*</span></div>
+                            @if (Model.P_AREA == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
                                 @Html.TextBoxFor(m => m.P_AREA, new { @class = "form-control allownumericwithdecimal" })
                                 @Html.ValidationMessageFor(m => m.P_AREA)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
-                                @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
-                                @Html.ValidationMessageFor(m => m.P_OWN)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 col-sm-3 premise" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
-                                @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                @Html.ValidationMessageFor(m => m.START_RENT)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 col-sm-3 premise" style="display:none;">
-                            <div class="form-group">
-                                <div class="control-label">Hingga<span class="cfont">*</span></div>
-                                @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                @Html.ValidationMessageFor(m => m.STOP_RENT)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-md-10 col-lg-6 premise" style="display:none;">
-                                <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-md-10 col-lg-3 premise" style="display:none;">
-                                @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
-                            </div>
-                            @if(Model.APP_ID == 0)
+                            }
+                            else
                             {
-                                <div class="col-md-2 col-lg-2 premise" style="display:none;">
-                                    <input type = "button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
-                                </div>
+                                <div class="well well-sm">@Model.P_AREA meter persegi</div>
+                                @Html.HiddenFor(m => m.P_AREA)
                             }
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 premise" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
+                            @if (string.IsNullOrWhiteSpace(Model.P_OWN) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control", onchange = "changePremiseOwn()" })
+                                @Html.ValidationMessageFor(m => m.P_OWN)
+                            }
+                            else
+                            {
+                                if (Model.P_OWN == "0")
+                                {
+                                    <div class="well well-sm">Sewaan</div>
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">Pemilikan Sendiri</div>
+                                }
+                                @Html.HiddenFor(m => m.P_OWN)
+                            }                                
+                        </div>
+                    </div>
+                </div>
+                if (Model.APP_ID == 0 && Model.P_OWN == null)
+                {
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.START_RENT)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Hingga<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                        </div>
+                    </div>
+                </div>
+                }
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-10 col-lg-6 premise" style="display:normal;">
+                            <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        @if (Model.PT_ID == null || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                        {
+                            <div class="col-md-10 col-lg-2 premise" style="display:normal;">
+                                @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
+                            </div>
+                            if (Model.APP_ID == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                <div class="col-md-2 col-lg-2 premise" style="display:normal;">
+                                    <input type = "button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-md-10 col-lg-3 premise" style="display:normal;">
+                                <div class="well well-sm">@Model.PremiseDesc</div>
+                                @Html.HiddenFor(m => m.PT_ID)
+                            </div>
+                        }
+                    </div>
+                </div>
+                if (Model.APP_ID <= 0 || !string.IsNullOrWhiteSpace(Model.FLOOR) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                {
                     <div class="row">
-                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
+                        <div class="col-md-4 col-sm-12 premise" style="display:normal;">
                             <div class="form-group">
                                 <div class="control-label">Tingkat</div>
-                                @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
+                                @if (string.IsNullOrWhiteSpace(Model.FLOOR))
+                                {
+                                    @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.FLOOR</div>
+                                    @Html.HiddenFor(m => m.FLOOR)
+                                }
                             </div>
                         </div>
                     </div>
-
-
-
+                }
                     <div class="row">
                         <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
                             <div class="form-group">
@@ -671,143 +715,324 @@
                         </div>
                     </div>
             }
-            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication && Model.MODE == (int)Enums.Mode.CEO)
             {
                 List<SelectListItem>
-                    supportList = new List<SelectListItem>
-                        ();
+                supportList = new List<SelectListItem>();
                 supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
                 supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <div class="control-label">Keputusan Pengarah</div>
-                                        @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                                    </div>
-                                </div>
-                            </div>
-                            }
-                            if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
-                            {
-                            List<SelectListItem>
-                                supportList = new List<SelectListItem>
-                                    ();
-supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
-                                    supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
-                                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <div class="control-label">Keputusan KPE</div>
-                                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    }
-                                    if (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting) // Meeting
-                                    {
-                                    List<SelectListItem>
-                                        supportList = new List<SelectListItem>
-                                            ();
-supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
-                                            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
-                                            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="form-group">
-                                                        <div class="control-label">Keputusan Mesyuarat</div>
-                                                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            }
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        @if(Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.APPSTATUSID <= (int)Enums.PAStausenum.Pendingpayment) && (Model.MODE == 1) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationRejected)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-                                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
-                                                        }
-                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.Paid)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
-                                                        }
-                                                        @if(Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
-                                                        {
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Kaunter Telah Menerima Bayaran"  onclick='return Approved();' />
-                                                        }
-                                                        @if(Model.UserRollTemplate != (int)Enums.RollTemplate.Clerk && Model.APPSTATUSID == (int)Enums.PAStausenum.LicenseGenerated && Model.MODE != 1)
-                                                        {
-                                                            // Add a button for showing License print
-                                                            <input type = "button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
-                                                        }
-                                                        @if(Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
-                                                        {
-                                                            if (Model.APPSTATUSID == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                                                            {
-                                                                <input type = "submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
-                                                                <input type = "submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                                            }
-                                                        }
 
-                                                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                                                            {
-                                                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                                                            }*@
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.APPSTATUSID <= (int)Enums.PAStausenum.unitroute) || Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.MODE == 1))
-                                                        {
-                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
-                                                            {
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
-                                                            }
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
-                                                        }
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0)
-                                                        {
-                                                            //<button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitReply();'>Ulasan Unit Teknikal/Jabatan Luar</button>
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.APP_ID > 0)
-                                                        {
-
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting || Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck))
-                                                        {
-                                                            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
-                                                            {
-                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar ke KPE</button>
-                                                            }
-                                                            else
-                                                            {
-                                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
-                                                            }
-                                                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Hantar ke Supervisor Untuk Disemak Semula</button>
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.APP_ID > 0 && (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck))
-                                                        {
-                                                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                                        }
-
-                                                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.APP_ID > 0)
-                                                        {
-
-                                                        }
-                                                        @if (Model.UserRollTemplate != (int)Enums.RollTemplate.Public && Model.UserRollTemplate != (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0 && Model.APPSTATUSID != 15)
-                                                        {
-                                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
-                                                        }
-                                                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            }
-
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Pengarah</div>
+                            @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
                 </div>
+            }
+            if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
+            {
+                    List<SelectListItem> supportList = new List<SelectListItem>();
+                    supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                    supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="control-label">Keputusan KPE</div>
+                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+            }
+            if (Model.APPSTATUSID == (int)Enums.PAStausenum.ScheduledMeeting) // Meeting
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Mesyuarat</div>
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+            if (Model.UserRollTemplate == (int)Enums.PAStausenum.expScheduledMeeting && Model.MODE == (int)Enums.Mode.Express) // Express Meeting
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Berjaya menepati syarat-syarat dalam tempoh 6 bulan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Gagal menepati syarat-syarat selepas tempoh 6 bulan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "Belum menepati syarat-syarat, hantar surat peringatan", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Mesyuarat Permohonan Ekspres</div><br />
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        @switch (Model.UserRollTemplate)
+                        {
+                            case (int)Enums.RollTemplate.Public:
+                                <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                break;
+                            case (int)Enums.RollTemplate.DeskOfficer:
+                                if (Model.MODE == (int)Enums.Mode.Express)
+                                {
+                                    switch (Model.APPSTATUSID)
+                                    {
+                                        case (int)Enums.PAStausenum.expDraft:
+                                            <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        case (int)Enums.PAStausenum.expPendingPayment:
+                                            <input type="button" class="btn btn-primary btSubmit" value="Kaunter Telah Menerima Bayaran" onclick='return Approved();' />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        case (int)Enums.PAStausenum.expPaid:
+                                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        default:
+                                            <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.APPSTATUSID <= (int)Enums.PAStausenum.draftcreated)
+                                    {
+                                    <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                    <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                    }
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.Clerk:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.expSubmitClerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>                                                                                        
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expRoute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expLetter:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Peringatan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />                                                
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.Supervisor:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.expSubmitClerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expRoute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expLetter:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Peringatan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.RouteUnit:
+                                //<input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                break;
+                            case (int)Enums.RollTemplate.Director:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.expMeeting)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Kemaskini Keputusan Mesyuarat" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck)
+                                        {
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Hantar ke KPE" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.ScheduledMeeting || Model.APPSTATUSID == (int)Enums.PAStausenum.meetingKIV)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Kemaskini Keputusan Mesyuarat" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.CEO:
+                                if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck || Model.APPSTATUSID == (int)Enums.PAStausenum.CEOKIV)
+                                {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                }
+                                break;
+                        }
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />                       
+                    </div>
+                </div>
+            </div>
+            }
+    </div>
 </div>
 
 <!-- Add Individual-->
@@ -1006,9 +1231,9 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
                                 <div class="control-label">Keputusan</div>
-                                @if(ProjectSession.User.DEP_ID == 3) 
-                                {                               
-                                    @Html.DropDownListFor(m => m.Supported, new SelectList(BPPRouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
+                                @if(ProjectSession.User.DEP_ID == 3)
+                        {
+                            @Html.DropDownListFor(m => m.Supported, new SelectList(BPPRouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
                                 }
                                 else
                                 {
@@ -1752,6 +1977,15 @@ supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense
 
         function changeSector(){
             bindCode();
+        }
+
+        function changePremiseOwn(){
+            if ($("#P_OWN").val() == 0) {
+                $('.rent').show();
+            }
+            else{
+                $('.rent').hide();
+            }
         }
 
         function changeLicense() {

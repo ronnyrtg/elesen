@@ -107,7 +107,30 @@
                                 },
                                 { "title": "Nombor Rujukan", "data": "MT_REF" },
                                 { "title": "Tajuk Mesyuarat", "data": "MT_DESC" },
-                                { "title": "Tarikh", "data": "MT_DATE" },
+                                { "title": "Tarikh", "data": "MT_DATE", render: renderDate },                                
+                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
+                                { "title": "Nama Syarikat", "data": "CompanyName" },
+                                { 
+                                    "title": "Keputusan",
+                                    "data": "Result",
+                                    "render": function (data, type, row){
+                                        if (data == 12 || data == 26){
+                                            return '<label class="label label-success">Lulus</label>';
+                                        }
+                                        else if (data == 13 || data == 27){
+                                            return '<label class="label label-danger">Gagal</label>';
+                                        }
+                                        else if (data == 9){
+                                            return '<label>KIV</label>';
+                                        }
+                                        else if (data == 25){
+                                            return '<label class="label label-danger">Surat Peringatan</label>';
+                                        }
+                                        else{
+                                            return '<label>Belum dibawa mesyuarat</label>';
+                                        }
+                                    }
+                                },
                                 {
                                     "title": "Tindakan",
                                     "data": null,
