@@ -56,6 +56,7 @@
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AddressModel.cs" />
     <Compile Include="ApplicationModel.cs" />
+    <Compile Include="AppLogModel.cs" />
     <Compile Include="APP_L_MTModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessTypeModel.cs" />

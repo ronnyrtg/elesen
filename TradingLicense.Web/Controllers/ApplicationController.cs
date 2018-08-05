@@ -5166,5 +5166,56 @@ namespace TradingLicense.Web.Controllers
         }
         #endregion
 
+        #region Application Log Grid
+        /// <summary>
+        /// GET: Application Log
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizationPrivilegeFilter(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel)]
+        public ActionResult ApplicationLog()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Get Application Log Data
+        /// </summary>
+        /// <param name="requestModel">The request model.</param>
+        /// <param name="RefNo">The application reference number.</param>      
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult ApplicationLog([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, string appID)
+        {
+            List<AppLogModel> Application;
+            int totalRecord = 0;
+            using (var ctx = new LicenseApplicationContext())
+            {                
+                IQueryable<APP_LOG> query = ctx.APP_LOGs;
+
+                if (!string.IsNullOrWhiteSpace(appID))
+                {
+                    query = query.Where(q => q.APP_ID.ToString().Contains(appID));
+                }
+
+                #region Sorting
+                // Sorting
+                var sortedColumns = requestModel.Columns.GetSortedColumns();
+                var orderByString = sortedColumns.GetOrderByString();
+
+                var result = Mapper.Map<List<AppLogModel>>(query.ToList());
+                result = result.OrderBy(orderByString == string.Empty ? "APP_LOGID desc" : orderByString).ToList();
+
+                totalRecord = result.Count;
+
+                #endregion Sorting
+
+                // Paging
+                result = result.Skip(requestModel.Start).Take(requestModel.Length).ToList();
+                Application = result;
+            }
+            return Json(new DataTablesResponse(requestModel.Draw, Application, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
     }
 }
