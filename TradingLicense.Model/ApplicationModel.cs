@@ -56,9 +56,11 @@ namespace TradingLicense.Model
         public string GOODS_TYPE { get; set; }
         public int H_START { get; set; }
         public int H_STOP { get; set; }
+        public int? OWNER_ID { get; set; }
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
         public int? HELPERC { get; set; }
+        public string PREMISNO { get; set; }
 
         //Entertainment Application
         public int E_P_FEEID { get; set; }
@@ -94,6 +96,8 @@ namespace TradingLicense.Model
         public string LicenseDocIds { get; set; }
         public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
+        public int ATT_ID { get; set; }
+
 
         public string LicenseTypeDesc { get; set; }
         public int UserRollTemplate { get; set; }
