@@ -21,19 +21,31 @@
 </div>
 <br /><br />
 <table class="A4">
-    <tr>
-        <th> License Type </th>
-        <th> Code </th>
-        <th> Description </th>
-        <th> Fees </th>
-    </tr>
-    @foreach (var item in ViewBag.businessCodes)
+    @foreach (var item in ViewBag.owners)
     {
         <tr>
-            <td>@item.LicenseTypeDesc</td>
-            <td>@item.C_R</td>
-            <td>@item.C_R_DESC</td>
-            <td>@item.DEF_RATE</td>
+            <td class="line">
+               <div class="row">
+                   <div class="label"> Full Name</div>
+                   <div class="info"> @item.FULLNAME </div>
+               </div>
+                <div class="row">
+                    <div class="label"> MyKad No </div>
+                    <div class="info"> @item.MYKADNO </div>
+                </div>
+                <div class="row">
+                    <div class="label"> Email </div>
+                    <div class="info"> @item.IND_EMAIL </div>
+                </div>
+                <div class="row">
+                    <div class="label"> Gender </div>
+                    <div class="info"> @item.GENDER </div>
+                </div>
+                <div class="row">
+                    <div class="label"> Address </div>
+                    <div class="info"> @item.ADD_IC </div>
+                </div>
+            </td>
         </tr>
     }
 </table>

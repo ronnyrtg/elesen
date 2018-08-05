@@ -167,10 +167,10 @@ namespace TradingLicense.Web.Controllers
             List<IndividualModel> items = new List<IndividualModel>();
             using (var ctx = new Data.LicenseApplicationContext())
             {
-                var individuals = ctx.ZONEs.ToList();
+                var individuals = ctx.INDIVIDUALs.ToList();
                 items = Mapper.Map<List<IndividualModel>>(individuals);
             }
-            ViewBag.zones = items;
+            ViewBag.owners = items;
             ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
             ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
             return new ViewAsPdf();
