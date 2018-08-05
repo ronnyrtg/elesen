@@ -21,7 +21,6 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<AccessPageModel, ACCESSPAGE>();
                 cfg.CreateMap<DEPARTMENT, DepartmentModel>();
                 cfg.CreateMap<RD, RequiredDocModel>();
-                cfg.CreateMap<ZONE, ZoneModel>().ForMember(dest => dest.zoneCombineList, opt => opt.Ignore());
                 cfg.CreateMap<CompanyModel, COMPANY>();
                 cfg.CreateMap<COMPANY, CompanyModel>().ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BT.BT_DESC));
                 cfg.CreateMap<ATTACHMENT, AttachmentModel>();
