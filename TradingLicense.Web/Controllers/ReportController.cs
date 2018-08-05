@@ -162,6 +162,20 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        public ActionResult OwnerMasterPdf()
+        {
+            List<IndividualModel> items = new List<IndividualModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var individuals = ctx.ZONEs.ToList();
+                items = Mapper.Map<List<IndividualModel>>(individuals);
+            }
+            ViewBag.zones = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
         public ActionResult JointOwner()
         {
             return View();

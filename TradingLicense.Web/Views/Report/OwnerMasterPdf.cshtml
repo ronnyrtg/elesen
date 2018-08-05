@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "Owner Master";
+    Layout = "~/Views/Shared/_Report.cshtml";
+}
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> L5-02</td>
+        <td>
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br /><br />
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>PERSONAL MASTER LISTING </div>
+</div>
+<br /><br />
+<table class="A4">
+    <tr>
+        <th> License Type </th>
+        <th> Code </th>
+        <th> Description </th>
+        <th> Fees </th>
+    </tr>
+    @foreach (var item in ViewBag.businessCodes)
+    {
+        <tr>
+            <td>@item.LicenseTypeDesc</td>
+            <td>@item.C_R</td>
+            <td>@item.C_R_DESC</td>
+            <td>@item.DEF_RATE</td>
+        </tr>
+    }
+</table>
+

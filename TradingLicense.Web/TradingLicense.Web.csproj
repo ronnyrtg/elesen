@@ -546,6 +546,7 @@
     <Content Include="Views\Application\Meeting.cshtml" />
     <Content Include="Views\Profile\ProfileList.cshtml" />
     <Content Include="Views\Profile\ViewProfile.cshtml" />
+    <Content Include="Views\Report\OwnerMasterPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
