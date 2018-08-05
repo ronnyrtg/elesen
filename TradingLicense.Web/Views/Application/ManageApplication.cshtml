@@ -282,7 +282,7 @@
                     </div>
                 </div>
             }
-                    <div class="row">
+                    <div class="row company-name">
                         <div class="form-group">
                             <div class="col-sm-10 col-lg-6">
                                 <div class="control-label">Nama Syarikat</div>
@@ -291,7 +291,7 @@
                     </div>
             if(Model.COMPANYID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
-                    <div class="row">
+                    <div class="row company-name">
                         <div class="form-group">
                             <div class="col-sm-10 col-lg-6">
                             <div class="well well-sm">@Model.CompanyName</div>
@@ -302,7 +302,7 @@
             }
             else
             {
-                <div class="row">
+                <div class="row company-name">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6">
                             @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
@@ -320,7 +320,7 @@
 
             if (Model.BT_ID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
-                <div class="row">
+                <div class="row company-type">
                     <div class="col-lg-3 col-md-6">
                         <div class="form-group">
                             <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
@@ -332,7 +332,7 @@
             }
             else
             {
-                <div class="row">
+                <div class="row company-type">
                     <div class="col-lg-3 col-md-6">
                         <div class="form-group">
                             <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
@@ -456,6 +456,115 @@
                         </div>
                     </div>
                 </div>
+            if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.HawkerApplication)
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="well well-sm">
+                                @foreach (var item in Model.selectedIndividualList)
+                                {
+                                    @item.text.ToString();<br />
+
+                                }
+                                @Html.HiddenFor(model => model.selectedIndividualList)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 col-lg-12 hawker">
+                        <div class="form-group" style="display:normal;">
+                            <div class="control-label">No Premis<span class="cfont">*</span></div>
+                            @Model.PREMISNO
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Tempol Sah Lesen<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.START_RENT)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Hingga<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                        </div>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                            @Html.HiddenFor(model => model.Individualids)
+                            @Html.HiddenFor(model => model.newIndividualsList)
+                        </div>
+                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                        {
+                            <div class="col-sm-2 col-lg-6">
+                                <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                            </div>
+                        }
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col-sm-12 col-lg-3 hawker">
+                        <div class="form-group" style="display:normal;">
+                            <div class="control-label">
+                                No Premis<span class="cfont">*</span>
+                                @Html.TextBoxFor(m => m.PREMISNO, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Tempol Sah Lesen<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.START_RENT)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Hingga<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                        </div>
+                    </div>
+                </div>
+
+
+            }
 
             if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.BannerApplication)
             {
@@ -2065,8 +2174,13 @@
                 $('#sector').hide();
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
-                $('.premise').show();
+                $('.premise').hide();
+                $('.hawker').show();
+                $('.rent').hide();
                 $('.banner').hide();
+                $('.company-name').hide();
+                $('.company-type').hide();
+
             }
             else if ($("#LIC_TYPEID").val() == 7){
                 bindLicense();

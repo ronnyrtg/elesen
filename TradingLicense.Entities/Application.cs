@@ -70,6 +70,10 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string GOODS_TYPE { get; set; }
+        //Location & Premise No
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PREMISNO { get; set; }
         //Operation Hour start and stop
         public int H_START { get; set; }
         public int H_STOP { get; set; }
