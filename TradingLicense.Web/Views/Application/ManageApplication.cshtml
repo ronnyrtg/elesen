@@ -33,7 +33,7 @@
         var appStatus = ctx.APPSTATUS.ToList();
         appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
 
-        var dept = ctx.DEPARTMENTs.ToList();
+        var dept = ctx.DEPARTMENTs.Where(de => de.ROUTE == 1).ToList();
         departmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(dept);
 
         var banner = ctx.BCs.Where(ba => ba.LIC_TYPEID == 5).ToList();
@@ -55,12 +55,19 @@
     List<SelectListItem> ModeList = new List<SelectListItem>();
     ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
     ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
-    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
     ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
 
     List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
     PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "0" });
     PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "1" });
+
+    List<SelectListItem> RouteUnitDecision = new List<SelectListItem>();
+    RouteUnitDecision.Add(new SelectListItem { Text = "Tiada Halangan", Value = "1" });
+    RouteUnitDecision.Add(new SelectListItem { Text = "Ada Halangan", Value = "0" });
+
+    List<SelectListItem> BPPRouteUnitDecision = new List<SelectListItem>();
+    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Sokong", Value = "1" });
+    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Tidak Disokong", Value = "0" });
 
 }
 <div id="divMessage"></div>
@@ -75,6 +82,7 @@
             @Html.HiddenFor(m => m.APP_ID)
             @Html.HiddenFor(m => m.USERSID)
             @Html.HiddenFor(m => m.UserRollTemplate)
+            @Html.HiddenFor(m => m.LicenseDocIds)
             @Html.HiddenFor(m => m.RequiredDocIds)
             @Html.HiddenFor(m => m.AdditionalDocIds)
             @Html.HiddenFor(m => m.IsDraft)
@@ -88,195 +96,396 @@
             @Html.HiddenFor(m => m.UPDATED_BY)
             @Html.HiddenFor(m => m.TOTAL_FEE)
 
-            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.meeting)
+            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.ScheduledMeeting && Model.APPSTATUSID != (int)Enums.PAStausenum.expScheduledMeeting)
             {
                 @Html.HiddenFor(m => m.SubmitType)
             }
 
             @Html.HiddenFor(m => m.UploadRequiredDocids)
-            @Html.HiddenFor(m => m.UploadAdditionalDocids)
+            @Html.HiddenFor(m => m.UploadLicenseDocids)
 
-
-            <div class="row">
-                <div class="col-lg-3 col-md-6" id="licenseType">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
-                        @Html.ValidationMessageFor(m => m.LIC_TYPEID)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6" id="approvalType" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>                       
-                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.MODE)
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" id="approvalDirector" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Kelulusan</div>
-                        <div class="well well-sm">Pengarah</div>
-                        @Html.Hidden("MODE", 2, null)
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" id="approvalCEO" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Kelulusan</div>
-                        <div class="well well-sm">Biasa</div>
-                        @Html.Hidden("MODE", 3, null)
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6" id="approvalMeeting" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Kelulusan</div>
-                        <div class="well well-sm">Mesyuarat</div>
-                        @Html.Hidden("MODE", 4, null)
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SECTORID), "SECTORID", "SECTORDESC"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
-                    </div>
-                </div>
-            </div>
-
-            
-
-            <div class="row">
-                <div class="col-sm-6" id="businessCode">
-                    <div class="form-group">
-                        <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
-                        @Html.HiddenFor(model => model.BusinessCodeids)
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-10 col-lg-6">
-                        <div class="control-label">Nama Penuh (Mykad/Paspot)<span class="cfont">*</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-10 col-lg-6">
-                        @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                        @Html.HiddenFor(model => model.Individualids)
-                        @Html.HiddenFor(model => model.newIndividualsList)
-                    </div>
-                    @if (Model.APP_ID == 0)
-                    {
-                        <div class="col-sm-2 col-lg-6">
-                            <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-10 col-lg-6">
-                        <div class="control-label">Nama Syarikat</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-sm-10 col-lg-6">
-                        @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
-                    </div>
-                    @if (Model.APP_ID == 0)
-                    {
-                        <div class="col-sm-2 col-lg-6">
-                            <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='addCompany();' />
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.BT_ID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
-                    </div>
-                </div>
-            </div>
-            <hr />
-
-            <div class="row">
-                <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
-                        @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.id), "id", "text"), "Pilih Kategori", new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Poskod<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Negeri<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3 col-sm-12 banner" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">Butir-butir Iklan<span class="cfont">*</span></div>                        
-                    </div>
-                </div>
-            </div>
-            if (Model.totalBannerObjects == 0)
+            if (Model.LIC_TYPEID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
             {
                 <div class="row">
-                    <div class="col-sm-12 col-lg-6 banner">
+                    <div class="col-lg-3 col-md-6" id="licenseType">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                            <div class="well well-sm">@Model.LicenseTypeDesc</div>
+                            @Html.HiddenFor(m => m.LIC_TYPEID)
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="licenseType">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
+                            @Html.ValidationMessageFor(m => m.LIC_TYPEID)
+                        </div>
+                    </div>
+                </div>
+            }
+            if (Model.MODE > 0)
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            @switch (Model.MODE)
+                            {
+                                case 1:
+                                    <div class="well well-sm">Ekspres</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Express, null)
+                                    break;
+                                case 2:
+                                    <div class="well well-sm">Biasa</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Director, null)
+                                    break;
+                                case 3:
+                                    <div class="well well-sm">Biasa</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.CEO, null)
+                                    break;
+                                case 4:
+                                    <div class="well well-sm">Mesyuarat</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Meeting, null)
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+                else
+                {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="approvalType" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.MODE)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalDirector" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Biasa</div>
+                            @Html.Hidden("MODE", 2, null)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalCEO" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Biasa</div>
+                            @Html.Hidden("MODE", 3, null)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalMeeting" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Mesyuarat</div>
+                            @Html.Hidden("MODE", 4, null)
+                        </div>
+                    </div>
+                </div>
+            }
+
+            if (Model.LIC_TYPEID <= (int)Enums.ApplicationTypeID.TradeApplication)
+            {
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids))
+                {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SECTORID), "SECTORID", "SECTORDESC"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                {
+                    <div class="row">
+                        <div class="col-sm-6" id="businessCode">
+                            <div class="form-group">
+                                <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
+                                @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
+                                @Html.HiddenFor(model => model.BusinessCodeids)
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-sm-6" id="businessCode">
+                            <div class="form-group">
+                                <div class="control-label">Kod Perniagaan</div>
+                                <div class="well well-sm">
+                                    @foreach (var item in Model.selectedbusinessCodeList)
+                                    {
+                                        @item.text.ToString();<br />
+
+                                    }
+                                    @Html.HiddenFor(model => model.BusinessCodeids)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                <div class="control-label">Nama Penuh (Mykad/Paspot)<span class="cfont">*</span></div>
+                            </div>
+                        </div>
+                    </div>
+            if (string.IsNullOrWhiteSpace(Model.Individualids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+            {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                                @Html.HiddenFor(model => model.Individualids)
+                                @Html.HiddenFor(model => model.newIndividualsList)
+                            </div>
+                            @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                <div class="col-sm-2 col-lg-6">
+                                    <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                                </div>
+                            }
+                        </div>
+                    </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="well well-sm">
+                                @foreach (var item in Model.selectedIndividualList)
+                                {
+                                    @item.text.ToString();<br />
+
+                                }
+                                @Html.HiddenFor(model => model.selectedIndividualList)
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+            }
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                <div class="control-label">Nama Syarikat</div>
+                            </div>
+                        </div>
+                    </div>
+            if(Model.COMPANYID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
+            {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                            <div class="well well-sm">@Model.CompanyName</div>
+                            @Html.HiddenFor(model => model.COMPANYID)
+                            </div>
+                        </div>
+                    </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
+                        </div>
+                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                        {
+                            <div class="col-sm-2 col-lg-6">
+                                <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='return AddCompany();' />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+
+            if (Model.BT_ID > 0 && Model.APPSTATUSID > (int)Enums.PAStausenum.draftcreated)
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                            <div class="well well-sm">@Model.BusinessTypeDesc</div>
+                            @Html.HiddenFor(m => m.BT_ID)
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.BT_ID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                        </div>
+                    </div>
+                </div>
+            }
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
+                                @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.id), "id", "text"), "Pilih Kategori", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA1) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                                {
+                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.ADDRA1</div>
+                                    @Html.HiddenFor(m => m.ADDRA1)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA2) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                               {
+                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
+                               }
+                               else
+                               {
+                                <div class="well well-sm">@Model.ADDRA2</div>
+                                    @Html.HiddenFor(m => m.ADDRA2)
+                               }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA3) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                                {
+                                    @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.ADDRA3</div>
+                                    @Html.HiddenFor(m => m.ADDRA3)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA4) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                               {
+                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
+                               }
+                               else
+                               {
+                                <div class="well well-sm">@Model.ADDRA4</div>
+                                    @Html.HiddenFor(m => m.ADDRA4)
+                               }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Poskod<span class="cfont">*</span></div>
+                                @if (string.IsNullOrWhiteSpace(Model.PCODEA) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                                {
+                                    @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.PCODEA</div>
+                                    @Html.HiddenFor(m => m.PCODEA)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Negeri<span class="cfont">*</span></div>                                
+                                @if (string.IsNullOrWhiteSpace(Model.STATEA) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                                {
+                                    @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.STATEA</div>
+                                    @Html.HiddenFor(m => m.STATEA)
+                                }
+                            </div>
+                        </div>
+                    </div>
+            }
+
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Butir-butir Iklan</div>
+                        </div>
+                    </div>
+                </div>
+
+            if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+
+                <div class="row">
+                    <div class="col-sm-12 col-lg-12">
+                        <div class="form-group">
+                            <table cellspacing = "0" class="table table-hover table-bordered responsive" style="width:100%" id="BannerObject"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6">
+                        <div class="form-group">
+                            <button type = "button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            <div class="well well-sm">@Model.PRO_FEE</div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">Kod Iklan</div>
                             @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
@@ -284,193 +493,235 @@
                         </div>
                     </div>
                 </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner">
-                            <div class="form-group">
-                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
-                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
-                            </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.ADDRB1, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB2, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB3, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12 banner">
-                            <div class="form-group">
-                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ADDRB4, new { @class = "form-control" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner">
-                            <div class="form-group">
-                                <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
-                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
-                                <span class="text-danger SizeVal"></span>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Saiz Iklan Dipohon(meter persegi)</div>
+                            @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                            <span class="text-danger SizeVal"></span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-lg-6 banner">
-                            <div class="form-group">
-                                <div class="control-label">Bilangan Iklan</div>
-                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
-                                <span class="text-danger quantityVal"></span>
-                            </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Bilangan Iklan</div>
+                            @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                            <span class="text-danger quantityVal"></span>
                         </div>
                     </div>
-            }
-            else
-            {
-            <div class="row">
-                <div class="col-sm-12 col-lg-12 banner" style="display:none;">
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            @Html.TextBoxFor(m => m.PRO_FEE, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <hr />
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 premise" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Luas Premis<span class="cfont">*</span></div>
+                            @if (Model.P_AREA == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                @Html.TextBoxFor(m => m.P_AREA, new { @class = "form-control allownumericwithdecimal" })
+                                @Html.ValidationMessageFor(m => m.P_AREA)
+                            }
+                            else
+                            {
+                                <div class="well well-sm">@Model.P_AREA meter persegi</div>
+                                @Html.HiddenFor(m => m.P_AREA)
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 premise" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
+                            @if (string.IsNullOrWhiteSpace(Model.P_OWN) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control", onchange = "changePremiseOwn()" })
+                                @Html.ValidationMessageFor(m => m.P_OWN)
+                            }
+                            else
+                            {
+                                if (Model.P_OWN == "0")
+                                {
+                                    <div class="well well-sm">Sewaan</div>
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">Pemilikan Sendiri</div>
+                                }
+                                @Html.HiddenFor(m => m.P_OWN)
+                            }                                
+                        </div>
+                    </div>
+                </div>
+                if (Model.APP_ID == 0 && Model.P_OWN == null)
+                {
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.START_RENT)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Hingga<span class="cfont">*</span></div>
+                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                        </div>
+                    </div>
+                </div>
+                }
+                <div class="row">
                     <div class="form-group">
-                        <table cellspacing="0" class="table table-hover table-bordered responsive" style="width:100%" id="BannerObject"></table>
+                        <div class="col-md-10 col-lg-6 premise" style="display:normal;">
+                            <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                <div class="row">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
-                    </div>
-                </div>
-            </div>
-            }
-            <hr />
-            <div class="row">
-                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Luas Premis<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.P_AREA, new { @class = "form-control allownumericwithdecimal" })
-                        @Html.ValidationMessageFor(m => m.P_AREA)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.P_OWN)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-3 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.START_RENT)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-3 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Hingga<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.STOP_RENT)
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-md-10 col-lg-6 premise" style="display:normal;">
-                        <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <div class="col-md-10 col-lg-3 premise" style="display:normal;">
-                        @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
-                    </div>
-                        @if (Model.APP_ID == 0)
+                        @if (Model.PT_ID == null || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
-                            <div class="col-md-2 col-lg-2 premise">
-                                <input type="button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                            <div class="col-md-10 col-lg-2 premise" style="display:normal;">
+                                @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
                             </div>
-                        }                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-12 premise" style="display:normal;">
-                    <div class="form-group">
-                        <div class="control-label">Tingkat</div>
-                        @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
+                            if (Model.APP_ID == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                <div class="col-md-2 col-lg-2 premise" style="display:normal;">
+                                    <input type = "button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-md-10 col-lg-3 premise" style="display:normal;">
+                                <div class="well well-sm">@Model.PremiseDesc</div>
+                                @Html.HiddenFor(m => m.PT_ID)
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
-
-            
-
-            <div class="row">
-                <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen   @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                if (Model.APP_ID <= 0 || !string.IsNullOrWhiteSpace(Model.FLOOR) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                {
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Tingkat</div>
+                                @if (string.IsNullOrWhiteSpace(Model.FLOOR))
+                                {
+                                    @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.FLOOR</div>
+                                    @Html.HiddenFor(m => m.FLOOR)
+                                }
+                            </div>
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblLicenseType"></table>
                     </div>
-                </div>
-                <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan   @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                }
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblLicenseType"></table>
+                            </div>
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Senarai Dokumen Tambahan mengikut Kod Perniagaan @if (Model.UserRollTemplate > 1)
-                            {<span class="cfont">*</span>}
+                        <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
+                            </div>
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Ulasan Unit Teknikal/Jabatan Luar
+                        <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Tambahan mengikut Kod Perniagaan
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
+                            </div>
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
-                    <div class="form-group">
-                        <div class="control-label">
-                            Senarai Catatan
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Ulasan Unit Teknikal/Jabatan Luar
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
+                            </div>
                         </div>
-                        <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
                     </div>
-                </div>
-            </div>
-            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director)
+            if (Model.UserRollTemplate != (int)Enums.RollTemplate.Public && Model.UserRollTemplate != (int)Enums.RollTemplate.RouteUnit)
             {
-                List<SelectListItem> supportList = new List<SelectListItem>();
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Ulasan
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
+                            </div>
+                        </div>
+                    </div>
+            }
+            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication && Model.MODE == (int)Enums.Mode.CEO)
+            {
+                List<SelectListItem>
+                supportList = new List<SelectListItem>();
                 supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
                 supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
+
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -482,25 +733,27 @@
             }
             if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
             {
-                List<SelectListItem> supportList = new List<SelectListItem>();
-                supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
-                supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
-                supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <div class="control-label">Keputusan KPE</div>
-                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                    List<SelectListItem> supportList = new List<SelectListItem>();
+                    supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                    supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="control-label">Keputusan KPE</div>
+                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                            </div>
                         </div>
                     </div>
-                </div>
             }
-            if (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting) // Meeting
+            if (Model.APPSTATUSID == (int)Enums.PAStausenum.ScheduledMeeting) // Meeting
             {
                 List<SelectListItem> supportList = new List<SelectListItem>();
                 supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
                 supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
                 supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -510,77 +763,275 @@
                     </div>
                 </div>
             }
+            if (Model.UserRollTemplate == (int)Enums.PAStausenum.expScheduledMeeting && Model.MODE == (int)Enums.Mode.Express) // Express Meeting
+            {
+                List<SelectListItem> supportList = new List<SelectListItem>();
+                supportList.Add(new SelectListItem { Text = "Berjaya menepati syarat-syarat dalam tempoh 6 bulan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Gagal menepati syarat-syarat selepas tempoh 6 bulan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                supportList.Add(new SelectListItem { Text = "Belum menepati syarat-syarat, hantar surat peringatan", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="control-label">Keputusan Mesyuarat Permohonan Ekspres</div><br />
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @if (Model.UserRollTemplate >= (int)Enums.RollTemplate.DeskOfficer && (Model.APPSTATUSID <= (int)Enums.PAStausenum.Pendingpayment) && (Model.MODE == 1) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationRejected)
+                        @switch (Model.UserRollTemplate)
                         {
-                            <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
-                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
-                        }
-                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && (Model.MODE == 1 && Model.APPSTATUSID <= (int)Enums.PAStausenum.submittedtoclerk) || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || Model.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions)
-                        {
-                            <input type="button" class="btn btn-primary btSubmit" value="Fi Yang Perlu Dibayar" onclick="showPaymentsDuePopup();" />
-                        }
-                        @if (Model.UserRollTemplate > (int)Enums.RollTemplate.Public && Model.APPSTATUSID == (int)Enums.PAStausenum.Pendingpayment)
-                        {
-                            <input type="button" class="btn btn-primary btSubmit" value="Terima Bayaran" id="btnSubmitPaymentReceived" onclick="showPaymentsReceivedPopup();" />
-                        }
-                        @if (Model.UserRollTemplate != (int)Enums.RollTemplate.Clerk && Model.APPSTATUSID == (int)Enums.PAStausenum.LicenseGenerated && Model.MODE != 1)
-                        {
-                            // Add a button for showing License print
-                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
-                        }
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Public || Model.UserRollTemplate == (int)Enums.RollTemplate.DeskOfficer)
-                        {
-                            if (Model.APPSTATUSID == 0 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                            {
+                            case (int)Enums.RollTemplate.Public:
                                 <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
                                 <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                            }
+                                break;
+                            case (int)Enums.RollTemplate.DeskOfficer:
+                                if (Model.MODE == (int)Enums.Mode.Express)
+                                {
+                                    switch (Model.APPSTATUSID)
+                                    {
+                                        case (int)Enums.PAStausenum.expDraft:
+                                            <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        case (int)Enums.PAStausenum.expPendingPayment:
+                                            <input type="button" class="btn btn-primary btSubmit" value="Kaunter Telah Menerima Bayaran" onclick='return Approved();' />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        case (int)Enums.PAStausenum.expPaid:
+                                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                        default:
+                                            <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.APPSTATUSID <= (int)Enums.PAStausenum.draftcreated)
+                                    {
+                                    <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
+                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                    <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                    }
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.Clerk:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.expSubmitClerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>                                                                                        
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expRoute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expLetter:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Peringatan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />                                                
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.Supervisor:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.expSubmitClerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expRoute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.expLetter:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Peringatan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Dokumen Tidak Lengkap</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        switch (Model.APPSTATUSID)
+                                        {
+                                            case (int)Enums.PAStausenum.submittedtoclerk:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.unitroute:
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
+                                                <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Paid:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Lesen" id="btnLicense" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Selesai" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.RouteUnit:
+                                //<input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                break;
+                            case (int)Enums.RollTemplate.Director:
+                                switch (Model.MODE)
+                                {
+                                    case (int)Enums.Mode.Express:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.expMeeting)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Kemaskini Keputusan Mesyuarat" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Director:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck)
+                                        {
+                                        <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Lulus</button>
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.CEO:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Hantar ke KPE" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                    case (int)Enums.Mode.Meeting:
+                                        if (Model.APPSTATUSID == (int)Enums.PAStausenum.ScheduledMeeting || Model.APPSTATUSID == (int)Enums.PAStausenum.meetingKIV)
+                                        {
+                                        <input type="submit" class="btn btn-primary btSubmit" value="Kemaskini Keputusan Mesyuarat" onclick='frmSubmit(false); return false;' />
+                                        <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                        }
+                                        break;
+                                }
+                                break;
+                            case (int)Enums.RollTemplate.CEO:
+                                if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck || Model.APPSTATUSID == (int)Enums.PAStausenum.CEOKIV)
+                                {
+                                <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                }
+                                break;
                         }
-
-                        @*@if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
-                            {
-                                <input type="submit" class="btn btn-primary btSubmit" value="Submit" onclick='frmSubmit(true); return false;' id="btnsubmit" />
-                            }*@
-
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.APPSTATUSID <= (int)Enums.PAStausenum.unitroute) || Model.UserRollTemplate == (int)Enums.RollTemplate.Clerk && (Model.APPSTATUSID >= (int)Enums.PAStausenum.submittedtoclerk && Model.MODE == 1))
-                        {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return showRouteUnitConfirmModal();'>Hantar ke Unit Teknikal/Jabatan Luar</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
-                        }
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.RouteUnit && Model.APP_ID > 0)
-                        {
-
-                        }
-
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor && Model.APP_ID > 0)
-                        {
-
-                        }
-
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting || Model.APPSTATUSID == (int)Enums.PAStausenum.directorcheck))
-                        {
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar</button>
-                            <button type="button" class="btn btn-primary btSubmit" onclick='return Rejected();'>Kembali ke Supervisor</button>
-                        }
-
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.CEO && Model.APP_ID > 0 && (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck))
-                        {
-                            <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
-                        }
-
-                        @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Administrator && Model.APP_ID > 0)
-                        {
-
-                        }
-
-                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />                       
                     </div>
                 </div>
             </div>
-        }
+            }
     </div>
 </div>
 
@@ -591,7 +1042,7 @@
         {
             @Html.AntiForgeryToken()
             @Html.Hidden("id", Model.APP_ID)
-            @Html.Hidden("appType", "Application")
+            
 
             <div class="modal-content">
                 <div class="modal-header">
@@ -634,7 +1085,7 @@
         {
             @Html.AntiForgeryToken()
             @Html.Hidden("id", Model.APP_ID)
-            @Html.Hidden("appType", "Application")
+            
 
             <div class="modal-content">
                 <div class="modal-header">
@@ -692,7 +1143,7 @@
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
                                 <div class="control">
-                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                    @Html.TextAreaFor(m => m.newCatatan, new { @class = "form-control", rows = "5" })
                                 </div>
                             </div>
                         </div>
@@ -707,6 +1158,102 @@
     </div>
 </div>
 
+<!--Add Comment-->
+<div id="showComment" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveComment", "Application", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Ulasan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Masukkan Ulasan
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveComment()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Route Unit reply-->
+<div id="showUnitReply" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveRouteComment", "Application", FormMethod.Post, new { name = "frmsaveRouteComment", id = "frmsaveRouteComment" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            @Html.HiddenFor(m => m.routeID)
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Maklumbalas kepada Pelesenan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Ulasan
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">Keputusan</div>
+                                @if(ProjectSession.User.DEP_ID == 3)
+                        {
+                            @Html.DropDownListFor(m => m.Supported, new SelectList(BPPRouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Supported, new SelectList(RouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
+                                }                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return SaveUnitReply()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
 <!--Upload Doc-->
 <div id="uploadDocumentModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -720,6 +1267,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="licDocid" id="licDocid">
                     <input type="hidden" name="reqDocid" id="reqDocid">
                     <input type="hidden" name="addDocid" id="addDocid">
                     <input type="hidden" name="isReqDoc" id="isReqDoc">
@@ -747,14 +1295,14 @@
 
 @if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk)
 {
-    <!--Route Unit modal-->
+    <!--Send to Route Unit modal-->
     <div id="routeUnitModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             @using (Html.BeginForm("AddRoute", "Application", FormMethod.Post, new { name = "frmsaveRoute", id = "frmsaveRoute" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.Hidden("id", Model.APP_ID)
-                @Html.Hidden("appType", "Application")
+                
 
                 <div class="modal-content">
                     <div class="modal-header">
@@ -781,6 +1329,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="form-group">
+                                    <div class="control">
+                                        @Html.TextAreaFor(m => m.newQuestion, new { @class = "form-control", rows = "5" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="return RoutePremiseApplication()">Hantar</button>
@@ -792,32 +1349,9 @@
     </div>
 }
 
-<!--approved/reject-->
-<div id="approvedrejectModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        @using (Html.BeginForm("SaveComment", "Application", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
-        {
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><lable id="lblheaderTitle"></lable></h4>
-                </div>
-                <div class="modal-body">
-                    <textarea rows="5" cols="65" class="classOfSelector" id="txtComment" maxlength="255" autofocus="autofocus" placeholder="Comment here..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="return SaveComment()"><lable id="lblapprovedreject"></lable> </button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        }
-    </div>
-</div>
-
+<!-- Print License-->
 <div id="myModalLicense" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -832,10 +1366,9 @@
         </div>
     </div>
 </div>
-
+<!-- Print letter-->
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -850,13 +1383,12 @@
         </div>
     </div>
 </div>
-
+<!--Create Open Item for Payment-->
 <div id="showPaymentsDue" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         @using (Html.BeginForm("SavePaymentDue", "Application", FormMethod.Post, new { name = "frmsavePaymentDue", id = "frmsavePaymentDue" }))
         {
             @Html.HiddenFor(m => m.APP_ID)
-        <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -881,13 +1413,13 @@
         }
     </div>
 </div>
-
+<!-- Receive Payment-->
 <div id="showPaymentsReceived" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         @using (Html.BeginForm("SaveReceivedPayment", "Application", FormMethod.Post, new { name = "frmsaveReceivedPayment", id = "frmsaveReceivedPayment" }))
         {
             @Html.HiddenFor(m => m.APP_ID)
-        <!-- Modal content-->
+        
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -1060,7 +1592,10 @@
         var userRollTemplate = 0;
         var visibleGridColume = false;
         var visibleGridUploadColume = false;
+        var sender = false;
+        var receiver = false;
 
+        var licenseDocList = [];
         var requiredDocList = [];
         var addtionalDocList = [];
 
@@ -1126,8 +1661,8 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<div class="row">' +
-                        '<div class="col-md-2">' + r[1] + '</div>' +
-                        '<div class="col-md-10">' + r[0] + '</div>' +
+                        '<div class="col-md-2">' + r[0] + '</div>' +
+                        '<div class="col-md-10">' + r[1] + '</div>' +
                     '</div>'
                 );
                 return $result;
@@ -1137,7 +1672,7 @@
                 var r = data.text.split('~');
                 var $result = $(
                     '<span>' +
-                        r[1] + ' | '  + r[0] +
+                        r[0] + ' | '  + r[1] +
                     '</span>'
                 );
                 return $result;
@@ -1158,7 +1693,7 @@
                         return {
                             query: query.term,
                             selectedLic: $('#LIC_TYPEID').val(),
-                            selectedSector:  $("#SECTORID").val()
+                            selectedSector:  $("#SectorID").val()
                         }
                     },
                     //processes the results from the JSON method and gives us the select list
@@ -1191,11 +1726,17 @@
                 errorMessage(actionError);
             }
 
-            if (userRollTemplate == 1 || userRollTemplate == 3 || userRollTemplate == 4) {
+            if (userRollTemplate == 1 || userRollTemplate == 3 && @Model.APPSTATUSID != 15) {
                 visibleGridUploadColume = true;
             }
             if (userRollTemplate == 2) {
                 visibleGridColume = true;
+            }
+            if (userRollTemplate == 3 || userRollTemplate == 4) {
+                sender = true;
+            }
+            if (userRollTemplate == 5) {
+                receiver = true;
             }
 
             $("#businessCodeList").select2({ width: '100%' });
@@ -1203,7 +1744,7 @@
             $("#individualList").select2({ width: '100%' });
             $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
-            AddRules();
+
 
 
 
@@ -1260,7 +1801,7 @@
                     url: encodeURI('@Url.Action("FillIndividual", "Application")'),
                     //Data: allows us to pass a parameter to the controller
                     data: function (query) {
-                        //console.log(query)
+                        console.log(query)
                         return { query: query.term }
                     },
                     //processes the results from the JSON method and gives us the select list
@@ -1307,6 +1848,12 @@
                 bindTable();
             }
 
+            if(@Model.LIC_TYPEID > 0)
+            {
+                $("#licTypeID").val(@Model.LIC_TYPEID);
+                bindLicense();
+            }
+
             if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
 
                 var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
@@ -1317,15 +1864,17 @@
                 });
             }
 
-            if ('@Model.UploadAdditionalDocids' != null && '@Model.UploadAdditionalDocids' != '') {
+            if ('@Model.UploadLicenseDocids' != null && '@Model.UploadLicenseDocids' != '') {
 
-                var UploadAdditionalDocumentlist = '@Model.UploadAdditionalDocids';
+                var UploadLicenseDocumentlist = '@Model.UploadLicenseDocids';
 
-                var arr = UploadAdditionalDocumentlist.split(',');
+                var arr = UploadLicenseDocumentlist.split(',');
                 $.each(arr, function (index, value) {
-                    addtionalDocList.push(value);
+                    licenseDocList.push(value);
                 });
             }
+
+
 
             $("#preAppid").val(@Model.APP_ID);
 
@@ -1347,20 +1896,17 @@
 
         function frmSubmit(isdraft) {
             $("#IsDraft").val(isdraft);
-            if (validatePremiseApplication(isdraft)) {
-                $("#frmPremiseApplication").submit();
-            }
+            $("#frmApplication").submit();
         }
 
         function validatePremiseApplication(isdraft) {
             $("#UploadRequiredDocids").val(requiredDocList);
-            $("#UploadAdditionalDocids").val(addtionalDocList);
 
             AdditionalChecked();
 
-            RequiredDocument();
+            RequiredCheck();
 
-            if (!$("#frmPremiseApplication").valid()) {
+            if (!$("#frmApplication").valid()) {
                 return false;
             }else if ($('#BusinessCodeids').val() == "") {
                 alert("Please select Business Code");
@@ -1370,6 +1916,9 @@
                 return false;
             } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
                 alert("Please Upload all Required Document");
+                return false;
+            } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != licenseDocList.length) {
+                alert("Please Upload all License Document");
                 return false;
             }
             else if (userRollTemplate == 1 && !isdraft && $('.lableadddocument').length != addtionalDocList.length) {
@@ -1403,10 +1952,11 @@
         function changeBussinesscode() {
             $('#BusinessCodeids').val($('#businessCodeList').val());
             bindAdditionalTable();
+            //console.log("changebusinesscode");
             checkButtonState();
         }
 
-       
+
 
         function changeIndindividual() {
             var individuals = $("#individualList").select2('data');
@@ -1429,10 +1979,20 @@
             bindCode();
         }
 
+        function changePremiseOwn(){
+            if ($("#P_OWN").val() == 0) {
+                $('.rent').show();
+            }
+            else{
+                $('.rent').hide();
+            }
+        }
+
         function changeLicense() {
-            bindLicense();
+
             bindCode();
             if ($("#LIC_TYPEID").val() == 1) {
+                bindLicense();
                 $('#approvalType').show();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1444,6 +2004,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 2){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1456,6 +2017,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 3){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1468,6 +2030,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 4){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1480,6 +2043,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 5){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').show();
                 $('#approvalCEO').hide();
@@ -1492,6 +2056,7 @@
                 $('.banner').show();
             }
             else if ($("#LIC_TYPEID").val() == 6){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1504,6 +2069,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 7){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').show();
@@ -1516,6 +2082,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 8){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1528,6 +2095,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 9){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1540,6 +2108,7 @@
                 $('.banner').hide();
             }
             else if ($("#LIC_TYPEID").val() == 10){
+                bindLicense();
                 $('#approvalType').hide();
                 $('#approvalDirector').hide();
                 $('#approvalCEO').hide();
@@ -1554,13 +2123,14 @@
         }
 
         function businessTypeChange() {
-            if ($("#BUSINESSTYPEID").val() > 0) {
+            if ($("#BT_ID").val() > 0) {
+                //console.log($("#BT_ID").val());
                 bindTable();
             }
             checkButtonState();
         }
 
-        
+
 
         function bindDownload(attechmentID) {
             if (attechmentID > 0) {
@@ -1571,12 +2141,38 @@
 
         function bindSearch() {
             var param = {};
-            param["businessTypeID"] = $("#BUSINESSTYPEID").val();
+            param["businessTypeID"] = $("#BT_ID").val();
 
             if ($("#APP_ID").val() > 0) {
                 param["ApplicationID"] = $("#APP_ID").val();
             } else {
                 param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchLicense() {
+            var param = {};
+            param["licTypeID"] = $("#LIC_TYPEID").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["ApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchAdditional() {
+            var param = {};
+            param["BusinessCodeids"] = $("#BusinessCodeids").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["premiseApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["premiseApplicationID"] = "";
             }
 
             return param;
@@ -1609,7 +2205,7 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            appendstring += '<div class="checkbox"> <label for="chkreqdoc_' + row["RD_ID"] + '"> <input id="chkreqdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             return appendstring
                         },
                         width: "7%",
@@ -1623,10 +2219,10 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RDModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="BusinessRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1658,24 +2254,13 @@
                             return appendstring
                         },
                         "orderable": false,
-                        "visible": visibleGridUploadColume,
+
                     }
                 ]
             });
         }
 
-        function bindSearchAdditional() {
-            var param = {};
-            param["BusinessCodeids"] = $("#BusinessCodeids").val();
 
-            if ($("#APP_ID").val() > 0) {
-                param["premiseApplicationID"] = $("#APP_ID").val();
-            } else {
-                param["premiseApplicationID"] = "";
-            }
-
-            return param;
-        }
 
         function bindAdditionalTable() {
             //displays required document related to business code selected
@@ -1705,7 +2290,7 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate > 1) {
-                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalChecked();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalCheck();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             }
                             return appendstring
                         },
@@ -1720,9 +2305,9 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             } else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="AdditionalDoc(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1735,35 +2320,29 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-
-                            if (visibleGridUploadColume) {
-
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
-                                }
-
-                            } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
                             }
-
+                            else
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                            }
                             return appendstring
                         },
                         "orderable": false,
+
+
                     }
                 ]
             });
         }
 
         function bindLicense() {
+            //console.log('bindLicense');
             //displays required document related to license type
             $('#LicenseDocument').show();
+            //console.log("change license type");
             if ($.fn.DataTable.isDataTable("#tblLicenseType")) {
                 $('#tblLicenseType').dataTable().fnDestroy();
             }
@@ -1780,7 +2359,7 @@
                 "ajax": {
                     url: '@Url.Action("LicenseDocument", "Application")',
                     type: "POST",
-                    data: bindSearch()
+                    data: bindSearchLicense()
                 },
                 "columns": [
                     {
@@ -1788,7 +2367,7 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            appendstring += '<div class="checkbox"> <label for="chkdoc_' + row["RD_ID"] + '"> <input id="chkdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredDocument();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            appendstring += '<div class="checkbox"> <label for="chkLicdoc_' + row["RD_ID"] + '"> <input id="chkLicdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkLicdoc" type = "checkbox" onclick = "LicenseCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
                             return appendstring
                         },
                         width: "7%",
@@ -1802,10 +2381,10 @@
                         "render": function (data, type, row) {
                             var appendstring = '';
                             if (userRollTemplate == 1) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             else if (userRollTemplate > 2) {
-                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="RequiredDocModel(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
+                                appendstring += '<a href="javascript:void(0);" title="Upload" data-id="' + row["RD_ID"] + '" onclick="LicenseRequiredDocument(' + row["RD_ID"] + ');"> <button type="button" class="btn btn-primary">Upload</button></a>';
                             }
                             return appendstring
                         },
@@ -1818,33 +2397,38 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-
-                            if (visibleGridUploadColume) {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
-
-                                } else {
-                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
-                                }
-
-                            } else {
-                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
-                                } else {
-                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
-                                }
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
+                            {
+                                appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablelicdocument" style="cursor: pointer;" id="lbllicAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                            }
+                            else
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablelicdocument"  id="lbllicAttachment_' + row["RD_ID"] + '"> </label> </a>';
                             }
                             return appendstring
                         },
                         "orderable": false,
-                        "visible": visibleGridUploadColume,
+
                     }
                 ]
             });
         }
 
-        function RequiredDocument() {
+        function LicenseCheck() {
+            //console.log("LicenseChecked");
+            var LicenseArray = [];
+            $('.chkLicdoc').each(function () {
+                if ($(this).is(":checked")) {
+                    LicenseArray.push($(this).val());
+                }
+            });
+            $("#LicenseDocIds").val(LicenseArray);
 
+            checkButtonState();
+        }
+
+        function RequiredCheck() {
+            //console.log("RequiredCheck");
             var RequiredArray = [];
             $('.chkreqdoc').each(function () {
                 if ($(this).is(":checked")) {
@@ -1856,26 +2440,9 @@
             checkButtonState();
         }
 
-        function checkButtonState() {
-            var isAddtional = false;
-            if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
-                isAddtional = true;
-            }
 
-            var isDocument = false;
-            if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
-                isDocument = true;
-            }
-
-            if (isAddtional && isDocument) {
-                $('.btSubmit').show();
-            } else {
-                $('.btSubmit').hide();
-            }
-        }
-
-        function AdditionalChecked() {
-
+        function AdditionalCheck() {
+            console.log("AdditionalChecked");
             var AdditionalArray = [];
             $('.chkAdddoc').each(function () {
                 if ($(this).is(":checked")) {
@@ -1887,14 +2454,48 @@
             checkButtonState();
         }
 
-        function RequiredDocumentModel(Requiredid) {
-            $("#reqDocid").val(Requiredid);
+        function checkButtonState() {
+
+            var isLicense = false;
+            if ($('.chkLicdoc:checked').length == $('.chkLicdoc').length) {
+                isLicense = true;
+            }
+
+            var isDocument = false;
+            if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
+                isDocument = true;
+            }
+
+            var isAddtional = false;
+            if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
+                isAddtional = true;
+            }
+
+            if (isAddtional && isDocument && isLicense) {
+                $('.btSubmit').show();
+            } else {
+                $('.btSubmit').hide();
+            }
+        }
+
+        function LicenseRequiredDocument(Requiredid) {
+            $("#licDocid").val(Requiredid);
+            $("#reqDocid").val("0");
             $("#addDocid").val("0");
             $('#isReqDoc').val("1");
             $('#uploadDocumentModal').modal('show');
         }
 
-        function AdditionalModel(Additionalid) {
+        function BusinessRequiredDocument(BRequiredid) {
+            $("#licDocid").val("0");
+            $("#reqDocid").val(BRequiredid);
+            $("#addDocid").val("0");
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+        function AdditionalDoc(Additionalid) {
+            $("#licDocid").val("0");
             $("#reqDocid").val("0");
             $("#addDocid").val(Additionalid);
             $('#isReqDoc').val("0");
@@ -1917,6 +2518,7 @@
                 }
 
                 data.append("APP_ID", @Model.APP_ID);
+                data.append("licDocid", $("#licDocid").val());
                 data.append("reqDocid", $("#reqDocid").val());
                 data.append("addDocid", $("#addDocid").val());
                 data.append("isReqDoc", $("#isReqDoc").val());
@@ -1934,10 +2536,17 @@
                             if (result.status == 1) {
                                 successMessage(result.message);
 
-                                if ($("#isReqDoc").val() > 0) {
+                                if ($("#reqDocid").val() > 0)
+                                {
                                     bindTable();
-                                } else {
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
                                     bindAdditionalTable();
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    bindLicense();
                                 }
                             }
                             else {
@@ -1959,7 +2568,7 @@
         function UploadAttechment(){
 
             if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
-
+                console.log("sini pula?");
                 var data = new FormData();
                 var files = $("#DocumentFile").get(0).files;
 
@@ -1967,6 +2576,7 @@
                     data.append("DocumentFile", files[0]);
                 }
 
+                data.append("licDocid", $("#licDocid").val());
                 data.append("reqDocid", $("#reqDocid").val());
                 data.append("addDocid", $("#addDocid").val());
                 data.append("isReqDoc", $("#isReqDoc").val());
@@ -1979,21 +2589,43 @@
                     data: data,
                     async: false,
                     success: function (result) {
-                        if (result != null) {
+                        if (result != null)
+                        {
+                            console.log("sini ada ka");
                             $("#DocumentFile").val("");
-                            if (result.status == 1) {
+                            if (result.status == 1)
+                            {
                                 successMessage("Document Upload Successfully");
 
                                 console.log(result.result);
-                                if ($("#isReqDoc").val() > 0) {
+                                if ($("#reqDocid").val() > 0)
+                                {
                                     var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
-                                    $('.lablereqdocument').each(function () {
-                                        if ($(this).attr('id') == lblreqAttachment) {
+                                    $('.lablereqdocument').each(function ()
+                                    {
+                                        console.log("oyo oyo");
+                                        if ($(this).attr('id') == lblreqAttachment)
+                                        {
                                             $("#" + lblreqAttachment).html(result.result.AttachmentName);
                                             RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
                                         }
                                     });
-                                } else {
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    var lbllicAttachment = "lbllicAttachment_" + $("#licDocid").val();
+                                    $('.lablelicdocument').each(function ()
+                                    {
+                                        console.log("oye oye");
+                                        if ($(this).attr('id') == lbllicAttachment)
+                                        {
+                                            $("#" + lbllicAttachment).html(result.result.AttachmentName);
+                                            LicenseDocumentDublicateCheck(result.result.LicenseDocID, result.result.AttachmentID);
+                                        }
+                                    });
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
                                     var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
                                     $('.lableadddocument').each(function () {
                                         if ($(this).attr('id') == lbladdAttachment) {
@@ -2003,7 +2635,8 @@
                                     });
                                 }
                             }
-                            else {
+                            else
+                            {
                                 errorMessage(result.message);
                             }
                         }
@@ -2019,10 +2652,32 @@
             }
         }
 
+        function LicenseDocumentDublicateCheck(LicenseDocID, AttachmentID) {
+            var itemfound = 0;
+            var itemFoundbool = false;
+            console.log("LicenseDublicateCheck");
+            for (var i = 0; i < licenseDocList.length; i++) {
+                var doc = licenseDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == LicenseDocID ) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = licenseDocList.length+1;
+                }
+            }
+
+            if (itemFoundbool) {
+                licenseDocList.splice(itemfound, 1);
+            }
+
+            var licenseDocument = LicenseDocID + ":" + AttachmentID;
+            licenseDocList.push(licenseDocument);
+        }
+
         function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
             var itemfound = 0;
             var itemFoundbool = false;
-
+            console.log("RequiredDublicateCheck");
             for (var i = 0; i < requiredDocList.length; i++) {
                 var doc = requiredDocList[i].split(',');
                 var document = doc[0].split(':');
@@ -2063,17 +2718,7 @@
             addtionalDocList.push(additionaDocument);
         }
 
-        function AddRules()
-        {
-            //validation implementation will go here.
-            $("#frmsaveComment").validate({
-                rules: {
-                    txtComment: {
-                        required: true
-                    }
-                }
-            });
-        }
+
 
         function Approvedreject(name) {
             if (name == "approved") {
@@ -2081,7 +2726,7 @@
                 $("#txtComment").rules("remove", "required");
             }
             else {
-                AddRules();
+
                 $("#lblapprovedreject").html("Reject");
                 $("#txtComment").rules("add", "required");
             }
@@ -2089,49 +2734,7 @@
             $('#approvedrejectModal').modal('show');
         }
 
-        function SaveComment() {
 
-            if (!$("#frmsaveComment").valid()) {
-                return false;
-            } else {
-
-                var data = new FormData();
-                data.append("APP_ID", @Model.APP_ID);
-                data.append("comment", $("#txtComment").val());
-
-                if ($("#lblapprovedreject").html() == "Approve") {
-                    data.append("approveRejectType", "Approve");
-                } else {
-                    data.append("approveRejectType", "Reject");
-                }
-
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("SaveComment", "Application")',
-                    contentType: false,
-                    processData: false,
-                    data: data,
-                    async: false,
-                    success: function (result) {
-                        if (result != null) {
-                            $("#txtComment").val("");
-                            if (result.status == 1) {
-                                successMessage(result.message);
-                                back();
-                            }
-                            else {
-                                errorMessage(result.message);
-                            }
-                        }
-                        $("#approvedrejectModal").modal('hide');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        errorMessage(xhr.responseText);
-                    }
-                });
-
-            }
-        }
 
         function loadComments() {
             $('#Comments').show();
@@ -2139,7 +2742,7 @@
                 $('#tblComments').dataTable().fnDestroy();
             }
 
-            var data = { "APP_ID": @Model.APP_ID };
+            var data = { "applicationID": @Model.APP_ID };
 
             table = $("#tblComments").dataTable({
                 "lengthChange": true,
@@ -2152,7 +2755,7 @@
                 "bInfo": false,
                 "orderMulti": false,
                 "ajax": {
-                    url: '@Url.Action("PremiseComments", "Application")',
+                    url: '@Url.Action("Comments", "Application")',
                     type: "POST",
                     data: data
                 },
@@ -2167,18 +2770,17 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Ulasan", "orderable": false, "data": "Comment" },
-                    { "title": "Pengulas", "orderable": false, "data": "FullName" },
-                    { "title": "Ulasan dibuat pada", "data": "CommentDate", render: renderDateTime },
+                    { "title": "Ulasan", "orderable": false, "data": "CONTENT" },
+                    { "title": "Nama", "orderable": false, "data": "FullName" },
+                    { "title": "Tarikh", "data": "COMMENTDATE", render: renderDateTime },
                     {
                         "title": "Tindakan",
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
 
-                            if (data['UsersID'] == '@(ProjectSession.User.USERSID)') {
-                                appendstring += '<a  href="@Url.Action("AddCatatan", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
-                                appendstring += '<a href="javascript:void(0);" data-id="' + row["PACommentID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            if ('@(ProjectSession.User.ROLEID)' == '@Enums.RollTemplate.Supervisor') {
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["COMMENTID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Padam" /></a>';
                             }
                             return appendstring
                         },
@@ -2191,8 +2793,9 @@
         }
 
         function bindDelete(item) {
-            var x = confirm("Are you sure you want to delete?");
+            var x = confirm("Anda pasti?");
             if (x) {
+
                 $.ajax({
                     type: "POST",
                     url: encodeURI('@Url.Action("DeleteComment", "Application")'),
@@ -2201,16 +2804,18 @@
                     dataType: 'json',
                     success: function (data, textStatus, XMLHttpRequest) {
                         if (data.success) {
-                            bindTable();
+                            console.log("success");
                             successMessage(data.message);
                         }
                         else {
+                            console.log(" not success");
                             successMessage(data.message);
                         }
                     },
                     error: function (jqXHR, exception, errMsg) {
                     }
                 });
+                loadComments();
             }
         }
 
@@ -2219,8 +2824,10 @@
             if ($.fn.DataTable.isDataTable("#tblRouteComments")) {
                 $('#tblRouteComments').dataTable().fnDestroy();
             }
+            //console.log("loadRoute");
 
             var data = { "APP_ID": @Model.APP_ID };
+
 
             table = $("#tblRouteComments").dataTable({
                 "lengthChange": true,
@@ -2232,7 +2839,7 @@
                 "bInfo": false,
                 "orderMulti": false,
                 "ajax": {
-                    url: '@Url.Action("PremiseRouteComments", "Application")',
+                    url: '@Url.Action("RouteComments", "Application")',
                     type: "POST",
                     data: data
                 },
@@ -2248,41 +2855,74 @@
                         }
                     },
                     {
-                        "title": "Ulasan",
+                        "title": "Pertanyaan",
                         "orderable": false,
-                        "data": "Comment"
+                        "data": "QUESTION",
+                        "visible": receiver
+                    },
+                    {
+                        "title": "Ulasan Unit Teknikal/Jabatan Luar",
+                        "orderable": false,
+                        "data": "ANSWER",
+                        "visible": sender
                     },
                     {
                         "title": "Nama Unit Teknikal/Jabatan Luar",
                         "orderable": false,
-                        "data": "DepartmentDesc"
+                        "data": "DepartmentDesc",
+                        "visible": sender
                     },
                     {
-                        "title": "Keputusan",
+                        "title": "Status",
                         "orderable": false,
-                        "data": "IsSupported",
-                        "render": function (data, type, row) {
-                            if (data) {
-                                return '<label class="label label-success">Tiada Halangan</label>';
-                            }
-                            else {
-                                return '<label class="label label-danger">Ada Halangan</label>';
+                        "data": "SUPPORT",
+                        "render" : function (data, type, row) {
+                            switch(data) {
+                                case 0 : return 'Belum Ada Jawapan'; break;
+                                case 1 : return '<label class="label label-success">Tiada Halangan</label>'; break;
+                                case 2 : return '<label class="label label-danger">Ada Halangan</label>'; break;
+                                default  : return 'N/A';
                             }
                         }
                     },
                     {
+                        "title": "Dihantar oleh",
+                        "orderable": false,
+                        "data": "SENDER",
+                        "visible": receiver
+                    },
+                    {
                         "title": "Diulas oleh",
                         "orderable": false,
-                        "data": "FullName"
+                        "data": "RECEIVER",
+                        "visible": sender
                     },
-                    { "title": "Tarikh", "data": "SubmittedDate", "width": "150px", render: renderDateTime },
+                    { "title": "Tarikh Dihantar", "data": "SUBMITTED", "width": "150px", render: renderDateTime },
+                    { "title": "Tarikh Dijawab", "data": "REPLIED", "width": "150px", render: renderDateTime },
+                    {
+                        "title": "Tindakan",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (data['DEP_ID'] == '@(ProjectSession.User.DEP_ID)') {
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["ROUTEUNITID"] + '" onclick="showRouteUnitReply(this);" title="Ubah"><img src="@Url.Content("~/images/edit.png")" alt="Ubah" /></a>';
+                            }
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons",
+                        "visible": receiver
+                    }
                 ]
             });
         }
+        
 
         function del(ob,param){
-            console.log($(ob).attr("data-id"));
-            console.log("#"+param+$(ob).attr("data-id"));
+            //console.log($(ob).attr("data-id"));
+            //console.log("#"+param+$(ob).attr("data-id"));
             //$("#"+param+$(ob).attr("data-id")).remove();
 
             $("#"+param+$(ob).attr("data-id")).remove();//hidden
@@ -2294,7 +2934,7 @@
         function showRouteUnitConfirmModal() {
             //console.log("pop");
             $("#AddDept").click( function(){
-                //console.log("clicked");
+                console.log("clicked");
                 var dept_id = $("#department").val();
                 var dept = $("#department option:selected").text();
                 var ct = $("#tblRouteDepartments tbody").children().length + 1;
@@ -2309,49 +2949,49 @@
 
 
             });
-            if(validatePremiseApplication()) {
-                $('#routeUnitModal').modal('show');
-                $('#RouteUnitTable').show();
-                if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
-                    $('#tblRouteDepartments').dataTable().fnDestroy();
-                }
 
-                var data = { "businessCodeids": $('#BusinessCodeids').val() };
-
-                table = $("#tblRouteDepartments").dataTable({
-                    "lengthChange": true,
-                    "searching": false,
-                    "pageLength": 10,
-                    "processing": true,
-                    "serverSide": true,
-                    "bPaginate": false,
-                    "bInfo": false,
-                    "orderMulti": false,
-                    "ajax": {
-                        url: '@Url.Action("FillRouteDepartments", "Application")',
-                        type: "POST",
-                        data: data
-                    },
-                    "columns": [
-                        { "title": "Nama Jabatan", "orderable": true, "data": "DepartmentDesc" },
-                        {
-                            "title": "Padam",
-                            "data": null,
-                            "render": function (data, type, row) {
-                                var appendstring = '';
-                                appendstring += '<input type="hidden" id="dept_'+row["DepartmentID"]+'" value="'+ row["DepartmentID"] + '" name="DeptId[]"/>';
-                                // appendstring += '<a href="javascript:void(0);" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                appendstring += '<a href="#" onclick="del(this,\'dept_\');" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                return appendstring
-                            },
-                            "width": "100px",
-                            "orderable": false,
-                            "class": "action-icons"
-                        }
-
-                    ]
-                });
+            $('#routeUnitModal').modal('show');
+            $('#RouteUnitTable').show();
+            if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
+                $('#tblRouteDepartments').dataTable().fnDestroy();
             }
+
+            var data = { "businessCodeids": $('#BusinessCodeids').val() };
+
+            table = $("#tblRouteDepartments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("FillRouteDepartments", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    { "title": "Nama Jabatan", "orderable": true, "data": "DEP_DESC" },
+                    {
+                        "title": "Padam",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<input type="hidden" id="dept_'+row["DEP_ID"]+'" value="'+ row["DEP_ID"] + '" name="DeptId[]"/>';
+                            // appendstring += '<a href="javascript:void(0);" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            appendstring += '<a href="#" onclick="del(this,\'dept_\');" class="delDept" data-id="' + row["DEP_ID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+
+                ]
+            });
+
             return false;
         }
 
@@ -2405,7 +3045,7 @@
             if ($.fn.DataTable.isDataTable("#BannerObject")) {
                 $('#BannerObject').dataTable().fnDestroy();
             }
-
+            //console.log("banner");
             var data = { "ApplicationId": @Model.APP_ID };
 
             table = $("#BannerObject").DataTable({
@@ -2424,8 +3064,8 @@
                 },
                 "columns": [
                     { "title": "No. Siri Iklan", "data": "B_O_ID", "orderable": false },
-                    { "title": "Kod Iklan", "data": "BC_ID", "orderable": false },
-                    { "title": "Lokasi", "data": "ADDRESS_ID", "orderable": false },
+                    { "title": "Kod Iklan", "data": "CodeRefDesc", "orderable": false },
+                    { "title": "Lokasi", "data": "ADDRB1", "orderable": false },
                     { "title": "Saiz", "data": "B_SIZE", "orderable": false },
                     { "title": "Bilangan", "data": "B_QTY", "orderable": false },
                     { "title": "Fi (RM)", "data": "FEE", "orderable": false },
@@ -2434,12 +3074,7 @@
                         "data": null,
                         "render": function (data, type, row) {
                             var appendstring = '';
-                            if (!restrictSubmittedApps || data['APPSTATUSID'] == 1) {
-
-                                if (IsDelete != "False" && '@Model.B_O_TOTAL' > 1) {
-                                    appendstring += '<a href="javascript:void(0);" data-id="' + row["BannerObjectID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                }
-                            }
+                            appendstring += '<a href="javascript:void(0);" data-id="' + row["B_O_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                             return appendstring
                         },
                         "width": "100px",
@@ -2461,19 +3096,19 @@
         function RoutePremiseApplication() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRouteSubmit');
             $("#frmsaveRoute").submit();
-            $("#frmPremiseApplication").submit();
+            $("#frmApplication").submit();
             return false;
         }
 
         function Approved() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnSubmit');
-            $("#frmPremiseApplication").submit();
+            $("#frmApplication").submit();
             return false;
         }
 
         function Rejected() {
             $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRejected');
-            $("#frmPremiseApplication").submit();
+            $("#frmApplication").submit();
             return false;
         }
 
@@ -2492,7 +3127,7 @@
             {
                 $('#btnLetter').show();
                 $('#btnLetter').css('visibility', 'visible');
-                if(!($('#Mode').val() == 1 || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#AppStatusID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
+                if(!($('#MODE').val() == 1 || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
                 {
                     $('#btnLetter').hide();
                 }
@@ -2503,12 +3138,12 @@
             $("#showAddIndividual").modal('show');
         }
 
-        function addCompany() {
-            $("#showAddCompany").modal('show');
-        }
-
         function SaveIndividual(){
             $("frmsaveIndividual").submit();
+        }
+
+        function AddCompany() {
+            $("#showAddCompany").modal('show');
         }
 
         function SaveCompany(){
@@ -2517,6 +3152,27 @@
 
         function AddCatatan() {
             $("#showCatatan").modal('show');
+        }
+
+        function addComment() {
+            $("#showComment").modal('show');
+        }
+
+        function SaveComment() {
+            $("frmsaveComment").submit();
+        }
+
+        function showRouteUnitReply(item) {
+            var rID = $(item).attr('data-id');
+            //console.log(rID);
+            $('#routeID').val(rID);
+            //console.log($('#routeID').val());
+
+            $("#showUnitReply").modal('show');
+        }
+
+        function SaveUnitReply() {
+            $("frmsaveRouteComment").submit();
         }
 
         function addPremiseType() {

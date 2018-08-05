@@ -1,45 +1,12 @@
-﻿@model IEnumerable<TradingLicense.Entities.ZONE>
-
-@{
+﻿@{
     ViewBag.Title = "ZoneMaster";
 }
 
-<h2>ZoneMaster</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ZONECODE)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ZONEDESC)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ACTIVE)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ZONECODE)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ZONEDESC)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ACTIVE)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ZONEID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ZONEID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ZONEID })
-        </td>
-    </tr>
+@using (Html.BeginForm("ZoneMasterPdf", "Report", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="licenseCode"> Zone List </label>
+        @Html.DropDownList("ZoneList", null, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 }
-
-</table>

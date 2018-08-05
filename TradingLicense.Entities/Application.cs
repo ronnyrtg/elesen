@@ -16,7 +16,25 @@ namespace TradingLicense.Entities
         public int BT_ID { get; set; }
         //Foreign Key to Company Table
         public int COMPANYID { get; set; }
-        
+        //Address
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ADDRA1 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ADDRA2 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ADDRA3 { get; set; }
+        [StringLength(40)]
+        [Column(TypeName = "VARCHAR2")]
+        public string ADDRA4 { get; set; }
+        [StringLength(10)]
+        [Column(TypeName = "VARCHAR2")]
+        public string PCODEA { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string STATEA { get; set; }
         //Rent or Own
         [StringLength(20)]
         [Column(TypeName = "VARCHAR2")]
@@ -43,6 +61,7 @@ namespace TradingLicense.Entities
 
         //Banner Application has Processing Fee
         public float? PRO_FEE { get; set; }
+        public int? BC_ID { get; set; }
 
         //Hawker Application & Stall Application
         public DateTime? V_START { get; set; }
@@ -69,13 +88,17 @@ namespace TradingLicense.Entities
         public string REF_NO { get; set; }
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
+        public string PRF_NO { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
         public string L_STATUS { get; set; }
         public DateTime? EXPIRE { get; set; }
 
         public virtual LIC_TYPE LIC_TYPE { get; set; }
         public virtual BT BT { get; set; }
-        public virtual PREMISETYPE PREMISETYPE { get; set;  }
+        public virtual BC BC { get; set; }
         public virtual COMPANY COMPANY { get; set; }
+        public virtual PREMISETYPE PREMISETYPE { get; set; }
         public virtual APPSTATUS APPSTATUS { get; set; }
         public virtual USERS USERS { get; set; }
     }

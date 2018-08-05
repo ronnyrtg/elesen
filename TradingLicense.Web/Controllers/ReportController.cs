@@ -8,16 +8,11 @@ using TradingLicense.Model;
 using AutoMapper;
 using TradingLicense.Data;
 using TradingLicense.Entities;
-using System;
-using System.Linq;
-using AutoMapper;
 
 namespace TradingLicense.Web.Controllers
 {
     public class ReportController : BaseController
     {
-        private Func<ZONE, Select2ListItem> fnZoneDisplayFormat = ind => new Select2ListItem { id = ind.ZONEID, text = $" Kod {ind.ZONECODE} | {ind.ZONEDESC}" };
-
         // GET /Report
         public ActionResult Index()
         {
@@ -62,53 +57,104 @@ namespace TradingLicense.Web.Controllers
 
         public ActionResult ZoneMaster()
         {
-            ZoneModel zoneModel = new ZoneModel();
-            List<Select2ListItem> zoneList = new List<Select2ListItem>();
-            
-
-            using (var ctx = new LicenseApplicationContext())
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
             {
-                zoneList = ctx.ZONEs
-                .Select(fnZoneDisplayFormat)
-                .ToList();
-
-                var zoneAll = from ZONE in ctx.ZONEs select new Alldata();
-                zoneModel.zListAll = zoneAll.ToList();
+                var zones = ctx.ZONEs.ToList();
+                foreach (var item in zones)
+                {
+                    items.Add(new SelectListItem { Text = item.ZONE_CODE + " - " + item.ZONE_DESC, Value = item.ZONEID.ToString() });
+                }
             }
+            ViewBag.ZoneList = items;
+            return View();
+        }
 
-            
-            zoneModel.zoneCombineList = zoneList;
-            return View(zoneModel);
+        // Display generated pdf
+        public ActionResult ZoneMasterPdf(string LicenseCode)
+        {
+            List<ZoneModel> items = new List<ZoneModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var zones = ctx.ZONEs.ToList();
+                items = Mapper.Map<List<ZoneModel>>(zones);
+            }
+            ViewBag.zones = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult SubzoneMaster()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var subzones = ctx.SUBZONEs.ToList();
+                foreach (var item in subzones)
+                {
+                    items.Add(new SelectListItem { Text = item.SUBZONE_CODE + " - " + item.SUBZONE_DESC, Value = item.SUBZONEID.ToString() });
+                }
+            }
+            ViewBag.SubzoneList = items;
             return View();
+        }
+
+        // Display generated pdf
+        public ActionResult SubzoneMasterPdf(string LicenseCode)
+        {
+            List<ZoneModel> items = new List<ZoneModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var zones = ctx.SUBZONEs.ToList();
+                items = Mapper.Map<List<ZoneModel>>(zones);
+            }
+            ViewBag.zones = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult RoadMaster()
         {
-            return View();
-        }
-
-        public ActionResult CitizenMaster()
-        {
-            return View();
-        }
-
-        public ActionResult CitizenLookup()
-        {
-            return View();
+            List<RoadModel> items = new List<RoadModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var roads = ctx.ROADs.ToList();
+                items = Mapper.Map<List<RoadModel>>(roads);
+            }
+            ViewBag.roads = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult RaceMaster()
         {
-            return View();
+            List<RaceModel> items = new List<RaceModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var races = ctx.RACEs.ToList();
+                items = Mapper.Map<List<RaceModel>>(races);
+            }
+            ViewBag.races = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
-        public ActionResult BankMaster()
+        public ActionResult CitizenMaster()
         {
-            return View();
+            List<CitizenModel> items = new List<CitizenModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var citizens = ctx.CITIZENs.ToList();
+                items = Mapper.Map<List<CitizenModel>>(citizens);
+            }
+            ViewBag.citizens = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult OwnerMaster()
@@ -121,24 +167,125 @@ namespace TradingLicense.Web.Controllers
             return View();
         }
 
+        public ActionResult BankMaster()
+        {
+            List<BankModel> items = new List<BankModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var citizens = ctx.BANKs.ToList();
+                items = Mapper.Map<List<BankModel>>(citizens);
+            }
+            ViewBag.banks = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
         public ActionResult PaymentTransaction()
         {
             return View();
         }
 
+        public ActionResult PaymentTransactionPdf()
+        {
+            List<PaymentModel> items = new List<PaymentModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var payments = ctx.PAYTRAN_Ms.ToList();
+                items = Mapper.Map<List<PaymentModel>>(payments);
+            }
+            ViewBag.payments = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
         public ActionResult PaymentCollection()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
         }
 
+        public ActionResult PaymentCollectionPdf()
+        {
+            List<PaymentModel> items = new List<PaymentModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var payments = ctx.PAYTRAN_Ms.ToList();
+                items = Mapper.Map<List<PaymentModel>>(payments);
+            }
+            ViewBag.payments = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
+        }
+
+
         public ActionResult PaymentInquiryPaid()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
+        }
+
+        public ActionResult PaymentInquiryPaidPdf()
+        {
+            List<PaymentModel> items = new List<PaymentModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var payments = ctx.PAYTRAN_Ms.ToList();
+                items = Mapper.Map<List<PaymentModel>>(payments);
+            }
+            ViewBag.payments = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult PaymentInquiryUnpaid()
         {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var licenseCodes = ctx.LIC_TYPEs.ToList();
+                foreach (var item in licenseCodes)
+                {
+                    items.Add(new SelectListItem { Text = item.LIC_TYPECODE + " - " + item.LIC_TYPEDESC, Value = item.LIC_TYPEID.ToString() });
+                }
+            }
+            ViewBag.LicenseCode = items;
             return View();
+        }
+
+        public ActionResult PaymentInquiryUnpaidPdf()
+        {
+            List<PaymentModel> items = new List<PaymentModel>();
+            using (var ctx = new Data.LicenseApplicationContext())
+            {
+                var payments = ctx.PAYTRAN_Ms.ToList();
+                items = Mapper.Map<List<PaymentModel>>(payments);
+            }
+            ViewBag.payments = items;
+            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
+            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
+            return new ViewAsPdf();
         }
 
         public ActionResult AdjustmentListing()
@@ -182,11 +329,6 @@ namespace TradingLicense.Web.Controllers
         }
 
         public ActionResult RenewalStatusResult()
-        {
-            return View();
-        }
-
-        public ActionResult BusinessListing()
         {
             return View();
         }

@@ -13,22 +13,22 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmBusinessType", id = "frmBusinessType" }))
         {
             @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.BusinessTypeID)
+            @Html.HiddenFor(m => m.BT_ID)
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.BusinessTypeCode, new { @class = "control-label" }) <span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.BusinessTypeCode, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BusinessTypeCode)
+                        @Html.LabelFor(m => m.BT_CODE, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.BT_CODE, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.BT_CODE)
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        @Html.LabelFor(m => m.BusinessTypeDesc, new { @class = "control-label" }) <span class="cfont">*</span>
-                        @Html.TextBoxFor(m => m.BusinessTypeDesc, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.BusinessTypeDesc)
+                        @Html.LabelFor(m => m.BT_DESC, new { @class = "control-label" }) <span class="cfont">*</span>
+                        @Html.TextBoxFor(m => m.BT_DESC, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.BT_DESC)
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
-                                @Html.CheckBoxFor(model => model.Active)
-                                <span>Active</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                @Html.CheckBoxFor(model => model.ACTIVE)
+                                <span>Aktif?</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                             </label>
                         </div>
                     </div>
@@ -54,10 +54,10 @@
                                 <label>
                                     <input type="checkbox"
                                             name="RequiredDocs"
-                                            value="@item.RequiredDocID"
-                                            @if(Model.RequiredDocs?.Any(rdID => rdID == item.RequiredDocID) == true){ <text>checked</text> }
+                                            value="@item.RD_ID"
+                                            @if(Model.RequiredDocs?.Any(rdID => rdID == item.RD_ID) == true){ <text>checked</text> }
                                             />
-                                    <span>@item.RequiredDocDesc</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
+                                    <span>@item.RD_DESC</span><span class="pointer"><img src="~/images/checkmark.svg" alt="Checkmark" /></span>
                                 </label>
                             </div>
                         }

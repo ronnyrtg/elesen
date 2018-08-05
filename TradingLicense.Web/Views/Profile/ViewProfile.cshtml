@@ -1,0 +1,2851 @@
+﻿
+@model TradingLicense.Model.ApplicationModel
+@using AutoMapper;
+@using System.Linq;
+@using TradingLicense.Infrastructure;
+@{
+    ViewBag.Title = "Manage License Application";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
+    List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
+    List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
+    List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
+    List<TradingLicense.Model.PremiseTypeModel> PremiseTypeList = new List<TradingLicense.Model.PremiseTypeModel>();
+    List<TradingLicense.Model.DepartmentModel> departmentList = new List<TradingLicense.Model.DepartmentModel>();
+    List<TradingLicense.Model.BusinessCodeModel> bannerCodeList = new List<TradingLicense.Model.BusinessCodeModel>();
+
+    using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
+    {
+        var businessType = ctx.BTs.ToList();
+        businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
+
+        var sectors = ctx.SECTORs.ToList();
+        sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
+
+        var companies = ctx.COMPANIES.ToList();
+        companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
+
+        var premiseType = ctx.PREMISETYPEs.ToList();
+        PremiseTypeList = Mapper.Map<List<TradingLicense.Model.PremiseTypeModel>>(premiseType);
+
+        var appStatus = ctx.APPSTATUS.ToList();
+        appStatusList = Mapper.Map<List<TradingLicense.Model.AppStatusModel>>(appStatus);
+
+        var dept = ctx.DEPARTMENTs.Where(de => de.ROUTE == 1).ToList();
+        departmentList = Mapper.Map<List<TradingLicense.Model.DepartmentModel>>(dept);
+
+        var banner = ctx.BCs.Where(ba => ba.LIC_TYPEID == 5).ToList();
+        bannerCodeList = Mapper.Map<List<TradingLicense.Model.BusinessCodeModel>>(banner);
+    }
+
+    List<SelectListItem> LicenseList = new List<SelectListItem>();
+    LicenseList.Add(new SelectListItem { Text = "Lesen Tred, Perniagaan & Perindustrian", Value = "1" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Petempatan Makanan", Value = "2" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Hotel dan Rumah Tumpangan", Value = "3" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pengurusan Skrap", Value = "4" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Iklan", Value = "5" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Penjaja", Value = "6" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pasar", Value = "7" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Minuman Keras", Value = "8" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Pemberi Pinjam Wang", Value = "9" });
+    LicenseList.Add(new SelectListItem { Text = "Lesen Hiburan", Value = "10" });
+
+    List<SelectListItem> ModeList = new List<SelectListItem>();
+    ModeList.Add(new SelectListItem { Text = "Biasa", Value = "3" });
+    ModeList.Add(new SelectListItem { Text = "Mesyuarat", Value = "4" });
+    ModeList.Add(new SelectListItem { Text = "Pengarah", Value = "2" });
+    ModeList.Add(new SelectListItem { Text = "Ekspres", Value = "1" });
+
+    List<SelectListItem> PremiseOwnershipList = new List<SelectListItem>();
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Sewaan", Value = "0" });
+    PremiseOwnershipList.Add(new SelectListItem { Text = "Pemilikan Sendiri", Value = "1" });
+
+    List<SelectListItem> RouteUnitDecision = new List<SelectListItem>();
+    RouteUnitDecision.Add(new SelectListItem { Text = "Tiada Halangan", Value = "1" });
+    RouteUnitDecision.Add(new SelectListItem { Text = "Ada Halangan", Value = "0" });
+
+    List<SelectListItem> BPPRouteUnitDecision = new List<SelectListItem>();
+    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Sokong", Value = "1" });
+    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Tidak Disokong", Value = "0" });
+
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Permohonan Baru</h4>
+    </div>
+    <div class="body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmApplication", id = "frmApplication" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.APP_ID)
+            @Html.HiddenFor(m => m.USERSID)
+            @Html.HiddenFor(m => m.UserRollTemplate)
+            @Html.HiddenFor(m => m.LicenseDocIds)
+            @Html.HiddenFor(m => m.RequiredDocIds)
+            @Html.HiddenFor(m => m.AdditionalDocIds)
+            @Html.HiddenFor(m => m.IsDraft)
+            @Html.HiddenFor(m => m.APPSTATUSID)
+            @Html.HiddenFor(m => m.L_STATUS)
+            @Html.HiddenFor(m => m.REF_NO)
+            @Html.HiddenFor(m => m.SUBMIT)
+            @Html.HiddenFor(m => m.APPROVE)
+            @Html.HiddenFor(m => m.PAID)
+            @Html.HiddenFor(m => m.EXPIRE)
+            @Html.HiddenFor(m => m.UPDATED_BY)
+            @Html.HiddenFor(m => m.TOTAL_FEE)
+
+            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.meeting)
+            {
+                @Html.HiddenFor(m => m.SubmitType)
+            }
+
+            @Html.HiddenFor(m => m.UploadRequiredDocids)
+            @Html.HiddenFor(m => m.UploadLicenseDocids)
+
+            if (Model.LIC_TYPEID > 0)
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="licenseType">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                            <div class="well well-sm">@Model.LicenseTypeDesc</div>
+                            @Html.HiddenFor(m => m.LIC_TYPEID)
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="licenseType">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(LicenseList, "Value", "Text"), "Pilih Jenis Lesen", new { @class = "form-control", onchange = "changeLicense()" })
+                            @Html.ValidationMessageFor(m => m.LIC_TYPEID)
+                        </div>
+                    </div>
+                </div>
+            }
+            if (Model.MODE > 0)
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            @switch (Model.MODE)
+                            {
+                                case 1:
+                                    <div class="well well-sm">Ekspres</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Express, null)
+                                    break;
+                                case 2:
+                                    <div class="well well-sm">Pengarah</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Director, null)
+                                    break;
+                                case 3:
+                                    <div class="well well-sm">Biasa</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.CEO, null)
+                                    break;
+                                case 4:
+                                    <div class="well well-sm">Mesyuarat</div>
+                                    @Html.Hidden("MODE", (int)Enums.Mode.Meeting, null)
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+                else
+                {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="approvalType" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.MODE)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalDirector" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Pengarah</div>
+                            @Html.Hidden("MODE", 2, null)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalCEO" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Biasa</div>
+                            @Html.Hidden("MODE", 3, null)
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" id="approvalMeeting" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Kelulusan</div>
+                            <div class="well well-sm">Mesyuarat</div>
+                            @Html.Hidden("MODE", 4, null)
+                        </div>
+                    </div>
+                </div>
+            }
+
+            if (Model.LIC_TYPEID <= (int)Enums.ApplicationTypeID.TradeApplication)
+            {
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids))
+                {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6" id="sector" style="display:normal;">
+                        <div class="form-group">
+                            <div class="control-label">Kumpulan Kod Perniagaan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.SectorID, new SelectList(sectorsList.OrderBy(x => x.SECTORID), "SECTORID", "SECTORDESC"), "Semua Kumpulan", new { @class = "form-control", onchange = "changeSector()" })
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids))
+                {
+                    <div class="row">
+                        <div class="col-sm-6" id="businessCode">
+                            <div class="form-group">
+                                <div class="control-label">Kod Perniagaan<span class="cfont">*</span></div>
+                                @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), "Pilih Kod Perniagaan", new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
+                                @Html.HiddenFor(model => model.BusinessCodeids)
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-sm-6" id="businessCode">
+                            <div class="form-group">
+                                <div class="control-label">Kod Perniagaan</div>
+                                <div class="well well-sm">
+                                    @foreach (var item in Model.selectedbusinessCodeList)
+                                    {
+                                        @item.text.ToString();<br />
+
+                                    }
+                                    @Html.HiddenFor(model => model.BusinessCodeids)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                <div class="control-label">Nama Penuh (Mykad/Paspot)<span class="cfont">*</span></div>
+                            </div>
+                        </div>
+                    </div>
+            if (string.IsNullOrWhiteSpace(Model.Individualids))
+            {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                                @Html.HiddenFor(model => model.Individualids)
+                                @Html.HiddenFor(model => model.newIndividualsList)
+                            </div>
+                            @if (Model.APP_ID < 1)
+                            {
+                                <div class="col-sm-2 col-lg-6">
+                                    <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                                </div>
+                            }
+                        </div>
+                    </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="well well-sm">
+                                @foreach (var item in Model.selectedIndividualList)
+                                {
+                                    @item.text.ToString();<br />
+
+                                }
+                                @Html.HiddenFor(model => model.selectedIndividualList)
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+            }
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                <div class="control-label">Nama Syarikat</div>
+                            </div>
+                        </div>
+                    </div>
+            if(Model.COMPANYID > 0)
+            {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                            <div class="well well-sm">@Model.CompanyName</div>
+                            @Html.HiddenFor(model => model.COMPANYID)
+                            </div>
+                        </div>
+                    </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            @Html.DropDownListFor(m => m.COMPANYID, new SelectList(companiesList, "COMPANYID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control" })
+                        </div>
+                        @if (Model.APP_ID < 1)
+                        {
+                            <div class="col-sm-2 col-lg-6">
+                                <input type="button" class="btn btn-primary" value="Daftar Syarikat Baru" onclick='return AddCompany();' />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+
+            if (Model.BT_ID > 0)
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                            <div class="well well-sm">@Model.BusinessTypeDesc</div>
+                            @Html.HiddenFor(m => m.BT_ID)
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
+                            @Html.DropDownListFor(m => m.BT_ID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BT_ID", "BT_DESC"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                        </div>
+                    </div>
+                </div>
+            }
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6" id="entmtGroup" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Jenis Tempat Hiburan<span class="cfont">*</span></div>
+                                @Html.DropDownList("E_P_FEE", new SelectList(Model.selectedPremiseFeeList.OrderBy(x => x.id), "id", "text"), "Pilih Kategori", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Alamat Premis Yang Dipohon<span class="cfont">*</span></div>
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA1))
+                                {
+                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.ADDRA1</div>
+                                    @Html.HiddenFor(m => m.ADDRA1)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA2))
+                               {
+                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
+                               }
+                               else
+                               {
+                                <div class="well well-sm">@Model.ADDRA2</div>
+                                    @Html.HiddenFor(m => m.ADDRA2)
+                               }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                @if (string.IsNullOrWhiteSpace(Model.ADDRA3))
+                                {
+                                    @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.ADDRA3</div>
+                                    @Html.HiddenFor(m => m.ADDRA3)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                               @if (string.IsNullOrWhiteSpace(Model.ADDRA4))
+                               {
+                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
+                               }
+                               else
+                               {
+                                <div class="well well-sm">@Model.ADDRA4</div>
+                                    @Html.HiddenFor(m => m.ADDRA4)
+                               }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Poskod<span class="cfont">*</span></div>
+                                @if (string.IsNullOrWhiteSpace(Model.PCODEA))
+                                {
+                                    @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.PCODEA</div>
+                                    @Html.HiddenFor(m => m.PCODEA)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 premise" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Negeri<span class="cfont">*</span></div>                                
+                                @if (string.IsNullOrWhiteSpace(Model.STATEA))
+                                {
+                                    @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <div class="well well-sm">@Model.STATEA</div>
+                                    @Html.HiddenFor(m => m.STATEA)
+                                }
+                            </div>
+                        </div>
+                    </div>
+            }
+
+                <div class="row">
+                    <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                        <div class="form-group">
+                            <div class="control-label">Butir-butir Iklan</div>
+                        </div>
+                    </div>
+                </div>
+
+            if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+
+                <div class="row">
+                    <div class="col-sm-12 col-lg-12">
+                        <div class="form-group">
+                            <table cellspacing = "0" class="table table-hover table-bordered responsive" style="width:100%" id="BannerObject"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-6">
+                        <div class="form-group">
+                            <button type = "button" class="btn btn-primary" onclick='return AddBannerObject();'>Tambah Iklan</button>
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-3">
+                        <div class="form-group">
+                            <div class="control-label">Yuran Pemprosesan</div>
+                            <div class="well well-sm">@Model.PRO_FEE</div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Kod Iklan</div>
+                                @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.ADDRB1, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRB2, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRB3, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 banner" style="display:none;">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRB4, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Saiz Iklan Dipohon(meter persegi)</div>
+                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                                <span class="text-danger SizeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Bilangan Iklan</div>
+                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                                <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 banner" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Yuran Pemprosesan</div>
+                                @Html.TextBoxFor(m => m.PRO_FEE, new { @Value = 25, @class = "form-control allownumericwithdecimal" })
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Luas Premis<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.P_AREA, new { @class = "form-control allownumericwithdecimal" })
+                                @Html.ValidationMessageFor(m => m.P_AREA)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Pemilikan Premis<span class="cfont">*</span></div>
+                                @Html.DropDownListFor(m => m.P_OWN, new SelectList(PremiseOwnershipList, "Value", "Text"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.P_OWN)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-3 premise" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                @Html.ValidationMessageFor(m => m.START_RENT)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-3 premise" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Hingga<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                @Html.ValidationMessageFor(m => m.STOP_RENT)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10 col-lg-6 premise" style="display:none;">
+                                <div class="control-label">Jenis Premis<span class="cfont">*</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10 col-lg-3 premise" style="display:none;">
+                                @Html.DropDownListFor(m => m.PT_ID, new SelectList(PremiseTypeList.OrderBy(x => x.PT_ID), "PT_ID", "PT_DESC"), "Pilih jenis premis", new { @class = "form-control" })
+                            </div>
+                            @if(Model.APP_ID == 0)
+                            {
+                                <div class="col-md-2 col-lg-2 premise" style="display:none;">
+                                    <input type = "button" class="btn btn-primary" value="Daftar Jenis Premis Baru" onclick='return addPremiseType();' />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12 premise" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">Tingkat</div>
+                                @Html.TextBoxFor(m => m.FLOOR, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="LicenseDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Yang Diperlukan mengikut Jenis Lesen
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblLicenseType"></table>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12" id="RequiredDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Yang Diperlukan mengikut Jenis Perniagaan
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblBusinessType"></table>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12" id="AdditionalDocument" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Dokumen Tambahan mengikut Kod Perniagaan
+                                    <span class="cfont">*</span>
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblAdditional"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="RouteComments" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Ulasan Unit Teknikal/Jabatan Luar
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblRouteComments"></table>
+                            </div>
+                        </div>
+                    </div>
+            if (Model.UserRollTemplate != (int)Enums.RollTemplate.Public && Model.UserRollTemplate != (int)Enums.RollTemplate.RouteUnit)
+            {
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12" id="Comments" style="display:none;">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Senarai Ulasan
+                                </div>
+                                <table cellspacing = "0" class="table table-hover table-bordered" style="width:100%" id="tblComments"></table>
+                            </div>
+                        </div>
+                    </div>
+            }
+            if (Model.UserRollTemplate == (int)Enums.RollTemplate.Director && Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                List<SelectListItem>
+                    supportList = new List<SelectListItem>
+                        ();
+                supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
+                supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="control-label">Keputusan Pengarah</div>
+                                        @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            if (Model.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck) // Awaiting CEO
+                            {
+                            List<SelectListItem>
+                                supportList = new List<SelectListItem>
+                                    ();
+supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                                    supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                                    supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <div class="control-label">Keputusan KPE</div>
+                                                @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                    if (Model.APPSTATUSID == (int)Enums.PAStausenum.meeting) // Meeting
+                                    {
+                                    List<SelectListItem>
+                                        supportList = new List<SelectListItem>
+                                            ();
+supportList.Add(new SelectListItem { Text = "Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                                            supportList.Add(new SelectListItem { Text = "Tidak Diluluskan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
+                                            supportList.Add(new SelectListItem { Text = "KIV", Value = TradingLicense.Web.Controllers.ApplicationController.OnKIV });
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <div class="control-label">Keputusan Mesyuarat</div>
+                                                        @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            }
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">                                                        
+                                                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            }
+
+                </div>
+</div>
+
+<!-- Add Individual-->
+<div id="showAddIndividual" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddIndividual", "Master", FormMethod.Post, new { name = "frmsaveIndividual", id = "frmsaveIndividual" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.APP_ID)
+            
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Masukkan Maklumat Individu Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nama</div>
+                                @Html.TextBox("Fname", null, new { @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nombor MyKad / Nombor Paspot</div>
+                                @Html.TextBox("MykadNo", null, new { @class = "form-control" })
+                                <span class="text-danger LocationVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveIndividual()" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add Company-->
+<div id="showAddCompany" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddCompany", "Master", FormMethod.Post, new { name = "frmsaveCompany", id = "frmsaveCompany" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.APP_ID)
+            
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Masukkan Maklumat Syarikat Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nama Syarikat</div>
+                                @Html.TextBox("Cname", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nombor Pendaftaran Syarikat</div>
+                                @Html.TextBox("RegNo", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCompany()" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Notes in Letter-->
+<div id="showCatatan" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveCatatan", "Application", FormMethod.Post, new { name = "frmsaveCatatan", id = "frmsaveCatatan" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Catatan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Masukkan Catatan baru
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newCatatan, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCatatan()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Comment-->
+<div id="showComment" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveComment", "Application", FormMethod.Post, new { name = "frmsaveComment", id = "frmsaveComment" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Ulasan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Masukkan Ulasan
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveComment()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Route Unit reply-->
+<div id="showUnitReply" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveRouteComment", "Application", FormMethod.Post, new { name = "frmsaveRouteComment", id = "frmsaveRouteComment" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            @Html.HiddenFor(m => m.routeID)
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Maklumbalas kepada Pelesenan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">
+                                    Ulasan
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control">
+                                    @Html.TextAreaFor(m => m.newComment, new { @class = "form-control", rows = "5" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <div class="control-label">Keputusan</div>
+                                @if(ProjectSession.User.DEP_ID == 3) 
+                                {                               
+                                    @Html.DropDownListFor(m => m.Supported, new SelectList(BPPRouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Supported, new SelectList(RouteUnitDecision.OrderBy(x => x.Text), "Value", "Text"), new { @class = "form-control" })
+                                }                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return SaveUnitReply()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<!--Upload Doc-->
+<div id="uploadDocumentModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        @using (Html.BeginForm("UploadDocument", "Application", FormMethod.Post, new { name = "frmuploadDocument", id = "frmuploadDocument", enctype = "multipart/form-data" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload Document</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="preAppid" id="preAppid">
+                    <input type="hidden" name="licDocid" id="licDocid">
+                    <input type="hidden" name="reqDocid" id="reqDocid">
+                    <input type="hidden" name="addDocid" id="addDocid">
+                    <input type="hidden" name="isReqDoc" id="isReqDoc">
+
+                    <input type="file" id="DocumentFile" name="file" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf, image/*" /><br />
+                </div>
+                <div class="modal-footer">
+                    @if (Model.UserRollTemplate > (int)TradingLicense.Infrastructure.Enums.RollTemplate.DeskOfficer)
+                    {
+                        <input type="button" class="btn btn-primary" onclick="return UploadDocument()" value="Upload" />
+                    }
+                    else
+                    {
+                        if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Public)
+                        {
+                            <input type="button" class="btn btn-primary" onclick="return UploadAttechment()" value="Upload" />
+                        }
+                    }
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.UserRollTemplate == (int)TradingLicense.Infrastructure.Enums.RollTemplate.Clerk)
+{
+    <!--Send to Route Unit modal-->
+    <div id="routeUnitModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            @using (Html.BeginForm("AddRoute", "Application", FormMethod.Post, new { name = "frmsaveRoute", id = "frmsaveRoute" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", Model.APP_ID)
+                
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Senarai Unit Teknikal/Jabatan Luar</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+
+                                <div class="col-lg-8 col-md-8">
+                                    @Html.DropDownList("department", new SelectList(departmentList, "DEP_ID", "DEP_DESC"), new { @class = "form-control" })
+                                </div>
+                                <div class="col-lg-2 col-md-2">
+                                    <button type="button" id="AddDept" class="btn btn-primary">Tambah</button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12" id="RouteUnitTable" style="display:none;">
+                                <div class="form-group">
+                                    <table cellspacing="0" class="table table-hover table-bordered" style="width:100%" id="tblRouteDepartments"></table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="form-group">
+                                    <div class="control">
+                                        @Html.TextAreaFor(m => m.newQuestion, new { @class = "form-control", rows = "5" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="return RoutePremiseApplication()">Hantar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Print License-->
+<div id="myModalLicense" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Cetak Lesen</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Print letter-->
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Letter Details</h4>
+            </div>
+            <div class="modal-body">
+                <p><iframe id="ifrm" src="" height="500" width="850" frameborder="0"></iframe></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Create Open Item for Payment-->
+<div id="showPaymentsDue" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SavePaymentDue", "Application", FormMethod.Post, new { name = "frmsavePaymentDue", id = "frmsavePaymentDue" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Jumlah Yang Perlu Dibayar</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Jumlah Fi Bagi Semua Kod Perniagaan</div>
+                                @Html.TextBox("totalDue", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return validatePaymentDue()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- Receive Payment-->
+<div id="showPaymentsReceived" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("SaveReceivedPayment", "Application", FormMethod.Post, new { name = "frmsaveReceivedPayment", id = "frmsaveReceivedPayment" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+        
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Penerimaan Bayaran</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Bayaran untuk:</div>
+                                @Model.REF_NO
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Jumlah bayaran</div>
+                                @Model.AmountDue
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Bayaran dibuat oleh/untuk</div>
+                                @Html.DropDownList("individualID", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return validateSavePayments()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- Add Premise Type-->
+<div id="showAddPremiseType" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddPremiseType", "Master", FormMethod.Post, new { name = "frmsavePremiseType", id = "frmsavePremiseType" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.APP_ID)
+            @Html.Hidden("appType", "Application")
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Daftar Jenis Premis Baru</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Jenis Premis</div>
+                                @Html.TextBox("PTypeDesc", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Hantar" onclick="return savePremiseType()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!--Add Banner Object-->
+<div id="showAddBannerObject" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm("AddBannerObject", "Application", FormMethod.Post, new { name = "frmsaveBannerObject", id = "frmsaveBannerObject" }))
+        {
+            @Html.HiddenFor(m => m.APP_ID)
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Tambah Iklan</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Kod Iklan</div>
+                                @Html.DropDownListFor(m => m.BC_ID, new SelectList(bannerCodeList, "BC_ID", "C_R_DESC"), "Pilih Kod Iklan", new { @id = "bannerCodeList", @class = "form-control" })
+                                <span class="text-danger BannerCodeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                <div class="control-label">Lokasi Iklan<span class="cfont">*</span></div>
+                                @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Saiz Iklan Dipohon (meter persegi)</div>
+                                @Html.TextBoxFor(m => m.B_SIZE, new { @id = "bsize", @class = "form-control allownumericwithdecimal" })
+                                <span class="text-danger SizeVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Bilangan Iklan</div>
+                                @Html.TextBoxFor(m => m.B_QTY, "1", new { @class = "form-control allowinteger" })
+                                <span class="text-danger quantityVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveBannerObjects()" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        $(function () {
+            // This will make every element with the class "date-picker" into a DatePicker element
+            $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
+        })
+
+        $(document).ready(function () {
+            $('#btnLicense').click(function () {
+                $('.modal-body iframe').attr('src', "../Application/GeneratLicense?AppId=@Model.APP_ID");
+                $('#myModalLicense').modal('show');
+            });
+        });
+
+
+        var userRollTemplate = 0;
+        var visibleGridColume = false;
+        var visibleGridUploadColume = false;
+        var sender = false;
+        var receiver = false;
+
+        var licenseDocList = [];
+        var requiredDocList = [];
+        var addtionalDocList = [];
+
+        var actionError = '@(TempData["ErrorMessage"])';
+        if (actionError != null && actionError != "") {
+            errorMessage(actionError);
+        }
+
+        function bindPremiseFee(){
+
+            function formatPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-2">' + r[1] + '</div>' +
+                        '<div class="col-md-10">' + r[0] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatSelectionPremiseFees(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[1] + ' | '  + r[0] +
+                    '</span>'
+                );
+                return $result;
+            }
+
+            $("#premiseFeeList").select2({
+                placeholder: "Cari Jenis Tempat Hiburan",
+                minimumInputLength: 0,
+                width: '100%',
+                templateResult: formatPremiseFees,
+                templateSelection: formatSelectionPremiseFees,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillPremiseFee", "Application")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        console.log(query)
+                        return {
+                            query: query.term,
+                            selectedPFID: $('#E_P_FEEID').val()
+                        }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        }
+
+        function bindCode(){
+
+            function formatBusinessCodes(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<div class="row">' +
+                        '<div class="col-md-2">' + r[0] + '</div>' +
+                        '<div class="col-md-10">' + r[1] + '</div>' +
+                    '</div>'
+                );
+                return $result;
+            }
+
+            function formatSelectionBusinessCodes(data) {
+                var r = data.text.split('~');
+                var $result = $(
+                    '<span>' +
+                        r[0] + ' | '  + r[1] +
+                    '</span>'
+                );
+                return $result;
+            }
+
+            $("#businessCodeList").select2({
+                placeholder: "Search for a Business Code",
+                minimumInputLength: 0,
+                width: '100%',
+                templateResult: formatBusinessCodes,
+                templateSelection: formatSelectionBusinessCodes,
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillBusinessCode", "Application")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        //console.log(query)
+                        return {
+                            query: query.term,
+                            selectedLic: $('#LIC_TYPEID').val(),
+                            selectedSector:  $("#SectorID").val()
+                        }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        };
+
+
+
+        $(function () {
+
+
+
+
+            userRollTemplate = $("#UserRollTemplate").val();
+
+            var success = '@(TempData["SuccessMessage"])';
+            if (success != null && success != "") {
+                successMessage(success);
+            }
+
+            var actionError = '@(TempData["ErrorMessage"])';
+            if (actionError != null && actionError != "") {
+                errorMessage(actionError);
+            }
+
+            if (userRollTemplate == 1 || userRollTemplate == 3 && @Model.APPSTATUSID != 15) {
+                visibleGridUploadColume = true;
+            }
+            if (userRollTemplate == 2) {
+                visibleGridColume = true;
+            }
+            if (userRollTemplate == 3 || userRollTemplate == 4) {
+                sender = true;
+            }
+            if (userRollTemplate == 5) {
+                receiver = true;
+            }
+
+            $("#businessCodeList").select2({ width: '100%' });
+            $("#premiseFeeList").select2({ width: '100%' });
+            $("#individualList").select2({ width: '100%' });
+            $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
+
+
+
+
+
+
+            function individualFormating(state) {
+                if (!state.isNew) {
+                    return state.text;
+                }
+
+                state.text = state.fullName + ' (' + state.passportNo +')';
+                var $state = $(
+                  '<span>' + state.text +'&nbsp;</span>'
+                );
+                if(state.isNew) {
+                    var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+                    editLink.on('click', function() {
+                        showIndividualModal(state);
+                    });
+                    $state.append(editLink);
+                }
+                return $state;
+            }
+
+            $("#individualList").select2({
+                placeholder: "Select Full Name or Mykad/Passport No",
+                minimumInputLength: 2,
+                width: '100%',
+                tags: true,
+                tokenSeparators: [';'],
+                templateSelection: individualFormating,
+                createTag: function (params) {
+                    var term = params.term;
+                    var indexOfPassport = term.indexOf('(');
+                    var fullName= '';
+                    var passportNo = '';
+                    if(indexOfPassport > 0) {
+                        var endIndex = term.indexOf(')', indexOfPassport);
+                        passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                        fullName = term.substring(0, indexOfPassport);
+                    } else {
+                        fullName = term;
+                    }
+
+                    return {
+                        id: term,
+                        text: fullName + ' (' + passportNo +')',
+                        fullName: fullName,
+                        passportNo: passportNo,
+                        isNew: true
+                    };
+                },
+                ajax: {
+                    type: "POST",
+                    url: encodeURI('@Url.Action("FillIndividual", "Application")'),
+                    //Data: allows us to pass a parameter to the controller
+                    data: function (query) {
+                        console.log(query)
+                        return { query: query.term }
+                    },
+                    //processes the results from the JSON method and gives us the select list
+                    processResults: function (data) {
+                        //console.log(data)
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
+            var businessSelecteId = [];
+            if ('@Model.BusinessCodeids' != null && '@Model.BusinessCodeids' != '') {
+                var BussinessCodeIds = '@Model.BusinessCodeids';
+
+                var arr = BussinessCodeIds.split(',');
+                $.each(arr, function (index, value) {
+                    businessSelecteId.push(value);
+                });
+                $('#businessCodeList').val(businessSelecteId);
+                $('#businessCodeList').trigger('change');
+            } else {
+                businessSelecteId = [];
+            }
+
+            var individualSelecteId = [];
+            if ('@Model.Individualids' != null && '@Model.Individualids' != '') {
+                var individualIds = '@Model.Individualids';
+
+                var arr = individualIds.split(',');
+                $.each(arr, function (index, value) {
+                    individualSelecteId.push(value);
+                });
+                $('#individualList').val(individualSelecteId);
+                $('#individualList').trigger('change');
+            } else {
+                individualSelecteId = [];
+            }
+
+            if(@Model.BT_ID > 0)
+            {
+                $("#BusinessTypeID").val(@Model.BT_ID);
+                bindTable();
+            }
+
+            if(@Model.LIC_TYPEID > 0)
+            {
+                $("#licTypeID").val(@Model.LIC_TYPEID);
+                bindLicense();
+            }
+
+            if ('@Model.UploadRequiredDocids' != null && '@Model.UploadRequiredDocids' != '') {
+
+                var UploadRequiredDocumentlist = '@Model.UploadRequiredDocids';
+
+                var arr = UploadRequiredDocumentlist.split(',');
+                $.each(arr, function (index, value) {
+                    requiredDocList.push(value);
+                });
+            }
+
+            if ('@Model.UploadLicenseDocids' != null && '@Model.UploadLicenseDocids' != '') {
+
+                var UploadLicenseDocumentlist = '@Model.UploadLicenseDocids';
+
+                var arr = UploadLicenseDocumentlist.split(',');
+                $.each(arr, function (index, value) {
+                    licenseDocList.push(value);
+                });
+            }
+
+
+
+            $("#preAppid").val(@Model.APP_ID);
+
+            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                    event.preventDefault();
+                }
+            });
+
+            if(@Model.APP_ID > 0 && @Model.UserRollTemplate > 1) {
+                loadComments();
+            }
+            if(@(Model.HasPADepSupp.ToString().ToLower()) === true)
+            {
+                loadRouteComments();
+            }
+        });
+
+        function frmSubmit(isdraft) {
+            $("#IsDraft").val(isdraft);
+            $("#frmApplication").submit();
+        }
+
+        function validatePremiseApplication(isdraft) {
+            $("#UploadRequiredDocids").val(requiredDocList);
+
+            AdditionalChecked();
+
+            RequiredCheck();
+
+            if (!$("#frmApplication").valid()) {
+                return false;
+            }else if ($('#BusinessCodeids').val() == "") {
+                alert("Please select Business Code");
+                return false;
+            }else if (userRollTemplate > 1 && $('#Individualids').val() == "") {
+                alert("Please select Mykad/Passport No");
+                return false;
+            } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != requiredDocList.length) {
+                alert("Please Upload all Required Document");
+                return false;
+            } else if (userRollTemplate == 1 && !isdraft && $('.lablereqdocument').length != licenseDocList.length) {
+                alert("Please Upload all License Document");
+                return false;
+            }
+            else if (userRollTemplate == 1 && !isdraft && $('.lableadddocument').length != addtionalDocList.length) {
+                alert("Please Upload all Additional Document");
+                return false;
+            }
+            else if (userRollTemplate > 1 && $('.chkreqdoc:checked').length != $('.chkreqdoc').length) {
+                alert("Please select all checkbox for Required Document");
+                return false;
+            }else if (userRollTemplate > 1 && $('.chkAdddoc:checked').length != $('.chkAdddoc').length){
+                alert("Please select all checkbox for Additional Document");
+                return false;
+            }else {
+                var individuals = $("#individualList").select2('data');
+                if (individuals) {
+                    var newIndividuals = [];
+                    for(var i =0; i< individuals.length; i++) {
+                        var ind = individuals[i];
+                        if(ind.isNew) {
+                            newIndividuals.push({ fullName: ind.fullName, passportNo: ind.passportNo });
+                        }
+                    }
+                    if(newIndividuals.length >0) {
+                        $("#newIndividualsList").val(JSON.stringify(newIndividuals));
+                    }
+                }
+            }
+            return true;
+        }
+
+        function changeBussinesscode() {
+            $('#BusinessCodeids').val($('#businessCodeList').val());
+            bindAdditionalTable();
+            //console.log("changebusinesscode");
+            checkButtonState();
+        }
+
+
+
+        function changeIndindividual() {
+            var individuals = $("#individualList").select2('data');
+            var newIndividuals = [];
+            for(var i =0; i< individuals.length; i++) {
+                var ind = individuals[i];
+                if(!ind.isNew) {
+                    newIndividuals.push(ind.id);
+                }
+            }
+            $('#Individualids').val(newIndividuals.join(','));
+        }
+
+        function back() {
+            var link = '@Url.Action("ProfileList", "Profile")';
+            window.location.href = link;
+        }
+
+        function changeSector(){
+            bindCode();
+        }
+
+        function changeLicense() {
+
+            bindCode();
+            if ($("#LIC_TYPEID").val() == 1) {
+                bindLicense();
+                $('#approvalType').show();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').hide();
+                $('#sector').show();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 2){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').show();
+                $('#approvalMeeting').hide();
+                $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 3){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').show();
+                $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 4){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').show();
+                $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 5){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').show();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').hide();
+                $("#MODE").val(2);
+                $('#sector').hide();
+                $('#businessCode').hide();
+                $('#entmtGroup').hide();
+                $('.premise').hide();
+                $('.banner').show();
+            }
+            else if ($("#LIC_TYPEID").val() == 6){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').show();
+                $('#approvalMeeting').hide();
+                $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 7){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').show();
+                $('#approvalMeeting').hide();
+                $("#MODE").val(3);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 8){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').show();
+                $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 9){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').show();
+                $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').hide();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+            else if ($("#LIC_TYPEID").val() == 10){
+                bindLicense();
+                $('#approvalType').hide();
+                $('#approvalDirector').hide();
+                $('#approvalCEO').hide();
+                $('#approvalMeeting').show();
+                $("#MODE").val(4);
+                $('#sector').hide();
+                $('#businessCode').show();
+                $('#entmtGroup').show();
+                $('.premise').show();
+                $('.banner').hide();
+            }
+        }
+
+        function businessTypeChange() {
+            if ($("#BT_ID").val() > 0) {
+                //console.log($("#BT_ID").val());
+                bindTable();
+            }
+            checkButtonState();
+        }
+
+
+
+        function bindDownload(attechmentID) {
+            if (attechmentID > 0) {
+                window.location.href = "@Url.Action("Download", "Application")" + "?attechmentID=" + attechmentID + "&premiseId=" + @Model.APP_ID;
+            }
+        }
+
+
+        function bindSearch() {
+            var param = {};
+            param["businessTypeID"] = $("#BT_ID").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["ApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchLicense() {
+            var param = {};
+            param["licTypeID"] = $("#LIC_TYPEID").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["ApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindSearchAdditional() {
+            var param = {};
+            param["BusinessCodeids"] = $("#BusinessCodeids").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["premiseApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["premiseApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        function bindTable() {
+            //displays related documents required linked to business types
+            $('#RequiredDocument').show();
+            if ($.fn.DataTable.isDataTable("#tblBusinessType")) {
+                $('#tblBusinessType').dataTable().fnDestroy();
+            }
+
+            table = $("#tblBusinessType").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("RequiredDocument", "Application")',
+                    type: "POST",
+                    data: bindSearch()
+                },
+                "columns": [
+                    {
+                        "title": "Disertakan?",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<div class="checkbox"> <label for="chkreqdoc_' + row["RD_ID"] + '"> <input id="chkreqdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkreqdoc" type = "checkbox" onclick = "RequiredCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
+                    {
+                        "title": "Nama Fail",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (visibleGridUploadColume) {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablereqdocument" style="cursor: pointer;" id="lblreqAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+
+                                } else {
+                                    appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablereqdocument"  id="lblreqAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                                }
+
+                            } else {
+                                if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "") {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title="Download" onclick="bindDownload(' + row["AttachmentId"] + "," + row["APP_ID"] + ');">' + row["AttachmentFileName"] + '</a>';
+                                } else {
+                                    appendstring += '<a target="_blank" href="javascript:void(0);" title=""></a>';
+                                }
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+
+                    }
+                ]
+            });
+        }
+
+
+
+        function bindAdditionalTable() {
+            //displays required document related to business code selected
+            $('#AdditionalDocument').show();
+            if ($.fn.DataTable.isDataTable("#tblAdditional")) {
+                $('#tblAdditional').dataTable().fnDestroy();
+            }
+
+            table = $("#tblAdditional").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("AdditionalDocument", "Application")',
+                    type: "POST",
+                    data: bindSearchAdditional()
+                },
+                "columns": [
+                    {
+                        "title": "Disertakan?",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (userRollTemplate > 1) {
+                                appendstring += '<div class="checkbox"> <label for="chkAdddoc_' + row["RD_ID"] + '"> <input id="chkAdddoc_' + row["RD_ID"] + '" value="' + row["RD_ID"] + '" class="chkAdddoc" type = "checkbox" onclick="AdditionalCheck();" ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+                        width: "7%",
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
+                    {
+                        "title": "Nama Fail",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lableadddocument" style="cursor: pointer;"  id="lbladdAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                            }
+                            else
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lableadddocument"  id="lbladdAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+
+
+                    }
+                ]
+            });
+        }
+
+        function bindLicense() {
+            //console.log('bindLicense');
+            //displays required document related to license type
+            $('#LicenseDocument').show();
+            //console.log("change license type");
+            if ($.fn.DataTable.isDataTable("#tblLicenseType")) {
+                $('#tblLicenseType').dataTable().fnDestroy();
+            }
+
+            table = $("#tblLicenseType").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("LicenseDocument", "Application")',
+                    type: "POST",
+                    data: bindSearchLicense()
+                },
+                "columns": [
+                    {
+                        "title": "Disertakan?",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<div class="checkbox"> <label for="chkLicdoc_' + row["RD_ID"] + '"> <input id="chkLicdoc_' + row["RD_ID"] + '"  value="' + row["RD_ID"] + '" class="chkLicdoc" type = "checkbox" onclick = "LicenseCheck();"  ' + row["IsChecked"] + ' /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            return appendstring
+                        },
+                        width: "7%",
+                        "orderable": false,
+                        "visible": visibleGridColume,
+                    },
+                    { "title": "Jenis Dokumen", "data": "RD_DESC", "orderable": false },                    
+                    {
+                        "title": "Nama Fail",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            if (row["AttachmentFileName"] != null && row["AttachmentFileName"] != "")
+                            {
+                                appendstring += '<a target="_blank"   href="javascript:void(0);" title="Document" onclick="bindDownload(' + row["AttachmentId"] + ');"> <label class="lablelicdocument" style="cursor: pointer;" id="lbllicAttachment_' + row["RD_ID"] + '"> ' + row["AttachmentFileName"] + ' </label> </a>';
+                            }
+                            else
+                            {
+                                appendstring += '<a target="_blank"  href="javascript:void(0);" title="Document"> <label class="lablelicdocument"  id="lbllicAttachment_' + row["RD_ID"] + '"> </label> </a>';
+                            }
+                            return appendstring
+                        },
+                        "orderable": false,
+
+                    }
+                ]
+            });
+        }
+
+        function LicenseCheck() {
+            //console.log("LicenseChecked");
+            var LicenseArray = [];
+            $('.chkLicdoc').each(function () {
+                if ($(this).is(":checked")) {
+                    LicenseArray.push($(this).val());
+                }
+            });
+            $("#LicenseDocIds").val(LicenseArray);
+
+            checkButtonState();
+        }
+
+        function RequiredCheck() {
+            //console.log("RequiredCheck");
+            var RequiredArray = [];
+            $('.chkreqdoc').each(function () {
+                if ($(this).is(":checked")) {
+                    RequiredArray.push($(this).val());
+                }
+            });
+            $("#RequiredDocIds").val(RequiredArray);
+
+            checkButtonState();
+        }
+
+
+        function AdditionalCheck() {
+            console.log("AdditionalChecked");
+            var AdditionalArray = [];
+            $('.chkAdddoc').each(function () {
+                if ($(this).is(":checked")) {
+                    AdditionalArray.push($(this).val());
+                }
+            });
+            $("#AdditionalDocIds").val(AdditionalArray);
+
+            checkButtonState();
+        }
+
+        function checkButtonState() {
+
+            var isLicense = false;
+            if ($('.chkLicdoc:checked').length == $('.chkLicdoc').length) {
+                isLicense = true;
+            }
+
+            var isDocument = false;
+            if ($('.chkreqdoc:checked').length == $('.chkreqdoc').length) {
+                isDocument = true;
+            }
+
+            var isAddtional = false;
+            if ($('.chkAdddoc:checked').length == $('.chkAdddoc').length) {
+                isAddtional = true;
+            }
+
+            if (isAddtional && isDocument && isLicense) {
+                $('.btSubmit').show();
+            } else {
+                $('.btSubmit').hide();
+            }
+        }
+
+        function LicenseRequiredDocument(Requiredid) {
+            $("#licDocid").val(Requiredid);
+            $("#reqDocid").val("0");
+            $("#addDocid").val("0");
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+        function BusinessRequiredDocument(BRequiredid) {
+            $("#licDocid").val("0");
+            $("#reqDocid").val(BRequiredid);
+            $("#addDocid").val("0");
+            $('#isReqDoc').val("1");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+        function AdditionalDoc(Additionalid) {
+            $("#licDocid").val("0");
+            $("#reqDocid").val("0");
+            $("#addDocid").val(Additionalid);
+            $('#isReqDoc').val("0");
+            $('#uploadDocumentModal').modal('show');
+        }
+
+        var strValidateFileFormate = '@TradingLicense.Infrastructure.ProjectConfiguration.UploadFileFormat';
+        var _validFileExtensions = [];
+        _validFileExtensions = strValidateFileFormate.split(",");
+
+        function UploadDocument(){
+
+            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+
+                var data = new FormData();
+                var files = $("#DocumentFile").get(0).files;
+
+                if (files.length > 0) {
+                    data.append("DocumentFile", files[0]);
+                }
+
+                data.append("APP_ID", @Model.APP_ID);
+                data.append("licDocid", $("#licDocid").val());
+                data.append("reqDocid", $("#reqDocid").val());
+                data.append("addDocid", $("#addDocid").val());
+                data.append("isReqDoc", $("#isReqDoc").val());
+
+                var ajaxRequest = $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UploadDocument", "Application")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    async: false,
+                    success: function (result) {
+                        if (result != null) {
+                            $("#DocumentFile").val("");
+                            if (result.status == 1) {
+                                successMessage(result.message);
+
+                                if ($("#reqDocid").val() > 0)
+                                {
+                                    bindTable();
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
+                                    bindAdditionalTable();
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    bindLicense();
+                                }
+                            }
+                            else {
+                                errorMessage(result.message);
+                            }
+                        }
+                        $("#uploadDocumentModal").modal('hide');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        errorMessage(xhr.responseText);
+                    }
+                });
+
+            } else {
+                alert("Please Select Valid File");
+            }
+        }
+
+        function UploadAttechment(){
+
+            if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+                console.log("sini pula?");
+                var data = new FormData();
+                var files = $("#DocumentFile").get(0).files;
+
+                if (files.length > 0) {
+                    data.append("DocumentFile", files[0]);
+                }
+
+                data.append("licDocid", $("#licDocid").val());
+                data.append("reqDocid", $("#reqDocid").val());
+                data.append("addDocid", $("#addDocid").val());
+                data.append("isReqDoc", $("#isReqDoc").val());
+
+                var ajaxRequest = $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UploadAttechment", "Application")',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    async: false,
+                    success: function (result) {
+                        if (result != null)
+                        {
+                            console.log("sini ada ka");
+                            $("#DocumentFile").val("");
+                            if (result.status == 1)
+                            {
+                                successMessage("Document Upload Successfully");
+
+                                console.log(result.result);
+                                if ($("#reqDocid").val() > 0)
+                                {
+                                    var lblreqAttachment = "lblreqAttachment_" + $("#reqDocid").val();
+                                    $('.lablereqdocument').each(function ()
+                                    {
+                                        console.log("oyo oyo");
+                                        if ($(this).attr('id') == lblreqAttachment)
+                                        {
+                                            $("#" + lblreqAttachment).html(result.result.AttachmentName);
+                                            RequiredDocumentDublicateCheck(result.result.RequiredDocID, result.result.AttachmentID);
+                                        }
+                                    });
+                                }
+                                if ($("#licDocid").val() > 0)
+                                {
+                                    var lbllicAttachment = "lbllicAttachment_" + $("#licDocid").val();
+                                    $('.lablelicdocument').each(function ()
+                                    {
+                                        console.log("oye oye");
+                                        if ($(this).attr('id') == lbllicAttachment)
+                                        {
+                                            $("#" + lbllicAttachment).html(result.result.AttachmentName);
+                                            LicenseDocumentDublicateCheck(result.result.LicenseDocID, result.result.AttachmentID);
+                                        }
+                                    });
+                                }
+                                if ($("#addDocid").val() > 0)
+                                {
+                                    var lbladdAttachment = "lbladdAttachment_" + $("#addDocid").val();
+                                    $('.lableadddocument').each(function () {
+                                        if ($(this).attr('id') == lbladdAttachment) {
+                                            $("#" + lbladdAttachment).html(result.result.AttachmentName);
+                                            AdditionalDocumentDublicateCheck(result.result.AdditionalDocID, result.result.AttachmentID)
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                errorMessage(result.message);
+                            }
+                        }
+                        $("#uploadDocumentModal").modal('hide');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        errorMessage(xhr.responseText);
+                    }
+                });
+
+            } else {
+                alert("Please Select Valid File");
+            }
+        }
+
+        function LicenseDocumentDublicateCheck(LicenseDocID, AttachmentID) {
+            var itemfound = 0;
+            var itemFoundbool = false;
+            console.log("LicenseDublicateCheck");
+            for (var i = 0; i < licenseDocList.length; i++) {
+                var doc = licenseDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == LicenseDocID ) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = licenseDocList.length+1;
+                }
+            }
+
+            if (itemFoundbool) {
+                licenseDocList.splice(itemfound, 1);
+            }
+
+            var licenseDocument = LicenseDocID + ":" + AttachmentID;
+            licenseDocList.push(licenseDocument);
+        }
+
+        function RequiredDocumentDublicateCheck(RequiredDocID, AttachmentID) {
+            var itemfound = 0;
+            var itemFoundbool = false;
+            console.log("RequiredDublicateCheck");
+            for (var i = 0; i < requiredDocList.length; i++) {
+                var doc = requiredDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == RequiredDocID ) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = requiredDocList.length+1;
+                }
+            }
+
+            if (itemFoundbool) {
+                requiredDocList.splice(itemfound, 1);
+            }
+
+            var requiredDocument = RequiredDocID + ":" + AttachmentID;
+            requiredDocList.push(requiredDocument);
+        }
+
+        function AdditionalDocumentDublicateCheck(AdditionalDocID, AttachmentID) {
+            var itemfound = 0;
+            var itemFoundbool = false;
+
+            for (var i = 0; i < addtionalDocList.length; i++) {
+                var doc = addtionalDocList[i].split(',');
+                var document = doc[0].split(':');
+                if (document[0] == AdditionalDocID) {
+                    itemfound = i;
+                    itemFoundbool = true;
+                    i = addtionalDocList.length + 1;
+                }
+            }
+
+            if (itemFoundbool) {
+                addtionalDocList.splice(itemfound, 1);
+            }
+
+            var additionaDocument = AdditionalDocID + ":" + AttachmentID;
+            addtionalDocList.push(additionaDocument);
+        }
+
+
+
+        function Approvedreject(name) {
+            if (name == "approved") {
+                $("#lblapprovedreject").html("Approve");
+                $("#txtComment").rules("remove", "required");
+            }
+            else {
+
+                $("#lblapprovedreject").html("Reject");
+                $("#txtComment").rules("add", "required");
+            }
+            $("#lblheaderTitle").html("Add Comment");
+            $('#approvedrejectModal').modal('show');
+        }
+
+
+
+        function loadComments() {
+            $('#Comments').show();
+            if ($.fn.DataTable.isDataTable("#tblComments")) {
+                $('#tblComments').dataTable().fnDestroy();
+            }
+
+            var data = { "applicationID": @Model.APP_ID };
+
+            table = $("#tblComments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "bPaginate": true,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("Comments", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "Ulasan", "orderable": false, "data": "CONTENT" },
+                    { "title": "Nama", "orderable": false, "data": "FullName" },
+                    { "title": "Tarikh", "data": "COMMENTDATE", render: renderDateTime },
+                    {
+                        "title": "Tindakan",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if ('@(ProjectSession.User.ROLEID)' == '@Enums.RollTemplate.Supervisor') {
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["COMMENTID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Padam" /></a>';
+                            }
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ]
+            });
+        }
+
+        function bindDelete(item) {
+            var x = confirm("Anda pasti?");
+            if (x) {
+
+                $.ajax({
+                    type: "POST",
+                    url: encodeURI('@Url.Action("DeleteComment", "Application")'),
+                    data: { "Id": $(item).attr('data-id') },
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data, textStatus, XMLHttpRequest) {
+                        if (data.success) {
+                            console.log("success");
+                            successMessage(data.message);
+                        }
+                        else {
+                            console.log(" not success");
+                            successMessage(data.message);
+                        }
+                    },
+                    error: function (jqXHR, exception, errMsg) {
+                    }
+                });
+                loadComments();
+            }
+        }
+
+        function loadRouteComments() {
+            $('#RouteComments').show();
+            if ($.fn.DataTable.isDataTable("#tblRouteComments")) {
+                $('#tblRouteComments').dataTable().fnDestroy();
+            }
+            //console.log("loadRoute");
+
+            var data = { "APP_ID": @Model.APP_ID };
+
+
+            table = $("#tblRouteComments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("RouteComments", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    {
+                        "title": "Pertanyaan",
+                        "orderable": false,
+                        "data": "QUESTION",
+                        "visible": receiver
+                    },
+                    {
+                        "title": "Ulasan Unit Teknikal/Jabatan Luar",
+                        "orderable": false,
+                        "data": "ANSWER",
+                        "visible": sender
+                    },
+                    {
+                        "title": "Nama Unit Teknikal/Jabatan Luar",
+                        "orderable": false,
+                        "data": "DepartmentDesc",
+                        "visible": sender
+                    },
+                    {
+                        "title": "Status",
+                        "orderable": false,
+                        "data": "SUPPORT",
+                        "render" : function (data, type, row) {
+                            switch(data) {
+                                case 0 : return 'Belum Ada Jawapan'; break;
+                                case 1 : return '<label class="label label-success">Tiada Halangan</label>'; break;
+                                case 2 : return '<label class="label label-danger">Ada Halangan</label>'; break;
+                                default  : return 'N/A';
+                            }
+                        }
+                    },
+                    {
+                        "title": "Dihantar oleh",
+                        "orderable": false,
+                        "data": "SENDER",
+                        "visible": receiver
+                    },
+                    {
+                        "title": "Diulas oleh",
+                        "orderable": false,
+                        "data": "RECEIVER",
+                        "visible": sender
+                    },
+                    { "title": "Tarikh Dihantar", "data": "SUBMITTED", "width": "150px", render: renderDateTime },
+                    { "title": "Tarikh Dijawab", "data": "REPLIED", "width": "150px", render: renderDateTime },
+                    {
+                        "title": "Tindakan",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+
+                            if (data['DEP_ID'] == '@(ProjectSession.User.DEP_ID)') {
+                                appendstring += '<a href="javascript:void(0);" data-id="' + row["ROUTEUNITID"] + '" onclick="showRouteUnitReply(this);" title="Ubah"><img src="@Url.Content("~/images/edit.png")" alt="Ubah" /></a>';
+                            }
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons",
+                        "visible": receiver
+                    }
+                ]
+            });
+        }
+        
+
+        function del(ob,param){
+            //console.log($(ob).attr("data-id"));
+            //console.log("#"+param+$(ob).attr("data-id"));
+            //$("#"+param+$(ob).attr("data-id")).remove();
+
+            $("#"+param+$(ob).attr("data-id")).remove();//hidden
+            $(ob).closest('tr').remove();//row
+            //$(this).remove();
+
+        }
+
+        function showRouteUnitConfirmModal() {
+            //console.log("pop");
+            $("#AddDept").click( function(){
+                console.log("clicked");
+                var dept_id = $("#department").val();
+                var dept = $("#department option:selected").text();
+                var ct = $("#tblRouteDepartments tbody").children().length + 1;
+
+                console.log($("#dept_"+dept_id).val());
+
+                if($("#dept_"+dept_id).length == 0){
+                    //console.log("--> "+$("#tblRouteDepartments tbody").children().length);
+                    $("#tblRouteDepartments").append('<input type="hidden" value="'+ dept_id + '" id="dept_'+dept_id+'" name="DeptId[]"/>');
+                    $("#tblRouteDepartments").append('<tr role="row" class="odd"><td>'+dept+'</td><td class=" action-icons"><a href="#"  onclick="del(this,\'dept_\');"  data-id="'+dept_id+'" class="del" title="Padam"><img src="/images/delete.png" alt="Delete"></a></td></tr>');
+                }
+
+
+            });
+
+            $('#routeUnitModal').modal('show');
+            $('#RouteUnitTable').show();
+            if ($.fn.DataTable.isDataTable("#tblRouteDepartments")) {
+                $('#tblRouteDepartments').dataTable().fnDestroy();
+            }
+
+            var data = { "businessCodeids": $('#BusinessCodeids').val() };
+
+            table = $("#tblRouteDepartments").dataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("FillRouteDepartments", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    { "title": "Nama Jabatan", "orderable": true, "data": "DEP_DESC" },
+                    {
+                        "title": "Padam",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<input type="hidden" id="dept_'+row["DEP_ID"]+'" value="'+ row["DEP_ID"] + '" name="DeptId[]"/>';
+                            // appendstring += '<a href="javascript:void(0);" class="delDept" data-id="' + row["DepartmentID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            appendstring += '<a href="#" onclick="del(this,\'dept_\');" class="delDept" data-id="' + row["DEP_ID"] +'" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+
+                ]
+            });
+
+            return false;
+        }
+
+        function showPaymentsDuePopup() {
+
+            var data = new FormData();
+            data.append("APP_ID", @Model.APP_ID);
+
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPaymentDue", "Application")',
+                contentType: false,
+                processData: false,
+                data: data,
+                async: false,
+                success: function (result) {
+                    $("#totalDue").val(0);
+                    $("#totalfee").val(0);
+                    if (result != null) {
+                        $("#totalDue").val(result.totalDue);
+                        $("#totalfee").val(result.totalfee);
+                    }
+                    $("#showPaymentsDue").modal('show');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    errorMessage(xhr.responseText);
+                }
+            });
+
+        }
+
+        function showPaymentsReceivedPopup() {
+            $("#showPaymentsReceived").modal('show');
+        }
+
+        function validatePaymentDue() {
+            var due = $('#totalDue').val();
+            if(due === '' || isNaN(due)) {
+                alert('Please enter valid Amount of due');
+                return false;
+            }
+            if(parseFloat(due) <= 0) {
+                var confirmed = confirm('The value of amount due seems to be less than or equal to zero, Please confirm if you want to update the same');
+                return confirmed;
+            }
+            return true;
+        }
+
+        $(document).ready(function bannerObj() {
+            if ($.fn.DataTable.isDataTable("#BannerObject")) {
+                $('#BannerObject').dataTable().fnDestroy();
+            }
+            //console.log("banner");
+            var data = { "ApplicationId": @Model.APP_ID };
+
+            table = $("#BannerObject").DataTable({
+                "lengthChange": true,
+                "searching": false,
+                "pageLength": 50,
+                "processing": true,
+                "serverSide": true,
+                "bPaginate": false,
+                "bInfo": false,
+                "orderMulti": false,
+                "ajax": {
+                    url: '@Url.Action("BannerObject", "Application")',
+                    type: "POST",
+                    data: data
+                },
+                "columns": [
+                    { "title": "No. Siri Iklan", "data": "B_O_ID", "orderable": false },
+                    { "title": "Kod Iklan", "data": "CodeRefDesc", "orderable": false },
+                    { "title": "Lokasi", "data": "ADDRB1", "orderable": false },
+                    { "title": "Saiz", "data": "B_SIZE", "orderable": false },
+                    { "title": "Bilangan", "data": "B_QTY", "orderable": false },
+                    { "title": "Fi (RM)", "data": "FEE", "orderable": false },
+                    {
+                        "title": "Padam",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<a href="javascript:void(0);" data-id="' + row["B_O_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ]
+            })
+        });
+
+        function validateSavePayments() {
+            if($('#individualID').val() === '') {
+                alert('Please select individual who has paid for this application');
+                return false;
+            }
+            return true;
+        }
+
+        function RoutePremiseApplication() {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRouteSubmit');
+            $("#frmsaveRoute").submit();
+            $("#frmApplication").submit();
+            return false;
+        }
+
+        function Approved() {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnSubmit');
+            $("#frmApplication").submit();
+            return false;
+        }
+
+        function Rejected() {
+            $('#SubmitType').val('@TradingLicense.Web.Controllers.ApplicationController.OnRejected');
+            $("#frmApplication").submit();
+            return false;
+        }
+
+
+        $(document).ready(function () {
+            hideLetterDropDown();
+            $('#btnLetter').click(function () {
+                $('.modal-body iframe').attr('src', "../Application/GenerateLetter?AppId=@Model.APP_ID");
+                $('#myModal').modal('show');
+            });
+        });
+
+        function hideLetterDropDown()
+        {
+            if($('#btnLetter') != null && $('#btnLetter').length)
+            {
+                $('#btnLetter').show();
+                $('#btnLetter').css('visibility', 'visible');
+                if(!($('#MODE').val() == 1 || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
+                {
+                    $('#btnLetter').hide();
+                }
+            }
+        }
+
+        function AddIndividual() {
+            $("#showAddIndividual").modal('show');
+        }
+
+        function SaveIndividual(){
+            $("frmsaveIndividual").submit();
+        }
+
+        function AddCompany() {
+            $("#showAddCompany").modal('show');
+        }
+
+        function SaveCompany(){
+            $("frmsaveCompany").submit();
+        }
+
+        function AddCatatan() {
+            $("#showCatatan").modal('show');
+        }
+
+        function addComment() {
+            $("#showComment").modal('show');
+        }
+
+        function SaveComment() {
+            $("frmsaveComment").submit();
+        }
+
+        function showRouteUnitReply(item) {
+            var rID = $(item).attr('data-id');
+            //console.log(rID);
+            $('#routeID').val(rID);
+            //console.log($('#routeID').val());
+
+            $("#showUnitReply").modal('show');
+        }
+
+        function SaveUnitReply() {
+            $("frmsaveRouteComment").submit();
+        }
+
+        function addPremiseType() {
+            $("#showAddPremiseType").modal('show');
+        }
+
+        function savePremiseType(){
+            $("frmsavePremiseType").submit();
+        }
+
+        function AddBannerObject() {
+            $("#showAddBannerObject").modal('show');
+
+            //Form input control modes
+            $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+                if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                    event.preventDefault();
+                }
+            });
+
+            $(".allowinteger").on("keypress keyup blur", function (event) {
+                $(this).val($(this).val().replace(/[^0-9]/g, ''));
+                if ((event.which != 46) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+                    event.preventDefault();
+                }
+            });
+        }
+
+        function SaveBannerObjects(){
+            $("frmsaveBannerObject").submit();
+        }
+    </script>
+
+
+}

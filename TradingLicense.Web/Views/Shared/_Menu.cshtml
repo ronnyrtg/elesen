@@ -14,7 +14,7 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    
+                    <li>@Html.ActionLink("Profail Lesen (Test)", "ProfileList", "Profile")</li>
                     <li>@Html.ActionLink("Senarai Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Senarai Syarikat (Test)", "Company", "Master")</li>
                 </ul>
@@ -32,6 +32,7 @@
                     <li>@Html.ActionLink("Daftar Individu (Test)", "Individual", "Master")</li>
                     <li>@Html.ActionLink("Daftar Syarikat (Test)", "Company", "Master")</li>
                     <li>@Html.ActionLink("Permohonan Baru (Test)", "Application", "Application")</li>
+                    <li>@Html.ActionLink("Mesyuarat (Test)", "Meeting", "Application")</li>
                 </ul>
             </li>
 }
@@ -67,18 +68,11 @@
                     <li>@Html.ActionLink("Lokasi (Test)", "Location", "Master")</li>
                     <li>@Html.ActionLink("Jalan (Test)", "Road", "Master")</li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#">Senarai Kumpulan</a></li>
                     <li>@Html.ActionLink("Jenis Lesen (Test)", "LicenseType", "Master")</li>
                     <li>@Html.ActionLink("Jenis-Jenis Lesen Tred, Perniagaan dan Perindustrian (Test)", "Sector", "Master")</li>
-                    <li>@Html.ActionLink("Jenis-Jenis Tempat Hiburan (Test)", "EntmtPremiseType", "Application")</li>
+                    <li>@Html.ActionLink("Jenis-Jenis Tempat Hiburan (Test)", "EntmtPremiseFee", "Application")</li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("Kod Perniagaan (Test)", "BusinessCode", "Application")</li>
-                   
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#">Dokumen Wajib</a></li>
-                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Jenis Lesen (Test)", "RDLinkLT", "Application")</li>
-                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Jenis Perniagaan (Test)", "RDLinkBT", "Application")</li>
-                    <li>@Html.ActionLink("Dokumen Wajib Mengikut Kod Perniagaan (Test)", "RDLinkBC", "Application")</li>
+                    <li>@Html.ActionLink("Kod Perniagaan (Test)", "BusinessCode", "Application")</li>                  
                     <li role="separator" class="divider"></li>
                     <li>@Html.ActionLink("Jenis Perniagaan (Test)", "BusinessType", "Master")</li>
                     <li>@Html.ActionLink("Senarai Cuti (Test)", "Holiday", "Master")</li>
@@ -104,31 +98,37 @@
                 <ul class="dropdown-menu">
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel))
                     {
-                    <li>@Html.ActionLink("Received Applications", "ReceivedApplication", "Report")</li>
+                    //<li>@Html.ActionLink("Received Applications", "ReceivedApplication", "Report")</li>
+                    <li><a href="#">Received Applications</a></li>
                     }
                     @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Reporting, SystemEnum.PageRight.CrudLevel2))
                     {
-                    <li>@Html.ActionLink("License/Business Type Master", "LicenseBusinessTypeMaster", "Report")</li>
-                    <li>@Html.ActionLink("Zone Master", "ZoneMaster", "Report")</li>
-                    <li>@Html.ActionLink("Subzone Master", "SubzoneMaster", "Report")</li>
-                    <li>@Html.ActionLink("Road Master", "RoadMaster", "Report")</li>
-                    <li>@Html.ActionLink("Citizen Master", "CitizenMater", "Report")</li>
-                    <li>@Html.ActionLink("Race Master", "RaceMaster", "Report")</li>
-                    <li>@Html.ActionLink("Bank Master", "BankMaster", "Report")</li>
+                    <li>@Html.ActionLink("License/Business Type Master (Test)", "LicenseBusinessTypeMaster", "Report")</li>
+                    <li>@Html.ActionLink("Zone Master (Test)", "ZoneMaster", "Report")</li>
+                    <li>@Html.ActionLink("Subzone Master (Test)", "SubzoneMaster", "Report")</li>
+                    <li>@Html.ActionLink("Road Master (Test)", "RoadMaster", "Report")</li>
+                    <li>@Html.ActionLink("Race Master (Test)", "RaceMaster", "Report")</li>
+                    <li>@Html.ActionLink("Citizen Master (Test)", "CitizenMaster", "Report")</li>
                     <li>@Html.ActionLink("Owner Master", "OwnerMaster", "Report")</li>
                     <li>@Html.ActionLink("Joint Owner", "JointOwner", "Report")</li>
-                    <li>@Html.ActionLink("Payment Transaction Listing", "PaymentTransaction", "Report")</li>
-                    <li>@Html.ActionLink("Payment Collection Listing", "PaymentCollection", "Report")</li>
-                    <li>@Html.ActionLink("Payment Inquiry Listing Paid", "PaymentInquiryPaid", "Report")</li>
-                    <li>@Html.ActionLink("Payment Inquiry Listing Unpaid", "PaymentInquiryUnpaid", "Report")</li>
+                    <li>@Html.ActionLink("Bank Master (Test)", "BankMaster", "Report")</li>
+                    <li>@Html.ActionLink("Payment Transaction Listing (Test)", "PaymentTransaction", "Report")</li>
+                    <li>@Html.ActionLink("Payment Collection Listing (Test)", "PaymentCollection", "Report")</li>
+                    <li>@Html.ActionLink("Payment Inquiry Listing Paid (Test)", "PaymentInquiryPaid", "Report")</li>
+                    <li>@Html.ActionLink("Payment Inquiry Listing Unpaid (Test)", "PaymentInquiryUnpaid", "Report")</li>
                     <li>@Html.ActionLink("Duration Report", "Duration", "Report")</li>
                     <li>@Html.ActionLink("Status Permohonan Lesen", "ApplicationStatus", "Report")</li>
                     <li>@Html.ActionLink("Senarai Keputusan Pembaharuan", "RenewalStatusResult", "Report")</li>
-                    <li>@Html.ActionLink("Analisa Pemohon Lesen", "ApplicationStatusStats", "Report")</li>
-                    <li>@Html.ActionLink("Analisa Lokasi Permohonan Lesen", "ApplicationLocationStatus", "Report")</li>
+                    //<li>@Html.ActionLink("Analisa Pemohon Lesen", "ApplicationStatusStats", "Report")</li>
+                    <li><a href="#">Analisa Pemohon Lesen</a></li>
+                    //<li>@Html.ActionLink("Analisa Lokasi Permohonan Lesen", "ApplicationLocationStatus", "Report")</li>
+                    <li><a href="#">Analisa Lokasi Permohonan Lesen</a></li>
                     <li>@Html.ActionLink("Senarai Perniagaan", "BusinessListing", "Report")</li>
+                    <li><a href="#">Analisa Lokasi Permohonan Lesen</a></li>
                     <li>@Html.ActionLink("Status Pergerakan Permohonan Lesen", "ApplicationStatus", "Report")</li>
-                    <li>@Html.ActionLink("Laporan Kod Perniagaan", "BusinessCode", "Report")</li>
+                    <li><a href="#">Status Pergerakan Permohonan Lesen</a></li>
+                    //<li>@Html.ActionLink("Laporan Kod Perniagaan", "BusinessCode", "Report")</li>
+                    <li><a href="#">Laporan Kod Perniagaan</a></li>
                     }
                 </ul>
             </li>

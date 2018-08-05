@@ -56,8 +56,14 @@
     <Compile Include="AccessPageModel.cs" />
     <Compile Include="AddressModel.cs" />
     <Compile Include="ApplicationModel.cs" />
+    <Compile Include="APP_L_MTModel.cs" />
     <Compile Include="BusinessCodeModel.cs" />
     <Compile Include="BusinessTypeModel.cs" />
+    <Compile Include="CatatanModel.cs" />
+    <Compile Include="CitizenModel.cs" />
+    <Compile Include="BankModel.cs" />
+    <Compile Include="PaymentModel.cs" />
+    <Compile Include="SubzoneModel.cs" />
     <Compile Include="LicenseTypeModel.cs" />
     <Compile Include="ManageIndividualModel.cs" />
     <Compile Include="AttachmentModel.cs" />
@@ -79,8 +85,6 @@
     <Compile Include="RD_L_BCModel.cs" />
     <Compile Include="RouteUnitModel.cs" />
     <Compile Include="PageRoleAccessModel.cs" />
-    <Compile Include="PaymentDueModel.cs" />
-    <Compile Include="PaymentReceivedModel.cs" />
     <Compile Include="PremiseTypeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaceModel.cs" />

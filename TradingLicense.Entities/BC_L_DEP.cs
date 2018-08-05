@@ -8,10 +8,10 @@ namespace TradingLicense.Entities
         [Key]
         public int BC_L_DEPID { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public int BC_ID { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public int DEP_ID { get; set; }
 
         public virtual BC BC { get; set; }

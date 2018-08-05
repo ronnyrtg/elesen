@@ -13,14 +13,14 @@ namespace TradingLicense.Model
         public float? FEE { get; set; }
         [Required(ErrorMessage = "Sila masukkan lokasi iklan")]
         [StringLength(255)]
-        public string ADDRA1 { get; set; }
-        public string ADDRA2 { get; set; }
-        public string ADDRA3 { get; set; }
-        public string ADDRA4 { get; set; }
+        public string ADDRB1 { get; set; }
+        public string ADDRB2 { get; set; }
+        public string ADDRB3 { get; set; }
+        public string ADDRB4 { get; set; }
         [Required(ErrorMessage = "Sila pilih kod iklan")]
         public int BC_ID { get; set; }
 
-        public string C_R_DESC { get; set; }
+        public string CodeRefDesc { get; set; }
     }
     public class SelectedBannerObjectModel
     {

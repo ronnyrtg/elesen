@@ -7,7 +7,7 @@
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
     {
-        var businessType = ctx.BusinessTypes.ToList();
+        var businessType = ctx.BTs.ToList();
         businessTypeList = Mapper.Map<List<TradingLicense.Model.BusinessTypeModel>>(businessType);
     }
 }
@@ -22,13 +22,13 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmCompany", id = "frmCompany" }))
     {
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.CompanyID)
+        @Html.HiddenFor(m => m.COMPANYID)
 
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="form-group">
                     <div class="control-label">Jenis Perniagaan<span class="cfont">*</span></div>
-                    @Html.DropDownListFor(m => m.BusinessTypeID, new SelectList(businessTypeList.OrderBy(x => x.BusinessTypeDesc), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
+                    @Html.DropDownListFor(m => m.BT_ID, new SelectList(businessTypeList.OrderBy(x => x.BT_DESC), "BusinessTypeID", "BusinessTypeDesc"), "Pilih Jenis Perniagaan", new { @class = "form-control", @onchange = "businessTypeChange()" })
                 </div>
             </div>
         </div>
@@ -36,8 +36,8 @@
             <div class="col-sm-12 col-md-6 col-lg-3">
                 <div class="form-group">
                     <div class="control-label">Nama Syarikat/Pertubuhan<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", @maxlength = "100" })
-                    @Html.ValidationMessageFor(m => m.CompanyName)
+                    @Html.TextBoxFor(m => m.C_NAME, new { @class = "form-control", @maxlength = "100" })
+                    @Html.ValidationMessageFor(m => m.C_NAME)
                 </div>
             </div>
         </div>
@@ -55,28 +55,28 @@
             <div class="col-sm-12 col-md-6 col-lg-3">
                 <div class="form-group">
                     <div class="control-label">Alamat Premis<span class="cfont">*</span></div>
-                    @Html.TextBoxFor(m => m.Addra1, new { @class = "form-control" })
+                    @Html.TextBoxFor(m => m.ADDRA1, new { @class = "form-control" })
                 </div>
             </div>
         </div>
             <div class="row">
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
-                        @Html.TextBoxFor(m => m.Addra2, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.ADDRA2, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
-                        @Html.TextBoxFor(m => m.Addra3, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.ADDRA3, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
-                        @Html.TextBoxFor(m => m.Addra4, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.ADDRA4, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Poskod<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.PcodeA, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.PCODEA, new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Negeri<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.StateA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
+                        @Html.TextBoxFor(m => m.STATEA, new { @Value = "Wilayah Persekutuan Labuan", @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -100,8 +100,8 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">No. Telefon Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.CompanyPhone, new { @class = "form-control", @maxlength = "50" })
-                        @Html.ValidationMessageFor(m => m.CompanyPhone)
+                        @Html.TextBoxFor(m => m.C_PHONE, new { @class = "form-control", @maxlength = "50" })
+                        @Html.ValidationMessageFor(m => m.C_PHONE)
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">No. Pendaftaran Perniagaan/Syarikat<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.RegistrationNo, new { @class = "form-control", @maxlength = "50" })
+                        @Html.TextBoxFor(m => m.REG_NO, new { @class = "form-control", @maxlength = "50" })
                     </div>
                 </div>
             </div>
@@ -117,8 +117,8 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Tarikh Pendaftaran<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.SSMRegDate, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.SSMRegDate)
+                        @Html.TextBoxFor(m => m.SSMREGDATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.SSMREGDATE)
                     </div>
                 </div>
             </div>
@@ -126,8 +126,8 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Tarikh Habis Tempoh<span class="cfont">*</span></div>
-                        @Html.TextBoxFor(m => m.SSMExpDate, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                        @Html.ValidationMessageFor(m => m.SSMExpDate)
+                        @Html.TextBoxFor(m => m.SSMEXPDATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.SSMEXPDATE)
                     </div>
                 </div>
             </div>
@@ -137,7 +137,7 @@
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <div class="control-label">Modal Dibenarkan (RM)</div>
-                            @Html.TextBoxFor(m => m.AuthorisedCapital, new { @class = "form-control allownumericwithdecimal" })
+                            @Html.TextBoxFor(m => m.A_CAPITAL, new { @class = "form-control allownumericwithdecimal" })
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <div class="control-label">Modal Terbitan (RM)</div>
-                            @Html.TextBoxFor(m => m.IssuedCapital, new { @class = "form-control allownumericwithdecimal" })
+                            @Html.TextBoxFor(m => m.I_CAPITAL, new { @class = "form-control allownumericwithdecimal" })
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <div class="control-label">Modal Berbayar Tunai (RM)</div>
-                            @Html.TextBoxFor(m => m.PaidUpCapitalCash, new { @class = "form-control allownumericwithdecimal" })
+                            @Html.TextBoxFor(m => m.PU_C_CASH, new { @class = "form-control allownumericwithdecimal" })
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <div class="control-label">Modal Berbayar Selainnya (RM)</div>
-                            @Html.TextBoxFor(m => m.PaidUpCapitalOther, new { @class = "form-control allownumericwithdecimal" })
+                            @Html.TextBoxFor(m => m.PU_C_O, new { @class = "form-control allownumericwithdecimal" })
                         </div>
                     </div>
                 </div>           
@@ -172,7 +172,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Bank/Institusi kewangan (RM)</div>
-                        @Html.TextBoxFor(m => m.BankSource, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.TextBoxFor(m => m.BANK_S, new { @class = "form-control allownumericwithdecimal" })
                     </div>
                 </div>
             </div>
@@ -180,7 +180,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Simpanan (RM)</div>
-                        @Html.TextBoxFor(m => m.DepositSource, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.TextBoxFor(m => m.DEPOSIT_S, new { @class = "form-control allownumericwithdecimal" })
                     </div>
                 </div>
             </div>
@@ -188,7 +188,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Pinjaman (RM)</div>
-                        @Html.TextBoxFor(m => m.LoanSource, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.TextBoxFor(m => m.LOAN_S, new { @class = "form-control allownumericwithdecimal" })
                     </div>
                 </div>
             </div>
@@ -196,7 +196,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Pinjaman daripada siapa (Nama)</div>
-                        @Html.TextBoxFor(m => m.LoanSourceName, new { @class = "form-control", @maxlength = "50" })
+                        @Html.TextBoxFor(m => m.LOAN_S_NAME, new { @class = "form-control", @maxlength = "50" })
                     </div>
                 </div>
             </div>
@@ -204,7 +204,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Lain-lain (RM)</div>
-                        @Html.TextBoxFor(m => m.OtherSource, new { @class = "form-control allownumericwithdecimal" })
+                        @Html.TextBoxFor(m => m.OTHER_S, new { @class = "form-control allownumericwithdecimal" })
                     </div>
                 </div>
             </div>
@@ -212,7 +212,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <div class="control-label">Jika ada sumber lain-lain, sila nyatakan</div>
-                        @Html.TextBoxFor(m => m.OtherSourceName, new { @class = "form-control", @maxlength = "50" })
+                        @Html.TextBoxFor(m => m.OTHER_S_NAME, new { @class = "form-control", @maxlength = "50" })
                     </div>
                 </div>
             </div>
@@ -250,9 +250,9 @@
         errorMessage(actionError);
     }
 
-    if(@Model.BusinessTypeID > 1)
+    if(@Model.BT_ID > 1)
     {
-        $("#BusinessTypeID").val(@Model.BusinessTypeID);
+        $("#BusinessTypeID").val(@Model.BT_ID);
     }
 
     function businessTypeChange() {

@@ -20,10 +20,13 @@ namespace TradingLicense.Data
         public DbSet<INDIVIDUAL> INDIVIDUALs { get; set; }
         public DbSet<IND_L_COM> IND_L_COMs { get; set; }  // Individual Link Company
         public DbSet<IND_L_ATT> IND_L_ATTs { get; set; }  // Individual Link Attachments
-        public DbSet<ZONE> ZONEs { get; set; }
+        public DbSet<ZONE_M> ZONEs { get; set; }
+        public DbSet<SUBZONE_M> SUBZONEs { get; set; }
         public DbSet<LOCATION> LOCATIONs { get; set; }
-        public DbSet<ROAD> ROADs { get; set; }
-        public DbSet<RACE> RACEs { get; set; }
+        public DbSet<ROAD_M> ROADs { get; set; }
+        public DbSet<RACE_M> RACEs { get; set; }
+        public DbSet<BANK_M> BANKs { get; set; }
+        public DbSet<CITIZEN_M> CITIZENs { get; set; }
 
         //Combined Applications
         public DbSet<APPLICATION> APPLICATIONs { get; set; }
@@ -38,6 +41,9 @@ namespace TradingLicense.Data
         public DbSet<APP_L_IND> APP_L_INDs { get; set; }
         public DbSet<APP_L_RD> APP_L_RDs { get; set; }
         public DbSet<APP_L_BC> APP_L_BCs { get; set; }
+        public DbSet<APP_L_MT> APP_L_MTs { get; set; }
+        public DbSet<PROFILE> PROFILEs { get; set; }
+        public DbSet<APP_LOG> APP_LOGs { get; set; }
 
 
         //Banner Application
@@ -51,10 +57,10 @@ namespace TradingLicense.Data
 
         //Common fields for all applications
         public DbSet<APPSTATUS> APPSTATUS { get; set; }
-        public DbSet<PAY_DUE> PAY_DUEs { get; set; }
-        public DbSet<PAY_REC> PAY_RECs { get; set; }
+        public DbSet<PAYTRAN_M> PAYTRAN_Ms { get; set; }
         public DbSet<ROUTEUNIT> ROUTEUNITs { get; set; }
         public DbSet<COMMENT> COMMENTs { get; set; }
+        public DbSet<CATATAN> CATATANs { get; set; }
         public DbSet<ATTACHMENT> ATTACHMENTs { get; set; }
 
         //User related

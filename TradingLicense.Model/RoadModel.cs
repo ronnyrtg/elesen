@@ -9,11 +9,11 @@ namespace TradingLicense.Model
         [Display(Name = "Road Code")]
         [Required(ErrorMessage = "Please enter Road Code")]
         [StringLength(5)]
-        public string ROADCODE { get; set; }
+        public string ROAD_CODE { get; set; }
         [Display(Name = "Road Description")]
         [Required(ErrorMessage = "Please enter Road Description")]
         [StringLength(255)]
-        public string ROADDESC { get; set; }
+        public string ROAD_DESC { get; set; }
         [Display(Name = "Is Active")]
         public bool ACTIVE { get; set; }
     }

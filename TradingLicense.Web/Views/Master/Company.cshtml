@@ -90,30 +90,30 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Nama Syarikat", "data": "CompanyName" },
-                    { "title": "Nombor Pendaftaran", "data": "RegistrationNo" },
-                    { "title": "Tarikh Tamat", "data": "SSMExpDate", "render": renderDate },
+                    { "title": "Nama Syarikat", "data": "C_NAME" },
+                    { "title": "Nombor Pendaftaran", "data": "REG_NO" },
+                    { "title": "Tarikh Tamat", "data": "SSMEXPDATE", "render": renderDate },
                     {
-                     "title": "Active",
-                     "data": "Active",
+                     "title": "Aktif",
+                     "data": "ACTIVE",
                      "render": function (data, type, row) {
-                         if (data) {
-                             return '<label class="label label-success">Active</label>';
+                         if (!data) {
+                             return '<label class="label label-success">Aktif</label>';
                          }
                          else {
-                             return '<label class="label label-danger">InActive</label>';
+                             return '<label class="label label-danger">Tidak Aktif</label>';
                          }
                      },
                      "width": "10%",
                      "orderable": true,
                     },
                     {
-                    "title": "Action",
+                    "title": "Tindakan",
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageCompany", "Master")?Id=' + row["CompanyID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["CompanyID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageCompany", "Master")?Id=' + row["COMPANYID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["COMPANYID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                         },
                             "width": "80px",

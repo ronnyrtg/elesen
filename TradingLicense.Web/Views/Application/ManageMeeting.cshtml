@@ -1,0 +1,165 @@
+﻿@model TradingLicense.Model.APP_L_MTModel
+@using TradingLicense.Infrastructure;
+@using TradingLicense.Web.Classes;
+@{
+    ViewBag.Title = "Manage Meeting";
+}
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">        
+        <h4 id="headerTitle">Kemaskini Senarai Permohonan Dalam Mesyuarat</h4>           
+    </div>
+    <div class="body">
+    @using (Html.BeginForm("AddAppToMeeting", "Application", FormMethod.Post, new { name = "frmManageMeeting", id = "frmManageMeeting" }))
+    {
+        @Html.AntiForgeryToken()
+        
+
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Nombor Rujukan Mesyuarat</div>
+                    @Html.TextBoxFor(m => m.MT_REF, null, new { @class = "form-control" })
+                    <span class="text-danger BannerCodeVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Tajuk Mesyuarat</div>
+                    @Html.TextBoxFor(m => m.MT_DESC, null, new { @class = "form-control" })
+                    <span class="text-danger LocationVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label">Tarikh Mesyuarat</div>
+                    @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                    <span class="text-danger LocationVal"></span>
+                </div>
+            </div>
+        </div>
+        <div class="grid" id="divMeetingTable">
+            <table cellspacing="0" class="table table-striped" id="tblMeeting"></table>
+        </div>
+        <input type="Submit" class="btn btn-primary" value="Hantar" name="Submit" />
+        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+    }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        function back() {
+            var link = '@Url.Action("Meeting", "Application")';
+            window.location.href = link;
+        }
+
+        $(function () {
+            // This will make every element with the class "date-picker" into a DatePicker element
+            $('.date-picker').datepicker({dateFormat: 'dd/M/yy'});
+        })
+
+        function bindSearch() {
+            var param = {};
+            param["businessTypeID"] = $("#BT_ID").val();
+
+            if ($("#APP_ID").val() > 0) {
+                param["ApplicationID"] = $("#APP_ID").val();
+            } else {
+                param["ApplicationID"] = "";
+            }
+
+            return param;
+        }
+
+        $(document).ready(function bindTable() {
+
+            if ($.fn.DataTable.isDataTable("#tblMeeting")) {
+                $('#tblMeeting').dataTable().fnDestroy();
+                $('#divMeetingTable').html('<table class="table table-striped" width="100%"  id="tblMeeting"></table>');
+            }
+
+            table = $("#tblMeeting").dataTable({
+                "autoWidth": false,
+                "searching": false,
+                "paging": true,
+                "sPaginationType": "full_numbers",
+                "language": {
+                    "lengthMenu": "Page Size : _MENU_ ",
+                    "info": "Records _START_ to _END_ of (_TOTAL_)",
+                    "emptyTable": "No Record(s) Found"
+                },
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 10,
+                "ajax": {
+                    url: '@Url.Action("ManageMeeting", "Application")',
+                    type: "POST",
+                    data: bindSearch()
+                },
+                "columns": [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false,
+                        "title": "No.",
+                        "data": null,
+                        "render": function (data, type, full, meta) {
+                            return meta.settings._iDisplayStart + meta.row + 1;
+                        }
+                    },
+                    { "title": "No. Rujukan", "data": "REF_NO" },
+                    { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
+                    {
+                        "title": "Kelulusan",
+                        "data": "MODE",
+                        "render": function (data, type, row) {
+                            switch (data) {
+                                case 1: return 'Ekspres'; break;
+                                case 2: return 'Pengarah'; break;
+                                case 3: return 'Biasa'; break;
+                                case 4: return 'Mesyuarat'; break;
+                                default: return 'N/A';
+                            }
+                        }
+                    },
+                    { "title": "Syarikat", "data": "CompanyName" },
+                    { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
+                    { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
+                    {
+                        "title": "Pilih",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var appendstring = '';
+                            appendstring += '<div class="checkbox"> <label for="chkreqdoc_' + row["APP_ID"] + '"> <input id="chkreqdoc_' + row["APP_ID"] + '"  value="' + row["APP_ID"] + '" name="AppId[]" class="chkreqdoc" type = "checkbox" /><span class="pointer"><img src="../images/checkmark.svg" alt="Checkmark" width="20px" height="20px" /></span></label> </div>';
+                            return appendstring
+                        },
+                        "width": "100px",
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                "drawCallback": function (settings) {
+                    //hide paging and info when empty datattable
+                    var api = this.api();
+                    if (api.rows({ page: 'current' }).data().length <= 0) {
+                        $('#tblMeeting_info').hide();
+                        $('#tblMeeting_paginate').hide();
+                        $('#tblMeeting_length').hide();
+                    }
+                    else {
+                        $('#tblMeeting_info').show();
+                        $('#tblMeeting_paginate').show();
+                        $('#tblMeeting_length').show();
+                    }
+                    bindSortingArrow();
+                }
+            });
+        });
+    </script>
+}

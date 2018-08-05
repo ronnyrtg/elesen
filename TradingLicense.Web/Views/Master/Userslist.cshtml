@@ -81,12 +81,12 @@
                             return meta.settings._iDisplayStart + meta.row + 1;
                         }
                     },
-                    { "title": "Nama Penuh", "data": "FullName" },
-                    { "title": "Nama Pengguna", "data": "Username" },
-                    { "title": "Emel", "data": "Email" },
+                    { "title": "Nama Penuh", "data": "FULLNAME" },
+                    { "title": "Nama Pengguna", "data": "USERNAME" },
+                    { "title": "Emel", "data": "EMAIL" },
                     {
                         "title": "Aktif",
-                        "data": "Active",
+                        "data": "ACTIVE",
                         "render": function (data, type, row) {
                             if (data) {
                                 return '<label class="label label-success">Aktif</label>';
@@ -103,8 +103,8 @@
                     "data": null,
                     "render": function (data, type, row) {
                         var appendstring = '';
-                        appendstring += '<a  href="@Url.Action("ManageUsers", "Master")?Id=' + row["UsersID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
-                        appendstring += '<a href="javascript:void(0);" data-id="' + row["UsersID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
+                        appendstring += '<a  href="@Url.Action("ManageUsers", "Master")?Id=' + row["USERSID"] + '" title="Edit"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; '
+                        appendstring += '<a href="javascript:void(0);" data-id="' + row["USERSID"] + '" onclick="bindDelete(this);" title="Delete"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
                         return appendstring
                     },
                             "width": "80px",

@@ -84,59 +84,105 @@
             meeting = 7,
 
             /// <summary>
+            /// scheduled for meeting
+            /// </summary>
+            ScheduledMeeting = 8,
+
+            /// <summary>
+            /// for next meeting
+            /// </summary>
+            meetingKIV = 9,
+
+            /// <summary>
             /// for set CEO check
             /// </summary>
-            CEOcheck = 8,
+            CEOcheck = 10,
+
+            /// <summary>
+            /// for set meeting
+            /// </summary>
+            CEOKIV = 11,
 
             /// <summary>
             /// for set Letter of notification (Approved)
             /// </summary>
-            LetterofnotificationApproved = 9,
+            LetterofnotificationApproved = 12,
 
             /// <summary>
             /// for set Letter of notification (Rejected)
             /// </summary>
-            LetterofnotificationRejected = 10,
+            LetterofnotificationRejected = 13,
 
             /// <summary>
             /// for set Letter of notification (Approved with Terms & Conditions)
             /// </summary>
-            LetterofnotificationApprovedwithTermsConditions = 11,
+            LetterofnotificationApprovedwithTermsConditions = 14,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Pendingpayment = 12,
+            Pendingpayment = 15,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Paid = 13,
-
-            /// <summary>
-            /// for set License Generated
-            /// </summary>
-            LicenseGenerated = 14,
+            Paid = 16,
 
             /// <summary>
             /// for set Complete Status
             /// </summary>
-            Complete = 15,
+            Complete = 17,
 
             /// <summary>
-            /// for set supervisor check
+            /// express save draft
             /// </summary>
-            supervisorcheck = 24,
+            expDraft = 18,
 
             /// <summary>
-            /// for set KIV at Meeting
+            /// express create open item receipting
             /// </summary>
-            KIVatMeeting = 25,
+            expPendingPayment = 19,
 
             /// <summary>
-            /// for set KIV at CEO
+            /// express Paid
             /// </summary>
-            KIVatCEO = 26,
+            expPaid = 20,
+
+            /// <summary>
+            /// express send to clerk
+            /// </summary>
+            expSubmitClerk = 21,
+
+            /// <summary>
+            ///express routing
+            /// </summary>
+            expRoute = 22,
+
+            /// <summary>
+            /// express send to meeting
+            /// </summary>
+            expMeeting = 23,
+
+            /// <summary>
+            /// express scheduled for meeting
+            /// </summary>
+            expScheduledMeeting = 24,
+
+            /// <summary>
+            /// express Send Letter of Reminder
+            /// </summary>
+            expLetter = 25,
+
+            /// <summary>
+            /// express Approved
+            /// </summary>
+            expApproved = 26,
+
+            /// <summary>
+            /// express not comply
+            /// </summary>
+            expReject = 27,
+
         }
 
         public enum RollTemplate
@@ -185,39 +231,54 @@
         public enum ApplicationTypeID
         {
             /// <summary>
-            /// for PremiseApplication
+            /// Lesen Tred, Perniagaan & Perindustrian
             /// </summary>
             TradeApplication = 1,
 
             /// <summary>
-            /// for BannerApplication
+            /// Lesen Petempatan Makanan
             /// </summary>
-            BannerApplication = 2,
+            FoodApplication = 2,
 
             /// <summary>
-            /// for HawkerApplication
+            /// Lesen Hotel & Rumah Tumpangan
             /// </summary>
-            HawkerApplication = 3,
+            HotelApplication = 3,
 
             /// <summary>
-            /// for StallApplication
+            /// Lesen Pengurusan Skrap
             /// </summary>
-            StallApplication = 4,
+            ScrapApplication = 4,
 
             /// <summary>
-            /// for LiquorApplication
+            /// lesen Iklan
             /// </summary>
-            LiquorApplication = 5,
+            BannerApplication = 5,
 
             /// <summary>
-            /// for MoneyLenderApplication
+            /// Lesen Penjaja
             /// </summary>
-            MLApplication = 6,
+            HawkerApplication = 6,
 
             /// <summary>
-            /// for EntertainmentApplication
+            /// LEsen Pasar
             /// </summary>
-            EntmtApplication = 7,
+            StallApplication = 7,
+
+            /// <summary>
+            /// Lesen Minuman Keras
+            /// </summary>
+            LiquorApplication = 8,
+
+            /// <summary>
+            /// Lesen Pemberi Pinjam Wang
+            /// </summary>
+            MLApplication = 9,
+
+            /// <summary>
+            /// Lesen Hiburan
+            /// </summary>
+            EntmtApplication = 10,
         }
 
         public enum Mode
