@@ -96,7 +96,7 @@
             @Html.HiddenFor(m => m.UPDATED_BY)
             @Html.HiddenFor(m => m.TOTAL_FEE)
 
-            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.ScheduledMeeting && Model.APPSTATUSID != (int)Enums.PAStausenum.expScheduledMeeting)
+            if (Model.APPSTATUSID != (int)Enums.PAStausenum.CEOcheck && Model.APPSTATUSID != (int)Enums.PAStausenum.ScheduledMeeting && Model.APPSTATUSID != (int)Enums.PAStausenum.expScheduledMeeting && Model.APPSTATUSID != (int)Enums.PAStausenum.directorcheck)
             {
                 @Html.HiddenFor(m => m.SubmitType)
             }
@@ -719,14 +719,14 @@
             {
                 List<SelectListItem>
                 supportList = new List<SelectListItem>();
-                supportList.Add(new SelectListItem { Text = "Disyorkan", Value = "1" });
-                supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = "0" });
+                supportList.Add(new SelectListItem { Text = "Disyorkan", Value = TradingLicense.Web.Controllers.ApplicationController.OnSubmit });
+                supportList.Add(new SelectListItem { Text = "Tidak Disyorkan", Value = TradingLicense.Web.Controllers.ApplicationController.OnRejected });
 
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <div class="control-label">Keputusan Pengarah</div>
-                            @Html.DropDownListFor(m => m.Supported, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.DropDownListFor(m => m.SubmitType, new SelectList(supportList, "Value", "Text"), new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
@@ -863,11 +863,13 @@
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                 <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
@@ -891,11 +893,13 @@
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                 <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationRejected:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />                                                
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
@@ -946,6 +950,7 @@
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                 <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
@@ -970,6 +975,7 @@
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationApproved:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
                                                 <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />

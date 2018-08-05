@@ -78,7 +78,10 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.LicenseTypeDesc, opt => opt.MapFrom(s => s.APPLICATION.LIC_TYPE.LIC_TYPEDESC))
                             .ForMember(dest => dest.Result, opt => opt.MapFrom(s => s.APPLICATION.APPSTATUSID))
                             .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
-
+                cfg.CreateMap<APP_LOG, AppLogModel>()
+                            .ForMember(dest => dest.ReferenceNo, opt => opt.MapFrom(s => s.APPLICATION.REF_NO))
+                            .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))                            
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
 
                 //Entertainment License related
                 cfg.CreateMap<E_P_FEE, EntmtPremiseFeeModel>();
