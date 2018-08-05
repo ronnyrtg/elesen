@@ -22,10 +22,12 @@
         var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
 
-        if (Model.Individual != null && Model.Individual.ATT_ID != 0)
+        if (Model.Individual.ATT_ID != null && Model.Individual.ATT_ID != 0)
         {
-            profilePic = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.Individual.ATT_ID).ToList()[0].FILENAME;
+            var profile = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.Individual.ATT_ID).SingleOrDefault();
+            profilePic = profile.ToString();
         }
+
     }
 
     string individualLoc = string.Empty;
@@ -66,7 +68,7 @@
                         </div>
                         @if (profilePic != null && profilePic !="")
                             {
-                            int value = Model.Individual.IND_ID;
+                            int value = Model.Individual.IND_ID;                            
                             string text = value.ToString("D6");
                             <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
                         }
@@ -151,7 +153,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Nama Syarikat</div>
-                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "CompanyName"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
+                        @Html.DropDownList("Company", new SelectList(companiesList, "CompanyID", "C_NAME"), "Select Company", new { @id = "companyList", @class = "form-control", multiple = "true", onchange = "changeCompany()" })
                         @Html.HiddenFor(model => model.CompanyIds)
                     </div>
                 </div>
