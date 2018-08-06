@@ -9,16 +9,7 @@
     <div class="header">
         <div class="row">
             <div class="col-lg-10">
-                <h4>Senarai Permohonan Baru</h4>
-            </div>
-            <div class="col-lg-2">
-                @if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel2))
-                {
-                    if (userRollTemplate <= (int)Enums.RollTemplate.DeskOfficer)
-                    {
-                        <button type="button" class="btn btn-primary" onclick="addApplication();">Permohonan Baru</button>
-                    }
-                }
+                <h4>Case Log</h4>
             </div>
         </div>
     </div>
@@ -41,6 +32,13 @@
     <div class="grid" id="divApplicationTable">
         <table cellspacing="0" class="table table-striped" id="tblApplication"></table>
     </div>
+    <div class="filter-block">
+        <div class="row small-gutter">
+            <div class="col-xs-4">
+                <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts{
@@ -48,7 +46,13 @@
                     var IsEdit = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel3)';
                     var IsDelete = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel4)';
                     var IsView = '@TradingLicenseCommon.HasAccess(SystemEnum.Page.Application, SystemEnum.PageRight.CrudLevel)';
-                    $(function () {
+
+        function back() {
+            var link = '@Url.Action("Application", "Application")';
+            window.location.href = link;
+        }
+
+        $(function () {
 
                         $('.form-control').keypress(function (e) {
                             if (e.which == 13) {
@@ -64,10 +68,7 @@
                         bindTable();
                     });
                     var restrictSubmittedApps = @((userRollTemplate.HasValue && (userRollTemplate.Value == (int)TradingLicense.Infrastructure.Enums.RollTemplate.RouteUnit)).ToString().ToLower());
-                    function addApplication() {
-                        var link = '@Url.Action("ManageApplication", "Application")';
-                        window.location.href = link;
-                    }
+
 
                     function bindTable() {
 
@@ -92,7 +93,7 @@
                             "serverSide": true,
                             "pageLength": 10,
                             "ajax": {
-                                url: '@Url.Action("Application", "Application")',
+                                url: '@Url.Action("ApplicationLog", "Application")',
                                 type: "POST",
                                 data: bindSearch()
                             },
@@ -107,45 +108,11 @@
                                         return meta.settings._iDisplayStart + meta.row + 1;
                                     }
                                 },
-                                { "title": "No. Rujukan", "data": "REF_NO" },
-                                { "title": "Jenis Lesen", "data": "LicenseTypeDesc" },
-                                {
-                                    "title": "Kelulusan",
-                                    "data": "MODE",
-                                    "render" : function (data, type, row) {
-                                        switch(data) {
-                                            case 1 : return 'Ekspres'; break;
-                                            case 2 : return 'Pengarah'; break;
-                                            case 3 : return 'Biasa'; break;
-                                            case 4 : return 'Mesyuarat'; break;
-                                            default  : return 'N/A';
-                                        }
-                                    }
-                                },
-                                { "title": "Syarikat", "data": "CompanyName" },
-                                { "title": "Tarikh Memohon", "data": "SUBMIT", render: renderDate },
-                                { "title": "Dikemaskini Oleh", "data": "UPDATED_BY" },
-                                { "title": "Status", "data": "StatusDesc" },
-                                {
-                                    "title": "Tindakan",
-                                    "data": null,
-                                    "render": function (data, type, row) {
-                                        var appendstring = '';
-                                        
-                                        
-                                            if (IsEdit != "False") {
-                                                appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
-                                            }
-                                            if (IsDelete != "False") {
-                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                            }
-                                        
-                                        return appendstring
-                                    },
-                                    "width": "100px",
-                                    "orderable": false,
-                                    "class": "action-icons"
-                                }
+                                { "title": "No. Rujukan", "data": "ReferenceNo" },
+                                { "title": "Status Lesen", "data": "StatusDesc" },
+                                { "title": "Tarikh", "data": "TIME_STAMP", render: renderDateTime },
+                                { "title": "Dikemaskini Oleh", "data": "FullName" },
+                                { "title": "Aktiviti", "data": "ACTIVITY" }
                             ],
                             "drawCallback": function (settings) {
                                 //hide paging and info when empty datattable
@@ -192,29 +159,7 @@
                         return isValid;
                     }
 
-                    function bindDelete(item) {
-                        var x = confirm("Are you sure you want to delete?");
-                        if (x) {
-                            $.ajax({
-                                type: "POST",
-                                url: encodeURI('@Url.Action("DeleteApplication", "Application")'),
-                                data: { "Id": $(item).attr('data-id') },
-                                cache: false,
-                                dataType: 'json',
-                                success: function (data, textStatus, XMLHttpRequest) {
-                                    if (data.success) {
-                                        bindTable();
-                                        successMessage(data.message);
-                                    }
-                                    else {
-                                        successMessage(data.message);
-                                    }
-                                },
-                                error: function (jqXHR, exception, errMsg) {
-                                }
-                            });
-                        }
-                    }
+
 
     </script>
 }

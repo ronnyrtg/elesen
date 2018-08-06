@@ -540,7 +540,7 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
-            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid || applicationModel.MODE == (int)Enums.Mode.Express)
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.MODE == (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -756,7 +756,16 @@ namespace TradingLicense.Web.Controllers
                 ctx.B_Os.Add(banner);
                 ctx.SaveChanges();
             }
-            
+
+            APP_LOG applog = new APP_LOG();
+            applog.APP_ID = applicationId;
+            applog.APPSTATUSID = applicationModel.APPSTATUSID;
+            applog.TIME_STAMP = DateTime.Now;
+            applog.USERSID = ProjectSession.UserID;
+            applog.ACTIVITY = "Edit Application";
+            ctx.APP_LOGs.Add(applog);
+            ctx.SaveChanges();
+
             applicationModel.APP_ID = applicationId;
             return true;
 
@@ -970,6 +979,15 @@ namespace TradingLicense.Web.Controllers
                 route.SUPPORT = Supported;
                 route.RECEIVER = ProjectSession.User.FULLNAME;                
                 route.REPLIED = DateTime.Now;
+                ctx.SaveChanges();
+
+                APP_LOG applog = new APP_LOG();
+                applog.APP_ID = APP_ID;
+                applog.APPSTATUSID = (int)Enums.PAStausenum.unitroute;
+                applog.TIME_STAMP = DateTime.Now;
+                applog.USERSID = ProjectSession.UserID;
+                applog.ACTIVITY = "Unit Route Answer";
+                ctx.APP_LOGs.Add(applog);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Maklumbalas berjaya dihantar.";
             }

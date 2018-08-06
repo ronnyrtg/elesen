@@ -131,8 +131,9 @@
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-                                        
-                                        
+                                            if (IsView != "False") {
+                                                appendstring += '<a  href="@Url.Action("ApplicationLog", "Application")?Id=' + row["APP_ID"] + '" title="Case Log"> <img src="@Url.Content("~/images/view.png")" alt="View Case Log" /></a>&nbsp; ';
+                                            }                                        
                                             if (IsEdit != "False") {
                                                 appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                             }
