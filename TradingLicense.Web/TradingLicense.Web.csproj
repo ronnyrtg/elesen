@@ -524,7 +524,6 @@
     <Content Include="Views\Report\ApplicationStatus.cshtml" />
     <Content Include="Views\Report\ApplicationLocationStatus.cshtml" />
     <Content Include="Views\Report\RenewalStatusResult.cshtml" />
-    <Content Include="Views\Report\BusinessListing.cshtml" />
     <Content Include="Views\Report\PaymentInquiryUnpaid.cshtml" />
     <Content Include="Views\Report\BusinessCode.cshtml" />
     <Content Include="Views\Report\ApplicationStatusStats.cshtml" />
@@ -547,6 +546,7 @@
     <Content Include="Views\Profile\ProfileList.cshtml" />
     <Content Include="Views\Profile\ViewProfile.cshtml" />
     <Content Include="Views\Report\OwnerMasterPdf.cshtml" />
+    <Content Include="Views\Application\ApplicationLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

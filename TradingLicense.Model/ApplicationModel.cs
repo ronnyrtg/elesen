@@ -59,6 +59,7 @@ namespace TradingLicense.Model
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
         public int? HELPERC { get; set; }
+        public string PREMISNO { get; set; }
 
         //Entertainment Application
         public int E_P_FEEID { get; set; }
