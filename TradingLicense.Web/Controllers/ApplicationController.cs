@@ -80,7 +80,7 @@ namespace TradingLicense.Web.Controllers
                             break;
                         case (int)RollTemplate.Clerk:
                             {
-                                query = query.Where(q => q.APPSTATUSID < (int)PAStausenum.directorcheck || q.MODE == (int)Enums.Mode.Express && q.APPSTATUSID <= (int)PAStausenum.expRoute || q.APPSTATUSID >= (int)PAStausenum.LetterofnotificationApproved || q.APPSTATUSID >= (int)PAStausenum.expLetter);
+                                query = query.Where(q => q.APPSTATUSID < (int)PAStausenum.directorcheck && q.APPSTATUSID != (int)PAStausenum.Complete || q.MODE == (int)Enums.Mode.Express && q.APPSTATUSID <= (int)PAStausenum.expRoute || q.APPSTATUSID >= (int)PAStausenum.LetterofnotificationApproved && q.APPSTATUSID != (int)PAStausenum.Complete || q.APPSTATUSID >= (int)PAStausenum.expLetter);
                             }
                             break;
                         case (int)RollTemplate.RouteUnit:
@@ -374,7 +374,22 @@ namespace TradingLicense.Web.Controllers
                                     finalStatus = PAStausenum.directorcheck;
                                     break;
                                 case (int)Mode.CEO:
-                                    finalStatus = PAStausenum.directorcheck;
+                                    if(applicationModel.APPSTATUSID == (int)PAStausenum.unitroute)
+                                    {
+                                        finalStatus = PAStausenum.directorcheck;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.LetterofnotificationApproved)
+                                    {
+                                        finalStatus = PAStausenum.Pendingpayment;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.Pendingpayment)
+                                    {
+                                        finalStatus = PAStausenum.Paid;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.Paid)
+                                    {
+                                        finalStatus = PAStausenum.Complete;
+                                    }
                                     break;
                                 case (int)Mode.Meeting:
                                     finalStatus = PAStausenum.meeting;
@@ -519,10 +534,12 @@ namespace TradingLicense.Web.Controllers
                 application.EXPIRE = DateTime.Now;
                 application.L_STATUS = "TIDAK DILULUSKAN";
             }
-            else if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid && applicationModel.MODE > 1 || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.expPaid && applicationModel.MODE == 1)
+
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.Paid && applicationModel.MODE > 1 || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.expPaid && applicationModel.MODE == 1)
             {
                 application.PAID = DateTime.Now;
             }
+
             ctx.APPLICATIONs.AddOrUpdate(application);
             ctx.SaveChanges();
 
@@ -540,7 +557,7 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
-            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.MODE == (int)Enums.Mode.Express)
+            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck || applicationModel.MODE == (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -759,10 +776,18 @@ namespace TradingLicense.Web.Controllers
 
             APP_LOG applog = new APP_LOG();
             applog.APP_ID = applicationId;
-            applog.APPSTATUSID = applicationModel.APPSTATUSID;
+            if(applicationModel.APPSTATUSID == 0)
+            {
+                applog.APPSTATUSID = 1;
+                applog.ACTIVITY = "Cipta Permohonan Baru";
+            }
+            else
+            {
+                applog.APPSTATUSID = applicationModel.APPSTATUSID;
+                applog.ACTIVITY = "Sunting Permohonan";
+            }            
             applog.TIME_STAMP = DateTime.Now;
-            applog.USERSID = ProjectSession.UserID;
-            applog.ACTIVITY = "Edit Application";
+            applog.USERSID = ProjectSession.UserID;            
             ctx.APP_LOGs.Add(applog);
             ctx.SaveChanges();
 
@@ -2015,7 +2040,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawLine(lineRed, pt1, pt2);
                             lineheight = lineheight + 15;
                             graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if(item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            if(item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
                             {
                                 graph.DrawString("PL/JP/" + item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -2079,7 +2104,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("NO. RUJUKAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
                             {
                                 graph.DrawString(item.PRF_NO.ToString(), font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -2192,22 +2217,22 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("KEPUTUSAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             string modeValue = "";
-                            if (item.APPSTATUSID == 11)
+                            if (item.APPSTATUSID == 14)
                             {
                                 modeValue = "LULUS BERSYARAT";
                             }
-                            else if (item.APPSTATUSID == 9)
+                            else if (item.APPSTATUSID == 12)
                             {
                                 modeValue = "LULUS";
                             }
-                            else if (item.APPSTATUSID == 10)
+                            else if (item.APPSTATUSID == 13)
                             {
                                 modeValue = "GAGAL";
 
                             }
                             else
                             {
-                                modeValue = "LULUS BERSYARAT";
+                                modeValue = item.L_STATUS;
                             }
 
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -2365,7 +2390,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 30;
                             graph2.DrawString("NO. RUJUKAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             graph2.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null)
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
                             {
                                 graph2.DrawString(item.PRF_NO, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             }
@@ -2504,8 +2529,10 @@ namespace TradingLicense.Web.Controllers
                                 lineheight = lineheight + 15;
                                 graph.DrawString("No Rujukan", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                graph.DrawString(item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-
+                                if (item.PRF_NO != null)
+                                {
+                                    graph.DrawString(item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                }
                                 string compAdd = "";
                                 if (item.ADDRA2 == null)
                                 {
@@ -2550,15 +2577,15 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
                             graph.DrawString("Tempoh Sah", font, XBrushes.Black, new XRect(310, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(380, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if (item.PAID != null && item.PAID.ToString() != "")
+                            if (item.APPROVE != null && item.APPROVE.ToString() != "")
                             {
-                                DateTime dt = new DateTime(item.PAID.Value.Year, item.PAID.Value.Month, item.PAID.Value.Day);
+                                DateTime dt = new DateTime(item.APPROVE.Value.Year, item.APPROVE.Value.Month, item.APPROVE.Value.Day);
                                 var mDate = string.Format("{0:dd-MM-yyyy}", dt);
                                 graph.DrawString(mDate, nfont, XBrushes.Black, new XRect(390, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
 
                                 graph.DrawString("Hingga", nfont, XBrushes.Black, new XRect(451, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 DateTime? hDate;
-                                hDate = item.PAID;
+                                hDate = item.APPROVE;
                                 if (Convert.ToInt32(item.MODE) == 1)
                                 {
                                     hDate = hDate.Value.AddMonths(6);
@@ -2605,7 +2632,7 @@ namespace TradingLicense.Web.Controllers
                                             //graph.DrawString(item2.CodeDesc, nfont, XBrushes.Black, new XRect(((pdfPage.Width) / 2) - 100, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                         }
                                         float? Amount = 0;
-                                        if (item2.BASE_FEE == null)
+                                        if (item2.BASE_FEE == 0 || item2.BASE_FEE == null)
                                         {
                                             Amount = (item2.DEF_RATE) * (item.P_AREA);
                                             Amount = (float)Math.Round((float)Amount, 1);
@@ -2688,7 +2715,7 @@ namespace TradingLicense.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }

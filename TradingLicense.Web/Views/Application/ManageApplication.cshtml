@@ -98,6 +98,7 @@
             @Html.HiddenFor(m => m.APPSTATUSID)
             @Html.HiddenFor(m => m.L_STATUS)
             @Html.HiddenFor(m => m.REF_NO)
+            @Html.HiddenFor(m => m.PRF_NO)
             @Html.HiddenFor(m => m.SUBMIT)
             @Html.HiddenFor(m => m.APPROVE)
             @Html.HiddenFor(m => m.PAID)
@@ -217,7 +218,7 @@
 
             if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
             {
-                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                if (string.IsNullOrWhiteSpace(Model.BusinessCodeids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated || Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor)
                 {
                     <div class="row">
                         <div class="col-sm-6" id="businessCode">
@@ -469,7 +470,7 @@
             {
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-sm-10 col-lg-6">
+                        <div class="col-sm-10 col-lg-6 hawker">
                             <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
                         </div>
                     </div>
@@ -492,16 +493,16 @@
 
                 <div class="row">
                     <div class="col-sm-12 col-lg-12 hawker">
-                        <div class="form-group" style="display:normal;">
+                        <div class="form-group" style="display:none;">
                             <div class="control-label">No Premis<span class="cfont">*</span></div>
                             @Model.PREMISNO
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:none;">
                         <div class="form-group">
-                            <div class="control-label">Tempol Sah Lesen<span class="cfont">*</span></div>
+                            <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
                             @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                             @Html.ValidationMessageFor(m => m.START_RENT)
                         </div>
@@ -522,50 +523,52 @@
             {
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-sm-10 col-lg-6">
-                            <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-sm-10 col-lg-6">
-                            @Html.DropDownList("helperAList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperAList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
-                            <input id="helper_a" name="helper_a" type="hidden" value="">
-                        </div>
-                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                        {
-                            <div class="col-sm-2 col-lg-6">
-                                <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
-                            </div>
-                        }
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-sm-10 col-lg-6">
-                            <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
+                        <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
+                            <div class="control-label">Nama Penuh Pembantu 1(Mykad/Paspot)<span class="cfont">*</span></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group">
-                        <div class="col-sm-10 col-lg-6">
+                        <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
+                            @Html.DropDownList("helperAList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperAList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
+                            <input id="helper_a" name="helper_a" type="hidden" value="">
+                        </div>
+                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                    {
+                            <div class="col-sm-2 col-lg-6 hawker" style="display:none;">
+                                <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
+                            <div class="control-label">Nama Penuh Pembantu 2(Mykad/Paspot)<span class="cfont">*</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
                             @Html.DropDownList("helperBList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperBList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
                             <input id="helper_a" name="helper_a" type="hidden" value="">
-</div>
+                        </div>
                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
-                            <div class="col-sm-2 col-lg-6">
+                            <div class="col-sm-2 col-lg-6 hawker" style="display:none;">
                                 <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
                             </div>
                         }
                     </div>
                 </div>
                  <div class="row">
-                    <div class="col-sm-12 col-lg-3 hawker">
-                        <div class="form-group" style="display:normal;">
+                    <div class="col-sm-12 col-lg-3 hawker" style="display:none;">
+                        <div class="form-group">
                             <div class="control-label">
                                 No Premis<span class="cfont">*</span>
                                 @Html.TextBoxFor(m => m.PREMISNO, new { @class = "form-control" })
@@ -575,16 +578,16 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:none;">
                         <div class="form-group">
-                            <div class="control-label">Tempol Sah Lesen<span class="cfont">*</span></div>
+                            <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
                             @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                             @Html.ValidationMessageFor(m => m.START_RENT)
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
+                    <div class="col-md-4 col-sm-3 hawker" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">Hingga<span class="cfont">*</span></div>
                             @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
@@ -1001,15 +1004,19 @@
                                                 <button type="button" class="btn btn-primary btSubmit" onclick='return Approved();'>Hantar Ke Pengarah</button>
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
-                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:
-                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
-                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                            case (int)Enums.PAStausenum.LetterofnotificationApproved:                                                
                                                 <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.LetterofnotificationRejected:
                                                 <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                break;
+                                            case (int)Enums.PAStausenum.Pendingpayment:
+                                                <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
+                                                <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />                                                
+                                                <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Bayaran Diterima" />
                                                 <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                                 break;
                                             case (int)Enums.PAStausenum.Paid:
@@ -2307,6 +2314,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 2){
                 bindLicense();
@@ -2320,6 +2330,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 3){
                 bindLicense();
@@ -2333,6 +2346,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 4){
                 bindLicense();
@@ -2346,6 +2362,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 5){
                 bindLicense();
@@ -2359,6 +2378,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').hide();
                 $('.banner').show();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 6){
                 bindLicense();
@@ -2389,7 +2411,10 @@
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
                 $('.premise').show();
-                $('.banner').hide();
+                $('.banner').hide
+                $('.hawker').hide();
+                $('.company-name').hide();
+                $('.company-type').hide();
             }
             else if ($("#LIC_TYPEID").val() == 8){
                 bindLicense();
@@ -2403,6 +2428,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 9){
                 bindLicense();
@@ -2416,6 +2444,9 @@
                 $('#entmtGroup').hide();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
             else if ($("#LIC_TYPEID").val() == 10){
                 bindLicense();
@@ -2429,6 +2460,9 @@
                 $('#entmtGroup').show();
                 $('.premise').show();
                 $('.banner').hide();
+                $('.hawker').hide();
+                $('.company-name').show();
+                $('.company-type').show();
             }
         }
 
@@ -3437,7 +3471,7 @@
             {
                 $('#btnLetter').show();
                 $('#btnLetter').css('visibility', 'visible');
-                if(!($('#MODE').val() == 1 || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
+                if(!($('#MODE').val() == 1 || $('#APPSTATUSID').val() >= @((int)Enums.PAStausenum.LetterofnotificationApproved) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationApprovedwithTermsConditions) || $('#APPSTATUSID').val() == @((int)Enums.PAStausenum.LetterofnotificationRejected)))
                 {
                     $('#btnLetter').hide();
                 }
