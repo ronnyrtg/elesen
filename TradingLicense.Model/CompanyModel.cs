@@ -12,13 +12,8 @@ namespace TradingLicense.Model
         public string C_NAME { get; set; }
         [Required(ErrorMessage = "Sila masukkan nombor telefon pejabat")]
         public string C_PHONE { get; set; }
-        [Required(ErrorMessage = "Please Enter Company Address")]       
-        public string ADDRA1 { get; set; }        
-        public string ADDRA2 { get; set; }        
-        public string ADDRA3 { get; set; }        
-        public string ADDRA4 { get; set; }        
-        public string PCODEA { get; set; }        
-        public string STATEA { get; set; }
+        [Required(ErrorMessage = "Sila masukkan alamat surat-menyurat syarikat")]       
+        public string C_ADDRESS { get; set; }     
         
         public DateTime? SSMREGDATE { get; set; }
         

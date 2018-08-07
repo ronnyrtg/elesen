@@ -50,6 +50,15 @@ namespace TradingLicense.Data.Migrations
             sector.ForEach(s => context.SECTORs.Add(s));
             context.SaveChanges();
 
+            var citizen = new List<CITIZEN_M>
+            {
+                new CITIZEN_M {CITIZEN_DESC="Warganegara Malaysia"},
+                new CITIZEN_M {CITIZEN_DESC="Bukan Warganegara Malaysia"},
+                new CITIZEN_M {CITIZEN_DESC="Penduduk Tetap"},
+            };
+            citizen.ForEach(s => context.CITIZENs.Add(s));
+            context.SaveChanges();
+
 
             var bts = new List<BT>
             {

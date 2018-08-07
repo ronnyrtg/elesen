@@ -18,24 +18,9 @@ namespace TradingLicense.Entities
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
         public string C_PHONE { get; set; }
-        [StringLength(50)]
+        [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
-        public string ADDRA1 { get; set; }
-        [StringLength(40)]
-        [Column(TypeName = "VARCHAR2")]
-        public string ADDRA2 { get; set; }
-        [StringLength(40)]
-        [Column(TypeName = "VARCHAR2")]
-        public string ADDRA3 { get; set; }
-        [StringLength(40)]
-        [Column(TypeName = "VARCHAR2")]
-        public string ADDRA4 { get; set; }
-        [StringLength(10)]
-        [Column(TypeName = "VARCHAR2")]
-        public string PCODEA { get; set; }
-        [StringLength(50)]
-        [Column(TypeName = "VARCHAR2")]
-        public string STATEA { get; set; }
+        public string C_ADDRESS { get; set; }        
         public DateTime? SSMREGDATE { get; set; }
         public DateTime? SSMEXPDATE { get; set; }
         //Authorised Capital

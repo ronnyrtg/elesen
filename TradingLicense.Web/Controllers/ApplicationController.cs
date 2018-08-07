@@ -345,7 +345,7 @@ namespace TradingLicense.Web.Controllers
                             {
                                 case (int)PAStausenum.expDraft:
                                     finalStatus = PAStausenum.expPendingPayment;
-                                    break;
+                                    break;                                
                                 case (int)PAStausenum.expPendingPayment:
                                     finalStatus = PAStausenum.expPaid;
                                     break;
@@ -2072,9 +2072,9 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
 
                             string compAdd = "";
-                            if (!string.IsNullOrEmpty(item.COMPANY.ADDRA1))
+                            if (!string.IsNullOrEmpty(item.COMPANY.C_ADDRESS))
                             {
-                                compAdd = item.COMPANY.ADDRA1;
+                                compAdd = item.COMPANY.C_ADDRESS;
                             }
                             else
                             {
@@ -2713,7 +2713,7 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
             }

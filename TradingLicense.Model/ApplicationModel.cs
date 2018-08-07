@@ -19,12 +19,21 @@ namespace TradingLicense.Model
         public int MODE { get; set; }
         public int BT_ID { get; set; }
         public int COMPANYID { get; set; }
+        //Applied Address
         public string ADDRA1 { get; set; }
         public string ADDRA2 { get; set; }
         public string ADDRA3 { get; set; }
         public string ADDRA4 { get; set; }
         public string PCODEA { get; set; }
         public string STATEA { get; set; }
+        //Company Mailing Address
+        public string ADDRC1 { get; set; }
+        public string ADDRC2 { get; set; }
+        public string ADDRC3 { get; set; }
+        public string ADDRC4 { get; set; }
+        public string PCODEC { get; set; }
+        public string STATEC { get; set; }
+
         public string P_OWN { get; set; }
         public float P_AREA { get; set; }
         public DateTime? START_RENT { get; set; }
@@ -74,7 +83,7 @@ namespace TradingLicense.Model
         public int E_S_P_QTY { get; set; }
         public List<Select2ListItem> selectedPremiseFeeList = new List<Select2ListItem>();
 
-        //Save to Address Table
+        //Banner Location Address
         public string ADDRB1 { get; set; }
         public string ADDRB2 { get; set; }
         public string ADDRB3 { get; set; }

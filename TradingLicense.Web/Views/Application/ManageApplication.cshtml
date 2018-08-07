@@ -46,7 +46,6 @@
             var profile = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.ATT_ID).SingleOrDefault();
             profilePic = profile.ToString();
         }
-
     }
 
     List<SelectListItem> LicenseList = new List<SelectListItem>();
@@ -77,7 +76,7 @@
     List<SelectListItem> BPPRouteUnitDecision = new List<SelectListItem>();
     BPPRouteUnitDecision.Add(new SelectListItem { Text = "Sokong", Value = "1" });
     BPPRouteUnitDecision.Add(new SelectListItem { Text = "Tidak Disokong", Value = "0" });
-    
+
 }
 <div id="divMessage"></div>
 <div class="card">
@@ -173,7 +172,7 @@
                     <div class="col-lg-3 col-md-6" id="approvalType" style="display:normal;">
                         <div class="form-group">
                             <div class="control-label">Jenis Kelulusan<span class="cfont">*</span></div>
-                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control" })
+                            @Html.DropDownListFor(m => m.MODE, new SelectList(ModeList, "Value", "Text"), new { @class = "form-control", onchange = "changeMode()" })
                             @Html.ValidationMessageFor(m => m.MODE)
                         </div>
                     </div>
@@ -253,7 +252,8 @@
                     <div class="row">
                         <div class="form-group">
                             <div class="col-sm-10 col-lg-6">
-                                <div class="control-label">Nama Penuh (Mykad/Paspot)<span class="cfont">*</span></div>
+                                <div class="control-label premise">Nama Pemohon (Pengurus/Pengarah Syarikat)<span class="cfont">*</span></div>
+                                <div class="control-label hawker" style="display:none;">Nama Pemilik<span class="cfont">*</span></div>
                             </div>
                         </div>
                     </div>
@@ -265,7 +265,7 @@
                                 @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
                                 @Html.HiddenFor(model => model.Individualids)
                                 @Html.HiddenFor(model => model.newIndividualsList)
-                            </div>
+                            </div>                                                       
                             @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                             {
                                 <div class="col-sm-2 col-lg-6">
@@ -469,6 +469,15 @@
             if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.HawkerApplication)
             {
                 <div class="row">
+                    <div class="col-sm-12 col-lg-12 hawker">
+                        <div class="form-group">
+                            <div class="control-label hawkerA" style="display:none;">No Premis<span class="cfont">*</span></div>
+                            <div class="control-label stall" style="display:none;">Lokasi Perniagaan<span class="cfont">*</span></div>
+                            @Model.PREMISNO
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6 hawker">
                             <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
@@ -489,16 +498,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-12 col-lg-12 hawker">
-                        <div class="form-group" style="display:none;">
-                            <div class="control-label">No Premis<span class="cfont">*</span></div>
-                            @Model.PREMISNO
-                        </div>
-                    </div>
-                </div>
+                </div>               
                 <div class="row">
                     <div class="col-md-4 col-sm-3 hawker" style="display:none;">
                         <div class="form-group">
@@ -521,10 +521,20 @@
             }
             else
             {
+
+                <div class="row">
+                    <div class="col-sm-12 col-lg-3 hawker">
+                        <div class="form-group">
+                            <div class="control-label hawkerA" style="display:none;">No Premis<span class="cfont">*</span> </div>
+                            <div class="control-label stall" style="display:none;">Lokasi Perniagaan<span class="cfont">*</span> </div>
+                            @Html.TextBoxFor(m => m.PREMISNO, new { @class = "form-control" })                           
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
-                            <div class="control-label">Nama Penuh Pembantu 1(Mykad/Paspot)<span class="cfont">*</span></div>
+                            <div class="control-label">Nama Penuh Pembantu 1 (Mykad/Paspot)<span class="cfont">*</span></div>
                         </div>
                     </div>
                 </div>
@@ -532,8 +542,7 @@
                 <div class="row">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
-                            @Html.DropDownList("helperAList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperAList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
-                            <input id="helper_a" name="helper_a" type="hidden" value="">
+                            @Html.DropDownList("helperAList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperAList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })                            
                         </div>
                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                     {
@@ -547,7 +556,7 @@
                 <div class="row">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
-                            <div class="control-label">Nama Penuh Pembantu 2(Mykad/Paspot)<span class="cfont">*</span></div>
+                            <div class="control-label">Nama Penuh Pembantu 2 (Mykad/Paspot)<span class="cfont">*</span></div>
                         </div>
                     </div>
                 </div>
@@ -555,8 +564,7 @@
                 <div class="row">
                     <div class="form-group">
                         <div class="col-sm-10 col-lg-6 hawker" style="display:none;">
-                            @Html.DropDownList("helperBList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperBList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
-                            <input id="helper_a" name="helper_a" type="hidden" value="">
+                            @Html.DropDownList("helperBList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperBList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })                            
                         </div>
                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
@@ -566,14 +574,26 @@
                         }
                     </div>
                 </div>
-                 <div class="row">
-                    <div class="col-sm-12 col-lg-3 hawker" style="display:none;">
-                        <div class="form-group">
-                            <div class="control-label">
-                                No Premis<span class="cfont">*</span>
-                                @Html.TextBoxFor(m => m.PREMISNO, new { @class = "form-control" })
-                            </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6 stall" style="display:none;">
+                            <div class="control-label">Nama Penuh Pembantu 3 (Mykad/Paspot)<span class="cfont">*</span></div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6 stall" style="display:none;">
+                            @Html.DropDownList("helperCList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperCList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })                           
+                        </div>
+                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                        {
+                            <div class="col-sm-2 col-lg-6 stall" style="display:none;">
+                                <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -737,8 +757,8 @@
                 </div>
                 if (Model.APP_ID == 0 && Model.P_OWN == null)
                 {
-                <div class="row">
-                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                <div class="row premise">
+                    <div class="col-md-4 col-sm-3 rent" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">Tempoh Sewaan Premis dari<span class="cfont">*</span></div>
                             @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
@@ -746,8 +766,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-4 col-sm-3 rent" style="display:normal;">
+                <div class="row premise">
+                    <div class="col-md-4 col-sm-3 rent" style="display:none;">
                         <div class="form-group">
                             <div class="control-label">Hingga<span class="cfont">*</span></div>
                             @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
@@ -942,6 +962,12 @@
                                             <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
                                             <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                             break;
+                                        case (int)Enums.PAStausenum.expSubmitClerk:                                            
+                                            <input type="button" class="btn btn-primary btSubmit" value="Tambah Catatan Dalam Surat Perakuan " onclick="AddCatatan();" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Cetak Surat Perakuan" id="btnLetter" name="btnSubmit" />
+                                            <input type="button" class="btn btn-primary btSubmit" onclick='return Approved();' value="Cipta Open Item Dalam Modul Receipting" />
+                                            <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                            break;
                                         case (int)Enums.PAStausenum.expPendingPayment:
                                             <input type="button" class="btn btn-primary btSubmit" value="Kaunter Telah Menerima Bayaran" onclick='return Approved();' />
                                             <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
@@ -962,7 +988,7 @@
                                     if (Model.APPSTATUSID <= (int)Enums.PAStausenum.draftcreated)
                                     {
                                     <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
-                                    <input type="submit" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                    <input type="submit" class="btn btn-primary btSubmit Hantar" value="Hantar" onclick='frmSubmit(false); return false;' />
                                     <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
                                     }
                                 }
@@ -1206,8 +1232,7 @@
                         <div class="col-sm-12 col-lg-6">
                             <div class="form-group">
                                 <div class="control-label">Nama</div>
-                                @Html.TextBox("Fname", null, new { @class = "form-control" })
-                                <span class="text-danger BannerCodeVal"></span>
+                                @Html.TextBox("Fname", null, new { @class = "form-control" })                                
                             </div>
                         </div>
                     </div>
@@ -1215,27 +1240,66 @@
                         <div class="col-sm-12 col-lg-6">
                             <div class="form-group">
                                 <div class="control-label">Nombor MyKad / Nombor Paspot</div>
-                                @Html.TextBox("MykadNo", null, new { @class = "form-control" })
-                                <span class="text-danger LocationVal"></span>
+                                @Html.TextBox("MykadNo", null, new { @class = "form-control" })                                
                             </div>
                         </div>
                     </div>
-
+                    <div class="row" id="entmtGroup" style="display:none;">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Warganegara</div>
+                                @Html.TextBox("Citizen", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="entmtGroup" style="display:none;">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Bangsa</div>
+                                @Html.TextBox("Race", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row indPhone">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Nombor Telefon Bimbit</div>
+                                @Html.TextBox("PHONE", null, new { @class = "form-control" })                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row indAddress">
+                        <div class="col-sm-12 col-lg-6">
+                            <div class="form-group">
+                                <div class="control-label">Alamat</div>
+                                @Html.TextArea("ADD_IC", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
                     <div class="row hawker" style="display:none">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <div class="control-label">
-                                    Gambar :
-                                </div>
+                                <div class="control-label">Gambar :</div>
+                                @if (profilePic == null)
+                                {
                                     <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/profile_pic/" />
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <input type="file" class="btn btn-default" id="FileUpload1" />
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <input type="button" class="btn btn-default" id="btnUpload" value="Tukar Gambar" />
-                                    </div>
-                                </div>
+                                }
+                                else
+                                {
+                                    <img class="img-thumbnail" id="profilePic" width="150" src="~/images/member-default.jpg" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row hawker" style="display:none">
+                        <div class="col-sm-9 col-lg-4">
+                            <div class="form-group">
+                                <input type="file" class="btn btn-default" id="FileUpload1" />
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-lg-8">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-default" id="btnUpload" value="Tukar Gambar" />
                             </div>
                         </div>
                     </div>
@@ -1281,6 +1345,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-6 company-phone">
+                            <div class="form-group">
+                                <div class="control-label">Nombor Telefon Pejabat</div>
+                                @Html.TextBox("comPhone", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 comAddress" style="display:normal;">
+                            <div class="form-group">
+                                <div class="control-label">Alamat Surat Menyurat Syarikat<span class="cfont">*</span></div>
+                                @Html.TextBox("comAddress", null, new { @class = "form-control" })                                                             
+                            </div>
+                        </div>
+                    </div>                   
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-primary" value="Tambah" onclick="return SaveCompany()" />
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
@@ -2291,6 +2371,15 @@
             bindCode();
         }
 
+        function changeMode(){
+            if ($("#MODE").val() == 1) {
+                $('.Hantar').hide();
+            }
+            else{
+                $('.Hantar').show();
+            }
+        }
+
         function changePremiseOwn(){
             if ($("#P_OWN").val() == 0) {
                 $('.rent').show();
@@ -2394,10 +2483,12 @@
                 $('#entmtGroup').hide();
                 $('.premise').hide();
                 $('.hawker').show();
+                $('.hawkerA').show();
                 $('.rent').hide();
                 $('.banner').hide();
                 $('.company-name').hide();
                 $('.company-type').hide();
+                $('.stall').hide();
 
             }
             else if ($("#LIC_TYPEID").val() == 7){
@@ -2410,11 +2501,13 @@
                 $('#sector').hide();
                 $('#businessCode').show();
                 $('#entmtGroup').hide();
-                $('.premise').show();
+                $('.premise').hide();
                 $('.banner').hide
-                $('.hawker').hide();
+                $('.hawker').show();
+                $('.hawkerA').hide();
                 $('.company-name').hide();
                 $('.company-type').hide();
+                $('.stall').show();
             }
             else if ($("#LIC_TYPEID").val() == 8){
                 bindLicense();
@@ -2463,6 +2556,7 @@
                 $('.hawker').hide();
                 $('.company-name').show();
                 $('.company-type').show();
+                $('.company-phone').hide();
             }
         }
 
