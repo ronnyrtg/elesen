@@ -1,7 +1,38 @@
 ﻿
 @{
-    ViewBag.Title = "JointOwner";
+    ViewBag.Title = "Joint Owner";
+    Layout = "~/Views/Shared/_Report.cshtml";
 }
-
-<h2>JointOwner</h2>
+<table class="A4">
+    <tr>
+        <td align="left"> <strong>Report Name: </strong> L5-09</td>
+        <td>
+            <div style="text-align:right">
+                Print Date:  @ViewBag.date <br />
+                Print Time:  @ViewBag.time <br />
+            </div>
+        </td>
+    </tr>
+</table>
+<br /><br />
+<div style="text-align:center" class="A4 title">
+    <div>PERBADANAN LABUAN </div>
+    <div>JOINT OWNERS LISTING </div>
+</div>
+<br /><br />
+<table class="A4">
+    <tr>
+        <th> Account No </th>
+        <th> Owner Name </th>
+        <th> Owner IC No </th>
+    </tr>
+    @foreach (var item in ViewBag.owners)
+    {
+        <tr>
+            <td> 0001 </td>
+            <td> @item.FULLNAME </td>
+            <td> @item.MYKADNO </td>
+        </tr>
+    }
+</table>
 

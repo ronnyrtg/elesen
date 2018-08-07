@@ -1,7 +1,15 @@
 ﻿
 @{
-    ViewBag.Title = "OwnerMaster";
+    ViewBag.Title = "Owner Master Report";
 }
 
-<h2>OwnerMaster</h2>
+@using (Html.BeginForm("OwnerMasterPdf", "Report", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="query"> Name / IC </label>
+        <input type="text" class="form-control" name="query" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
+
 
