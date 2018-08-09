@@ -59,6 +59,10 @@ namespace TradingLicense.Entities
         //Foreign Key to AppStatus table
         public int APPSTATUSID { get; set; }
 
+        //Hotel Application
+        public int? ROOM_QTY { get; set; }
+        public float? OCC_RATE { get; set; }
+        
         //Banner Application has Processing Fee
         public float? PRO_FEE { get; set; }
         public int? BC_ID { get; set; }
@@ -81,6 +85,12 @@ namespace TradingLicense.Entities
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
         public int? HELPERC { get; set; }
+
+        //Liquor Application
+        public int? EX_HOUR { get; set; }
+
+        //Entertainment Application
+        public int? OBJECT_QTY { get; set; }
 
         //User that creates the application, either Public user or Desk Officer
         public int USERSID { get; set; }

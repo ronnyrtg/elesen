@@ -557,7 +557,7 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
-            if (applicationModel.APPSTATUSID == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.APPSTATUSID == (int)Enums.PAStausenum.CEOcheck || applicationModel.MODE == (int)Enums.Mode.Express)
+            if (finalStatus == (int)Enums.PAStausenum.LetterofnotificationApproved || applicationModel.MODE == (int)Enums.Mode.Express)
             {
                 var licCode = ctx.LIC_TYPEs.Where(m => m.LIC_TYPEID == application.LIC_TYPEID).Select(m => m.LIC_TYPECODE).SingleOrDefault().ToString();
                 application.SUBMIT = DateTime.Now;
@@ -625,7 +625,7 @@ namespace TradingLicense.Web.Controllers
                 float? Totalfee = 0;
                 if (dbEntryPaLinkBAct.Count > 0)
                 {
-                    
+
                     foreach (var item in dbEntryPaLinkBAct)
                     {
                         if (businessCodelist.All(q => q != item.BC_ID))
@@ -645,7 +645,34 @@ namespace TradingLicense.Web.Controllers
                         {
                             Totalfee = Totalfee + fee * applicationModel.P_AREA;
                             application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
-                            //application.TOTAL_FEE = Totalfee;
+                        }
+                        else
+                        {
+                            int? period = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.PERIOD).FirstOrDefault();
+                            int? periodQuantity = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.PERIOD_Q).FirstOrDefault();
+                            switch (period)
+                            {
+                                case 1:
+                                    Totalfee = Totalfee + fee * periodQuantity;
+                                    application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                                    break;
+                                case 2:
+                                    Totalfee = Totalfee + fee * 12 * periodQuantity;
+                                    application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                                    break;
+                                case 3:
+                                    Totalfee = Totalfee + fee * 52 * periodQuantity;
+                                    application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                                    break;
+                                case 4:
+                                    Totalfee = Totalfee + fee * 365 * periodQuantity;
+                                    application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                                    break;
+                                default:
+                                    Totalfee = Totalfee + fee;
+                                    application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
+                                    break;
+                            }
                         }
                         ctx.APPLICATIONs.AddOrUpdate(application);
                     }
@@ -653,22 +680,180 @@ namespace TradingLicense.Web.Controllers
                 }
                 else
                 {
-                    foreach ( var item in applicationModel.BusinessCodeids)
-                    {
-                        var fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.DEF_RATE).FirstOrDefault();
-                        if (fee == 0)
+                    foreach (var item in businessCodelist)
+                    {                                                
+                        int? period = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.PERIOD).FirstOrDefault();
+                        int? periodQuantity = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.PERIOD_Q).FirstOrDefault();
+                        float? fee = 0;
+                        switch (applicationModel.LIC_TYPEID)
                         {
-                            fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.BASE_FEE).FirstOrDefault();
+                            case (int)ApplicationTypeID.TradeApplication:
+                                var defFee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.DEF_RATE).FirstOrDefault();
+                                if (defFee == 0)
+                                {
+                                    fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.BASE_FEE).FirstOrDefault();
+                                }
+                                else
+                                {
+                                    fee = defFee * applicationModel.P_AREA;
+                                }
+                                Totalfee = Totalfee + fee;
+                                break;
+                            case (int)ApplicationTypeID.FoodApplication:
+                                defFee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.DEF_RATE).FirstOrDefault();                                
+                                fee = defFee * applicationModel.P_AREA; 
+                                Totalfee = Totalfee + fee;                               
+                                break;
+                            case (int)ApplicationTypeID.HotelApplication:
+                                int? room = applicationModel.ROOM_QTY;
+                                float? rate = applicationModel.OCC_RATE;
+                                fee = room * rate;
+                                Totalfee = Totalfee + fee;
+                                break;
+                            case (int)ApplicationTypeID.ScrapApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.BASE_FEE).FirstOrDefault();
+                                Totalfee = Totalfee + fee;                                                                                              
+                                break;
+                            case (int)ApplicationTypeID.HawkerApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.P_FEE).FirstOrDefault();
+                                int days = (int)((DateTime)applicationModel.V_STOP - (DateTime)applicationModel.V_START).TotalDays;
+                                switch (period)
+                                {
+                                    case 1:
+                                        Totalfee = Totalfee + fee;                                        
+                                        break;
+                                    case 2:
+                                        Totalfee = Totalfee + fee * 12;
+                                        break;
+                                    case 3:
+                                        Totalfee = Totalfee + fee * 52;
+                                        break;
+                                    case 4:
+                                        Totalfee = Totalfee + fee * days;
+                                        break;
+                                    default:
+                                        Totalfee = Totalfee + fee;
+                                        break;
+                                }                                                                                              
+                                break;
+                            case (int)ApplicationTypeID.StallApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.P_FEE).FirstOrDefault();
+                                if (fee == 0)
+                                {
+                                    days = (int)((DateTime)applicationModel.V_STOP - (DateTime)applicationModel.V_START).TotalDays;
+                                    switch (period)
+                                    {
+                                        case 1:
+                                            Totalfee = Totalfee + fee;                                        
+                                            break;
+                                        case 2:
+                                            Totalfee = Totalfee + fee * 12;
+                                            break;
+                                        case 3:
+                                            Totalfee = Totalfee + fee * 52;
+                                            break;
+                                        case 4:
+                                            Totalfee = Totalfee + fee * days;
+                                            break;
+                                        default:
+                                            Totalfee = Totalfee + fee;
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.DEF_RATE).FirstOrDefault();
+                                    Totalfee = Totalfee + fee;
+                                }                                                                                                                              
+                                break;
+                            case (int)ApplicationTypeID.LiquorApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.P_FEE).FirstOrDefault();                                
+                                if (applicationModel.EX_HOUR == 0)
+                                {                                    
+                                    switch (period)
+                                    {
+                                        case 1:
+                                            Totalfee = Totalfee + fee;                                        
+                                            break;
+                                        case 2:
+                                            Totalfee = Totalfee + fee * 12;
+                                            break;
+                                        case 3:
+                                            Totalfee = Totalfee + fee * 52;
+                                            break;
+                                        case 4:
+                                            Totalfee = Totalfee + fee * 365;
+                                            break;
+                                        default:
+                                            Totalfee = Totalfee + fee;
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    float? extraHourFee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.EX_HOUR_FEE).FirstOrDefault();
+                                    switch (period)
+                                    {
+                                        case 1:
+                                            Totalfee = Totalfee + fee + extraHourFee * applicationModel.EX_HOUR;                                        
+                                            break;
+                                        case 2:
+                                            Totalfee = Totalfee + fee * 12 + extraHourFee * applicationModel.EX_HOUR;
+                                            break;
+                                        case 3:
+                                            Totalfee = Totalfee + fee * 52 + extraHourFee * applicationModel.EX_HOUR;
+                                            break;
+                                        case 4:
+                                            Totalfee = Totalfee + fee * 365 + extraHourFee * applicationModel.EX_HOUR;
+                                            break;
+                                        default:
+                                            Totalfee = Totalfee + fee + extraHourFee * applicationModel.EX_HOUR;
+                                            break;
+                                    }
+                                }                                                                                                                              
+                                break;
+                            case (int)ApplicationTypeID.MLApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.P_FEE).FirstOrDefault();
+                                Totalfee = Totalfee + fee;                                                                                              
+                                break;
+                            case (int)ApplicationTypeID.EntmtApplication:
+                                fee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.O_FEE).FirstOrDefault();
+                                float? basefee = ctx.BCs.Where(b => b.BC_ID == item).Select(b => b.BASE_FEE).FirstOrDefault();                                
+                                if (period == 0)
+                                {
+                                    Totalfee = Totalfee + basefee + fee * applicationModel.OBJECT_QTY;
+                                }
+                                else
+                                {                                    
+                                    switch (period)
+                                    {
+                                        case 1:
+                                            Totalfee = Totalfee + fee * applicationModel.OBJECT_QTY;                                        
+                                            break;
+                                        case 2:
+                                            Totalfee = Totalfee + fee * 12 * applicationModel.OBJECT_QTY;
+                                            break;
+                                        case 3:
+                                            Totalfee = Totalfee + fee * 52 * applicationModel.OBJECT_QTY;
+                                            break;
+                                        case 4:
+                                            Totalfee = Totalfee + fee * 365 * applicationModel.OBJECT_QTY;
+                                            break;
+                                        default:
+                                            Totalfee = Totalfee + fee * applicationModel.OBJECT_QTY;
+                                            break;
+                                    }
+                                }                                                                                                                              
+                                break;
+                            default:
+                                Totalfee = Totalfee + fee;
+                                break;                          
                         }
-                        if (applicationModel.P_AREA != 0)
-                        {
-                            Totalfee = Totalfee + fee * applicationModel.P_AREA;
-                            application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
-                            //application.TOTAL_FEE = Totalfee;
-                        }
+                        
+                        application.TOTAL_FEE = (float)Math.Round((float)Totalfee, 1);
                         ctx.APPLICATIONs.AddOrUpdate(application);
+                        ctx.SaveChanges();
                     }
-                    ctx.SaveChanges();
                 }
 
 
@@ -806,16 +991,26 @@ namespace TradingLicense.Web.Controllers
         /// <param name="selectedSector">The selected sector.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult FillBusinessCode(string query, int selectedLic, int? selectedSector)
+        public JsonResult FillBusinessCode(string query, int selectedLic, int? selectedSector, int? selectedStall)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 IQueryable<BC> primaryQuery = ctx.BCs;
 
-                if (selectedLic == 1)
+                if (selectedLic == (int)Enums.ApplicationTypeID.TradeApplication)
                 {
                     if (selectedSector > 0) {
                         primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic && bc.SECTORID == selectedSector);
+                    }
+                    else
+                    {
+                        primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic);
+                    }
+                }
+                else if(selectedLic == (int)Enums.ApplicationTypeID.StallApplication)
+                {
+                    if (selectedStall > 0) {
+                        primaryQuery = primaryQuery.Where(bc => bc.LIC_TYPEID == selectedLic && bc.SECTORID == selectedStall);
                     }
                     else
                     {
@@ -2040,7 +2235,7 @@ namespace TradingLicense.Web.Controllers
                             graph.DrawLine(lineRed, pt1, pt2);
                             lineheight = lineheight + 15;
                             graph.DrawString("Rujukan Kami :", nfont, XBrushes.Black, new XRect(360, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if(item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
+                            if(item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved && item.PRF_NO != null)
                             {
                                 graph.DrawString("PL/JP/" + item.PRF_NO.ToString(), nfont, XBrushes.Black, new XRect(435, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -2104,7 +2299,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("NO. RUJUKAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved && item.PRF_NO != null)
                             {
                                 graph.DrawString(item.PRF_NO.ToString(), font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             }
@@ -2289,11 +2484,26 @@ namespace TradingLicense.Web.Controllers
                                                 {
                                                     fee = item.P_AREA * item2.DEF_RATE;
                                                 }
+                                                else if(item2.PERIOD == 1)
+                                                {
+                                                    fee = item2.BASE_FEE;
+                                                }
+                                                else if(item2.PERIOD == 2)
+                                                {
+                                                    fee = item2.BASE_FEE*12;
+                                                }
+                                                else if(item2.PERIOD == 3)
+                                                {
+                                                    fee = item2.BASE_FEE*52;
+                                                }
+                                                else if(item2.PERIOD == 4)
+                                                {
+                                                    fee = item2.BASE_FEE*356;
+                                                }
                                                 else
                                                 {
                                                     fee = item2.BASE_FEE;
                                                 }
-
                                             }
                                         }
                                     }
@@ -2390,7 +2600,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 30;
                             graph2.DrawString("NO. RUJUKAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             graph2.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
-                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved)
+                            if (item.MODE == (int)Enums.Mode.Express && item.PRF_NO != null || item.APPSTATUSID >= (int)Enums.PAStausenum.LetterofnotificationApproved && item.PRF_NO != null)
                             {
                                 graph2.DrawString(item.PRF_NO, font, XBrushes.Black, new XRect(300, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             }

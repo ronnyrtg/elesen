@@ -51,6 +51,10 @@ namespace TradingLicense.Model
         public string SectorDesc { get; set; }
         public List<Select2ListItem> selectedbusinessCodeList = new List<Select2ListItem>();
 
+        //Hotel Application
+        public int? ROOM_QTY { get; set; }
+        public float? OCC_RATE { get; set; }
+
         //Banner Application has Processing Fee
         public float? PRO_FEE { get; set; }
         public int? BC_ID { get; set; }
@@ -60,11 +64,12 @@ namespace TradingLicense.Model
         public int totalBannerObjects { get; set; }
 
         //Hawker Application & Stall Application
+        public int? StallType { get; set; }
         public DateTime? V_START { get; set; }
         public DateTime? V_STOP { get; set; }
         public string GOODS_TYPE { get; set; }
-        public int H_START { get; set; }
-        public int H_STOP { get; set; }
+        public int? H_START { get; set; }
+        public int? H_STOP { get; set; }
         public int? OWNER_ID { get; set; }
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
@@ -88,8 +93,13 @@ namespace TradingLicense.Model
         public string ADDRB2 { get; set; }
         public string ADDRB3 { get; set; }
         public string ADDRB4 { get; set; }
-        
 
+        //Liquor Application
+        public int? EX_HOUR { get; set; }
+
+        //Entertainment Application
+        public int? OBJECT_QTY { get; set; }
+        
         //User that creates the application, either Public user or Desk Officer
         public int USERSID { get; set; }
         public DateTime SUBMIT { get; set; }
