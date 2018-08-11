@@ -13,14 +13,21 @@
     @using (Html.BeginForm("AddAppToMeeting", "Application", FormMethod.Post, new { name = "frmManageMeeting", id = "frmManageMeeting" }))
     {
         @Html.AntiForgeryToken()
+        //@Html.HiddenFor()
         
 
         <div class="row">
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Nombor Rujukan Mesyuarat</div>
-                    @Html.TextBoxFor(m => m.MT_REF, null, new { @class = "form-control" })
-                    <span class="text-danger BannerCodeVal"></span>
+                    @if (string.IsNullOrWhiteSpace(Model.MT_REF))
+                    {
+                        @Html.TextBoxFor(m => m.MT_REF, null, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        <div class="well well-sm">@Model.MT_REF</div>
+                    }                                        
                 </div>
             </div>
         </div>
@@ -28,8 +35,14 @@
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Tajuk Mesyuarat</div>
-                    @Html.TextBoxFor(m => m.MT_DESC, null, new { @class = "form-control" })
-                    <span class="text-danger LocationVal"></span>
+                    @if (string.IsNullOrWhiteSpace(Model.MT_DESC))
+                    {
+                        @Html.TextBoxFor(m => m.MT_DESC, null, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        <div class="well well-sm">@Model.MT_DESC</div>
+                    }
                 </div>
             </div>
         </div>
@@ -37,8 +50,14 @@
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Tarikh Mesyuarat</div>
-                    @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                    <span class="text-danger LocationVal"></span>
+                    @if (Model.MT_DATE == null)
+                    {
+                        @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                    }
+                    else
+                    {
+                        <div class="well well-sm">@Model.MT_DATE.ToShortDateString()</div>
+                    }
                 </div>
             </div>
         </div>

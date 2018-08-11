@@ -136,15 +136,9 @@
                                     "data": null,
                                     "render": function (data, type, row) {
                                         var appendstring = '';
-
-
                                             if (IsEdit != "False") {
-                                                appendstring += '<a  href="@Url.Action("ManageApplication", "Application")?Id=' + row["APP_ID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                                appendstring += '<a  href="@Url.Action("ManageMeeting", "Application")?Id=' + row["APP_L_MTID"] + '" title="Ubah"> <img src="@Url.Content("~/images/edit.png")" alt="Edit" /></a>&nbsp; ';
                                             }
-                                            if (IsDelete != "False") {
-                                                appendstring += '<a href="javascript:void(0);" data-id="' + row["APP_ID"] + '" onclick="bindDelete(this);" title="Padam"><img src="@Url.Content("~/images/delete.png")" alt="Delete" /></a>';
-                                            }
-
                                         return appendstring
                                     },
                                     "width": "100px",
@@ -197,29 +191,7 @@
                         return isValid;
                     }
 
-                    function bindDelete(item) {
-                        var x = confirm("Are you sure you want to delete?");
-                        if (x) {
-                            $.ajax({
-                                type: "POST",
-                                url: encodeURI('@Url.Action("DeleteMeeting", "Application")'),
-                                data: { "Id": $(item).attr('data-id') },
-                                cache: false,
-                                dataType: 'json',
-                                success: function (data, textStatus, XMLHttpRequest) {
-                                    if (data.success) {
-                                        bindTable();
-                                        successMessage(data.message);
-                                    }
-                                    else {
-                                        successMessage(data.message);
-                                    }
-                                },
-                                error: function (jqXHR, exception, errMsg) {
-                                }
-                            });
-                        }
-                    }
+                    
 
     </script>
 }

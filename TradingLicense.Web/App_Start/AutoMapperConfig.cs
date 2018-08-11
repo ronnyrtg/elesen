@@ -73,11 +73,10 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.RD_DESC, opt => opt.MapFrom(s => s.RD.RD_DESC));
                 cfg.CreateMap<COMMENT, CommentModel>().ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
                 cfg.CreateMap<APP_L_MT, APP_L_MTModel>()
-                            .ForMember(dest => dest.ReferenceNo, opt => opt.MapFrom(s => s.APPLICATION.REF_NO))                            
-                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.APPLICATION.COMPANY.C_NAME))
                             .ForMember(dest => dest.LicenseTypeDesc, opt => opt.MapFrom(s => s.APPLICATION.LIC_TYPE.LIC_TYPEDESC))
-                            .ForMember(dest => dest.Result, opt => opt.MapFrom(s => s.APPLICATION.APPSTATUSID))
-                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
+                            .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.APPLICATION.COMPANY.C_NAME));
+                            
+                //cfg.CreateMap<APP_L_MTModel, APP_L_MT>();
                 cfg.CreateMap<APP_LOG, AppLogModel>()
                             .ForMember(dest => dest.ReferenceNo, opt => opt.MapFrom(s => s.APPLICATION.REF_NO))
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))                            

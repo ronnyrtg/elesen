@@ -78,11 +78,11 @@
 
     List<SelectListItem> RouteUnitDecision = new List<SelectListItem>();
     RouteUnitDecision.Add(new SelectListItem { Text = "Tiada Halangan", Value = "1" });
-    RouteUnitDecision.Add(new SelectListItem { Text = "Ada Halangan", Value = "0" });
+    RouteUnitDecision.Add(new SelectListItem { Text = "Ada Halangan", Value = "2" });
 
     List<SelectListItem> BPPRouteUnitDecision = new List<SelectListItem>();
     BPPRouteUnitDecision.Add(new SelectListItem { Text = "Sokong", Value = "1" });
-    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Tidak Disokong", Value = "0" });
+    BPPRouteUnitDecision.Add(new SelectListItem { Text = "Tidak Disokong", Value = "2" });
 
 }
 <div id="divMessage"></div>
@@ -1047,7 +1047,7 @@
                                     {
                                         <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
                                                                                 <input type="submit" class="btn btn-primary btSubmit Hantar" value="Hantar" onclick='frmSubmit(false); return false;' />
-                                                                                <input type="button" class="btn btn-primary btSubmit" value="Ulasan" onclick="addComment();" />
+                                                                                <input type="button" class="btn btn-primary" value="Ulasan" onclick="addComment();" />
                                     }
                                 }
                                 break;
