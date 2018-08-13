@@ -702,13 +702,28 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddCompany(int id, string appType, string Cname, string RegNo)
+        public ActionResult AddCompany(int id, string appType, string Cname, string RegNo, float? AllowedCapital, float? IssuedCapital, float? PUC_Cash, float? PUC_Others, float? BankSource, float? DepositSource, float? LoanSource, string LoanSourceName, float? OtherSource, string OtherSourceName, string comPhone, string comAddress, DateTime? ssmRegister, DateTime? ssmExpire)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 COMPANY com = new COMPANY();
                 com.C_NAME = Cname;
                 com.REG_NO = RegNo;
+                com.A_CAPITAL = AllowedCapital;
+                com.I_CAPITAL = IssuedCapital;
+                com.PU_C_CASH = PUC_Cash;
+                com.PU_C_O = PUC_Others;
+                com.BANK_S = BankSource;
+                com.DEPOSIT_S = DepositSource;
+                com.BANK_S = BankSource;
+                com.LOAN_S = LoanSource;
+                com.LOAN_S_NAME = LoanSourceName;
+                com.OTHER_S = OtherSource;
+                com.OTHER_S_NAME = OtherSourceName;
+                com.C_PHONE = comPhone;
+                com.C_ADDRESS = comAddress;
+                com.SSMREGDATE = ssmRegister;
+                com.SSMEXPDATE = ssmExpire;
                 ctx.COMPANIES.Add(com);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Syarikat berjaya ditambah.";
@@ -1943,13 +1958,16 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddIndividual(int id, string appType, string Fname, string MYKADNO)
+        public ActionResult AddIndividual(int id, string appType, string Fname, string MykadNo, string Citizen, string Race, string PHONE, string ADD_IC )
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 INDIVIDUAL ind = new INDIVIDUAL();
                 ind.FULLNAME = Fname;
-                ind.MYKADNO = MYKADNO;
+                ind.MYKADNO = MykadNo;
+                
+                ind.PHONE = PHONE;
+                ind.ADD_IC = ADD_IC;
                 ctx.INDIVIDUALs.Add(ind);
                 ctx.SaveChanges();
                 TempData["SuccessMessage"] = "Individu berjaya ditambah.";
