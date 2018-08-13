@@ -3228,8 +3228,9 @@
                                 _validFileExtensions = strValidateFileFormate.split(",");
 
                                 function UploadDocument(){
-
-                                    if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+                                    console.log("upload?");
+                                    //if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions) && $('#frmuploadDocument').valid()) {
+                                    if (checkforValidUploadedfiles($("#DocumentFile")[0].files, _validFileExtensions)) {
 
                                         var data = new FormData();
                                         var files = $("#DocumentFile").get(0).files;
