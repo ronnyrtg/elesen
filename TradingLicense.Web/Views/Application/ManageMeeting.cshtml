@@ -13,7 +13,9 @@
     @using (Html.BeginForm("AddAppToMeeting", "Application", FormMethod.Post, new { name = "frmManageMeeting", id = "frmManageMeeting" }))
     {
         @Html.AntiForgeryToken()
-        //@Html.HiddenFor()
+        @Html.HiddenFor(m => m.MT_REF)
+        @Html.HiddenFor(m => m.MT_DESC)
+        @Html.HiddenFor(m => m.MT_DATE)
         
 
         <div class="row">
@@ -50,13 +52,13 @@
             <div class="col-sm-12 col-lg-6">
                 <div class="form-group">
                     <div class="control-label">Tarikh Mesyuarat</div>
-                    @if (Model.MT_DATE == null)
+                    @if (Model.MT_DATE.HasValue)
                     {
-                        @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                        <div class="well well-sm">@Model.MT_DATE.Value.ToString("dd\\/MMM\\/yyyy")</div>
                     }
                     else
                     {
-                        <div class="well well-sm">@Model.MT_DATE.ToShortDateString()</div>
+                        @Html.TextBoxFor(m => m.MT_DATE, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                     }
                 </div>
             </div>

@@ -74,114 +74,119 @@
             unitroute = 5,
 
             /// <summary>
+            /// for set supervisor check
+            /// </summary>
+            supervisorcheck = 6,
+
+            /// <summary>
             /// for set director check
             /// </summary>
-            directorcheck = 6,
+            directorcheck = 7,
 
             /// <summary>
             /// for set meeting
             /// </summary>
-            meeting = 7,
+            meeting = 8,
 
             /// <summary>
             /// scheduled for meeting
             /// </summary>
-            ScheduledMeeting = 8,
+            ScheduledMeeting = 9,
 
             /// <summary>
             /// for next meeting
             /// </summary>
-            meetingKIV = 9,
+            meetingKIV = 10,
 
             /// <summary>
             /// for set CEO check
             /// </summary>
-            CEOcheck = 10,
+            CEOcheck = 11,
 
             /// <summary>
-            /// for set meeting
+            /// KIV at CEO
             /// </summary>
-            CEOKIV = 11,
+            CEOKIV = 12,
 
             /// <summary>
             /// for set Letter of notification (Approved)
             /// </summary>
-            LetterofnotificationApproved = 12,
+            LetterofnotificationApproved = 13,
 
             /// <summary>
             /// for set Letter of notification (Rejected)
             /// </summary>
-            LetterofnotificationRejected = 13,
+            LetterofnotificationRejected = 14,
 
             /// <summary>
             /// for set Letter of notification (Approved with Terms & Conditions)
             /// </summary>
-            LetterofnotificationApprovedwithTermsConditions = 14,
+            LetterofnotificationApprovedwithTermsConditions = 15,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Pendingpayment = 15,
+            Pendingpayment = 16,
 
             /// <summary>
             /// for set Pending payment
             /// </summary>
-            Paid = 16,
+            Paid = 17,
 
             /// <summary>
             /// for set Complete Status
             /// </summary>
-            Complete = 17,
+            Complete = 18,
 
             /// <summary>
             /// express save draft
             /// </summary>
-            expDraft = 18,
+            expDraft = 19,
 
             /// <summary>
             /// express create open item receipting
             /// </summary>
-            expPendingPayment = 19,
+            expPendingPayment = 20,
 
             /// <summary>
             /// express Paid
             /// </summary>
-            expPaid = 20,
+            expPaid = 21,
 
             /// <summary>
             /// express send to clerk
             /// </summary>
-            expSubmitClerk = 21,
+            expSubmitClerk = 22,
 
             /// <summary>
             ///express routing
             /// </summary>
-            expRoute = 22,
+            expRoute = 23,
 
             /// <summary>
             /// express send to meeting
             /// </summary>
-            expMeeting = 23,
+            expMeeting = 24,
 
             /// <summary>
             /// express scheduled for meeting
             /// </summary>
-            expScheduledMeeting = 24,
+            expScheduledMeeting = 25,
 
             /// <summary>
             /// express Send Letter of Reminder
             /// </summary>
-            expLetter = 25,
+            expLetter = 26,
 
             /// <summary>
             /// express Approved
             /// </summary>
-            expApproved = 26,
+            expApproved = 27,
 
             /// <summary>
             /// express not comply
             /// </summary>
-            expReject = 27,
+            expReject = 28,
 
         }
 

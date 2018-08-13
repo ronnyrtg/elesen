@@ -176,18 +176,15 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     var application = ctx.APPLICATIONs.FirstOrDefault(a => a.APP_ID == id);
-                    applicationModel = Mapper.Map<ApplicationModel>(application);
-
-                    var paLinkBc = ctx.APP_L_BCs.Where(a => a.APP_ID == id).ToList();
-                    applicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BC_ID.ToString()).ToArray());
+                    applicationModel = Mapper.Map<ApplicationModel>(application);                    
 
                     var routeSettled = ctx.ROUTEUNITs.Where(r => r.APP_ID == id);
 
                     var bannerObjects = ctx.B_Os.Where(a => a.APP_ID == id).ToList();
                     applicationModel.totalBannerObjects = bannerObjects.Count;
 
-                    //TODO: replaced with this for avoid calling database in foreach loop
-                    // TODO: Select2ListItem is just the same as build-in KeyValuePair class
+                    var paLinkBc = ctx.APP_L_BCs.Where(a => a.APP_ID == id).ToList();
+                    applicationModel.BusinessCodeids = string.Join(",", paLinkBc.Select(x => x.BC_ID.ToString()).ToArray());
                     List<Select2ListItem> businessCodesList = new List<Select2ListItem>();
                     var ids = paLinkBc.Select(b => b.BC_ID).ToList();
                     businessCodesList = ctx.BCs
@@ -375,6 +372,56 @@ namespace TradingLicense.Web.Controllers
                                     break;
                                 case (int)Mode.CEO:
                                     if(applicationModel.APPSTATUSID == (int)PAStausenum.unitroute)
+                                    {
+                                        finalStatus = PAStausenum.directorcheck;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.LetterofnotificationApproved)
+                                    {
+                                        finalStatus = PAStausenum.Pendingpayment;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.Pendingpayment)
+                                    {
+                                        finalStatus = PAStausenum.Paid;
+                                    }
+                                    else if (applicationModel.APPSTATUSID == (int)PAStausenum.Paid)
+                                    {
+                                        finalStatus = PAStausenum.Complete;
+                                    }
+                                    break;
+                                case (int)Mode.Meeting:
+                                    finalStatus = PAStausenum.meeting;
+                                    break;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnRouteSubmit)
+                        {
+                            if (applicationModel.MODE == (int)Mode.Express)
+                            {
+                                finalStatus = PAStausenum.expRoute;
+                            }
+                            else
+                            {
+                                finalStatus = PAStausenum.unitroute;
+                            }
+                        }
+                        else if (applicationModel.SubmitType == OnRejected)
+                        {
+                            finalStatus = PAStausenum.documentIncomplete;
+                        }
+                        break;
+                    case (int)RollTemplate.Supervisor:
+                        if (applicationModel.SubmitType == OnSubmit)
+                        {
+                            switch (applicationModel.MODE)
+                            {
+                                case (int)Mode.Express:
+                                    finalStatus = PAStausenum.expMeeting;
+                                    break;
+                                case (int)Mode.Director:
+                                    finalStatus = PAStausenum.directorcheck;
+                                    break;
+                                case (int)Mode.CEO:
+                                    if (applicationModel.APPSTATUSID == (int)PAStausenum.unitroute)
                                     {
                                         finalStatus = PAStausenum.directorcheck;
                                     }
@@ -631,10 +678,28 @@ namespace TradingLicense.Web.Controllers
                         if (businessCodelist.All(q => q != item.BC_ID))
                         {
                             ctx.APP_L_BCs.Remove(item);
+
+                            APP_LOG applog1 = new APP_LOG();
+                            applog1.APP_ID = applicationId;
+                            string bcDesc = ctx.BCs.Where(m => m.BC_ID == item.BC_ID).Select(m => m.C_R_DESC).SingleOrDefault();                           
+                            applog1.APPSTATUSID = applicationModel.APPSTATUSID;
+                            applog1.ACTIVITY = "Kod Perniagaan " + bcDesc + " dipadamkan";                            
+                            applog1.TIME_STAMP = DateTime.Now;
+                            applog1.USERSID = ProjectSession.UserID;
+                            ctx.APP_LOGs.Add(applog1);
                         }
                         else
                         {
                             existingRecord.Add(item.BC_ID);
+
+                            APP_LOG applog1 = new APP_LOG();
+                            applog1.APP_ID = applicationId;
+                            string bcDesc = ctx.BCs.Where(m => m.BC_ID == item.BC_ID).Select(m => m.C_R_DESC).SingleOrDefault();
+                            applog1.APPSTATUSID = applicationModel.APPSTATUSID;
+                            applog1.ACTIVITY = "Kod Perniagaan " + bcDesc + " ditambah";
+                            applog1.TIME_STAMP = DateTime.Now;
+                            applog1.USERSID = ProjectSession.UserID;
+                            ctx.APP_LOGs.Add(applog1);
                         }
                         int? period = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.PERIOD).FirstOrDefault();
                         int? periodQuantity = ctx.BCs.Where(b => b.BC_ID == item.BC_ID).Select(b => b.PERIOD_Q).FirstOrDefault();
@@ -1103,7 +1168,7 @@ namespace TradingLicense.Web.Controllers
             else
             {
                 applog.APPSTATUSID = applicationModel.APPSTATUSID;
-                applog.ACTIVITY = activity;
+                applog.ACTIVITY = "Dihantar ke" + activity;
             }            
             applog.TIME_STAMP = DateTime.Now;
             applog.USERSID = ProjectSession.UserID;            
@@ -1466,8 +1531,11 @@ namespace TradingLicense.Web.Controllers
                 {
                     foreach (string id in ids)
                     {
-                        int businessCodeId = Convert.ToInt32(id);
-                        businessCodelist.Add(businessCodeId);
+                        if (!string.IsNullOrWhiteSpace(id))
+                        {
+                            int businessCodeId = Convert.ToInt32(id);
+                            businessCodelist.Add(businessCodeId);
+                        }
                     }
                 }
 
@@ -5464,8 +5532,7 @@ namespace TradingLicense.Web.Controllers
 
                 }
                 else
-                {
-                    meetingModel.MT_DATE = DateTime.Today;
+                {                    
                     meetingModel.USERSID = ProjectSession.UserID;
                     meetingModel.CREATED = DateTime.Now;
                 }
@@ -5608,6 +5675,41 @@ namespace TradingLicense.Web.Controllers
                 Application = result;
             }
             return Json(new DataTablesResponse(requestModel.Draw, Application, totalRecord, totalRecord), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Add BusinessCode into Application (Supervisor)
+        /// <summary>
+        /// Add Applications to Meeting
+        /// </summary>
+        /// <param name="Appid"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SaveBusinessCode(int APP_ID, int bcList)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                
+
+                APP_L_BC pad = new APP_L_BC();
+                pad.APP_ID = APP_ID;
+                pad.BC_ID = bcList;                                
+                ctx.APP_L_BCs.Add(pad);                                    
+                ctx.SaveChanges();
+                TempData["SuccessMessage"] = "Kod perniagaan berjaya ditambah ke dalam permohonan.";
+
+                APP_LOG applog1 = new APP_LOG();
+                applog1.APP_ID = APP_ID;
+                string bcDesc = ctx.BCs.Where(m => m.BC_ID == bcList).Select(m => m.C_R_DESC).SingleOrDefault();
+                applog1.APPSTATUSID = (int)Enums.PAStausenum.supervisorcheck;
+                applog1.ACTIVITY = "Kod Perniagaan " + bcDesc + " ditambah";
+                applog1.TIME_STAMP = DateTime.Now;
+                applog1.USERSID = ProjectSession.UserID;
+                ctx.APP_LOGs.Add(applog1);
+
+            }
+
+            return Redirect(Url.Action("ManageApplication", "Application") + "?Id=" + APP_ID);
         }
         #endregion
 

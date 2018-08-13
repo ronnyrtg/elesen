@@ -15,7 +15,7 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string MT_DESC { get; set; }
-        public DateTime MT_DATE { get; set; }
+        public DateTime? MT_DATE { get; set; }
         public int USERSID { get; set; }
         public DateTime CREATED { get; set; }
         public bool ACTIVE { get; set; }

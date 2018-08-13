@@ -13,7 +13,7 @@ namespace TradingLicense.Model
         [Required(ErrorMessage = "Sila masukkan tajuk mesyuarat")]
         [Display(Name = "Tajuk Mesyuarat")]
         public string MT_DESC { get; set; }
-        public DateTime MT_DATE { get; set; }
+        public DateTime? MT_DATE { get; set; }
         public int USERSID { get; set; }
         public DateTime CREATED { get; set; }
         public bool ACTIVE { get; set; }

@@ -397,6 +397,7 @@ namespace TradingLicense.Data.Migrations
                 new APPSTATUS {STATUSDESC="Submitted to clerk" ,PROGRESS =10},
                 new APPSTATUS {STATUSDESC="Processing by Clerk" ,PROGRESS =20},
                 new APPSTATUS {STATUSDESC="Route Unit" ,PROGRESS =30},
+                new APPSTATUS {STATUSDESC="Supervisor Check" ,PROGRESS =35},
                 new APPSTATUS {STATUSDESC="Awaiting Director Response" ,PROGRESS =40},
                 new APPSTATUS {STATUSDESC="Meeting" ,PROGRESS =50},
                 new APPSTATUS {STATUSDESC="Scheduled For Meeting" ,PROGRESS =60},
