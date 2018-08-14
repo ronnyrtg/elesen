@@ -360,17 +360,17 @@ namespace TradingLicense.Data.Migrations
 
             var individuals = new List<INDIVIDUAL>
             {
-                new INDIVIDUAL{FULLNAME="Ali Bin Abu",MYKADNO="710213-12-4820",NAT_ID=1,PHONE="0108103140",ADD_IC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IND_EMAIL="aliabu@yahoo.com",GENDER=1},
-                new INDIVIDUAL{FULLNAME="Siti Aminah",MYKADNO="610122-12-4933",NAT_ID=1,PHONE="0112546778",ADD_IC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IND_EMAIL="sitiaminah@gmail.com",GENDER=2},
-                new INDIVIDUAL{FULLNAME="Chin Chee Kiong",MYKADNO="500101-12-5129",NAT_ID=1,PHONE="0148552370",ADD_IC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IND_EMAIL="chinchee70@gmail.com",GENDER=1},
-                new INDIVIDUAL{FULLNAME="Abdul Azis Hj Ibrahim",MYKADNO="600501125629",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Arif Koh",MYKADNO="H0392480",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Chan Chew Houi",MYKADNO="790402086273",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Chua Kai Wen",MYKADNO="760814125411",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Harilal Vasudevan",MYKADNO="660823125343",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Hilary Koh Chin Kian @ Koh Chean Kan",MYKADNO="551109125597",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Hj Mohd Ismail Bin Abdul Rahman",MYKADNO="540521125093",NAT_ID=1,GENDER=1},
-                new INDIVIDUAL{FULLNAME="Imelda Binti Michael",MYKADNO="840110125552",NAT_ID=1,GENDER=2},
+                new INDIVIDUAL{FULLNAME="Ali Bin Abu",MYKADNO="710213-12-4820",CITIZENID=1,PHONE="0108103140",ADD_IC="No.3, Kg. Tg. Aru, Jalan Tg. Aru, 87000 W.P.Labuan",IND_EMAIL="aliabu@yahoo.com",GENDER=1},
+                new INDIVIDUAL{FULLNAME="Siti Aminah",MYKADNO="610122-12-4933",CITIZENID=1,PHONE="0112546778",ADD_IC="Lot 20, Blok F, Taman Mutiara, 87000 W.P.Labuan",IND_EMAIL="sitiaminah@gmail.com",GENDER=2},
+                new INDIVIDUAL{FULLNAME="Chin Chee Kiong",MYKADNO="500101-12-5129",CITIZENID=1,PHONE="0148552370",ADD_IC="Lot 13, Blok D, Jalan Merdeka, Pusat Bandar, 87000 W.P.Labuan",IND_EMAIL="chinchee70@gmail.com",GENDER=1},
+                new INDIVIDUAL{FULLNAME="Abdul Azis Hj Ibrahim",MYKADNO="600501125629",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Arif Koh",MYKADNO="H0392480",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Chan Chew Houi",MYKADNO="790402086273",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Chua Kai Wen",MYKADNO="760814125411",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Harilal Vasudevan",MYKADNO="660823125343",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Hilary Koh Chin Kian @ Koh Chean Kan",MYKADNO="551109125597",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Hj Mohd Ismail Bin Abdul Rahman",MYKADNO="540521125093",CITIZENID=1,GENDER=1},
+                new INDIVIDUAL{FULLNAME="Imelda Binti Michael",MYKADNO="840110125552",CITIZENID=1,GENDER=2},
             };
             individuals.ForEach(s => context.INDIVIDUALs.Add(s));
             context.SaveChanges();

@@ -11,6 +11,8 @@
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
     List<TradingLicense.Model.BusinessCodeModel> bcList = new List<TradingLicense.Model.BusinessCodeModel>();
     List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
+    List<TradingLicense.Model.CitizenModel> citizenList = new List<TradingLicense.Model.CitizenModel>();
+    List<TradingLicense.Model.RaceModel> raceList = new List<TradingLicense.Model.RaceModel>();
     List<TradingLicense.Model.CompanyModel> companiesList = new List<TradingLicense.Model.CompanyModel>();
     List<TradingLicense.Model.Select2ListItem> businessCodeList = new List<TradingLicense.Model.Select2ListItem>();
     List<TradingLicense.Model.AppStatusModel> appStatusList = new List<TradingLicense.Model.AppStatusModel>();
@@ -29,6 +31,12 @@
 
         var sectors = ctx.SECTORs.ToList();
         sectorsList = Mapper.Map<List<TradingLicense.Model.SectorModel>>(sectors);
+
+        var citizens = ctx.CITIZENs.ToList();
+        citizenList = Mapper.Map<List<TradingLicense.Model.CitizenModel>>(citizens);
+
+        var races = ctx.RACEs.ToList();
+        raceList = Mapper.Map<List<TradingLicense.Model.RaceModel>>(races);
 
         var companies = ctx.COMPANIES.ToList();
         companiesList = Mapper.Map<List<TradingLicense.Model.CompanyModel>>(companies);
@@ -1325,7 +1333,7 @@
                                                 <div class="col-sm-12 col-lg-6">
                                                     <div class="form-group">
                                                         <div class="control-label">Warganegara</div>
-                                                        @Html.TextBox("Citizen", null, new { @class = "form-control" })
+                                                        @Html.DropDownList("Citizen", new SelectList(citizenList.OrderBy(x => x.CITIZENID), "CITIZENID", "CITIZEN_DESC"), "Pilih kewarganegaraan", new { @class = "form-control" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -1333,7 +1341,7 @@
                                                 <div class="col-sm-12 col-lg-6">
                                                     <div class="form-group">
                                                         <div class="control-label">Bangsa</div>
-                                                        @Html.TextBox("Race", null, new { @class = "form-control" })
+                                                        @Html.DropDownList("Race", new SelectList(raceList.OrderBy(x => x.RACEID), "RACEID", "RACE_DESC"), "Pilih bangsa", new { @class = "form-control" })
                                                     </div>
                                                 </div>
                                             </div>

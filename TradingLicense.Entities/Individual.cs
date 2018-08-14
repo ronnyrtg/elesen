@@ -16,7 +16,9 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string MYKADNO { get; set; }
 
-        public int? NAT_ID { get; set; }
+        public int? CITIZENID { get; set; }
+
+        public int? RACEID { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
@@ -41,5 +43,7 @@ namespace TradingLicense.Entities
         }
 
         public virtual ATTACHMENT ATTACHMENT { get; set; }
+        public virtual CITIZEN_M CITIZEN_M{ get; set; }
+        public virtual RACE_M RACE_M { get; set; }
     }
 }

@@ -702,7 +702,7 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddCompany(int id, string appType, string Cname, string RegNo, float? AllowedCapital, float? IssuedCapital, float? PUC_Cash, float? PUC_Others, float? BankSource, float? DepositSource, float? LoanSource, string LoanSourceName, float? OtherSource, string OtherSourceName, string comPhone, string comAddress, DateTime? ssmRegister, DateTime? ssmExpire)
+        public ActionResult AddCompany(int id, string Cname, string RegNo, float? AllowedCapital, float? IssuedCapital, float? PUC_Cash, float? PUC_Others, float? BankSource, float? DepositSource, float? LoanSource, string LoanSourceName, float? OtherSource, string OtherSourceName, string comPhone, string comAddress, DateTime? ssmRegister, DateTime? ssmExpire)
         {
             using (var ctx = new LicenseApplicationContext())
             {
@@ -730,7 +730,7 @@ namespace TradingLicense.Web.Controllers
 
             }
 
-            return Redirect(Url.Action("Manage" + appType, appType) + "?id=" + id);
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
         }
 
         #endregion
@@ -1958,14 +1958,15 @@ namespace TradingLicense.Web.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddIndividual(int id, string appType, string Fname, string MykadNo, string Citizen, string Race, string PHONE, string ADD_IC )
+        public ActionResult AddIndividual(int id, string Fname, string MykadNo, int? Citizen, int? Race, string PHONE, string ADD_IC )
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 INDIVIDUAL ind = new INDIVIDUAL();
                 ind.FULLNAME = Fname;
                 ind.MYKADNO = MykadNo;
-                
+                ind.CITIZENID = Citizen;
+                ind.RACEID = Race;
                 ind.PHONE = PHONE;
                 ind.ADD_IC = ADD_IC;
                 ctx.INDIVIDUALs.Add(ind);
@@ -1974,7 +1975,7 @@ namespace TradingLicense.Web.Controllers
                 
             }
 
-            return Redirect(Url.Action("Manage"+appType, appType) + "?id=" + id);
+            return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
         }
 
         #endregion

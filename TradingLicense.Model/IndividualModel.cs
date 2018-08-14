@@ -17,7 +17,9 @@ namespace TradingLicense.Model
         public string MYKADNO { get; set; }
 
         [Display(Name = "Kewarganegaraan")]
-        public int? NAT_ID { get; set; }
+        public int? CITIZENID { get; set; }
+        [Display(Name = "Kaum")]
+        public int? RACEID { get; set; }
 
         [Required(ErrorMessage = "Sila masukkan alamat mengikut IC")]
         [Display(Name = "Address")]
