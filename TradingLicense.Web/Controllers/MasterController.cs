@@ -1960,6 +1960,66 @@ namespace TradingLicense.Web.Controllers
         [HttpPost]
         public ActionResult AddIndividual(int id, string Fname, string MykadNo, int? Citizen, int? Race, string PHONE, string ADD_IC )
         {
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    AttachmentModel attachmentModel = new AttachmentModel();
+                    
+                    HttpFileCollectionBase files = Request.Files;
+
+                    HttpPostedFileBase file = files[0];
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        int nextIndID = ctx.INDIVIDUALs.ToList().Count();
+                        if (nextIndID == 0)
+                        {
+                            nextIndID = 1;
+                        }
+                    }
+
+                    string fname;
+
+                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    {
+                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
+                    }
+                    else
+                    {
+                        fname = file.FileName;
+                    }
+
+                    var fileName = fname;
+                    var individualIdLoc = Request.Params["individualid"];
+
+                    var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                    individualUploadPath = Path.Combine(individualUploadPath, individualIdLoc);
+                    if (!Directory.Exists(individualUploadPath))
+                    {
+                        Directory.CreateDirectory(individualUploadPath);
+                    }
+                    fname = Path.Combine(individualUploadPath, fname);
+                    file.SaveAs(fname);
+
+                    attachmentModel.FILENAME = fileName;
+
+                    using (var ctx = new LicenseApplicationContext())
+                    {
+                        var attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
+                        ctx.ATTACHMENTs.AddOrUpdate(attachment);
+                        ctx.SaveChanges();
+                        
+                    }
+
+                    return Json("File Uploaded Successfully!#"
+                        + TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + individualIdLoc + "/" + fileName);
+                }
+                catch (Exception ex)
+                {
+                    return Json("Error occurred. Error details: " + ex.Message);
+                }
+            }
             using (var ctx = new LicenseApplicationContext())
             {
                 INDIVIDUAL ind = new INDIVIDUAL();

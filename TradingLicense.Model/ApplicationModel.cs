@@ -65,15 +65,16 @@ namespace TradingLicense.Model
 
         //Hawker Application & Stall Application
         public int? StallType { get; set; }
+        //Valid date & expire date
         public DateTime? V_START { get; set; }
-        public DateTime? V_STOP { get; set; }
-        public string GOODS_TYPE { get; set; }
+        public DateTime? V_STOP { get; set; }        
+        //Operation Hour start and stop
         public int? H_START { get; set; }
-        public int? H_STOP { get; set; }
-        public int? OWNER_ID { get; set; }
+        public int? H_STOP { get; set; }        
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
         public int? HELPERC { get; set; }
+        //stall use PremiseNo, Hawker use this as Location
         public string PREMISNO { get; set; }
 
         //Entertainment Application

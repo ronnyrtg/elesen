@@ -104,8 +104,8 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">Warganegara<span class="cfont">*</span></div>
-                        @Html.DropDownListFor(m => m.Individual.NAT_ID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Individual.NAT_ID)
+                        @Html.DropDownListFor(m => m.Individual.CITIZENID, new SelectList(nationalityList, "Value", "Text"), new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Individual.CITIZENID)
                     </div>
                 </div>
             </div>

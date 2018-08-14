@@ -9,6 +9,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     List<TradingLicense.Model.BusinessTypeModel> businessTypeList = new List<TradingLicense.Model.BusinessTypeModel>();
+    List<TradingLicense.Model.Select2ListItem> indList = new List<TradingLicense.Model.Select2ListItem>();
     List<TradingLicense.Model.BusinessCodeModel> bcList = new List<TradingLicense.Model.BusinessCodeModel>();
     List<TradingLicense.Model.SectorModel> sectorsList = new List<TradingLicense.Model.SectorModel>();
     List<TradingLicense.Model.CitizenModel> citizenList = new List<TradingLicense.Model.CitizenModel>();
@@ -55,12 +56,7 @@
 
         var banner = ctx.BCs.Where(ba => ba.LIC_TYPEID == (int)Enums.ApplicationTypeID.BannerApplication).ToList();
         bannerCodeList = Mapper.Map<List<TradingLicense.Model.BusinessCodeModel>>(banner);
-
-        if (Model.ATT_ID != 0)
-        {
-            var profile = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.ATT_ID).SingleOrDefault();
-            profilePic = profile.ToString();
-        }
+        
     }
 
     List<SelectListItem> LicenseList = new List<SelectListItem>();
@@ -267,7 +263,7 @@
                     </div>
                 </div>
             }
-            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication || Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.StallApplication || Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.HawkerApplication)
             {
                 if (string.IsNullOrWhiteSpace(Model.BusinessCodeids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated || Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor)
                 {
@@ -278,8 +274,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group" id="businessCode">
+                    <div class="row premise">
+                        <div class="form-group">
                             <div class="col-sm-6">
                                 @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), new { @id = "businessCodeList", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
                                 @Html.HiddenFor(model => model.BusinessCodeids)
@@ -287,9 +283,23 @@
                         @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor)
                         {
                             <div class="col-sm-2 col-lg-6">
-                                <input type="button" class="btn btn-primary" value="Tambah Kod Perniagaan Baru" onclick='return AddNewBC();' />
+                                <input type="button" class="btn btn-primary" value="Tambah Kod Perniagaan" onclick='return AddNewBC();' />
                             </div>
                         }
+                        </div>
+                    </div>
+                    <div class="row hawker">
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), new { @id = "businessCodeList2", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
+                                @Html.HiddenFor(model => model.BusinessCodeids)
+                            </div>
+                            @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor)
+                        {
+                                <div class="col-sm-2 col-lg-6">
+                                    <input type="button" class="btn btn-primary" value="Tambah Kod Perniagaan" onclick='return AddNewBC();' />
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -312,50 +322,52 @@
                 </div>
                 }
             }<br />
+            if (Model.LIC_TYPEID != (int)Enums.ApplicationTypeID.BannerApplication)
+            {
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-10 col-lg-6">
+                            <div class="control-label premise">Nama Pemohon (Pengurus/Pengarah Syarikat)<span class="cfont">*</span></div>
+                            <div class="control-label hawker" style="display:none;">Nama Pemilik<span class="cfont">*</span></div>
+                        </div>
+                    </div>
+                </div>
+                if (string.IsNullOrWhiteSpace(Model.Individualids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
+                                @Html.HiddenFor(model => model.Individualids)
+                                @Html.HiddenFor(model => model.newIndividualsList)
+                            </div>
+                            @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
+                            {
+                                <div class="col-sm-2 col-lg-6">
+                                    <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-lg-6">
+                                <div class="well well-sm">
+                                    @foreach (var item in Model.selectedIndividualList)
+                                    {
+                                        @item.text.ToString();<br />
 
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="col-sm-10 col-lg-6">
-                                            <div class="control-label premise">Nama Pemohon (Pengurus/Pengarah Syarikat)<span class="cfont">*</span></div>
-                                            <div class="control-label hawker" style="display:none;">Nama Pemilik<span class="cfont">*</span></div>
-                                        </div>
-                                    </div>
+                                    }
+                                    @Html.HiddenFor(model => model.selectedIndividualList)
                                 </div>
-                                if (string.IsNullOrWhiteSpace(Model.Individualids) || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                                {
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="col-sm-10 col-lg-6">
-                                            @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
-                                            @Html.HiddenFor(model => model.Individualids)
-                                            @Html.HiddenFor(model => model.newIndividualsList)
-                                        </div>
-                                        @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                        {
-                                            <div class="col-sm-2 col-lg-6">
-                                                <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                }
-                                else
-                                {
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="col-sm-10 col-lg-6">
-                                            <div class="well well-sm">
-                                                @foreach (var item in Model.selectedIndividualList)
-                                                {
-                                                    @item.text.ToString();<br />
-
-                                                }
-                                                @Html.HiddenFor(model => model.selectedIndividualList)
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
                                 <div class="row company-name">
                                     <div class="form-group">
                                         <div class="col-sm-10 col-lg-6">
@@ -541,7 +553,7 @@
                                     <div class="col-md-4 col-sm-3 hawker" style="display:none;">
                                         <div class="form-group">
                                             <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                            @Html.TextBoxFor(m => m.V_START, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                                             @Html.ValidationMessageFor(m => m.START_RENT)
                                         </div>
                                     </div>
@@ -550,7 +562,7 @@
                                     <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
                                         <div class="form-group">
                                             <div class="control-label">Hingga<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                            @Html.TextBoxFor(m => m.V_STOP, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
                                             @Html.ValidationMessageFor(m => m.STOP_RENT)
                                         </div>
                                     </div>
@@ -578,10 +590,10 @@
                                 <div class="row hawker" style="display:none;">
                                     <div class="form-group">
                                         <div class="col-sm-10 col-lg-6">
-                                            @Html.DropDownList("helperAList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperAList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
+                                            @Html.DropDownListFor(m => m.HELPERA, new SelectList(indList, "IND_ID", "FULLNAME"), "Select  Mykad/Passport No", new { @id = "indList", @class = "form-control" }) 
                                         </div>
                                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
-                        {
+                                        {
                                             <div class="col-sm-2 col-lg-6 hawker" style="display:none;">
                                                 <input type="button" class="btn btn-primary" value="Daftar Individu Baru" onclick='return AddIndividual();' />
                                             </div>
@@ -598,7 +610,7 @@
                                 <div class="row hawker" style="display:none;">
                                     <div class="form-group">
                                         <div class="col-sm-10 col-lg-6">
-                                            @Html.DropDownList("helperBList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperBList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
+                                            @Html.DropDownListFor(m => m.HELPERB, new SelectList(indList, "IND_ID", "FULLNAME"), "Select  Mykad/Passport No", new { @id = "indList2", @class = "form-control" })
                                         </div>
                                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
@@ -618,7 +630,7 @@
                                 <div class="row stall" style="display:none;">
                                     <div class="form-group">
                                         <div class="col-sm-10 col-lg-6">
-                                            @Html.DropDownList("helperCList", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "helperCList", @class = "form-control", multiple = "false", onchange = "changeIndindividual()" })
+                                            @Html.DropDownListFor(m => m.HELPERC, new SelectList(indList, "IND_ID", "FULLNAME"), "Select  Mykad/Passport No", new { @id = "indList3", @class = "form-control" })
                                         </div>
                                         @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                         {
@@ -632,8 +644,8 @@
                                     <div class="col-md-4 col-sm-3">
                                         <div class="form-group">
                                             <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.START_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                            @Html.ValidationMessageFor(m => m.START_RENT)
+                                            @Html.TextBoxFor(m => m.V_START, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                            @Html.ValidationMessageFor(m => m.V_START)
                                         </div>
                                     </div>
                                 </div>
@@ -641,8 +653,8 @@
                                     <div class="col-md-4 col-sm-3">
                                         <div class="form-group">
                                             <div class="control-label">Hingga<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.STOP_RENT, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                                            @Html.TextBoxFor(m => m.V_STOP, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                                            @Html.ValidationMessageFor(m => m.V_STOP)
                                         </div>
                                     </div>
                                 </div>
@@ -1301,7 +1313,7 @@
                         <!-- Add Individual-->
                         <div id="showAddIndividual" class="modal fade" role="dialog">
                             <div class="modal-dialog modal-lg">
-                                @using (Html.BeginForm("AddIndividual", "Master", FormMethod.Post, new { name = "frmsaveIndividual", id = "frmsaveIndividual" }))
+                                @using (Html.BeginForm("AddIndividual", "Master", FormMethod.Post, new { name = "frmsaveIndividual", id = "frmsaveIndividual", enctype = "multipart/form-data" }))
                                 {
                                     @Html.AntiForgeryToken()
                                     @Html.Hidden("id", Model.APP_ID)
@@ -1360,33 +1372,14 @@
                                                         @Html.TextArea("ADD_IC", null, new { @class = "form-control" })
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row hawker" style="display:none">
-                                                <div class="col-sm-12">
-                                                    <div class="form-group">
-                                                        <div class="control-label">Gambar :</div>
-                                                        @if (profilePic == null)
-                                                        {
-                                                            <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/profile_pic/" />
-                                                        }
-                                                        else
-                                                        {
-                                                            <img class="img-thumbnail" id="profilePic" width="150" src="~/images/member-default.jpg" />
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </div>                                            
                                             <div class="row hawker" style="display:none">
                                                 <div class="col-sm-9 col-lg-4">
                                                     <div class="form-group">
-                                                        <input type="file" class="btn btn-default" id="FileUpload1" />
+                                                        <div class="control-label">Gambar</div>
+                                                        <input type="file" name="filePic" class="btn btn-default" id="FileUpload1" />                                                       
                                                     </div>
-                                                </div>
-                                                <div class="col-sm-3 col-lg-8">
-                                                    <div class="form-group">
-                                                        <input type="button" class="btn btn-default" id="btnUpload" value="Tukar Gambar" />
-                                                    </div>
-                                                </div>
+                                                </div>                                               
                                             </div>
 
                                             <div class="modal-footer">
@@ -2081,8 +2074,6 @@
                                     });
                                 }
 
-
-
                                 function bindCode(){
 
                                     function formatBusinessCodes(data) {
@@ -2134,6 +2125,137 @@
                                             }
                                         }
                                     });
+
+                                    $("#businessCodeList2").select2({
+                                        placeholder: "Search for a Business Code",
+                                        minimumInputLength: 0,
+                                        width: '100%',
+                                        templateResult: formatBusinessCodes,
+                                        templateSelection: formatSelectionBusinessCodes,
+                                        ajax: {
+                                            type: "POST",
+                                            url: encodeURI('@Url.Action("FillBusinessCode", "Application")'),
+                                            //Data: allows us to pass a parameter to the controller
+                                            data: function (query) {
+                                                //console.log(query)
+                                                return {
+                                                    query: query.term,
+                                                    selectedLic: $('#LIC_TYPEID').val(),
+                                                    selectedSector:  $("#SectorID").val(),
+                                                    selectedStall:  $("#StallType").val()
+                                                }
+                                            },
+                                            //processes the results from the JSON method and gives us the select list
+                                            processResults: function (data) {
+                                                //console.log(data)
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+                                };
+
+
+                                function bindInd(){
+
+                                    function formatInds(data) {
+                                        var r = data.text.split('~');
+                                        var $result = $(
+                                            '<div class="row">' +
+                                                '<div class="col-md-12">' + r[0] + '</div>' +
+                                            '</div>'
+                                        );
+                                        return $result;
+                                    }
+
+                                    function formatSelectionInds(data) {
+                                        var r = data.text.split('~');
+                                        var $result = $(
+                                            '<span>' +
+                                                r[0] +
+                                            '</span>'
+                                        );
+                                        return $result;
+                                    }
+
+                                    $("#indList").select2({
+                                        placeholder: "Pilih Nama atau MyKad",
+                                        minimumInputLength: 0,
+                                        width: '100%',
+                                        templateResult: formatInds,
+                                        templateSelection: formatSelectionInds,
+                                        ajax: {
+                                            type: "POST",
+                                            url: encodeURI('@Url.Action("FillIndividual", "Application")'),
+                                            //Data: allows us to pass a parameter to the controller
+                                            data: function (query) {
+                                                //console.log("query indList")
+                                                return {
+                                                    query: query.term,
+                                                }
+                                            },
+                                            //processes the results from the JSON method and gives us the select list
+                                            processResults: function (data) {
+                                                //console.log("data indList")
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+
+                                    $("#indList2").select2({
+                                        placeholder: "Pilih Nama atau MyKad",
+                                        minimumInputLength: 0,
+                                        width: '100%',
+                                        templateResult: formatInds,
+                                        templateSelection: formatSelectionInds,
+                                        ajax: {
+                                            type: "POST",
+                                            url: encodeURI('@Url.Action("FillIndividual", "Application")'),
+                                            //Data: allows us to pass a parameter to the controller
+                                            data: function (query) {
+                                                //console.log("query indList")
+                                                return {
+                                                    query: query.term,
+                                                }
+                                            },
+                                            //processes the results from the JSON method and gives us the select list
+                                            processResults: function (data) {
+                                                //console.log("data indList")
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+
+                                    $("#indList3").select2({
+                                        placeholder: "Pilih Nama atau MyKad",
+                                        minimumInputLength: 0,
+                                        width: '100%',
+                                        templateResult: formatInds,
+                                        templateSelection: formatSelectionInds,
+                                        ajax: {
+                                            type: "POST",
+                                            url: encodeURI('@Url.Action("FillIndividual", "Application")'),
+                                            //Data: allows us to pass a parameter to the controller
+                                            data: function (query) {
+                                                //console.log("query indList")
+                                                return {
+                                                    query: query.term,
+                                                }
+                                            },
+                                            //processes the results from the JSON method and gives us the select list
+                                            processResults: function (data) {
+                                                //console.log("data indList")
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
                                 };
 
                                 function bcCode(){
@@ -2157,7 +2279,7 @@
                                                    r[0] + ' | '  + r[1] +
                                                '</span>'
                                            );
-                                        }                                       
+                                        }
                                         return $result;
                                     }
 
@@ -2177,7 +2299,7 @@
                                                     query: query.term,
                                                     selectedLic: $('#LIC_TYPEID').val(),
                                                     selectedSector:  $("#SectorID").val()
-                                                    
+
                                                 }
                                             },
                                             //processes the results from the JSON method and gives us the select list
@@ -2225,6 +2347,9 @@
 
                                     $("#businessCodeList").select2({ width: '100%' });
                                     $("#premiseFeeList").select2({ width: '100%' });
+                                    $("#indList").select2({ width: '100%' });
+                                    $("#indList2").select2({ width: '100%' });
+                                    $("#indList3").select2({ width: '100%' });
                                     $("#individualList").select2({ width: '100%' });
                                     $("#companyList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
 
@@ -2633,7 +2758,7 @@
                                 }
 
                                 function changeLicense() {
-
+                                    bindInd();
                                     bindCode();
                                     if ($("#LIC_TYPEID").val() == 1) {
                                         bindLicense();

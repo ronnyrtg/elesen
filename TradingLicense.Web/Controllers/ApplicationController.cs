@@ -1157,6 +1157,18 @@ namespace TradingLicense.Web.Controllers
                 ctx.SaveChanges();
             }
 
+            if (application.LIC_TYPEID == (int)Enums.ApplicationTypeID.HawkerApplication || application.LIC_TYPEID == (int)Enums.ApplicationTypeID.StallApplication)
+            {
+                application.BC_ID = applicationModel.BC_ID;
+                application.HELPERA = applicationModel.HELPERA;
+                application.HELPERB = applicationModel.HELPERB;
+                application.HELPERC = applicationModel.HELPERC;
+                application.V_START = applicationModel.V_START;
+                application.V_STOP = applicationModel.V_STOP;
+                ctx.APPLICATIONs.AddOrUpdate(application);
+                ctx.SaveChanges();
+            }
+
             APP_LOG applog = new APP_LOG();
             applog.APP_ID = applicationId;
             string activity = ctx.APPSTATUS.Where(m => m.APPSTATUSID == finalStatus).Select(m => m.STATUSDESC).SingleOrDefault();
@@ -4893,9 +4905,9 @@ namespace TradingLicense.Web.Controllers
                                 lineheight = lineheight + 15;
                                 graph.DrawString("JENIS BARANG DIJAJA", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                if (item.GOODS_TYPE != null)
+                                if (item.BC.C_R_DESC != null)
                                 {
-                                    graph.DrawString(item.GOODS_TYPE, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                    graph.DrawString(item.BC.C_R_DESC, nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 }
                                 lineheight = lineheight + 15;
                                 graph.DrawString("MASA PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);

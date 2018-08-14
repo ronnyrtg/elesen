@@ -68,13 +68,10 @@ namespace TradingLicense.Entities
         public int? BC_ID { get; set; }
 
         //Hawker Application & Stall Application
+        //Valid date & expire date
         public DateTime? V_START { get; set; }
-        public DateTime? V_STOP { get; set; }
-        //Type of goods sold
-        [StringLength(255)]
-        [Column(TypeName = "VARCHAR2")]
-        public string GOODS_TYPE { get; set; }
-        //Location & Premise No
+        public DateTime? V_STOP { get; set; }        
+        //Location or Premise No
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string PREMISNO { get; set; }
