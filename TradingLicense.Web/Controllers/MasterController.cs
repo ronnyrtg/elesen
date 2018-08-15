@@ -1010,18 +1010,26 @@ namespace TradingLicense.Web.Controllers
                     }
 
                     var fileName = fname;
-                    var individualIdLoc = Request.Params["individualid"];
+                    var extension = Path.GetExtension(fname);
+                    var individualIdLoc = Request.Params["individualid"] + extension;
 
                     var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
-                    individualUploadPath = Path.Combine(individualUploadPath, individualIdLoc);
+                    var sourcePath = Path.Combine(individualUploadPath, fileName);                    
+                    var destinationPath = Path.Combine(individualUploadPath, individualIdLoc);
+
                     if (!Directory.Exists(individualUploadPath))
                     {
                         Directory.CreateDirectory(individualUploadPath);
                     }
-                    fname = Path.Combine(individualUploadPath, fname);
-                    file.SaveAs(fname);
+                    if (System.IO.File.Exists(destinationPath))
+                    {
+                        System.IO.File.Delete(destinationPath);
+                    }
 
-                    attachmentModel.FILENAME = fileName;
+                    file.SaveAs(sourcePath);
+                    System.IO.File.Move(sourcePath, destinationPath);
+
+                    attachmentModel.FILENAME = individualIdLoc;
 
                     using (var ctx = new LicenseApplicationContext())
                     {
@@ -1959,82 +1967,106 @@ namespace TradingLicense.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         public ActionResult AddIndividual(int id, string Fname, string MykadNo, int? Citizen, int? Race, string PHONE, string ADD_IC )
-        {
-            if (Request.Files.Count > 0)
+        {            
+            try
             {
-                try
+                if (Request.Files.Count > 0)
                 {
                     AttachmentModel attachmentModel = new AttachmentModel();
-                    
+
                     HttpFileCollectionBase files = Request.Files;
 
                     HttpPostedFileBase file = files[0];
+
                     using (var ctx = new LicenseApplicationContext())
                     {
-                        int nextIndID = ctx.INDIVIDUALs.ToList().Count();
+
+                        int nextIndID = ctx.INDIVIDUALs.OrderByDescending(m => m.IND_ID).Select(m => m.IND_ID).First();
                         if (nextIndID == 0)
                         {
                             nextIndID = 1;
                         }
-                    }
-
-                    string fname;
-
-                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                    {
-                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                        fname = testfiles[testfiles.Length - 1];
-                    }
-                    else
-                    {
-                        fname = file.FileName;
-                    }
-
-                    var fileName = fname;
-                    var individualIdLoc = Request.Params["individualid"];
-
-                    var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
-                    individualUploadPath = Path.Combine(individualUploadPath, individualIdLoc);
-                    if (!Directory.Exists(individualUploadPath))
-                    {
-                        Directory.CreateDirectory(individualUploadPath);
-                    }
-                    fname = Path.Combine(individualUploadPath, fname);
-                    file.SaveAs(fname);
-
-                    attachmentModel.FILENAME = fileName;
-
-                    using (var ctx = new LicenseApplicationContext())
-                    {
+                        else
+                        {
+                            ++nextIndID;
+                        }
+                        string fname;
+                        if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                        {
+                            string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = file.FileName;
+                        }
+                        var fileName = fname;
+                        var extension = Path.GetExtension(fname);
+                        var individualIdLoc = nextIndID.ToString() + extension;
+                        var individualUploadPath = Path.Combine(Server.MapPath(TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument), "Individual");
+                        var sourcePath = Path.Combine(individualUploadPath, fileName);
+                        if (!Directory.Exists(Path.GetDirectoryName(sourcePath)))
+                        {
+                            return Json("Source path error!");
+                        }
+                        var destinationPath = Path.Combine(individualUploadPath, individualIdLoc);
+                        if (!Directory.Exists(Path.GetDirectoryName(destinationPath)))
+                        {
+                            return Json("Destination path error!");
+                        }
+                        if (!Directory.Exists(individualUploadPath))
+                        {
+                            Directory.CreateDirectory(individualUploadPath);
+                        }
+                        // Check to see if a file already exists with the same name as the file to upload.
+                        if (System.IO.File.Exists(destinationPath))
+                        {
+                            System.IO.File.Delete(destinationPath);
+                        }
+                       
+                        file.SaveAs(sourcePath);
+                        System.IO.File.Move(sourcePath, destinationPath);                        
+                        
+                        attachmentModel.FILENAME = individualIdLoc;
                         var attachment = Mapper.Map<ATTACHMENT>(attachmentModel);
                         ctx.ATTACHMENTs.AddOrUpdate(attachment);
                         ctx.SaveChanges();
-                        
+
+                        int attID = ctx.ATTACHMENTs.Where(m => m.FILENAME == individualIdLoc).Select(m => m.ATT_ID).First();
+                        INDIVIDUAL ind = new INDIVIDUAL();
+                        ind.FULLNAME = Fname;
+                        ind.MYKADNO = MykadNo;
+                        ind.CITIZENID = Citizen;
+                        ind.RACEID = Race;
+                        ind.PHONE = PHONE;
+                        ind.ADD_IC = ADD_IC;
+                        ind.ATT_ID = attID;
+                        ctx.INDIVIDUALs.Add(ind);
+                        ctx.SaveChanges();
+                        TempData["SuccessMessage"] = "Individu berjaya ditambah.";
                     }
-
-                    return Json("File Uploaded Successfully!#"
-                        + TradingLicense.Infrastructure.ProjectConfiguration.AttachmentDocument + "Individual/" + individualIdLoc + "/" + fileName);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return Json("Error occurred. Error details: " + ex.Message);
-                }
+                    using (var ctx = new LicenseApplicationContext())
+                    {                        
+                        INDIVIDUAL ind = new INDIVIDUAL();
+                        ind.FULLNAME = Fname;
+                        ind.MYKADNO = MykadNo;
+                        ind.CITIZENID = Citizen;
+                        ind.RACEID = Race;
+                        ind.PHONE = PHONE;
+                        ind.ADD_IC = ADD_IC;                        
+                        ctx.INDIVIDUALs.Add(ind);
+                        ctx.SaveChanges();
+                        TempData["SuccessMessage"] = "Individu berjaya ditambah.";
+                    }
+                }                                      
             }
-            using (var ctx = new LicenseApplicationContext())
+            catch (Exception ex)
             {
-                INDIVIDUAL ind = new INDIVIDUAL();
-                ind.FULLNAME = Fname;
-                ind.MYKADNO = MykadNo;
-                ind.CITIZENID = Citizen;
-                ind.RACEID = Race;
-                ind.PHONE = PHONE;
-                ind.ADD_IC = ADD_IC;
-                ctx.INDIVIDUALs.Add(ind);
-                ctx.SaveChanges();
-                TempData["SuccessMessage"] = "Individu berjaya ditambah.";
-                
-            }
-
+                return Json("Error occurred. Error details: " + ex.Message);
+            }                       
             return Redirect(Url.Action("ManageApplication", "Application") + "?id=" + id);
         }
 

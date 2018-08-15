@@ -288,7 +288,7 @@
                         }
                         </div>
                     </div>
-                    <div class="row hawker">
+                    <div class="row hawker" style="display:none;">
                         <div class="form-group">
                             <div class="col-sm-6">
                                 @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), new { @id = "businessCodeList2", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
@@ -2361,18 +2361,20 @@
                                     function individualFormating(state) {
                                         if (!state.isNew) {
                                             return state.text;
-                                        }
-
-                                        state.text = state.fullName + ' (' + state.passportNo +')';
-                                        var $state = $(
-                                          '<span>' + state.text +'&nbsp;</span>'
-                                        );
+                                            
+                                        }                                     
+                                            state.text = state.fullName + ' (' + state.passportNo +')';
+                                            var $state = $(
+                                              '<span>' + state.text +'&nbsp;</span>'
+                                            );                                                                                   
+                                        
                                         if(state.isNew) {
                                             var editLink = $(' <a href="javascript:void(0);">Edit</a>');
                                             editLink.on('click', function() {
                                                 showIndividualModal(state);
                                             });
                                             $state.append(editLink);
+                                            
                                         }
                                         return $state;
                                     }
@@ -2396,21 +2398,22 @@
                                             } else {
                                                 fullName = term;
                                             }
-
-                                            return {
-                                                id: term,
-                                                text: fullName + ' (' + passportNo +')',
-                                                fullName: fullName,
-                                                passportNo: passportNo,
-                                                isNew: true
-                                            };
+                                            if(passportNo != ''){
+                                                return {
+                                                    id: term,
+                                                    text: fullName + ' (' + passportNo +')',
+                                                    fullName: fullName,
+                                                    passportNo: passportNo,
+                                                    isNew: true
+                                                };
+                                            }                                            
                                         },
                                         ajax: {
                                             type: "POST",
                                             url: encodeURI('@Url.Action("FillIndividual", "Application")'),
                                             //Data: allows us to pass a parameter to the controller
                                             data: function (query) {
-                                                console.log(query)
+                                                //console.log(query)
                                                 return { query: query.term }
                                             },
                                             //processes the results from the JSON method and gives us the select list

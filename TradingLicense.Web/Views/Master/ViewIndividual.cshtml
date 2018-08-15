@@ -274,31 +274,7 @@
             return param;
         }
 
-        function bindPaymentDueTable() {
-            $.ajax({
-                url: '@Url.Action("PaymentDueByIndividual", "Payment")',
-                type: "GET",
-                data: bindPaymentDueParams('@ViewBag.IndividualId'),
-                success: function (result) {
-                    $('#tblPaymentDue tbody').html('');
-                    $.each(result, function (index, payment) {
-                        var row = '<tr>';
-                        row += '<td>' + (parseInt(index) + 1) + '</td>';
-                        row += '<td>' + payment.PAY_FOR + '</td>';
-                        row += '<td>' + payment.AMT_DUE + '</td>';
-                        row += '<td>' + renderDate(payment.DATE_BILL) + '</td>';
-                        row += '<td>' + renderDate(payment.DUE_DATE) + '</td>';
-                        row += '<td>' + payment.BILL_BY + '</td>';
-                        row += '<td>' + payment.BILL_STATUS + '</td>';
-                        row += '</tr>';
-                        $('#tblPaymentDue tbody').append(row);
-                    });
-                },
-                error: function (err) {
-                    alert("2");
-                }
-            });
-        }
+        
 
         function bindPaymentDueParams(individualId) {
             var param = {};
@@ -306,29 +282,7 @@
             return param;
         }
 
-        function bindPaymentReceivedTable() {
-            $.ajax({
-                url: '@Url.Action("PaymentReceivedByIndividual", "Payment")',
-                type: "GET",
-                data: bindPaymentReceivedParams('@ViewBag.IndividualId'),
-                success: function (result) {
-                    $('#tblPaymentReceived tbody').html('');
-                    $.each(result, function (index, payment) {
-                        var row = '<tr>';
-                        row += '<td>' + (parseInt(index) + 1) + '</td>';
-                        row += '<td>' + payment.PaymentFor + '</td>';
-                        row += '<td>' + payment.AmountPaid + '</td>';
-                        row += '<td>' + renderDate(premise.DatePaid) + '</td>';
-                        row += '<td>' + payment.ReceivedBy + '</td>';
-                        row += '</tr>';
-                        $('#tblPaymentReceived tbody').append(row);
-                    });
-                },
-                error: function (err) {
-                    alert(err.statusText);
-                }
-            });
-        }
+        
 
         function bindPaymentReceivedParams(individualId) {
             var param = {};

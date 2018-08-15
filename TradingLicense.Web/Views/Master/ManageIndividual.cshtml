@@ -24,7 +24,7 @@
 
         if (Model.Individual.ATT_ID != null && Model.Individual.ATT_ID != 0)
         {
-            var profile = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.Individual.ATT_ID).SingleOrDefault();
+            var profile = ctx.ATTACHMENTs.Where(a => a.ATT_ID == Model.Individual.ATT_ID).Select(a => a.FILENAME).SingleOrDefault();
             profilePic = profile.ToString();
         }
 
@@ -37,7 +37,7 @@
     }
     else
     {
-        individualLoc = Model.Individual.IND_ID.ToString("D6");
+        individualLoc = Model.Individual.IND_ID.ToString();
     }
 }
 
@@ -64,13 +64,11 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <div class="control-label">
-                            Gambar :
+                            Gambar : 
                         </div>
                         @if (profilePic != null && profilePic !="")
-                            {
-                            int value = Model.Individual.IND_ID;                            
-                            string text = value.ToString("D6");
-                            <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/@text/@profilePic" />
+                        {                            
+                            <img class="img-thumbnail" id="profilePic" width="150" src="~/Documents/Attachment/Individual/@profilePic" />
                         }
                         else
                         {

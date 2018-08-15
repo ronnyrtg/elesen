@@ -15,7 +15,7 @@
                             {
                                 int value = Model.IND_ID;
                                 string text = value.ToString("D6");
-                                <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@text/@Model.FileName" />
+                                <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@Model.FileName" />
                             }
                             else
                             {
@@ -53,9 +53,13 @@
                             {
                                 <label>Lelaki</label>
                             }
-                            else
+                            else if (Model.GENDER == 2)
                             {
                                 <label>Perempuan</label>
+                            }
+                            else
+                            {
+                                <label>-</label>
                             }
                         </td>
                     </tr>
