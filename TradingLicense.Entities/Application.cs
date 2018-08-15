@@ -13,7 +13,7 @@ namespace TradingLicense.Entities
         //Approval Type
         public int MODE { get; set; }
         //Sole Proprietorship or Sdn Bhd
-        public int BT_ID { get; set; }
+        public int? BT_ID { get; set; }
         //Foreign Key to Company Table
         public int COMPANYID { get; set; }
         //Address

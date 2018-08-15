@@ -17,7 +17,7 @@ namespace TradingLicense.Model
         public int APP_ID { get; set; }
         public int LIC_TYPEID { get; set; }
         public int MODE { get; set; }
-        public int BT_ID { get; set; }
+        public int? BT_ID { get; set; }
         public int COMPANYID { get; set; }
         //Applied Address
         public string ADDRA1 { get; set; }

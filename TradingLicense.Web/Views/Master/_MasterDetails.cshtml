@@ -12,9 +12,7 @@
                     <tr><td>Gambar:</td>
                         <td>
                             @if (Model.FileName != null)
-                            {
-                                int value = Model.IND_ID;
-                                string text = value.ToString("D6");
+                            {                                
                                 <img class="img-thumbnail" width="150" src="~/Documents/Attachment/Individual/@Model.FileName" />
                             }
                             else
