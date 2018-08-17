@@ -176,7 +176,20 @@ namespace TradingLicense.Web.Controllers
                 using (var ctx = new LicenseApplicationContext())
                 {
                     var application = ctx.APPLICATIONs.FirstOrDefault(a => a.APP_ID == id);
-                    applicationModel = Mapper.Map<ApplicationModel>(application);                    
+                    applicationModel = Mapper.Map<ApplicationModel>(application);
+
+                    if (applicationModel.HELPERA != null && applicationModel.HELPERA > 0)
+                    {
+                        applicationModel.helperNameA = ctx.INDIVIDUALs.Where(m => m.IND_ID == applicationModel.HELPERA).Select(m => m.FULLNAME).SingleOrDefault();
+                    }
+                    if (applicationModel.HELPERB != null && applicationModel.HELPERB > 0)
+                    {
+                        applicationModel.helperNameB = ctx.INDIVIDUALs.Where(m => m.IND_ID == applicationModel.HELPERB).Select(m => m.FULLNAME).SingleOrDefault();
+                    }
+                    if (applicationModel.HELPERC != null && applicationModel.HELPERC > 0)
+                    {
+                        applicationModel.helperNameC = ctx.INDIVIDUALs.Where(m => m.IND_ID == applicationModel.HELPERC).Select(m => m.FULLNAME).SingleOrDefault();
+                    }
 
                     var routeSettled = ctx.ROUTEUNITs.Where(r => r.APP_ID == id);
 
@@ -1467,6 +1480,7 @@ namespace TradingLicense.Web.Controllers
             int totalRecord = 0;
             using (var ctx = new LicenseApplicationContext())
             {
+
                 IQueryable<RD_L_BT> query = ctx.RD_L_BTs.Where(p => p.BT_ID.ToString().Contains(businessTypeID));
 
                 #region Sorting
@@ -2472,10 +2486,9 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
                             string compName = "";
                            
-                            if (!string.IsNullOrEmpty(compDetails.C_NAME))
+                            if (compID != null && !string.IsNullOrEmpty(compDetails.C_NAME) )
                             {
                                 compName = compDetails.C_NAME.ToString();
-
                             }
                             else
                             {
@@ -2487,7 +2500,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
 
                             string compAdd = "";
-                            if (!string.IsNullOrEmpty(item.COMPANY.C_ADDRESS))
+                            if (compID != null && !string.IsNullOrEmpty(item.COMPANY.C_ADDRESS))
                             {
                                 compAdd = item.COMPANY.C_ADDRESS;
                             }
@@ -2501,7 +2514,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 15;
 
                             string compPhone = "";
-                            if (!string.IsNullOrEmpty(item.COMPANY.C_PHONE))
+                            if (compID != null && !string.IsNullOrEmpty(item.COMPANY.C_PHONE))
                             {
                                 compPhone = item.COMPANY.C_PHONE;
                             }
@@ -2531,14 +2544,23 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 20;
                             graph.DrawString("NAMA PERNIAGAAN", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(compDetails.C_NAME, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-
+                            if (compID != null && !string.IsNullOrEmpty(compDetails.C_NAME))
+                            {
+                                graph.DrawString(compDetails.C_NAME, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            }                            
                             lineheight = lineheight + 20;
                             graph.DrawString("ALAMAT PREMIS", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);                            
-                            
-                            graph.DrawString(item.ADDRA1, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);                            
-                            lineheight = lineheight + 15;
+                            graph.DrawString(":", font, XBrushes.Black, new XRect(250, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                            if (item.LIC_TYPEID == (int)Enums.ApplicationTypeID.HawkerApplication && !string.IsNullOrEmpty(item.PREMISNO) || item.LIC_TYPEID == (int)Enums.ApplicationTypeID.StallApplication && !string.IsNullOrEmpty(item.PREMISNO))
+                            {
+                                graph.DrawString(item.PREMISNO, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                lineheight = lineheight + 15;
+                            }
+                            if (!string.IsNullOrEmpty(item.ADDRA1))
+                            {
+                                graph.DrawString(item.ADDRA1, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
+                                lineheight = lineheight + 15;
+                            }
                             if (!string.IsNullOrEmpty(item.ADDRA2))
                             {
                                 graph.DrawString(item.ADDRA2, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -2555,7 +2577,14 @@ namespace TradingLicense.Web.Controllers
                                 lineheight = lineheight + 15;
                             }
                             string add1 = "";
-                            add1 = item.PCODEA + ',' + item.STATEA;
+                            if (!string.IsNullOrEmpty(item.PCODEA))
+                            {
+                                add1 = item.PCODEA + ',' + item.STATEA;
+                            }
+                            else
+                            {
+                                add1 = item.STATEA;
+                            }
                             graph.DrawString(add1, font, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph.DrawString("AKTIVITI", font, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
@@ -2778,7 +2807,7 @@ namespace TradingLicense.Web.Controllers
                             lineheight = lineheight + 25;
                             graph2.DrawString("1)  Saya bersetuju dengan keputusan permohonan ini dan segala maklumat yang  deberi adalah benar.", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
-                            graph2.DrawString("2)  Saya bersetuju sekiranya maklumat deberi adalah palsu atau saya gagal mematuhi syarat-", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
+                            graph2.DrawString("2)  Saya bersetuju sekiranya maklumat diberi adalah palsu atau saya gagal mematuhi syarat-", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 15;
                             graph2.DrawString("    syarat pengeluaran lesen, Perbadanan Labuan berhak untuk membatalkan keputusan lesen ini.", nfont, XBrushes.Black, new XRect(40, lineheight, pdfPage2.Width.Point, pdfPage2.Height.Point), XStringFormats.TopLeft);
                             lineheight = lineheight + 50;
@@ -2858,9 +2887,9 @@ namespace TradingLicense.Web.Controllers
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                return Content("<script language='javascript' type='text/javascript'>alert('"+ ex + "!');</script>");
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating Letter!');</script>");
         }
@@ -3153,7 +3182,7 @@ namespace TradingLicense.Web.Controllers
 
         #region Generate Banner License PDF
 
-        public ActionResult GenerateLicense(Int32? appId)
+        public ActionResult GenerateBannerLicense(Int32? appId)
         {
             ApplicationModel applicationModel = new ApplicationModel();
             try
@@ -5151,7 +5180,7 @@ namespace TradingLicense.Web.Controllers
             }
             catch (Exception ex)
             {
-                throw (ex);
+                return Content("<script language='javascript' type='text/javascript'>alert('P" + ex + "!');</script>");
             }
             return Content("<script language='javascript' type='text/javascript'>alert('Problem In Generating License!');</script>");
         }

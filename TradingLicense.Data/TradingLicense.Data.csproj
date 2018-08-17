@@ -82,6 +82,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LicenseContext.cs" />
+    <Compile Include="Migrations\201808161425581_seed.cs" />
+    <Compile Include="Migrations\201808161425581_seed.Designer.cs">
+      <DependentUpon>201808161425581_seed.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="MyDbConfiguration.cs" />
     <Compile Include="NVarcharInterceptor.cs" />
@@ -96,6 +100,11 @@
       <Project>{e97359ed-19a2-441b-a88a-ded8b42fae12}</Project>
       <Name>TradingLicense.Entities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201808161425581_seed.resx">
+      <DependentUpon>201808161425581_seed.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

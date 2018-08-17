@@ -18,7 +18,7 @@ namespace TradingLicense.Model
         public int LIC_TYPEID { get; set; }
         public int MODE { get; set; }
         public int? BT_ID { get; set; }
-        public int COMPANYID { get; set; }
+        public int? COMPANYID { get; set; }
         //Applied Address
         public string ADDRA1 { get; set; }
         public string ADDRA2 { get; set; }
@@ -35,7 +35,7 @@ namespace TradingLicense.Model
         public string STATEC { get; set; }
 
         public string P_OWN { get; set; }
-        public float P_AREA { get; set; }
+        public float? P_AREA { get; set; }
         public DateTime? START_RENT { get; set; }
         public DateTime? STOP_RENT { get; set; }
         public string FLOOR { get; set; }
@@ -61,7 +61,7 @@ namespace TradingLicense.Model
         public float? B_SIZE { get; set; }
         public float? B_QTY { get; set; }
         public int? B_O_TOTAL { get; set; }
-        public int totalBannerObjects { get; set; }
+        public int? totalBannerObjects { get; set; }
 
         //Hawker Application & Stall Application
         public int? StallType { get; set; }
@@ -72,21 +72,24 @@ namespace TradingLicense.Model
         public int? H_START { get; set; }
         public int? H_STOP { get; set; }        
         public int? HELPERA { get; set; }
+        public string helperNameA { get; set; }
         public int? HELPERB { get; set; }
+        public string helperNameB { get; set; }
         public int? HELPERC { get; set; }
+        public string helperNameC { get; set; }
         //stall use PremiseNo, Hawker use this as Location
         public string PREMISNO { get; set; }
 
         //Entertainment Application
-        public int E_P_FEEID { get; set; }
+        public int? E_P_FEEID { get; set; }
         public string E_P_DESC { get; set; }
         public string E_S_DESC { get; set; }
         public float? E_S_FEE { get; set; }
         public float? E_S_B_FEE { get; set; }
         public float? E_S_O_FEE { get; set; }
         public string E_S_O_NAME { get; set; }
-        public int E_S_PERIOD { get; set; }
-        public int E_S_P_QTY { get; set; }
+        public int? E_S_PERIOD { get; set; }
+        public int? E_S_P_QTY { get; set; }
         public List<Select2ListItem> selectedPremiseFeeList = new List<Select2ListItem>();
 
         //Banner Location Address
@@ -116,7 +119,7 @@ namespace TradingLicense.Model
         public string LicenseDocIds { get; set; }
         public string RequiredDocIds { get; set; }
         public string AdditionalDocIds { get; set; }
-        public int ATT_ID { get; set; }
+        public int? ATT_ID { get; set; }
 
 
         public string LicenseTypeDesc { get; set; }
@@ -140,7 +143,7 @@ namespace TradingLicense.Model
         public string SubmitType { get; set; }
         public bool HasPADepSupp { get; set; }
 
-        public float AmountDue { get; set; }
+        public float? AmountDue { get; set; }
 
         
         public List<Select2ListItem> selectedIndividualList = new List<Select2ListItem>();

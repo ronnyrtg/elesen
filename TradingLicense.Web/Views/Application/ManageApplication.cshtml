@@ -22,8 +22,12 @@
     List<TradingLicense.Model.DepartmentModel> departmentList = new List<TradingLicense.Model.DepartmentModel>();
     List<TradingLicense.Model.BusinessCodeModel> bannerCodeList = new List<TradingLicense.Model.BusinessCodeModel>();
 
-    string startRent = DateTime.Parse(Model.START_RENT.ToString()).ToString("dd/MMM/yyyy");
-    string stopRent = DateTime.Parse(Model.STOP_RENT.ToString()).ToString("dd/MMM/yyyy");
+    if(Model.START_RENT != null && Model.STOP_RENT != null)
+    {
+        string startRent = DateTime.Parse(Model.START_RENT.ToString()).ToString("dd/MMM/yyyy");
+        string stopRent = DateTime.Parse(Model.STOP_RENT.ToString()).ToString("dd/MMM/yyyy");
+    }
+
     string profilePic = string.Empty;
 
     using (var ctx = new TradingLicense.Data.LicenseApplicationContext())
@@ -125,7 +129,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6" id="licenseType">
                         <div class="form-group">
-                            <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                            <div class="control-label">Jenis Lesen</div>
                             <div class="well well-sm">@Model.LicenseTypeDesc</div>
                             @Html.HiddenFor(m => m.LIC_TYPEID)
                         </div>
@@ -284,10 +288,10 @@
                         <div class="form-group">
                             <div class="col-sm-6">
                                 @Html.DropDownList("BusinessCode", new SelectList(Model.selectedbusinessCodeList.OrderBy(x => x.text), "id", "text"), new { @id = "businessCodeList2", @class = "form-control", multiple = "true", onchange = "changeBussinesscode()" })
-                                @Html.HiddenFor(model => model.BusinessCodeids)
+                                @Html.HiddenFor(model => model.BusinessCodeids)                                
                             </div>
                             @if (Model.UserRollTemplate == (int)Enums.RollTemplate.Supervisor)
-                        {
+                            {
                                 <div class="col-sm-2 col-lg-6">
                                     <input type="button" class="btn btn-primary" value="Tambah Kod Perniagaan" onclick='return AddNewBC();' />
                                 </div>
@@ -301,12 +305,12 @@
                     <div class="col-sm-6" id="businessCode">
                         <div class="form-group">
                             <div class="control-label">Kod Perniagaan</div>
-                            <div class="well well-sm">
+                            <div class="well well-sm">                                
                                 @foreach (var item in Model.selectedbusinessCodeList)
                                 {
                                     @item.text.ToString();<br />
 
-                                }
+                                }                               
                                 @Html.HiddenFor(model => model.BusinessCodeids)
                             </div>
                         </div>
@@ -331,7 +335,7 @@
                             <div class="col-sm-10 col-lg-6">
                                 @Html.DropDownList("Individual", new SelectList(Model.selectedIndividualList.OrderBy(x => x.text), "id", "text"), "Select  Mykad/Passport No", new { @id = "individualList", @class = "form-control", multiple = "true", onchange = "changeIndindividual()" })
                                 @Html.HiddenFor(model => model.Individualids)
-                                @Html.HiddenFor(model => model.newIndividualsList)
+                                @Html.HiddenFor(model => model.newIndividualsList)                                
                             </div>
                             @if (Model.APP_ID < 1 || Model.APPSTATUSID == (int)Enums.PAStausenum.draftcreated)
                             {
@@ -346,15 +350,13 @@
                 {
                     <div class="row">
                         <div class="form-group">
-                            <div class="col-sm-10 col-lg-6">
+                            <div class="col-sm-10 col-lg-6">                                
                                 <div class="well well-sm">
                                     @foreach (var item in Model.selectedIndividualList)
                                     {
-                                        @item.text.ToString();<br />
-
+                                    @item.text.ToString();<br />
                                     }
-                                    @Html.HiddenFor(model => model.selectedIndividualList)
-                                </div>
+                                </div>                                                                                                                  
                             </div>
                         </div>
                     </div>
@@ -510,64 +512,75 @@
                                 </div>
                                 if (Model.LIC_TYPEID == (int)Enums.ApplicationTypeID.HawkerApplication)
                                 {
-                                <div class="row">
-                                    <div class="col-sm-12 col-lg-12 hawker">
+                                <div class="row hawker">
+                                    <div class="col-sm-10 col-lg-6">
                                         <div class="form-group">
-                                            <div class="control-label hawkerA" style="display:none;">No Premis<span class="cfont">*</span></div>
-                                            <div class="control-label stall" style="display:none;">Lokasi Perniagaan<span class="cfont">*</span></div>
-                                            @Model.PREMISNO
+                                            <div class="control-label stall" style="display:none;">No Premis</div>
+                                            <div class="control-label hawkerA" style="display:none;">Lokasi Perniagaan</div>
+                                            <div class="well well-sm">@Model.PREMISNO</div>
+                                            @Html.HiddenFor(m => m.PREMISNO)
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="col-sm-10 col-lg-6 hawker">
-                                            <div class="control-label">Nama Penuh Pembantu(Mykad/Paspot)<span class="cfont">*</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
+                                <div class="row hawker">
                                     <div class="form-group">
                                         <div class="col-sm-10 col-lg-6">
-                                            <div class="well well-sm">
-                                                @foreach (var item in Model.selectedIndividualList)
-                                                {
-                                                    @item.text.ToString();<br />
-
-                                                }
-                                                @Html.HiddenFor(model => model.selectedIndividualList)
+                                            <div class="control-label">Nama Penuh Pembantu 1</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row hawker">
+                                    <div class="form-group">
+                                        <div class="col-sm-10 col-lg-6">
+                                            <div class="well well-sm">                                                
+                                                @Model.helperNameA
+                                                @Html.HiddenFor(m => m.HELPERA)
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4 col-sm-3 hawker" style="display:none;">
-                                        <div class="form-group">
-                                            <div class="control-label">Tempoh Sah Lesen<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.V_START, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                            @Html.ValidationMessageFor(m => m.START_RENT)
+                                <div class="row hawker">
+                                    <div class="form-group">
+                                        <div class="col-sm-10 col-lg-6">
+                                            <div class="control-label">Nama Penuh Pembantu 2</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4 col-sm-3 hawker" style="display:normal;">
-                                        <div class="form-group">
-                                            <div class="control-label">Hingga<span class="cfont">*</span></div>
-                                            @Html.TextBoxFor(m => m.V_STOP, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
-                                            @Html.ValidationMessageFor(m => m.STOP_RENT)
+                                <div class="row hawker">
+                                    <div class="form-group">
+                                        <div class="col-sm-10 col-lg-6">
+                                            <div class="well well-sm">
+                                                @Model.helperNameB
+                                                @Html.HiddenFor(m => m.HELPERB)
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="row hawker">
+                                    <div class="col-md-4 col-sm-3">
+                                        <div class="form-group">
+                                            <div class="control-label">Tempoh Sah Lesen</div>
+                                            <div class="well well-sm">                                                
+                                                @if(Model.V_START != null && Model.V_STOP != null)
+                                                {
+                                                    var startV = DateTime.Parse(Model.V_START.ToString()).ToString("dd/MM/yyyy");
+                                                    var stopV = DateTime.Parse(Model.V_STOP.ToString()).ToString("dd/MM/yyyy");
+                                                    <label> @startV hingga @stopV</label>
+                                                }                                                
+                                                @Html.HiddenFor(m => m.V_START)
+                                                @Html.HiddenFor(m => m.V_STOP)
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                </div>                                
                                 }
                                 else
                                 {
                                 <div class="row hawker" style="display:none;">
                                     <div class="col-sm-12 col-lg-3">
                                         <div class="form-group">
-                                            <div class="control-label hawkerA" style="display:none;">No Premis<span class="cfont">*</span> </div>
-                                            <div class="control-label stall" style="display:none;">Lokasi Perniagaan<span class="cfont">*</span> </div>
+                                            <div class="control-label stall" style="display:none;">No Premis<span class="cfont">*</span> </div>
+                                            <div class="control-label hawkerA" style="display:none;">Lokasi Perniagaan<span class="cfont">*</span> </div>
                                             @Html.TextBoxFor(m => m.PREMISNO, new { @class = "form-control" })
                                         </div>
                                     </div>
@@ -1074,7 +1087,7 @@
                                                                                         if (Model.APPSTATUSID <= (int)Enums.PAStausenum.draftcreated)
                                                                                         {
                                                                                             <input type="submit" class="btn btn-primary" onclick='frmSubmit(true); return false;' id="btnsubmitdraft" value="Simpan Draf " />
-                                                                                            <input type="submit" class="btn btn-primary btSubmit Hantar" value="Hantar" onclick='frmSubmit(false); return false;' />
+                                                                                            <input type="button" class="btn btn-primary btSubmit" value="Hantar" onclick='frmSubmit(false); return false;' />
                                                                                             <input type="button" class="btn btn-primary" value="Ulasan" onclick="addComment();" />
                                                                                         }
                                                                                     }
@@ -1295,7 +1308,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                }
+                            }
                             </div>
 
 
@@ -1531,7 +1544,7 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-3 company-register" style="display:none;">
                                                     <div class="form-group">
                                                         <div class="control-label">Tarikh Pendaftaran</div>
-                                                        @Html.TextBox("ssmRegister", startRent, new { @class = "date-picker" })
+                                                        @Html.TextBox("ssmRegister", null, new { @class = "date-picker" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -1539,7 +1552,7 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-3 company-register" style="display:none;">
                                                     <div class="form-group">
                                                         <div class="control-label">Tarikh Habis Tempoh</div>
-                                                        @Html.TextBox("ssmExpire", stopRent, new { @class = "date-picker" })
+                                                        @Html.TextBox("ssmExpire", null, new { @class = "date-picker" })
                                                     </div>
                                                 </div>
                                             </div>
@@ -1993,8 +2006,29 @@
                                 })
 
                                 $(document).ready(function () {
+                                    changeLicense();
                                     $('#btnLicense').click(function () {
-                                        $('.modal-body iframe').attr('src', "../Application/GeneratLicense?AppId=@Model.APP_ID");
+                                        if($('#LIC_TYPEID').val() == AppTypeEnum.TradeApp || $('#LIC_TYPEID').val() == AppTypeEnum.FoodApp || $('#LIC_TYPEID').val() == AppTypeEnum.HotelApp || $('#LIC_TYPEID').val() == AppTypeEnum.ScrapApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GeneratLicense?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.BannerApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GenerateBannerLicense?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.HawkerApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GenerateHawkerLicense?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.StallApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GenerateStallLicense?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.LiquorApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GeneratLicense_RetailShop?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.MLApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GeneratLicense_PremiseApp?AppId=@Model.APP_ID");
+                                        }
+                                        else if($('#LIC_TYPEID').val() == AppTypeEnum.EntmtApp){
+                                            $('.modal-body iframe').attr('src', "../Application/GeneratLicense_Entertainment?AppId=@Model.APP_ID");
+                                        }
                                         $('#myModalLicense').modal('show');
                                     });
                                 });
@@ -2590,11 +2624,11 @@
                                         individualSelecteId = [];
                                     }
 
-                                    if(btID !== null)
-                                    {
-                                        $("#BusinessTypeID").val(btID);
-                                        bindTable();
-                                    }
+                                    //if(btID !== null)
+                                    //{
+                                      //  $("#BusinessTypeID").val(btID);
+                                       // bindTable();
+                                    //}
 
                                     if(@Model.LIC_TYPEID > 0)
                                     {
@@ -2645,9 +2679,10 @@
                                 function frmSubmit(isdraft) {
                                     $("#IsDraft").val(isdraft);
                                     $("#frmApplication").submit();
+
                                 }
 
-                                function validatePremiseApplication(isdraft) {
+                                function validateApplication(isdraft) {
                                     $("#UploadRequiredDocids").val(requiredDocList);
 
                                     AdditionalChecked();
@@ -2698,9 +2733,16 @@
                                 }
 
                                 function changeBussinesscode() {
-                                    $('#BusinessCodeids').val($('#businessCodeList').val());
+                                    if($('#businessCodeList').val() > 0){
+                                        $('#BusinessCodeids').val($('#businessCodeList').val());
+                                    }
+                                    if($('#businessCodeList2').val() > 0){
+                                        $('#BusinessCodeids').val($('#businessCodeList2').val());
+                                    }
+                                    if($('#bcList').val() > 0){
+                                        $('#BusinessCodeids').val($('#bcList').val());
+                                    }
                                     bindAdditionalTable();
-                                    //console.log("changebusinesscode");
                                     checkButtonState();
                                 }
 
@@ -3047,11 +3089,22 @@
 
                                 function bindSearch() {
                                     var param = {};
-                                    param["businessTypeID"] = $("#BT_ID").val();
+                                    if($("#BT_ID").val() > 0)
+                                    {
+                                        param["businessTypeID"] = $("#BT_ID").val();
+                                    }
+                                    else
+                                    {
+                                        param["businessTypeID"] = "0";
+                                    }
 
-                                    if ($("#APP_ID").val() > 0) {
+
+                                    if ($("#APP_ID").val() > 0)
+                                    {
                                         param["ApplicationID"] = $("#APP_ID").val();
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         param["ApplicationID"] = "";
                                     }
 

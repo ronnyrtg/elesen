@@ -15,7 +15,7 @@ namespace TradingLicense.Entities
         //Sole Proprietorship or Sdn Bhd
         public int? BT_ID { get; set; }
         //Foreign Key to Company Table
-        public int COMPANYID { get; set; }
+        public int? COMPANYID { get; set; }
         //Address
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
@@ -40,7 +40,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string P_OWN { get; set; }
         //Premise Area in square meters
-        public float P_AREA { get; set; }
+        public float? P_AREA { get; set; }
         //Premise Rent period
         public DateTime? START_RENT { get; set; }
         public DateTime? STOP_RENT { get; set; }
@@ -49,7 +49,7 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string FLOOR { get; set; }
         //Building type refer from PremiseType table
-        public int PT_ID { get; set; }
+        public int? PT_ID { get; set; }
         //Name of last user updating this application
         [StringLength(50)]
         [Column(TypeName = "VARCHAR2")]
@@ -76,8 +76,8 @@ namespace TradingLicense.Entities
         [Column(TypeName = "VARCHAR2")]
         public string PREMISNO { get; set; }
         //Operation Hour start and stop
-        public int H_START { get; set; }
-        public int H_STOP { get; set; }
+        public int? H_START { get; set; }
+        public int? H_STOP { get; set; }
         //Assistant Workers foreign key to Individual table
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }
@@ -108,6 +108,7 @@ namespace TradingLicense.Entities
         public virtual LIC_TYPE LIC_TYPE { get; set; }
         public virtual BT BT { get; set; }
         public virtual BC BC { get; set; }
+        public virtual INDIVIDUAL INDIVIDUAL { get; set; }
         public virtual COMPANY COMPANY { get; set; }
         public virtual PREMISETYPE PREMISETYPE { get; set; }
         public virtual APPSTATUS APPSTATUS { get; set; }

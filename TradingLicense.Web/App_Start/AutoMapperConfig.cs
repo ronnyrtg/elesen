@@ -49,7 +49,7 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BT.BT_DESC))
                             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.COMPANY.C_NAME))
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))
-                            .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PREMISETYPE.PT_DESC))
+                            .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PREMISETYPE.PT_DESC))                            
                             .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
                 cfg.CreateMap<ApplicationModel, APPLICATION>()
                             .ForMember(dest => dest.PRO_FEE, opt => opt.Ignore())
