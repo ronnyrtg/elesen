@@ -151,6 +151,19 @@
                 </ul>
             </li>
 }
+@if (TradingLicenseCommon.HasAccess(SystemEnum.Page.Developer, SystemEnum.PageRight.CrudLevel))
+{
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    Piawaian Pembangun Sistem
+                    <!--Developer Standards-->
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Text Input, Checkbox", "NormalTextBox", "Tutorial")</li>                                                   
+                </ul>
+            </li>
+}
         </ul>
         <div class="navbar-right">
         @if (ProjectSession.User != null && ProjectSession.UserID > 0)

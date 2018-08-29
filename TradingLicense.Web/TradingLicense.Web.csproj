@@ -197,6 +197,7 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RegistrationController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\TutorialController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -544,6 +545,7 @@
     <Content Include="Views\Profile\ViewProfile.cshtml" />
     <Content Include="Views\Report\OwnerMasterPdf.cshtml" />
     <Content Include="Views\Application\ApplicationLog.cshtml" />
+    <Content Include="Views\Tutorial\NormalTextBox.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

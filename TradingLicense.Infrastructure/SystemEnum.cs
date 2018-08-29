@@ -94,6 +94,12 @@ namespace TradingLicense.Infrastructure
             [Description("Meeting")]
             Meeting = 14,
 
+            /// <summary>
+            /// Meeting
+            /// </summary>
+            [Description("Developer")]
+            Developer = 15,
+
         }
 
 

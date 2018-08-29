@@ -1516,9 +1516,7 @@ namespace TradingLicense.Web.Controllers
 
                 if (!string.IsNullOrWhiteSpace(premiseDesc))
                 {
-                    query = query.Where(p =>
-                                        p.PT_DESC.Contains(premiseDesc)
-                                    );
+                    query = query.Where(p => p.PT_DESC.Contains(premiseDesc));
                 }
 
                 filteredRecord = query.Count();
