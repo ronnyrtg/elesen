@@ -6,7 +6,7 @@ namespace TradingLicense.Model
     {
         public int IND_ID { get; set; }
 
-        [Required(ErrorMessage = "SIla masukkan nama penuh")]
+        [Required(ErrorMessage = "Sila masukkan nama penuh")]
         [Display(Name = "Full Name")]
         [StringLength(50)]
         public string FULLNAME { get; set; }
@@ -20,6 +20,9 @@ namespace TradingLicense.Model
         public int? CITIZENID { get; set; }
         [Display(Name = "Kaum")]
         public int? RACEID { get; set; }
+        [Display(Name = "Lain-lain bangsa")]
+        [StringLength(100)]
+        public string LAIN_DESC { get; set; }
 
         [Required(ErrorMessage = "Sila masukkan alamat mengikut IC")]
         [Display(Name = "Address")]

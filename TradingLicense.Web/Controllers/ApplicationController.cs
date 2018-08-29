@@ -3765,7 +3765,7 @@ namespace TradingLicense.Web.Controllers
                                 lineheight = lineheight + 15;
                                 graph.DrawString("MASA PERNIAGAAN", nfont, XBrushes.Black, new XRect(180, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 graph.DrawString(":", nfont, XBrushes.Black, new XRect(300, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                if (item.H_START > 0)
+                                if (item.H_START != null)
                                 {
                                     graph.DrawString(item.H_START.ToString(), nUfont, XBrushes.Black, new XRect(307, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 }
@@ -4941,7 +4941,7 @@ namespace TradingLicense.Web.Controllers
                                 lineheight = lineheight + 15;
                                 graph.DrawString("MASA PERNIAGAAN", nfont, XBrushes.Black, new XRect(30, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 graph.DrawString(":", nfont, XBrushes.Black, new XRect(145, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
-                                if (item.H_START > 0)
+                                if (item.H_START != null)
                                 {
                                     graph.DrawString(item.H_START.ToString(), nUfont, XBrushes.Black, new XRect(150, lineheight, pdfPage.Width.Point, pdfPage.Height.Point), XStringFormats.TopLeft);
                                 }

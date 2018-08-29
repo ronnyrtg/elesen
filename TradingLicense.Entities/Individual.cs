@@ -19,6 +19,9 @@ namespace TradingLicense.Entities
         public int? CITIZENID { get; set; }
 
         public int? RACEID { get; set; }
+        [StringLength(100)]
+        [Column(TypeName = "VARCHAR2")]
+        public string LAIN_DESC { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]

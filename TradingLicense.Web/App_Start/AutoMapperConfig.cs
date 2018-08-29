@@ -34,8 +34,7 @@ namespace TradingLicense.Web.App_Start
                 cfg.CreateMap<ROAD_M, RoadModel>();
                 cfg.CreateMap<CITIZEN_M, CitizenModel>();
                 cfg.CreateMap<RACE_M, RaceModel>();
-                cfg.CreateMap<BANK_M, BankModel>();
-                cfg.CreateMap<PAYTRAN_M, PaymentModel>();
+                cfg.CreateMap<BANK_M, BankModel>();                
                 cfg.CreateMap<UsersModel, USERS>().ReverseMap();
                 cfg.CreateMap<RegistrationModel, USERS>().ReverseMap();                
                 cfg.CreateMap<INDIVIDUAL, IndividualModel>().ForMember(dest => dest.FileName, opt => opt.MapFrom(a => a.ATTACHMENT.FILENAME));
@@ -48,9 +47,11 @@ namespace TradingLicense.Web.App_Start
                             .ForMember(dest => dest.LicenseTypeDesc, opt => opt.MapFrom(s => s.LIC_TYPE.LIC_TYPEDESC))
                             .ForMember(dest => dest.BusinessTypeDesc, opt => opt.MapFrom(s => s.BT.BT_DESC))
                             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(s => s.COMPANY.C_NAME))
+                            .ForMember(dest => dest.BusinessCodeDesc, opt => opt.MapFrom(s => s.BC.C_R_DESC))
                             .ForMember(dest => dest.StatusDesc, opt => opt.MapFrom(s => s.APPSTATUS.STATUSDESC))
                             .ForMember(dest => dest.PremiseDesc, opt => opt.MapFrom(s => s.PREMISETYPE.PT_DESC))                            
-                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME));
+                            .ForMember(dest => dest.FullName, opt => opt.MapFrom(s => s.USERS.FULLNAME))
+                            .ForMember(dest => dest.OwnerName, opt => opt.MapFrom(s => s.INDIVIDUAL.FULLNAME));
                 cfg.CreateMap<ApplicationModel, APPLICATION>()
                             .ForMember(dest => dest.PRO_FEE, opt => opt.Ignore())
                             .ForMember(dest => dest.LIC_TYPE, opt => opt.Ignore());

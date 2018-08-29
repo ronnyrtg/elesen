@@ -61,7 +61,6 @@
     <Compile Include="BT.cs" />
     <Compile Include="CATATAN.cs" />
     <Compile Include="CITIZEN_M.cs" />
-    <Compile Include="PAYTRAN_M.cs" />
     <Compile Include="RD_L_BT.cs" />
     <Compile Include="LIC_TYPE.cs" />
     <Compile Include="ATTACHMENT.cs" />

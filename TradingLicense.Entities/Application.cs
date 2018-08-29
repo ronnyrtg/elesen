@@ -14,6 +14,8 @@ namespace TradingLicense.Entities
         public int MODE { get; set; }
         //Sole Proprietorship or Sdn Bhd
         public int? BT_ID { get; set; }
+        //Foreign Key to Individual Table
+        public int? IND_ID { get; set; }
         //Foreign Key to Company Table
         public int? COMPANYID { get; set; }
         //Address
@@ -75,9 +77,16 @@ namespace TradingLicense.Entities
         [StringLength(255)]
         [Column(TypeName = "VARCHAR2")]
         public string PREMISNO { get; set; }
+        [StringLength(255)]
+        [Column(TypeName = "VARCHAR2")]
+        public string GOODS_TYPE { get; set; }
         //Operation Hour start and stop
-        public int? H_START { get; set; }
-        public int? H_STOP { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string H_START { get; set; }
+        [StringLength(50)]
+        [Column(TypeName = "VARCHAR2")]
+        public string H_STOP { get; set; }
         //Assistant Workers foreign key to Individual table
         public int? HELPERA { get; set; }
         public int? HELPERB { get; set; }

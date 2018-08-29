@@ -18,6 +18,7 @@ namespace TradingLicense.Model
         public int LIC_TYPEID { get; set; }
         public int MODE { get; set; }
         public int? BT_ID { get; set; }
+        public int? IND_ID { get; set; }
         public int? COMPANYID { get; set; }
         //Applied Address
         public string ADDRA1 { get; set; }
@@ -69,8 +70,8 @@ namespace TradingLicense.Model
         public DateTime? V_START { get; set; }
         public DateTime? V_STOP { get; set; }        
         //Operation Hour start and stop
-        public int? H_START { get; set; }
-        public int? H_STOP { get; set; }        
+        public string H_START { get; set; }
+        public string H_STOP { get; set; }        
         public int? HELPERA { get; set; }
         public string helperNameA { get; set; }
         public int? HELPERB { get; set; }
@@ -79,6 +80,7 @@ namespace TradingLicense.Model
         public string helperNameC { get; set; }
         //stall use PremiseNo, Hawker use this as Location
         public string PREMISNO { get; set; }
+        public string GOODS_TYPE { get; set; }
 
         //Entertainment Application
         public int? E_P_FEEID { get; set; }
@@ -126,6 +128,7 @@ namespace TradingLicense.Model
         public int UserRollTemplate { get; set; }
         public string BusinessTypeDesc { get; set; }
         public string FullName { get; set; }
+        public string OwnerName { get; set; }
         public string CompanyName { get; set; }
         public string StatusDesc { get; set; }
         public string PremiseDesc { get; set; }

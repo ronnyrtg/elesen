@@ -208,20 +208,7 @@ namespace TradingLicense.Web.Controllers
         {
             return View();
         }
-
-        public ActionResult PaymentTransactionPdf()
-        {
-            List<PaymentModel> items = new List<PaymentModel>();
-            using (var ctx = new Data.LicenseApplicationContext())
-            {
-                var payments = ctx.PAYTRAN_Ms.ToList();
-                items = Mapper.Map<List<PaymentModel>>(payments);
-            }
-            ViewBag.payments = items;
-            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
-            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
-            return new ViewAsPdf();
-        }
+        
 
         public ActionResult PaymentCollection()
         {
@@ -237,20 +224,7 @@ namespace TradingLicense.Web.Controllers
             ViewBag.LicenseCode = items;
             return View();
         }
-
-        public ActionResult PaymentCollectionPdf()
-        {
-            List<PaymentModel> items = new List<PaymentModel>();
-            using (var ctx = new Data.LicenseApplicationContext())
-            {
-                var payments = ctx.PAYTRAN_Ms.ToList();
-                items = Mapper.Map<List<PaymentModel>>(payments);
-            }
-            ViewBag.payments = items;
-            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
-            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
-            return new ViewAsPdf();
-        }
+        
 
 
         public ActionResult PaymentInquiryPaid()
@@ -267,20 +241,7 @@ namespace TradingLicense.Web.Controllers
             ViewBag.LicenseCode = items;
             return View();
         }
-
-        public ActionResult PaymentInquiryPaidPdf()
-        {
-            List<PaymentModel> items = new List<PaymentModel>();
-            using (var ctx = new Data.LicenseApplicationContext())
-            {
-                var payments = ctx.PAYTRAN_Ms.ToList();
-                items = Mapper.Map<List<PaymentModel>>(payments);
-            }
-            ViewBag.payments = items;
-            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
-            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
-            return new ViewAsPdf();
-        }
+        
 
         public ActionResult PaymentInquiryUnpaid()
         {
@@ -296,20 +257,7 @@ namespace TradingLicense.Web.Controllers
             ViewBag.LicenseCode = items;
             return View();
         }
-
-        public ActionResult PaymentInquiryUnpaidPdf()
-        {
-            List<PaymentModel> items = new List<PaymentModel>();
-            using (var ctx = new Data.LicenseApplicationContext())
-            {
-                var payments = ctx.PAYTRAN_Ms.ToList();
-                items = Mapper.Map<List<PaymentModel>>(payments);
-            }
-            ViewBag.payments = items;
-            ViewBag.date = DateTime.Now.ToString("dd-MMM-yyyy");
-            ViewBag.time = DateTime.Now.ToString("hh:mm:ss tt");
-            return new ViewAsPdf();
-        }
+        
 
         public ActionResult AdjustmentListing()
         {

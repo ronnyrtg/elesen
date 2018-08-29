@@ -56,8 +56,7 @@ namespace TradingLicense.Data
         public DbSet<E_P_FEE> E_P_FEEs { get; set; }
 
         //Common fields for all applications
-        public DbSet<APPSTATUS> APPSTATUS { get; set; }
-        public DbSet<PAYTRAN_M> PAYTRAN_Ms { get; set; }
+        public DbSet<APPSTATUS> APPSTATUS { get; set; }        
         public DbSet<ROUTEUNIT> ROUTEUNITs { get; set; }
         public DbSet<COMMENT> COMMENTs { get; set; }
         public DbSet<CATATAN> CATATANs { get; set; }

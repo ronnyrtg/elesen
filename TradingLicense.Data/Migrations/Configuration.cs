@@ -81,9 +81,7 @@ namespace TradingLicense.Data.Migrations
                 new RACE_M {RACE_DESC="Melayu"},
                 new RACE_M {RACE_DESC="Cina"},
                 new RACE_M {RACE_DESC="India"},
-                new RACE_M {RACE_DESC="Bumiputra Sabah"},
-                new RACE_M {RACE_DESC="Bumiputra Sarawak"},
-                new RACE_M {RACE_DESC="Bangsa dari luar negara Malaysia"},
+                new RACE_M {RACE_DESC="Lain-lain"},                
             };
             race.ForEach(s => context.RACEs.Add(s));
             context.SaveChanges();
@@ -838,6 +836,10 @@ namespace TradingLicense.Data.Migrations
                 new RD_L_LT {LIC_TYPEID=1,RD_ID=4},
                 new RD_L_LT {LIC_TYPEID=5,RD_ID=14},
                 new RD_L_LT {LIC_TYPEID=5,RD_ID=37},
+                new RD_L_LT {LIC_TYPEID=6,RD_ID=39},
+                new RD_L_LT {LIC_TYPEID=6,RD_ID=40},
+                new RD_L_LT {LIC_TYPEID=7,RD_ID=39},
+                new RD_L_LT {LIC_TYPEID=7,RD_ID=40}
             };
             rdlinklt.ForEach(s => context.RD_L_LTs.Add(s));
             context.SaveChanges();
