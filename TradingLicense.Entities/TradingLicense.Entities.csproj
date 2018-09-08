@@ -90,6 +90,7 @@
     <Compile Include="ROLE.cs" />
     <Compile Include="SECTOR.cs" />
     <Compile Include="SUBZONE_M.cs" />
+    <Compile Include="TUTORIAL.cs" />
     <Compile Include="USERS.cs" />
     <Compile Include="ZONE_M.cs" />
   </ItemGroup>

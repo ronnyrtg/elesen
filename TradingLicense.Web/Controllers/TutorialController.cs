@@ -14,62 +14,63 @@ namespace TradingLicense.Web.Controllers
 {
     public class TutorialController : BaseController
     {
-        #region NormalTextBox
+        private Func<LIC_TYPE, Select2ListItem> fnSelectLicenseFormat = lic => new Select2ListItem { id = lic.LIC_TYPEID, text = $"{lic.LIC_TYPECODE} ({lic.LIC_TYPEDESC})" };
+
+        #region ManageTextInput
 
         /// <summary>
-        /// Get PremiseType Data by ID
+        /// Get text input data by ID
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public ActionResult NormalTextBox(int? Id)
+        public ActionResult ManageTextInput(int? Id)
         {
-            PremiseTypeModel premiseTypeModel = new PremiseTypeModel();
-            premiseTypeModel.ACTIVE = true;
-            if (Id != null && Id > 0)
+            TutorialModel tutorialModel = new TutorialModel();
+            tutorialModel.ACTIVE = true;
+            if (Id.HasValue)
             {
                 using (var ctx = new LicenseApplicationContext())
-                {
-                    int premiseTypeID = Convert.ToInt32(Id);
-                    var premiseType = ctx.PREMISETYPEs.Where(a => a.PT_ID == premiseTypeID).FirstOrDefault();
-                    premiseTypeModel = Mapper.Map<PremiseTypeModel>(premiseType);
+                {                  
+                    var tutorialData = ctx.TUTORIALs.Where(a => a.TUTORIAL_ID == Id).FirstOrDefault();
+                    tutorialModel = Mapper.Map<TutorialModel>(tutorialData);
                 }
             }
 
-            return View(premiseTypeModel);
+            return View(tutorialModel);
         }
         
         /// <summary>
-        /// Save Premise Type Infomration
+        /// Save Information
         /// </summary>
-        /// <param name="premiseTypeModel"></param>
+        /// <param name="tutorialModel"></param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult NormalTextBox(PremiseTypeModel premiseTypeModel)
+        public ActionResult ManageTextInput(TutorialModel tutorialModel)
         {
             if (ModelState.IsValid)
             {
                 using (var ctx = new LicenseApplicationContext())
                 {
-                    PREMISETYPE premiseType;
-                    if (IsPremiseTypeDuplicate(premiseTypeModel.PT_DESC, premiseTypeModel.PT_ID))
+                    TUTORIAL tutorial;
+                    if (IsDataDuplicate(tutorialModel.T_DESC, tutorialModel.TUTORIAL_ID))
                     {
-                        TempData["ErrorMessage"] = "Premise Type is already exist in the database.";
-                        return View(premiseTypeModel);
+                        TempData["ErrorMessage"] = "Data already exists in the database.";
+                        return View(tutorialModel);
                     }
 
-                    premiseType = Mapper.Map<PREMISETYPE>(premiseTypeModel);
-                    ctx.PREMISETYPEs.AddOrUpdate(premiseType);
+                    tutorial = Mapper.Map<TUTORIAL>(tutorialModel);
+                    ctx.TUTORIALs.AddOrUpdate(tutorial);
                     ctx.SaveChanges();
                 }
 
-                TempData["SuccessMessage"] = "Premise Type saved successfully.";
+                TempData["SuccessMessage"] = "Data saved successfully.";
 
-                return RedirectToAction("PremiseType");
+                return RedirectToAction("ManageNormalTextBox");
             }
             else
             {
-                return View(premiseTypeModel);
+                return View(tutorialModel);
             }
 
         }
@@ -77,22 +78,132 @@ namespace TradingLicense.Web.Controllers
         /// <summary>
         /// Check Duplicate
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="desc"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsPremiseTypeDuplicate(string name, int? id = null)
+        private bool IsDataDuplicate(string desc, int? id = null)
         {
             using (var ctx = new LicenseApplicationContext())
             {
                 var existObj = id != null ?
-               ctx.PREMISETYPEs.FirstOrDefault(
-                   c => c.PT_ID != id && c.PT_DESC.ToLower() == name.ToLower())
-               : ctx.PREMISETYPEs.FirstOrDefault(
-                   c => c.PT_DESC.ToLower() == name.ToLower());
+               ctx.TUTORIALs.FirstOrDefault(
+                   c => c.TUTORIAL_ID != id && c.T_DESC.ToLower() == desc.ToLower())
+               : ctx.TUTORIALs.FirstOrDefault(
+                   c => c.T_DESC.ToLower() == desc.ToLower());
                 return existObj != null;
             }
         }
 
+        #endregion
+
+        #region ManageCheckBox
+
+        /// <summary>
+        /// Empty Form
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult ManageCheckBox()
+        {
+            return View();
+        }
+
+        #endregion
+
+        #region ManageDateSelect
+
+        /// <summary>
+        /// Empty Form
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult ManageDateSelect()
+        {
+            return View();
+        }
+
+        #endregion
+
+        #region ManageDropdown
+
+        /// <summary>
+        /// Empty Form
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult ManageDropdown()
+        {
+            LicenseTypeModel licenseType = new LicenseTypeModel();
+            List<TradingLicense.Model.LicenseTypeModel> licenseList = new List<TradingLicense.Model.LicenseTypeModel>();
+            using (var ctx = new LicenseApplicationContext())
+            {                                
+                var license = ctx.LIC_TYPEs.ToList();                
+                licenseType.licenseList = Mapper.Map<List<LicenseTypeModel>>(license);                
+            }
+            return View(licenseType);
+        }
+
+        #endregion
+
+        #region ManageSelect2
+
+        /// <summary>
+        /// Empty Form
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult ManageSelect2()
+        {
+            LicenseTypeModel licenseType = new LicenseTypeModel();
+            List<TradingLicense.Model.LicenseTypeModel> licenseList = new List<TradingLicense.Model.LicenseTypeModel>();
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var license = ctx.LIC_TYPEs.ToList();
+                licenseType.licenseList = Mapper.Map<List<LicenseTypeModel>>(license);
+            }
+            return View(licenseType);
+        }
+
+        #endregion
+
+        #region ManageMultipleSelect
+
+        /// <summary>
+        /// Empty Form
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult ManageMultipleSelect()
+        {
+            LicenseTypeModel licenseType = new LicenseTypeModel();
+            List<TradingLicense.Model.LicenseTypeModel> licenseList = new List<TradingLicense.Model.LicenseTypeModel>();
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var license = ctx.LIC_TYPEs.ToList();
+                licenseType.licenseList = Mapper.Map<List<LicenseTypeModel>>(license);
+            }
+            return View(licenseType);
+        }
+
+        #endregion
+
+        #region FillLicense data
+        /// <summary>
+        /// Get License Types
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult FillLicense(string query)
+        {
+            using (var ctx = new LicenseApplicationContext())
+            {
+                var license = ctx.LIC_TYPEs
+                                    .Where(t => t.LIC_TYPEDESC.ToLower().Contains(query.ToLower()))
+                                    .Select(fnSelectLicenseFormat).ToList();
+                return Json(license, JsonRequestBehavior.AllowGet);
+            }
+        }
         #endregion
     }
 }

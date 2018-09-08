@@ -1,0 +1,55 @@
+﻿@model TradingLicense.Model.TutorialModel
+@{
+    ViewBag.Title = "Manage Date Select";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Pilih Tarikh</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmTutorial", id = "frmTutorial" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.TUTORIAL_ID)
+            
+            <div class="row">
+                <div class=" col-sm-3 col-md-4 col-lg-3">
+                    <div class="form-group">
+                        <div class="control-label"> Pilih Tarikh Sini </div>
+                        @Html.TextBoxFor(m => m.TARIKH, "{0:dd\\/MMM\\/yyyy}", new { @class = "date-picker" })
+                        @Html.ValidationMessageFor(m => m.TARIKH)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Simpan" />
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts
+{
+    <script>
+
+    $(function () {
+
+    // This will make every element with the class "date-picker" into a DatePicker element
+    $('.date-picker').datepicker({ dateFormat: 'dd/M/yy' });
+
+    })
+
+    function back() {
+         var link = '@Url.Action("TestDatatable", "Tutorial")';
+        window.location.href = link;
+    }
+    </script>
+}

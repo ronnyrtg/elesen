@@ -1,0 +1,115 @@
+﻿@model TradingLicense.Model.LicenseTypeModel
+@{
+    ViewBag.Title = "Manage Single Select Dropdown";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Select2 Single Select Dropdown</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmTutorial", id = "frmTutorial" }))
+        {
+            @Html.AntiForgeryToken()
+
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6" id="licenseType">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(Model.licenseList, "LIC_TYPEID", "LIC_TYPEDESC"), "Pilih Jenis Lesen", new { @id = "lesenList", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LIC_TYPEID)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts
+{
+    <script>
+
+    $("#lesenList").select2({
+        placeholder: "Select more than one License",
+        minimumInputLength: 2,
+        width: '100%',
+        tags: true,
+        tokenSeparators: [';'],
+        templateSelection: licenseFormating,
+        createTag: function (params) {
+            var term = params.term;
+            var indexOfPassport = term.indexOf('(');
+            var licName = '';
+            var codeNo = '';
+            if (indexOfPassport > 0) {
+                var endIndex = term.indexOf(')', indexOfPassport);
+                passportNo = endIndex > 0 ? term.substring(indexOfPassport + 1, endIndex) : term.substring(indexOfPassport + 1);
+                fullName = term.substring(0, indexOfPassport);
+            } else {
+                fullName = term;
+            }
+            if (passportNo != '') {
+                return {
+                    id: term,
+                    text: licName + ' (' + codeNo + ')',
+                    licName: licName,
+                    codeNo: codeNo,
+                    isNew: true
+                };
+            }
+        },
+        ajax: {
+            type: "POST",
+            url: encodeURI('@Url.Action("FillLicense", "Tutorial")'),
+            //Data: allows us to pass a parameter to the controller
+            data: function (query) {
+                //console.log(query)
+                return { query: query.term }
+            },
+            //processes the results from the JSON method and gives us the select list
+            processResults: function (data) {
+                //console.log(data)
+                return {
+                    results: data
+                };
+            }
+        }
+    });
+
+    function licenseFormating(state) {
+        if (!state.isNew) {
+            return state.text;
+
+        }
+        state.text = state.licName + ' (' + state.codeNo + ')';
+        var $state = $(
+            '<span>' + state.text + '&nbsp;</span>'
+        );
+
+        if (state.isNew) {
+            var editLink = $(' <a href="javascript:void(0);">Edit</a>');
+            editLink.on('click', function () {
+                showIndividualModal(state);
+            });
+            $state.append(editLink);
+
+        }
+        return $state;
+    }
+
+    function back() {
+        var link = '@Url.Action("TestDatatable", "Tutorial")';
+        window.location.href = link;
+    }
+    </script>
+}

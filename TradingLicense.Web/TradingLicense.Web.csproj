@@ -545,7 +545,14 @@
     <Content Include="Views\Profile\ViewProfile.cshtml" />
     <Content Include="Views\Report\OwnerMasterPdf.cshtml" />
     <Content Include="Views\Application\ApplicationLog.cshtml" />
-    <Content Include="Views\Tutorial\NormalTextBox.cshtml" />
+    <Content Include="Views\Tutorial\ManageTextInput.cshtml" />
+    <Content Include="Views\Tutorial\ManageCheckBox.cshtml" />
+    <Content Include="Views\Tutorial\ManageDateSelect.cshtml" />
+    <Content Include="Views\Tutorial\ManageDropdown.cshtml" />
+    <Content Include="Views\Tutorial\ManageSelect2.cshtml" />
+    <Content Include="Views\Tutorial\ManageMultipleSelect.cshtml" />
+    <Content Include="Views\Tutorial\TestDatatable.cshtml" />
+    <Content Include="Views\Tutorial\ManageShowHide.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

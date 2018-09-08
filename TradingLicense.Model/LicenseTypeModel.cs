@@ -18,6 +18,7 @@ namespace TradingLicense.Model
         [Display(Name = "Aktif?")]
         public bool ACTIVE { get; set; }
 
+        public List<LicenseTypeModel> licenseList { get; set; }
         public List<int> RequiredDocs { get; set; }
     }
 }

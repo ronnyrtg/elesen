@@ -66,7 +66,10 @@ namespace TradingLicense.Data
         public DbSet<USERS> USERS { get; set; }
         public DbSet<ROLE> ROLEs { get; set; }
         public DbSet<ACCESSPAGE> ACCESSPAGEs { get; set; }
-        public DbSet<LOGINLOG> LOGINLOGs { get; set; }       
+        public DbSet<LOGINLOG> LOGINLOGs { get; set; }
+
+        //For Developer  
+        public DbSet<TUTORIAL> TUTORIALs { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

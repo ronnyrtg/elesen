@@ -1,0 +1,51 @@
+﻿@model TradingLicense.Model.LicenseTypeModel
+@{
+    ViewBag.Title = "Manage Single Select Dropdown";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Select2 Single Select Dropdown</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmTutorial", id = "frmTutorial" }))
+        {
+            @Html.AntiForgeryToken()
+
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6" id="licenseType">
+                    <div class="form-group">
+                        <div class="control-label">Jenis Lesen<span class="cfont">*</span></div>
+                        @Html.DropDownListFor(m => m.LIC_TYPEID, new SelectList(Model.licenseList, "LIC_TYPEID", "LIC_TYPEDESC"), "Pilih Jenis Lesen", new { @id = "lesenList", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LIC_TYPEID)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts
+{
+<script>
+    
+    $(function () {
+        $("#lesenList").select2({ width: '100%', placeholder: "Pilih Syarikat" });
+    })
+
+    function back() {
+        var link = '@Url.Action("TestDatatable", "Tutorial")';
+        window.location.href = link;
+    }
+</script>
+}

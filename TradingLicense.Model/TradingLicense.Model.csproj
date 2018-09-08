@@ -95,6 +95,7 @@
     <Compile Include="RoadModel.cs" />
     <Compile Include="RoleModel.cs" />
     <Compile Include="SectorModel.cs" />
+    <Compile Include="TutorialModel.cs" />
     <Compile Include="UsersModel.cs" />
     <Compile Include="ZoneModel.cs" />
   </ItemGroup>

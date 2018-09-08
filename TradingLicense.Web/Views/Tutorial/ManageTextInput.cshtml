@@ -1,0 +1,81 @@
+﻿@model TradingLicense.Model.TutorialModel
+@{
+    ViewBag.Title = "Manage Text Input";
+}
+
+<div id="divMessage"></div>
+<div class="card">
+    <div class="header">
+        <h4 id="headerTitle">Teks Input</h4>
+    </div>
+    <div class="body">
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frmTutorial", id = "frmTutorial"}))
+        {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.TUTORIAL_ID)
+
+        <div class="row">
+            <div class="col-sm-12 col-lg-12">
+                <div class="form-group">
+                    <div class="control-label"> Teks Input Panjang <span class="cfont">*</span></div>
+                    @Html.TextBoxFor(m => m.T_DESC, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.T_DESC)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-6">
+                <div class="form-group">
+                    <div class="control-label"> Nombor Saja <span class="cfont">*</span></div>
+                    @Html.TextBoxFor(m => m.BT_ID, new { @class = "form-control allowinteger" })
+                    @Html.ValidationMessageFor(m => m.BT_ID)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-lg-4">
+                <div class="form-group">
+                    <div class="control-label"> Nombor Perpuluhan Saja <span class="cfont">*</span></div>
+                    @Html.TextBoxFor(m => m.LUAS, new { @class = "form-control allownumericwithdecimal" })
+                    @Html.ValidationMessageFor(m => m.LUAS)
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Simpan" />
+                    <input type="button" class="btn btn-default" value="Kembali" onclick="back()" />
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+@section scripts
+{
+    <script>
+
+    $(function () {
+
+    $(".allowinteger").on("keypress keyup blur", function (event) {
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        if ((event.which != 46) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+            event.preventDefault();
+        }
+    });
+
+    $(".allownumericwithdecimal").on("keypress keyup blur", function (event) {
+        $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which < 48 || event.which > 57) && (event.which == 37 || event.which == 39)) {
+            event.preventDefault();
+        }
+    });
+
+    function back() {
+         var link = '@Url.Action("TestDatatable", "Tutorial")';
+        window.location.href = link;
+    }
+    </script>
+}
